@@ -1,8 +1,7 @@
 import React, { useId } from "react";
 
-import { BanIcon, CheckCircle2Icon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { BanIcon, CheckCircle2Icon } from "lucide-react";
 
 import { UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";

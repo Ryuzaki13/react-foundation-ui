@@ -1,10 +1,9 @@
 import { useState } from "react";
 
-import type { ODataCollectionConfig, ODataCollectionModel, ODataCollectionSegment } from "@ryuzaki13/react-foundation-api/odata";
-
 import { baseModel, baseOData, baseSegment, storyValues, withMockedOData } from "../../../select/stories/odataStoryFixtures";
 import { ODataMultiSelect } from "../ODataMultiSelect";
 
+import type { ODataCollectionConfig, ODataCollectionModel, ODataCollectionSegment } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 function StatefulODataMultiSelect({
@@ -46,76 +45,74 @@ function StatefulODataMultiSelect({
 }
 
 function LinkedFiltersDemo() {
-	const [divisions, setDivisions] = useState<string[]>([storyValues.division]);
+	const [regions, setRegions] = useState<string[]>([storyValues.region]);
 	const [branches, setBranches] = useState<string[]>([storyValues.branch, storyValues.branchAlt]);
-	const [salesOffices, setSalesOffices] = useState<string[]>([storyValues.salesOffice]);
-	const [managerGroups, setManagerGroups] = useState<string[]>([storyValues.managerGroup, storyValues.managerGroupAlt]);
+	const [teams, setTeams] = useState<string[]>([storyValues.team]);
+	const [owners, setOwners] = useState<string[]>([storyValues.owner, storyValues.ownerAlt]);
 
-	const divisionDependencies = divisions.length ? { ZDIV: divisions } : undefined;
-	const salesOfficeDependencies = divisions.length && branches.length ? { ZDIV: divisions, ZCFO1: branches } : divisionDependencies;
-	const managerDependencies =
-		divisions.length && branches.length && salesOffices.length
-			? { ZDIV: divisions, ZCFO1: branches, ZCSLS_OFF: salesOffices }
-			: salesOfficeDependencies;
+	const regionDependencies = regions.length ? { REGION: regions } : undefined;
+	const teamDependencies = regions.length && branches.length ? { REGION: regions, BRANCH: branches } : regionDependencies;
+	const ownerDependencies =
+		regions.length && branches.length && teams.length ? { REGION: regions, BRANCH: branches, TEAM: teams } : teamDependencies;
 
 	return (
 		<div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
 			<ODataMultiSelect
-				label="Дивизион"
+				label="Регион"
 				description="Корневой фильтр для цепочки. После смены значения downstream-фильтры сбрасываются."
 				odata={baseOData}
-				model={{ ...baseModel, codeKey: "ZDIV" }}
-				segment={{ placeholder: "Дивизион" }}
-				value={divisions}
-				onChange={(nextDivisions) => {
-					setDivisions(nextDivisions);
+				model={{ ...baseModel, codeKey: "REGION" }}
+				segment={{ placeholder: "Регион" }}
+				value={regions}
+				onChange={(nextRegions) => {
+					setRegions(nextRegions);
 					setBranches([]);
-					setSalesOffices([]);
-					setManagerGroups([]);
+					setTeams([]);
+					setOwners([]);
 				}}
 			/>
 			<ODataMultiSelect
-				label="Филиал"
-				description="Выбор нескольких филиалов внутри выбранных дивизионов."
+				label="Подразделение"
+				description="Выбор нескольких подразделений внутри выбранных регионов."
 				odata={baseOData}
-				model={{ ...baseModel, codeKey: "ZCFO1" }}
-				segment={{ placeholder: "Филиал" }}
-				dependencies={divisionDependencies}
+				model={{ ...baseModel, codeKey: "BRANCH" }}
+				segment={{ placeholder: "Подразделение" }}
+				dependencies={regionDependencies}
 				value={branches}
 				onChange={(nextBranches) => {
 					setBranches(nextBranches);
-					setSalesOffices([]);
-					setManagerGroups([]);
+					setTeams([]);
+					setOwners([]);
 				}}
 			/>
 			<ODataMultiSelect
-				label="Отдел сбыта CRM"
-				description="Третий уровень зависит от текущего набора филиалов."
+				label="Команда"
+				description="Третий уровень зависит от текущего набора подразделений."
 				odata={baseOData}
-				model={{ ...baseModel, codeKey: "ZCSLS_OFF" }}
-				segment={{ placeholder: "Отдел сбыта CRM" }}
-				dependencies={salesOfficeDependencies}
-				value={salesOffices}
-				onChange={(nextSalesOffices) => {
-					setSalesOffices(nextSalesOffices);
-					setManagerGroups([]);
+				model={{ ...baseModel, codeKey: "TEAM" }}
+				segment={{ placeholder: "Команда" }}
+				dependencies={teamDependencies}
+				value={teams}
+				onChange={(nextTeams) => {
+					setTeams(nextTeams);
+					setOwners([]);
 				}}
 			/>
 			<ODataMultiSelect
-				label="Группа менеджеров"
-				description="Leaf-уровень для выбранных отделов сбыта."
+				label="Ответственный"
+				description="Leaf-уровень для выбранных команд."
 				odata={baseOData}
-				model={{ ...baseModel, codeKey: "ZBPMNGRRP" }}
-				segment={{ placeholder: "Группа менеджеров" }}
-				dependencies={managerDependencies}
-				value={managerGroups}
-				onChange={setManagerGroups}
+				model={{ ...baseModel, codeKey: "OWNER" }}
+				segment={{ placeholder: "Ответственный" }}
+				dependencies={ownerDependencies}
+				value={owners}
+				onChange={setOwners}
 			/>
 			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
-				<div>Дивизион: {divisions.length ? divisions.join(", ") : "пусто"}</div>
-				<div>Филиал: {branches.length ? branches.join(", ") : "пусто"}</div>
-				<div>Отдел сбыта CRM: {salesOffices.length ? salesOffices.join(", ") : "пусто"}</div>
-				<div>Группа менеджеров: {managerGroups.length ? managerGroups.join(", ") : "пусто"}</div>
+				<div>Регион: {regions.length ? regions.join(", ") : "пусто"}</div>
+				<div>Подразделение: {branches.length ? branches.join(", ") : "пусто"}</div>
+				<div>Команда: {teams.length ? teams.join(", ") : "пусто"}</div>
+				<div>Ответственный: {owners.length ? owners.join(", ") : "пусто"}</div>
 			</div>
 		</div>
 	);
@@ -131,7 +128,7 @@ const meta = {
 		odataMockMode: "success"
 	},
 	args: {
-		label: "Дивизион",
+		label: "Регион",
 		description: "Пример OData MultiSelect на основе конфигурации ui control.",
 		odata: baseOData,
 		model: baseModel,
@@ -152,14 +149,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const BasicDivision: Story = {
-	name: "Базовый дивизион",
+	name: "Базовый регион",
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Дивизион"
-			description="Базовая настройка из multiSelectConfig: выбор кодов ZDIV с текстовым отображением."
-			model={{ ...baseModel, codeKey: "ZDIV" }}
-			segment={{ placeholder: "Дивизион" }}
-			initialValue={[storyValues.division]}
+			label="Регион"
+			description="Базовая настройка из multiSelectConfig: выбор кодов REGION с текстовым отображением."
+			model={{ ...baseModel, codeKey: "REGION" }}
+			segment={{ placeholder: "Регион" }}
+			initialValue={[storyValues.region]}
 		/>
 	)
 };
@@ -168,10 +165,10 @@ export const HideCode: Story = {
 	name: "Скрытый код",
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Филиал"
+			label="Подразделение"
 			description="Сценарий segment.hideCode: в списке и токене показывается только текст без кода."
-			model={{ ...baseModel, codeKey: "ZCFO1" }}
-			segment={{ placeholder: "Филиал", hideCode: true }}
+			model={{ ...baseModel, codeKey: "BRANCH" }}
+			segment={{ placeholder: "Подразделение", hideCode: true }}
 			initialValue={[storyValues.branch, storyValues.branchAlt]}
 		/>
 	)
@@ -181,24 +178,24 @@ export const SelectTextValue: Story = {
 	name: "Выбор текста вместо кода",
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Дивизион по тексту"
+			label="Регион по тексту"
 			description="Сценарий segment.selectText: наружу возвращаются текстовые значения, а не коды."
-			model={{ ...baseModel, codeKey: "ZDIV" }}
-			segment={{ placeholder: "Дивизион", selectText: true }}
-			initialValue={[storyValues.divisionText]}
+			model={{ ...baseModel, codeKey: "REGION" }}
+			segment={{ placeholder: "Регион", selectText: true }}
+			initialValue={[storyValues.regionText]}
 		/>
 	)
 };
 
 export const StaticDependency: Story = {
-	name: "Зависимость от дивизиона",
+	name: "Зависимость от региона",
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Филиал c зависимостью"
-			description="Фильтрация филиалов по уже выбранному дивизиону через props.dependencies."
-			model={{ ...baseModel, codeKey: "ZCFO1" }}
-			segment={{ placeholder: "Филиал" }}
-			dependencies={{ ZDIV: [storyValues.division] }}
+			label="Подразделение c зависимостью"
+			description="Фильтрация подразделений по уже выбранному региону через props.dependencies."
+			model={{ ...baseModel, codeKey: "BRANCH" }}
+			segment={{ placeholder: "Подразделение" }}
+			dependencies={{ REGION: [storyValues.region] }}
 			initialValue={[storyValues.branch]}
 		/>
 	)
@@ -216,10 +213,10 @@ export const LoadingState: Story = {
 	},
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Отдел сбыта CRM"
+			label="Команда"
 			description="Mock с задержкой ответа, чтобы проверить loading-state и skeleton."
-			model={{ ...baseModel, codeKey: "ZCSLS_OFF" }}
-			segment={{ placeholder: "Отдел сбыта CRM" }}
+			model={{ ...baseModel, codeKey: "TEAM" }}
+			segment={{ placeholder: "Команда" }}
 		/>
 	)
 };
@@ -231,10 +228,10 @@ export const MetadataError: Story = {
 	},
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Дивизион"
+			label="Регион"
 			description="Сервис возвращает ошибку metadata. Полезно для проверки поведения хука useODataEntity."
-			model={{ ...baseModel, codeKey: "ZDIV" }}
-			segment={{ placeholder: "Дивизион" }}
+			model={{ ...baseModel, codeKey: "REGION" }}
+			segment={{ placeholder: "Регион" }}
 		/>
 	)
 };
@@ -246,10 +243,10 @@ export const CollectionError: Story = {
 	},
 	render: () => (
 		<StatefulODataMultiSelect
-			label="Группа менеджеров"
+			label="Ответственный"
 			description="Metadata доступна, но загрузка коллекции завершается ошибкой."
-			model={{ ...baseModel, codeKey: "ZBPMNGRRP" }}
-			segment={{ placeholder: "Группа менеджеров" }}
+			model={{ ...baseModel, codeKey: "OWNER" }}
+			segment={{ placeholder: "Ответственный" }}
 		/>
 	)
 };

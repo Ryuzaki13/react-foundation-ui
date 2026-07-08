@@ -1,8 +1,8 @@
 import { useCallback, useState } from "react";
 
-import type { ODataDependentSegmentItem } from "@ryuzaki13/react-foundation-api/odata";
-
 import { ODataMultiSelect } from "./ODataMultiSelect";
+
+import type { ODataDependentSegmentItem } from "@ryuzaki13/react-foundation-api/odata";
 
 interface ODataDependentSegmentMultiSelectProps {
 	item: ODataDependentSegmentItem;

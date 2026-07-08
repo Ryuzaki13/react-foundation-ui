@@ -1,8 +1,7 @@
+import { formatTypedCellValue } from "@ryuzaki13/react-foundation-lib/formatters";
+import { type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
-
-import { formatTypedCellValue } from "@ryuzaki13/react-foundation-lib/formatters";
-import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 
 import { TreeTable, type TreeTableProps } from "./TreeTable";
 

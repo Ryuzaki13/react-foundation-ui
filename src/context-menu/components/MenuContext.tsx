@@ -1,7 +1,8 @@
 import { createContext, useContext } from "react";
 
-import type { MenuOpenSource, MenuPoint } from "@ryuzaki13/react-foundation-lib/context-menu";
 import { createMissingContextError } from "@ryuzaki13/react-foundation-lib/error";
+
+import type { MenuOpenSource, MenuPoint } from "@ryuzaki13/react-foundation-lib/context-menu";
 
 export type MenuTriggerMode = "click" | "contextmenu";
 

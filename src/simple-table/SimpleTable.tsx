@@ -2,9 +2,9 @@ import { useMemo } from "react";
 
 import { ColumnDef } from "@tanstack/react-table";
 
-import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
-
 import { Table } from "../table";
+
+import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 
 /**
  * @deprecated Используйте `Table` из `shared/ui/composite/table`.

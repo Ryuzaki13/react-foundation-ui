@@ -1,11 +1,10 @@
 import { useState } from "react";
 
-import type { ODataCollectionConfig, ODataCollectionModel, ODataCollectionSegment } from "@ryuzaki13/react-foundation-api/odata";
-
 import { ODataSelect } from "../ODataSelect";
 
 import { baseModel, baseOData, baseSegment, storyValues, withMockedOData } from "./odataStoryFixtures";
 
+import type { ODataCollectionConfig, ODataCollectionModel, ODataCollectionSegment } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 function StatefulODataSelect({

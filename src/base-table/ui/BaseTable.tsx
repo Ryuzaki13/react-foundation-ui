@@ -10,9 +10,6 @@ import {
 
 import { DragEndEvent } from "@dnd-kit/core";
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
-import { flexRender, Header, type Cell, type Row, type Table as TanStackTable } from "@tanstack/react-table";
-
-import type { FormattersPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import { useDndSortableSensors } from "@ryuzaki13/react-foundation-lib/hooks";
 import {
 	getTableColumnMeta,
@@ -25,6 +22,7 @@ import {
 	type TableSelectionMode
 } from "@ryuzaki13/react-foundation-lib/table";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
+import { flexRender, Header, type Cell, type Row, type Table as TanStackTable } from "@tanstack/react-table";
 
 import { ContextMenu } from "../../context-menu";
 import { GridContainer } from "../../grid";
@@ -35,6 +33,8 @@ import { BaseTableCellLayout } from "../lib/mergeDuplicates";
 
 import styles from "./BaseTable.module.scss";
 import { BaseTableHeaderCell } from "./BaseTableHeaderCell";
+
+import type { FormattersPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 
 /**
  * Аргументы кастомизации рендера ячейки базовой таблицы.

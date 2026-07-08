@@ -1,10 +1,9 @@
 import React, { Children, useEffect, useEffectEvent, useId, useState } from "react";
 
-import { X } from "lucide-react";
-import { createPortal } from "react-dom";
-
 import { getOrCreatePortalRoot, useEscapeDismiss, useFocusTrap } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { X } from "lucide-react";
+import { createPortal } from "react-dom";
 
 import { Button } from "../button";
 import { FlexContainer } from "../flex";
@@ -51,10 +50,7 @@ type ContentElement = React.ReactElement<ModalCompositionProps, typeof ModalCont
 type FooterElement = React.ReactElement<ModalCompositionProps, typeof ModalFooter>;
 
 type ModalChildren =
-	| [ToolbarElement, ContentElement, FooterElement]
-	| [ToolbarElement, ContentElement]
-	| [ContentElement, FooterElement]
-	| ContentElement;
+	[ToolbarElement, ContentElement, FooterElement] | [ToolbarElement, ContentElement] | [ContentElement, FooterElement] | ContentElement;
 
 export interface ModalProps {
 	/** Открыто ли модальное окно */

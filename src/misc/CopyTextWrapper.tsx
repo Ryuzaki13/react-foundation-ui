@@ -1,7 +1,6 @@
 import { Placement } from "@floating-ui/react";
-import { CheckCheckIcon, CopyIcon } from "lucide-react";
-
 import { useCopyElementTextWithFeedback } from "@ryuzaki13/react-foundation-lib/copy";
+import { CheckCheckIcon, CopyIcon } from "lucide-react";
 
 import { FloatingPopover } from "../popover";
 

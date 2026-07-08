@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-import type { ReadImageResult } from "@ryuzaki13/react-foundation-lib/file";
-
 import { InputImage } from "../InputImage";
 
+import type { ReadImageResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const createMockReadImageResult = (name: string = "avatar.png"): ReadImageResult => {

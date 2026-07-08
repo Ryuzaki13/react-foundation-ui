@@ -5,4 +5,4 @@ import ignoresConfig from "./config/eslint/ignores";
 import prettierConfig from "./config/eslint/prettier";
 import storiesConfig from "./config/eslint/stories";
 
-export default defineConfig([ignoresConfig, tseslint.configs.recommended, globalConfig, storiesConfig, prettierConfig]);
+export default defineConfig([ignoresConfig, tseslint.configs.recommended, globalConfig, prettierConfig, storiesConfig]);

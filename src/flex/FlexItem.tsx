@@ -22,7 +22,7 @@ export const FlexItem = forwardRef<HTMLElement, FlexItemProps>(({ children, clas
 
 	return createElement(
 		Component,
-		// eslint-disable-next-line react-hooks/refs
+
 		{
 			ref,
 			className: finalClassName,

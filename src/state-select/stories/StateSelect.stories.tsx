@@ -2,10 +2,9 @@ import { useState } from "react";
 
 import { AlertTriangleIcon, CheckCircle2Icon, InfoIcon, MinusCircleIcon, XCircleIcon } from "lucide-react";
 
-import type { State } from "@ryuzaki13/react-foundation-lib/types";
-
 import { StateSelect } from "../StateSelect";
 
+import type { State } from "@ryuzaki13/react-foundation-lib/types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {

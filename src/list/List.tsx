@@ -1,9 +1,8 @@
 import React, { Children, PropsWithChildren, useMemo, useRef } from "react";
 
-import { useVirtualizer } from "@tanstack/react-virtual";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { useFetchNextPageEffect } from "@ryuzaki13/react-foundation-lib/virtualizer";
+import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { Grid } from "../grid";
 import { LoadingMessage, Scrollable } from "../misc";

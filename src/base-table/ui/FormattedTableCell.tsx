@@ -1,12 +1,13 @@
 import { useEffect, useRef } from "react";
 
 import { type FormattersPipelineDisplayValue, resolveValueStateClassName } from "@ryuzaki13/react-foundation-lib/formatters";
-import type { TableColumnAlign } from "@ryuzaki13/react-foundation-lib/table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { RenderStateIcon } from "../../misc";
 
 import styles from "./FormattedTableCell.module.scss";
+
+import type { TableColumnAlign } from "@ryuzaki13/react-foundation-lib/table";
 
 /**
  * Пропсы общего renderer форматированной ячейки.

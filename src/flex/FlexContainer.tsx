@@ -34,7 +34,7 @@ export const FlexContainer = forwardRef<HTMLElement, FlexContainerProps>(({ chil
 
 	return createElement(
 		Component,
-		// eslint-disable-next-line react-hooks/refs
+
 		{
 			ref,
 			className: finalClassName,

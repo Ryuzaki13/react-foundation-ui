@@ -1,8 +1,7 @@
 import { MouseEvent, ReactNode } from "react";
 
-import { ChevronDownIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { ChevronDownIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 

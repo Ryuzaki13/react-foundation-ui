@@ -1,9 +1,8 @@
 import { useState } from "react";
 
-import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
-
 import { InputFile } from "../InputFile";
 
+import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const createMockReadFileResult = (name: string, mime: string = "application/pdf"): ReadFileResult => {

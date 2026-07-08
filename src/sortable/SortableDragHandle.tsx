@@ -1,8 +1,7 @@
 import type { ComponentPropsWithoutRef, ReactNode } from "react";
 
-import { GripIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { GripIcon } from "lucide-react";
 
 import { SortableHandle } from "./Sortable";
 import styles from "./SortableDragHandle.module.scss";

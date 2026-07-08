@@ -1,12 +1,11 @@
 import { useEffect, useEffectEvent, useMemo } from "react";
 
-import type { DateRangeInput } from "@ryuzaki13/react-foundation-lib/formatters";
-
 import { PresetSelect } from "../preset-select";
 
 import { createPeriodSelectOptions, isPeriodSelectOptionDisabled, resolvePeriodSelectAvailableValue, type PeriodSelectOption } from "./lib";
 
 import type { UiBaseProps } from "../types";
+import type { DateRangeInput } from "@ryuzaki13/react-foundation-lib/formatters";
 
 export interface PeriodSelectProps extends UiBaseProps<PeriodSelectOption["id"] | undefined> {
 	options?: readonly PeriodSelectOption[];

@@ -1,8 +1,6 @@
 /* eslint-disable react-refresh/only-export-components */
 import { createContext, PropsWithChildren, useContext, useEffect, useMemo } from "react";
 
-import { useStore } from "zustand";
-
 import { createMissingContextError } from "@ryuzaki13/react-foundation-lib/error";
 import {
 	bindNotifications,
@@ -12,6 +10,7 @@ import {
 	NotificationsStoreApi,
 	NotificationType
 } from "@ryuzaki13/react-foundation-lib/notifications";
+import { useStore } from "zustand";
 
 const NotificationsContext = createContext<NotificationsStoreApi | null>(null);
 

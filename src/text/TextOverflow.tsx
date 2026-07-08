@@ -1,7 +1,6 @@
 import { ComponentProps, ComponentType } from "react";
 
 import { Placement } from "@floating-ui/react";
-
 import { normalizeTextWithFallback } from "@ryuzaki13/react-foundation-lib/formatters";
 
 import { FloatingPopover } from "../popover";

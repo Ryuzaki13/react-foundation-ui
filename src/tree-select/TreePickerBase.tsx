@@ -1,8 +1,7 @@
 import { ReactNode, useEffect, useMemo, useRef, useState } from "react";
 
-import { XIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { XIcon } from "lucide-react";
 
 import { InputText } from "../input";
 import {

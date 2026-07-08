@@ -34,7 +34,7 @@ export const GridItem = forwardRef<HTMLElement, GridItemProps>(
 
 		return createElement(
 			Component,
-			// eslint-disable-next-line react-hooks/refs
+
 			{
 				ref,
 				className: finalClassName,

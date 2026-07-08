@@ -1,5 +1,10 @@
 import { filterAndDeduplicateIds, pickExistingMapValues } from "@ryuzaki13/react-foundation-lib/array";
-import { buildTableColumnLayout, getTableColumnMeta, resolveTableColumnOrder, resolveTableLength } from "@ryuzaki13/react-foundation-lib/table";
+import {
+	buildTableColumnLayout,
+	getTableColumnMeta,
+	resolveTableColumnOrder,
+	resolveTableLength
+} from "@ryuzaki13/react-foundation-lib/table";
 
 import type { Column, TableState, Table as TanStackTable } from "@tanstack/react-table";
 

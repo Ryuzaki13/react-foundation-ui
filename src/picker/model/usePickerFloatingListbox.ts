@@ -1,5 +1,4 @@
 import { Placement } from "@floating-ui/react";
-
 import { useFloatingListbox } from "@ryuzaki13/react-foundation-lib/hooks";
 
 import { PickerTriggerMode, createPickerTriggerPolicy } from "./createPickerTriggerPolicy";

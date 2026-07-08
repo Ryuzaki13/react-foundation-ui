@@ -118,7 +118,7 @@ vi.mock("@ryuzaki13/react-foundation-api/odata", async (importOriginal) => {
 			const codeKey = model.codeKey;
 			const textKey = data?.keyPairsMap[codeKey] ?? "";
 			const separatedMap = data?.separated as Partial<Record<string, MockItem[]>> | undefined;
-			const separatedItems = separatedMap?.[codeKey] ?? [];
+			const separatedItems = React.useMemo(() => separatedMap?.[codeKey] ?? [], [codeKey, separatedMap]);
 			const [filteredItems, setFilteredItems] = React.useState<MockItem[] | undefined>();
 
 			const findSourceItemsByKeys = React.useCallback((key: keyof MockItem, keys: string[]) => {

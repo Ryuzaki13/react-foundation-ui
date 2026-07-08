@@ -1,9 +1,8 @@
 import { useRef, useState } from "react";
 
 import { type Placement } from "@floating-ui/react";
-import { CheckIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { CheckIcon } from "lucide-react";
 
 import {
 	PickerField,

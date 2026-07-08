@@ -2,14 +2,14 @@
 
 import { act, type ReactNode } from "react";
 
+import { formatTypedCellValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { formatTypedCellValue } from "@ryuzaki13/react-foundation-lib/formatters";
-import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
-
 import { Table } from "./Table";
+
+import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 
 type DemoRow = {
 	id: string;

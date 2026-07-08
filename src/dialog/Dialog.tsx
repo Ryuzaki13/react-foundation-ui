@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useId } from "react";
 
-import { createPortal } from "react-dom";
-
 import { getOrCreatePortalRoot, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
+import { createPortal } from "react-dom";
 
 interface DialogProps extends PropsWithChildren {
 	title: React.ReactNode;

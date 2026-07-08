@@ -1,8 +1,7 @@
 import { JSX, useCallback, useEffect, useRef, useState } from "react";
 
-import { CalendarDaysIcon } from "lucide-react";
-
 import { isDateRangeTuple, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
+import { CalendarDaysIcon } from "lucide-react";
 
 import { Button } from "../../button";
 import { InputText } from "../../input";

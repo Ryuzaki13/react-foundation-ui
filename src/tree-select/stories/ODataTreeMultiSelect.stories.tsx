@@ -1,11 +1,10 @@
 import { useState } from "react";
 
-import type { ODataCollectionConfig, ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
-
 import { baseOData, storyValues, treeSegments, withMockedOData } from "../../select/stories/odataStoryFixtures";
 import { ODataTreeMultiSelect } from "../ODataTreeMultiSelect";
 import { TreeMultiSelectValue } from "../types";
 
+import type { ODataCollectionConfig, ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 function StatefulODataTreeMultiSelect({

@@ -1,6 +1,6 @@
+import { snapNumberScaleValueToMarks, snapNumberScaleValueToStep } from "@ryuzaki13/react-foundation-lib/number-scale";
 import { describe, expect, it } from "vitest";
 
-import { snapNumberScaleValueToMarks, snapNumberScaleValueToStep } from "@ryuzaki13/react-foundation-lib/number-scale";
 import {
 	getRangeSliderVisualValue,
 	normalizeRangeSliderValue,

@@ -51,7 +51,7 @@ export const GridContainer = forwardRef<HTMLElement, GridContainerProps>(
 
 		return createElement(
 			Component,
-			// eslint-disable-next-line react-hooks/refs
+
 			{
 				ref,
 				className: finalClassName,

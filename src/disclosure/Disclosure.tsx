@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useId, useState } from "react";
 
-import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 

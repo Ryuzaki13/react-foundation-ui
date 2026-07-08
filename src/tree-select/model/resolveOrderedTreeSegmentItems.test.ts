@@ -1,8 +1,8 @@
 import { describe, expect, it } from "vitest";
 
-import type { ODataDependentSegmentItem } from "@ryuzaki13/react-foundation-api/odata";
-
 import { resolveOrderedTreeSegmentItems } from "./resolveOrderedTreeSegmentItems";
+
+import type { ODataDependentSegmentItem } from "@ryuzaki13/react-foundation-api/odata";
 
 function createItem(id: string, segmentIndex: number): ODataDependentSegmentItem {
 	return {

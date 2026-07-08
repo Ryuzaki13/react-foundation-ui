@@ -1,8 +1,7 @@
 import React, { useCallback, useEffect, useRef, useState } from "react";
 
-import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
 import styles from "./OneStepScroller.module.scss";
 

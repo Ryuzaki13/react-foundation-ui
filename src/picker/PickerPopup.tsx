@@ -1,9 +1,8 @@
 import { type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 
 import { FloatingContext, FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
-import { AnimatePresence, motion } from "motion/react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { AnimatePresence, motion } from "motion/react";
 
 import { Separator } from "../separator";
 

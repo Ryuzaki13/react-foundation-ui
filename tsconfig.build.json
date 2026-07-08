@@ -6,24 +6,6 @@
 		"rootDir": "src",
 		"outDir": "dist"
 	},
-	"include": [
-		"src/**/*.ts",
-		"src/**/*.tsx"
-	],
-	"exclude": [
-		"src/test",
-		"src/**/*.test.ts",
-		"src/**/*.test.tsx",
-		"src/**/*OData*.ts",
-		"src/**/*OData*.tsx",
-		"src/styles-entry.ts",
-		"src/select/model/useODataSelect.ts",
-		"src/select/model/useODataSelectBase.ts",
-		"src/multi-select/model/useODataMultiSelect.ts",
-		"src/tree-select/model/useODataTreeData.ts",
-		"src/tree-select/model/resolveOrderedTreeSegmentItems.ts",
-		"src/table/stories/Table.stories.tsx",
-		"src/tree-table/stories/TreeTable.stories.tsx",
-		"src/select/stories/odataStoryFixtures.tsx"
-	]
+	"include": ["src/**/*.ts", "src/**/*.tsx"],
+	"exclude": ["src/test", "src/**/*.test.ts", "src/**/*.test.tsx", "src/styles-entry.ts"]
 }

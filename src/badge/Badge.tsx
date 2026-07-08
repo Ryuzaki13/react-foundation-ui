@@ -1,6 +1,5 @@
-import { XIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { XIcon } from "lucide-react";
 
 import { TextOverflow } from "../text";
 import { getUiAppearanceClassName, getUiToneClassName, resolveUiScheme } from "../uiClasses";

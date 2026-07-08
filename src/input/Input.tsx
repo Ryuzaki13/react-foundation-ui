@@ -1,9 +1,8 @@
 import React, { CSSProperties, InputHTMLAttributes, ReactNode, useEffect, useEffectEvent, useState } from "react";
 
-import { XIcon } from "lucide-react";
-
 import { toFiniteNumber } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { XIcon } from "lucide-react";
 
 import { UiBaseProps, UiSize } from "../types";
 import uiStyles from "../ui.module.scss";
@@ -298,7 +297,7 @@ export function InputNumber({
 	endAdornmentClassName,
 	endAdornmentWidth,
 	...props
-	}: BaseInputProps<number, number | undefined>) {
+}: BaseInputProps<number, number | undefined>) {
 	const inputProps = props as InputHTMLAttributes<HTMLInputElement>;
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
 		id: props.id,

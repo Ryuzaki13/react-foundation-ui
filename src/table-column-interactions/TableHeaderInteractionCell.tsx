@@ -3,7 +3,6 @@ import { type ComponentPropsWithoutRef, type CSSProperties, type ReactNode } fro
 import { type DraggableAttributes, type DraggableSyntheticListeners, type UniqueIdentifier } from "@dnd-kit/core";
 import { useSortable } from "@dnd-kit/sortable";
 import { CSS } from "@dnd-kit/utilities";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { TableColumnResizeHandle, type TableColumnResizeHandleProps } from "./TableColumnResizeHandle";

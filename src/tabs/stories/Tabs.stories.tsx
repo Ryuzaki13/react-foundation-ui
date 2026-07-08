@@ -1,7 +1,7 @@
 import { useState, type CSSProperties } from "react";
 
-import { Scrollable } from "../../misc";
 import { Tabs, TabsBox, TabsLayout, type TabsBoxItem } from "..";
+import { Scrollable } from "../../misc";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 

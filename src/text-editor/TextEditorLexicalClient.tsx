@@ -10,9 +10,8 @@ import { ListPlugin } from "@lexical/react/LexicalListPlugin";
 import { OnChangePlugin } from "@lexical/react/LexicalOnChangePlugin";
 import { RichTextPlugin } from "@lexical/react/LexicalRichTextPlugin";
 import { HeadingNode, QuoteNode } from "@lexical/rich-text";
-import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexical";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexical";
 
 import { TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
 import { InitialHtmlPlugin, SelectionStatePlugin } from "./lexical/plugins";

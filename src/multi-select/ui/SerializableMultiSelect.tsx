@@ -1,8 +1,7 @@
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
-
 import { MultiSelect } from "./MultiSelect";
 
 import type { UiBaseProps } from "../../types";
+import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
 type SerializableOptionRecord = Record<string, unknown>;
 

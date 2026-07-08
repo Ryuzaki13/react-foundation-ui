@@ -1,9 +1,8 @@
 import { useEffect, useState } from "react";
 
-import { useQueryClient } from "@tanstack/react-query";
-
 import { captureRuntimeErrorReport } from "@ryuzaki13/react-foundation-lib/error-report";
 import { logError } from "@ryuzaki13/react-foundation-lib/utils";
+import { useQueryClient } from "@tanstack/react-query";
 
 import { BadRequestPage } from "./BadRequestPage";
 import { BoomExplosion } from "./BoomExplosion";

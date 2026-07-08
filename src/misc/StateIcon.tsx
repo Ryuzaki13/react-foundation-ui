@@ -1,9 +1,8 @@
 import React from "react";
 
-import { CircleAlertIcon, CircleCheckIcon, CircleXIcon, InfoIcon } from "lucide-react";
-
 import { State } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { CircleAlertIcon, CircleCheckIcon, CircleXIcon, InfoIcon } from "lucide-react";
 
 import styles from "./State.module.scss";
 

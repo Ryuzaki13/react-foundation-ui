@@ -71,8 +71,7 @@ export interface SliderProps extends Omit<UiBaseProps<number, number | undefined
  * Range slider. Возвращает бизнес-значения `SliderRangeMark.outputValue`, если они заданы, иначе координаты `value`.
  */
 export interface SliderRangeProps
-	extends Omit<UiBaseProps<SliderRangeValue, SliderRangeValue | undefined>, "placeholder">,
-		SliderCommonProps<SliderRangeMark> {}
+	extends Omit<UiBaseProps<SliderRangeValue, SliderRangeValue | undefined>, "placeholder">, SliderCommonProps<SliderRangeMark> {}
 
 interface SliderBaseCommonProps<TMark extends SliderMark> extends SliderCommonProps<TMark> {
 	/**

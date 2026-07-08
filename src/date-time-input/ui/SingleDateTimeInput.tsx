@@ -1,9 +1,8 @@
 import { JSX, useEffect, useEffectEvent, useMemo, useState } from "react";
 
-import { CalendarDaysIcon, Clock3Icon } from "lucide-react";
-
 import { getStartOfDay, isDateRangeTuple, NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { CalendarDaysIcon, Clock3Icon } from "lucide-react";
 
 import { Button } from "../../button";
 import { CalendarView } from "../../date-input/ui";

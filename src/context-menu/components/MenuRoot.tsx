@@ -1,7 +1,6 @@
 import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
 
 import { autoUpdate, flip, offset, Placement, shift, useFloating } from "@floating-ui/react";
-
 import {
 	closeMenu,
 	createVirtualAnchor,

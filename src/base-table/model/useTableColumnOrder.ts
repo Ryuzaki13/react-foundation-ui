@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { functionalUpdate, type ColumnOrderState, type Updater } from "@tanstack/react-table";
-
 import { normalizeTableColumnOrder, type TableColumnOrderState } from "@ryuzaki13/react-foundation-lib/table";
+import { functionalUpdate, type ColumnOrderState, type Updater } from "@tanstack/react-table";
 
 /**
  * Аргументы управления порядком колонок таблицы.

@@ -1,18 +1,7 @@
 /* eslint-disable react-hooks/incompatible-library */
 import { useEffect, useEffectEvent, useMemo, useRef, useState, type ReactNode } from "react";
 
-import {
-	getCoreRowModel,
-	getExpandedRowModel,
-	useReactTable,
-	type ExpandedState,
-	type Row,
-	type VisibilityState
-} from "@tanstack/react-table";
-import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
-
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
-import type { TableFormulaRowData } from "@ryuzaki13/react-foundation-lib/formulas";
 import {
 	resolveTableLength,
 	TableColumnDef,
@@ -23,6 +12,15 @@ import {
 } from "@ryuzaki13/react-foundation-lib/table";
 import { buildTreeTableRows, type TreeTableFlatHierarchy, type TreeTableRowNode } from "@ryuzaki13/react-foundation-lib/tree-table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import {
+	getCoreRowModel,
+	getExpandedRowModel,
+	useReactTable,
+	type ExpandedState,
+	type Row,
+	type VisibilityState
+} from "@tanstack/react-table";
+import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 
 import {
 	BaseTable,
@@ -42,6 +40,8 @@ import {
 } from "../base-table";
 
 import styles from "./TreeTable.module.scss";
+
+import type { TableFormulaRowData } from "@ryuzaki13/react-foundation-lib/formulas";
 
 /**
  * Внутренний тип строки TreeTable после преобразования в иерархию.

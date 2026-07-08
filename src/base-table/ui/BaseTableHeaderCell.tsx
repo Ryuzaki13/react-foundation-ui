@@ -1,8 +1,7 @@
 import { ReactNode } from "react";
 
-import { Header } from "@tanstack/react-table";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { Header } from "@tanstack/react-table";
 
 import { TableHeaderInteractionCell } from "../../table-column-interactions";
 

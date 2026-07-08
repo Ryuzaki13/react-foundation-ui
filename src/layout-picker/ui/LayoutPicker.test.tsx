@@ -6,6 +6,7 @@ import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { DEFAULT_LAYOUT_PICKER_PRESETS, type LayoutPickerPreset } from "../lib";
+
 import { LayoutPicker } from "./LayoutPicker";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;

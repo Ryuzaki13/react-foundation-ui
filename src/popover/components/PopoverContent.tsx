@@ -1,7 +1,6 @@
 import React, { useCallback, useRef } from "react";
 
 import { FloatingPortal } from "@floating-ui/react";
-
 import { useClickOutside, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 

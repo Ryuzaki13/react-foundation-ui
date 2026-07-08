@@ -1,8 +1,6 @@
 /* eslint-disable react-hooks/incompatible-library */
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 
-import { getCoreRowModel, useReactTable, type Row, type VisibilityState } from "@tanstack/react-table";
-
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import { TableFormulaRowData } from "@ryuzaki13/react-foundation-lib/formulas";
 import {
@@ -12,6 +10,7 @@ import {
 	type TableSelectionMode,
 	useTableRowSelection
 } from "@ryuzaki13/react-foundation-lib/table";
+import { getCoreRowModel, useReactTable, type Row, type VisibilityState } from "@tanstack/react-table";
 
 import {
 	BaseTable,

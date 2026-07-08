@@ -1,9 +1,8 @@
 import { useCallback } from "react";
 
-import { XIcon } from "lucide-react";
-
 import { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { XIcon } from "lucide-react";
 
 import styles from "./InputFiles.module.scss";
 

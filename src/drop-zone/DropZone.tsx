@@ -1,9 +1,15 @@
 import { ChangeEvent, ReactNode, useCallback, useMemo, useRef, useState } from "react";
 
-import { UploadIcon } from "lucide-react";
-
-import { assertValidAccept, assertValidAllowedMime, readFile, ReadFileError, ReadFileResult, ReadMode } from "@ryuzaki13/react-foundation-lib/file";
+import {
+	assertValidAccept,
+	assertValidAllowedMime,
+	readFile,
+	ReadFileError,
+	ReadFileResult,
+	ReadMode
+} from "@ryuzaki13/react-foundation-lib/file";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
+import { UploadIcon } from "lucide-react";
 
 import { InputFilesList } from "../input-files";
 

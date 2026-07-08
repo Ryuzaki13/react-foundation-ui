@@ -1,8 +1,7 @@
 import React, { useId } from "react";
 
-import { SquareIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { SquareIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 import { getUiToneClassName } from "../uiClasses";

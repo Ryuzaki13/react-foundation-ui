@@ -1,7 +1,6 @@
-import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, TriangleAlertIcon, XIcon } from "lucide-react";
-
 import { NotificationType } from "@ryuzaki13/react-foundation-lib/notifications";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, TriangleAlertIcon, XIcon } from "lucide-react";
 
 import { Button } from "../../button";
 import { FlexContainer } from "../../flex";

@@ -7,12 +7,17 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 const oDataMultiSelectSpy = vi.fn();
 
-vi.mock("./ODataMultiSelect", () => ({
-	ODataMultiSelect: function MockODataMultiSelect(props: Record<string, unknown>) {
+vi.mock("./ODataMultiSelect", () => {
+	function MockODataMultiSelect(props: Record<string, unknown>) {
 		oDataMultiSelectSpy(props);
 		return <div data-testid="odata-multi-select" />;
 	}
-}));
+
+	const moduleExports = {} as { ODataMultiSelect: typeof MockODataMultiSelect };
+	moduleExports.ODataMultiSelect = MockODataMultiSelect;
+
+	return moduleExports;
+});
 
 import { ODataDependentSegmentMultiSelect } from "./ODataDependentSegmentMultiSelect";
 

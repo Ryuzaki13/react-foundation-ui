@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 
-import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
-
 import {
 	buildTableFormattingSnapshot,
 	hasTableColumnCustomCellRenderer,
 	resolveTableFormattingColumnId,
 	shouldUseTableFormatting
 } from "./formatting";
+
+import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 
 type DemoRow = {
 	id: string;

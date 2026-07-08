@@ -1,8 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { functionalUpdate, type ColumnSizingState, type Updater } from "@tanstack/react-table";
-
 import { normalizeTableColumnSizing, type TableColumnSizingState } from "@ryuzaki13/react-foundation-lib/table";
+import { functionalUpdate, type ColumnSizingState, type Updater } from "@tanstack/react-table";
 
 /**
  * Аргументы управления шириной колонок таблицы.

@@ -1,8 +1,7 @@
 import React, { PropsWithChildren, useCallback, useId, useState } from "react";
 
-import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { ChevronsLeftIcon, ChevronsRightIcon } from "lucide-react";
 
 import { Button } from "../button";
 import { OneStepScroller } from "../misc";

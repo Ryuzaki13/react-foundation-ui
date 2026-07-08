@@ -1,8 +1,7 @@
 import { CSSProperties } from "react";
 
-import { CheckIcon, ChevronRightIcon, MinusIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { CheckIcon, ChevronRightIcon, MinusIcon } from "lucide-react";
 
 import { SelectOptionContent } from "../select/SelectOptionContent";
 

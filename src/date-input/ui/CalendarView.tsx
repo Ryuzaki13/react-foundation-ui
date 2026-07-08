@@ -1,7 +1,5 @@
 import { useEffect, useEffectEvent, useState } from "react";
 
-import { ChevronLeft, ChevronRight } from "lucide-react";
-
 import {
 	addCalendarMonths,
 	addCalendarYears,
@@ -12,6 +10,7 @@ import {
 	type CalendarPeriodOptions,
 	type NullableDateRange
 } from "@ryuzaki13/react-foundation-lib/formatters";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "../../button";
 import { isDatePickerLevelAvailable, type CalendarType, type DateInputSelectionMode, type DateInputWeekEndDay } from "../lib";

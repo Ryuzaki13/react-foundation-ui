@@ -2,10 +2,9 @@ import { useState } from "react";
 
 import { UploadCloudIcon } from "lucide-react";
 
-import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
-
 import { DropZone } from "../DropZone";
 
+import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {

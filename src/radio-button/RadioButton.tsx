@@ -1,8 +1,7 @@
 import React, { useId } from "react";
 
-import { CircleIcon } from "lucide-react";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { CircleIcon } from "lucide-react";
 
 import baseStyles from "../check-box/CheckBox.module.scss";
 import uiStyles from "../ui.module.scss";

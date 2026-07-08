@@ -1,10 +1,9 @@
 import { ReactNode, useRef, useState } from "react";
 
 import { Placement } from "@floating-ui/react";
-import { CheckIcon, XIcon } from "lucide-react";
-
 import { InputType } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { CheckIcon, XIcon } from "lucide-react";
 
 import {
 	extractPickerTextContent,

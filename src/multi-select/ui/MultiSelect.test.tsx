@@ -5,9 +5,9 @@ import React, { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
-
 import { MultiSelect } from "./MultiSelect";
+
+import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 window.matchMedia ??= () =>

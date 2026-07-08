@@ -1,9 +1,7 @@
 import React, { forwardRef, type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 
-import { XIcon } from "lucide-react";
-
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { XIcon } from "lucide-react";
 
 import { CheckBox } from "../../check-box";
 import {
@@ -30,6 +28,8 @@ import {
 } from "./defaultRenderers";
 import styles from "./MultiSelect.module.scss";
 import { MultiSelectOptionSkeleton } from "./MultiSelectOptionSkeleton";
+
+import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
 interface MultiSelectOptionsProps extends PropsWithChildren {
 	isNoData?: boolean;

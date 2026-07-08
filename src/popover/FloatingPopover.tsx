@@ -14,9 +14,8 @@ import {
 	useInteractions,
 	useRole
 } from "@floating-ui/react";
-import { createPortal } from "react-dom";
-
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { createPortal } from "react-dom";
 
 import { FloatingArrow } from "../floating-arrow/FloatingArrow";
 

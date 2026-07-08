@@ -1,4 +1,9 @@
-import { countCalendarDaysInDateRange, type DateRangeInput, normalizeText, toPositiveInteger } from "@ryuzaki13/react-foundation-lib/formatters";
+import {
+	countCalendarDaysInDateRange,
+	type DateRangeInput,
+	normalizeText,
+	toPositiveInteger
+} from "@ryuzaki13/react-foundation-lib/formatters";
 import { getPresetOption, normalizePresetIds, type PresetOption, resolvePresetOptionsByIds } from "@ryuzaki13/react-foundation-lib/presets";
 import { isRecord } from "@ryuzaki13/react-foundation-lib/validators";
 

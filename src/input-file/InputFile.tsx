@@ -1,6 +1,13 @@
 import { useCallback, useRef } from "react";
 
-import { assertValidAccept, assertValidAllowedMime, readFile, ReadFileError, ReadFileResult, ReadMode } from "@ryuzaki13/react-foundation-lib/file";
+import {
+	assertValidAccept,
+	assertValidAllowedMime,
+	readFile,
+	ReadFileError,
+	ReadFileResult,
+	ReadMode
+} from "@ryuzaki13/react-foundation-lib/file";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { InputClearButton, InputControl, InputUI, useInputFieldIds } from "../input";

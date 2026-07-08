@@ -1,14 +1,13 @@
 import { useMemo, useState, type ComponentType } from "react";
 
-import { QueryClientProvider } from "@tanstack/react-query";
-
 import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
-import type { EntityColumnProperty, EntityMetadata, ServiceMetadata } from "@ryuzaki13/react-foundation-lib/odata-service";
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
 import { enrichTableColumnsWithODataFormatting, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
+import { QueryClientProvider } from "@tanstack/react-query";
 
 import { Table, type TableProps } from "../Table";
 
+import type { EntityColumnProperty, EntityMetadata, ServiceMetadata } from "@ryuzaki13/react-foundation-lib/odata-service";
 import type { Decorator, Meta, StoryObj } from "@storybook/react-vite";
 
 interface DealRow {
