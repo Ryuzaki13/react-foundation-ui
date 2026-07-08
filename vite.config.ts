@@ -75,6 +75,7 @@ function collectEntries(): Record<string, string> {
   const entries: Record<string, string> = {};
 
   entries["styles-entry"] = resolve("src/styles-entry.ts");
+  entries["types"] = resolve("src/types.ts");
 
   for (const filePath of walkSourceFiles(resolve("src"), (file) =>
     file.endsWith("/index.ts"),

@@ -57,6 +57,10 @@
 			"sass": "./styles/themes.scss",
 			"default": "./styles/themes.scss"
 		},
+		"./types": {
+			"types": "./dist/types.d.ts",
+			"import": "./dist/types.js"
+		},
 		"./badge": {
 			"types": "./dist/badge/index.d.ts",
 			"import": "./dist/badge/index.js"
@@ -497,6 +501,9 @@
 	},
 	"typesVersions": {
 		"*": {
+			"types": [
+				"dist/types.d.ts"
+			],
 			"badge": [
 				"dist/badge/index.d.ts"
 			],
@@ -932,13 +939,13 @@
 			"optional": true
 		},
 		"@tanstack/react-router": {
-			"optional": "true"
+			"optional": true
 		},
 		"storybook": {
-			"optional": "true"
+			"optional": true
 		},
 		"@storybook/react-vite": {
-			"optional": "true"
+			"optional": true
 		}
 	},
 	"devDependencies": {
