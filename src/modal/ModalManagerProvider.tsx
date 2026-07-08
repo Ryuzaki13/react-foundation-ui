@@ -27,7 +27,6 @@ export function ModalManagerProvider({ children }: { children: React.ReactNode }
 
 	useEffect(() => {
 		const wasEmpty = prevModalsLength.current === 0;
-		const isNowEmpty = modals.length === 0;
 
 		if (wasEmpty && modals.length > 0) {
 			// первая модалка открыта — ставим стили
@@ -45,7 +44,7 @@ export function ModalManagerProvider({ children }: { children: React.ReactNode }
 			return;
 		}
 
-		if (!wasEmpty && isNowEmpty) {
+		if (!wasEmpty && modals.length === 0) {
 			// последняя модалка закрыта — снимаем стили
 			const appRoot = document.querySelector("#app-root");
 			const scrollY = parseInt(document.body.style.top || "0") * -1;

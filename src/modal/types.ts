@@ -3,5 +3,6 @@ export const ModalSize = {
 	md: "md",
 	lg: "lg",
 	xl: "xl",
+	xxl: "xxl",
 	inside: "inside"
 };
