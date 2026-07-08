@@ -98,7 +98,8 @@ function createDefine(configEnv: { mode: string }): Record<string, string> {
 		__DEV__: "true",
 		__IMAGE_UPLOAD_MAX_BYTES__: JSON.stringify(10 * 1024 * 1024),
 		__PREVIEW__: "false",
-		__REACT_QUERY_PERSISTENCE_BUSTER__: JSON.stringify("react-foundation-ui-query-test")
+		__REACT_QUERY_PERSISTENCE_BUSTER__: JSON.stringify("react-foundation-ui-query-test"),
+		__BASE_APP_CONFIG_URL__: JSON.stringify("/")
 	};
 }
 
