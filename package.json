@@ -65,6 +65,10 @@
 			"types": "./dist/badge/index.d.ts",
 			"import": "./dist/badge/index.js"
 		},
+		"./advanced-search": {
+			"types": "./dist/advanced-search/index.d.ts",
+			"import": "./dist/advanced-search/index.js"
+		},
 		"./base-table": {
 			"types": "./dist/base-table/index.d.ts",
 			"import": "./dist/base-table/index.js"
@@ -503,6 +507,9 @@
 		"*": {
 			"types": [
 				"dist/types.d.ts"
+			],
+			"advanced-search": [
+				"dist/advanced-search/index.d.ts"
 			],
 			"badge": [
 				"dist/badge/index.d.ts"
