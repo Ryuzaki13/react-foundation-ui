@@ -1,0 +1,99 @@
+// BORDER
+
+.border {
+	border: var(--border);
+}
+
+.borderTop {
+	border-top: var(--border);
+}
+.borderBottom {
+	border-bottom: var(--border);
+}
+.borderLeft {
+	border-left: var(--border);
+}
+.borderRight {
+	border-right: var(--border);
+}
+
+// TODO: unused
+.borderTransition {
+	transition: border var(--transition-fast) ease;
+}
+
+// TODO: unused
+.borderInline {
+	@extend .borderLeft;
+	@extend .borderRight;
+}
+
+// TODO: unused
+.borderBlock {
+	@extend .borderTop;
+	@extend .borderBottom;
+}
+
+// TODO: unused
+.borderTransparent {
+	border-color: transparent;
+}
+
+// TODO: unused
+.borderHover {
+	&:hover {
+		border-color: var(--border-1);
+	}
+}
+
+// TODO: unused
+.radiusXs {
+	border-radius: var(--radius-xs);
+}
+.radiusSm {
+	border-radius: var(--radius-sm);
+}
+.radiusMd {
+	border-radius: var(--radius-md);
+}
+.radiusLg {
+	border-radius: var(--radius-lg);
+}
+// TODO: unused
+.radiusXl {
+	border-radius: var(--radius-xl);
+}
+// TODO: unused
+.radiusCircle {
+	border-radius: 50%;
+}
+
+// TODO: unused
+.outlineSolid {
+	outline: var(--border-width) solid var(--content-accent);
+	outline-offset: var(--focus-offset);
+}
+
+// TODO: unused
+.outlineDashed {
+	outline: var(--border-width) dashed var(--content-accent);
+	outline-offset: var(--focus-offset);
+}
+
+.separator {
+	// margin: var(--space-xs) 0;
+	border-top: var(--border);
+}
+
+// TODO: unused
+.separatorDashed {
+	@extend .separator;
+	border-top-style: dashed;
+}
+
+.separatorVertical {
+	// margin: 0 var(--space-xs);
+	border-left: var(--border);
+	height: 100%;
+	min-height: 1em;
+}

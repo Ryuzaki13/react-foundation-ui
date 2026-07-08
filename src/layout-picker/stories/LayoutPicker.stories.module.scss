@@ -1,0 +1,64 @@
+.canvas {
+	display: grid;
+	gap: var(--space-md);
+	width: min(100%, 48em);
+}
+
+.toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: end;
+	gap: var(--space-sm);
+}
+
+.summary {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 9em), 1fr));
+	gap: var(--space-sm);
+	padding: var(--space-sm);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background-color: var(--surface-2);
+}
+
+.summaryItem {
+	display: grid;
+	gap: calc(var(--space-xs) / 2);
+	min-width: 0;
+}
+
+.summaryValue {
+	overflow: hidden;
+	color: var(--content-1);
+	font-weight: 300;
+	font-variation-settings: "wght" 300;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.muted {
+	color: var(--content-2);
+	font-size: var(--font-size-sm);
+}
+
+.layoutPreview {
+	display: grid;
+	gap: var(--space-sm);
+}
+
+.layoutCell {
+	display: grid;
+	gap: var(--space-xs);
+	align-content: start;
+	min-height: 6em;
+	padding: var(--space-sm);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background-color: var(--surface-1);
+}
+
+.layoutCellTitle {
+	color: var(--content-0);
+	font-weight: 600;
+	font-variation-settings: "wght" 600;
+}

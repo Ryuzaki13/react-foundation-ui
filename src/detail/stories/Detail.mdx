@@ -1,0 +1,74 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as DetailStories from "./Detail.stories";
+
+<Meta
+	of={DetailStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Detail</Title>
+<Subtitle>Компонент для вывода пар «заголовок-значение» в карточках, сводках и просмотре сущностей</Subtitle>
+
+Detail уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={DetailStories.BasicList} />
+
+```tsx
+import { Detail } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<Detail columnCount={2}>
+			<Detail.Item label="Номер" value="DOC-001" />
+			<Detail.Item label="Статус" value="Черновик" />
+		</Detail>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+
+## Сценарии использования
+
+### Базовый вывод списка пар «ключ-значение»
+
+Базовый вывод списка пар «ключ-значение».
+
+<Canvas of={DetailStories.BasicList} />
+
+### Многоколоночное отображение
+
+Многоколоночное отображение.
+
+<Canvas of={DetailStories.MultipleColumns} />
+
+### Семантический режим на dl/dt/dd
+
+Семантический режим на dl/dt/dd.
+
+<Canvas of={DetailStories.SemanticDl} />
+
+### Гибкая настройка подписи и оформления
+
+Гибкая настройка подписи и оформления.
+
+<Canvas of={DetailStories.CustomLabel} />
+
+## API
+
+<ArgTypes of={DetailStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

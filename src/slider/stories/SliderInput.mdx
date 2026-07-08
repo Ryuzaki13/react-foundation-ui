@@ -1,0 +1,100 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SliderInputStories from "./SliderInput.stories";
+
+<Meta
+	of={SliderInputStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>SliderInput</Title>
+<Subtitle>Поля ввода для single и range с popover slider</Subtitle>
+
+`SliderInput` работает с одним числом, а `SliderRangeInput` — с диапазоном `[number | null, number | null]`.
+
+- ручной ввод коммитится на `blur` и `Enter`;
+- невалидный draft откатывается к последнему committed значению;
+- popover показывает полные подписи marks;
+- `SliderRangeInput` выглядит как один control с двумя сегментами;
+- пустой range-сегмент коммитится как `null` и отображается как `-∞` или `∞`.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SliderInputStories.Basic} />
+
+```tsx
+import { useState } from "react";
+
+import { SliderInput } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState<number | undefined>(12);
+
+	return <SliderInput label="Порог" min={0} max={100} step={0.5} value={value} onChange={setValue} />;
+}
+```
+
+## RangeInput
+
+```tsx
+import { useState } from "react";
+
+import { SliderRangeInput, type SliderRangeValue } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState<SliderRangeValue | undefined>([null, 12]);
+
+	return <SliderRangeInput label="Период" min={0} max={24} value={value} onChange={setValue} />;
+}
+```
+
+## Сценарии использования
+
+### Базовый single input
+
+<Canvas of={SliderInputStories.Basic} />
+
+### Snap по marks
+
+<Canvas of={SliderInputStories.MarksSnap} />
+
+### Десятичный ручной ввод
+
+<Canvas of={SliderInputStories.DecimalManualInput} />
+
+### RangeInput без outputValue
+
+<Canvas of={SliderInputStories.RangeInputPlain} />
+
+### RangeInput с открытыми границами без outputValue у обычных marks
+
+<Canvas of={SliderInputStories.RangeInputOpenWithoutExplicitMiddleOutput} />
+
+### RangeInput с outputValue: месяцы на шкале, дни в фильтре
+
+<Canvas of={SliderInputStories.RangeInputMonthToDaysOutput} />
+
+### RangeInput с outputValue и открытыми границами
+
+<Canvas of={SliderInputStories.RangeInputOpenMonthToDaysOutput} />
+
+### RangeInput с текстом вместо ручного ввода
+
+<Canvas of={SliderInputStories.RangeInputReadonlyText} />
+
+### Disabled
+
+<Canvas of={SliderInputStories.Disabled} />
+
+## API
+
+<ArgTypes of={SliderInputStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

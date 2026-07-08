@@ -1,0 +1,109 @@
+.root,
+.headerContextMenuTrigger {
+	min-width: 0;
+}
+
+.table {
+	width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	table-layout: fixed;
+	font-variant-numeric: tabular-nums;
+
+	hyphens: auto;
+}
+
+.head {
+	z-index: 10;
+}
+
+.pinnedLeftBoundary {
+	box-shadow: inset var(--focus-offset) 0 0 var(--border-0);
+}
+
+.headerRow {
+	background-color: var(--surface-0);
+}
+
+.headerCell {
+	position: relative;
+	padding: var(--space-sm) var(--space-md);
+	background-color: var(--surface-2);
+	border-bottom: var(--border);
+	color: var(--content-0);
+	vertical-align: middle;
+}
+
+.headerCellContent {
+	min-width: 0;
+}
+
+.headerCellDraggable {
+	cursor: grab;
+	touch-action: none;
+	user-select: none;
+
+	&:active {
+		cursor: grabbing;
+	}
+}
+
+.headerCellDragging {
+	opacity: 0.75;
+}
+
+.headerCellPinnedLeft {
+	position: sticky;
+	z-index: 12;
+}
+
+.bodyRow {
+	transition: background-color var(--transition-fast) ease;
+}
+
+.bodyRowInteractive {
+	cursor: pointer;
+
+	&:hover .bodyCell,
+	&:focus-visible .bodyCell {
+		background-color: var(--surface-1);
+	}
+}
+
+.bodyRowSelected {
+	.bodyCell {
+		background-color: var(--surface-1);
+	}
+}
+
+.bodyCell {
+	padding: var(--space-sm) var(--space-md);
+	background-color: var(--surface-0);
+	border-bottom: var(--border);
+	vertical-align: middle;
+}
+
+.bodyCellPinnedLeft {
+	position: sticky;
+	z-index: 2;
+}
+
+.bodyCellMergedWithNext {
+	border-bottom-color: transparent;
+}
+
+.feedbackCell {
+	padding: var(--space-md);
+	background-color: var(--surface-0);
+}
+
+.fetchingRow .feedbackCell {
+	border-bottom: 0;
+}
+
+.noData {
+	pointer-events: none;
+	position: absolute;
+	inset: 0;
+	z-index: 40;
+}

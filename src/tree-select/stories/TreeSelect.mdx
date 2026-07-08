@@ -1,0 +1,29 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as TreeSelectStories from "./TreeSelect.stories";
+
+<Meta of={TreeSelectStories} parameters={{ docs: { toc: true } }} />
+
+<Title>TreeSelect</Title>
+<Subtitle>Single-select для выбора одного узла из дерева</Subtitle>
+
+`TreeSelect` подходит для сценариев, где выбор должен происходить по одному узлу, но пользователь работает не с плоским списком, а с иерархией.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={TreeSelectStories.Basic} />
+
+## Сценарии
+
+<Canvas of={TreeSelectStories.Basic} />
+<Canvas of={TreeSelectStories.SelectParent} />
+<Canvas of={TreeSelectStories.Empty} />
+
+## API
+
+<ArgTypes of={TreeSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

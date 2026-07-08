@@ -1,0 +1,71 @@
+.text-align-left .public-DraftStyleDefault-ltr {
+	text-align: left;
+}
+
+.text-align-center .public-DraftStyleDefault-ltr {
+	text-align: center;
+}
+
+.text-align-right .public-DraftStyleDefault-ltr {
+	text-align: right;
+}
+
+.text-align-justify .public-DraftStyleDefault-ltr {
+	text-align: justify;
+}
+
+.DraftEditor-editorContainer {
+	padding: var(--space-md);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background-color: var(--surface-primary);
+}
+
+.lexicalEditorContentEditable {
+	padding: var(--space-md);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background-color: var(--surface-primary);
+	min-height: 6rem;
+}
+
+.lexicalEditorContentEditable:focus {
+	outline: none;
+}
+
+.lexicalEditorPlaceholder {
+	padding: var(--space-md);
+	color: var(--text-secondary);
+	pointer-events: none;
+}
+
+.lexicalTextCode {
+	color: rgb(8, 89, 114);
+	padding: 0.15em 0.4em;
+	font-family: monospace;
+	font-size: 85%;
+	background-color: rgba(40, 68, 77, 0.05);
+	border-radius: var(--radius-md);
+	line-height: 1;
+}
+
+.lexicalTextHighlight {
+	padding-inline: 0.15em;
+	background-color: rgb(234, 255, 142);
+	border-radius: var(--radius-md);
+}
+
+.lexicalTextUnderline {
+	text-decoration: underline;
+}
+
+.lexicalTextStrikethrough {
+	text-decoration: line-through;
+}
+
+
+.custom-tag-highlight {
+	outline: var(--border-width) dashed var(--text-accent);
+	padding: 0 0.125em;
+	border-radius: var(--radius-xs);
+}

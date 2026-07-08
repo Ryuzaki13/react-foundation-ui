@@ -1,0 +1,79 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as PopoverStories from "./Popover.stories";
+
+<Meta
+	of={PopoverStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Popover</Title>
+<Subtitle>Всплывающий контейнер, привязанный к trigger-элементу и поддерживающий управляемое открытие</Subtitle>
+
+Popover уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={PopoverStories.Default} />
+
+```tsx
+import { Button, Popover } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<Popover>
+			<Popover.Trigger>
+				<Button>Открыть</Button>
+			</Popover.Trigger>
+			<Popover.Content>
+				<div style={{ padding: 12 }}>Содержимое поповера</div>
+			</Popover.Content>
+		</Popover>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- Если компонент участвует в фильтрации или поиске, заранее определите дефолтные значения и допустимые ограничения.
+
+## Сценарии использования
+
+### Сценарий со стандартным поведением и дефолтными настройками
+
+Сценарий со стандартным поведением и дефолтными настройками.
+
+<Canvas of={PopoverStories.Default} />
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={PopoverStories.Controlled} />
+
+### Сравнение вариантов позиционирования относительно trigger-элемента
+
+Сравнение вариантов позиционирования относительно trigger-элемента.
+
+<Canvas of={PopoverStories.AnchorPlacement} />
+
+### With Interactive Content
+
+Сценарий демонстрирует вариант `WithInteractiveContent` и помогает быстро сравнить его с остальными режимами компонента.
+
+<Canvas of={PopoverStories.WithInteractiveContent} />
+
+## API
+
+<ArgTypes of={PopoverStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

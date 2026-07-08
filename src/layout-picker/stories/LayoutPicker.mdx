@@ -1,0 +1,109 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as LayoutPickerStories from "./LayoutPicker.stories";
+
+<Meta
+	of={LayoutPickerStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>LayoutPicker</Title>
+<Subtitle>Контролируемый выбор layout-пресета со схематичным превью</Subtitle>
+
+`LayoutPicker` нужен для выбора схемы размещения независимых областей: графиков, панелей, секций дашборда или другого UI, где сама раскладка хранится во внешней модели.
+Компонент не знает, что будет внутри ячеек: он показывает только превью, принимает текущий `value` как ID пресета и возвращает выбранный ID через `onChange`.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={LayoutPickerStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { LayoutPicker } from "@/shared/ui";
+
+export function Example() {
+	const [layoutId, setLayoutId] = useState("two-columns");
+
+	return <LayoutPicker label="Layout панели" value={layoutId} onChange={setLayoutId} />;
+}
+```
+
+## Контракт пресета
+
+Пресет описывает размер сетки и расположение ячеек внутри CSS Grid. `LayoutPicker` использует эти данные только для превью и не применяет раскладку к пользовательскому контенту. Публичный `onChange` остаётся совместимым с `UiBaseProps<string>` и отдаёт только `preset.id`.
+
+```tsx
+import { type LayoutPickerPreset } from "@/shared/ui";
+
+const dashboardPreset: LayoutPickerPreset = {
+	id: "dashboard-main-aside",
+	label: "Основной блок + сайдбар",
+	description: "Большая рабочая область слева и вертикальная колонка справа.",
+	columns: 3,
+	rows: 2,
+	cells: [
+		{ id: "main", column: 1, columnSpan: 2, row: 1, rowSpan: 2 },
+		{ id: "aside-top", column: 3, columnSpan: 1, row: 1, rowSpan: 1 },
+		{ id: "aside-bottom", column: 3, columnSpan: 1, row: 2, rowSpan: 1 }
+	]
+};
+```
+
+## Практические рекомендации
+
+- Храните во внешней модели только `preset.id`, а полный пресет берите из стабильного списка `presets`.
+- Передавайте `ariaLabel`, когда рядом нет видимой подписи поля.
+- Используйте `getPresetDisabled`, если отдельные схемы временно недоступны из-за лимитов, прав или текущего режима.
+- Не помещайте бизнес-данные ячеек в `shared/ui`: назначение содержимого должно оставаться в вызывающем слое.
+
+## Сценарии использования
+
+### Контролируемый выбор синхронизирует `value` с Storybook args
+
+Главный story обновляет `value` через `useArgs`, поэтому Controls отражают выбранный layout.
+
+<Canvas of={LayoutPickerStories.Controlled} />
+
+### Состояние без выбранного значения
+
+Если `value` не найден среди `presets`, trigger показывает `placeholder`, а после выбора начинает отображать выбранный пресет.
+
+<Canvas of={LayoutPickerStories.Placeholder} />
+
+### Кастомный набор пресетов
+
+Компонент принимает произвольный список `LayoutPickerPreset`, пока каждая ячейка описана координатами grid.
+
+<Canvas of={LayoutPickerStories.CustomPresets} />
+
+### Заблокированные пресеты
+
+`getPresetDisabled` блокирует отдельные варианты, не отключая весь контрол.
+
+<Canvas of={LayoutPickerStories.DisabledPresets} />
+
+### Пример в панели настройки
+
+Сценарий показывает типичную связку: выбор layout, сводку текущего пресета и превью областей, которые уже рендерит вызывающий слой.
+
+<Canvas of={LayoutPickerStories.InToolbar} />
+
+### Заблокированный контрол
+
+Полное `disabled`-состояние блокирует trigger и открытие popup.
+
+<Canvas of={LayoutPickerStories.Disabled} />
+
+## API
+
+<ArgTypes of={LayoutPickerStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

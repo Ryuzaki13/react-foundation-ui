@@ -1,0 +1,70 @@
+@use "sass:math";
+
+@function toEm($pixel) {
+	@if math.is-unitless($pixel) {
+		@return math.div($pixel, 16) + em;
+	} @else {
+		@error "Функция toEm должна принимать число без единиц измерения!";
+	}
+}
+
+@function toRem($pixel) {
+	@if math.is-unitless($pixel) {
+		@return math.div($pixel, 16) + rem;
+	} @else {
+		@error "Функция toEm должна принимать число без единиц измерения!";
+	}
+}
+
+$laptop: 1919.98;
+$tablet: 1151.98;
+$mobile: 767.98;
+$mobile-s: 479.98;
+
+@mixin laptop-above {
+	@media (width > toEm($laptop)) {
+		@content;
+	}
+}
+
+@mixin laptop {
+	@media (width <= toEm($laptop)) {
+		@content;
+	}
+}
+
+@mixin tablet-above {
+	@media (min-width: toEm($tablet)) {
+		@content;
+	}
+}
+
+@mixin tablet {
+	@media (width <= toEm($tablet)) {
+		@content;
+	}
+}
+
+@mixin mobile-above {
+	@media (min-width: toEm($mobile)) {
+		@content;
+	}
+}
+
+@mixin mobile {
+	@media (width <= toEm($mobile)) {
+		@content;
+	}
+}
+
+@mixin mobile-s-above {
+	@media (width > toEm($mobile-s)) {
+		@content;
+	}
+}
+
+@mixin mobile-s {
+	@media (width <= toEm($mobile-s)) {
+		@content;
+	}
+}

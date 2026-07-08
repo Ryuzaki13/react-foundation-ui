@@ -1,0 +1,69 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ContextMenuStories from "./ContextMenu.stories";
+
+<Meta
+	of={ContextMenuStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>ContextMenu</Title>
+<Subtitle>Контекстные и dropdown-меню для локальных действий в списках, карточках и рабочих областях</Subtitle>
+
+ContextMenu уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ContextMenuStories.DropdownMenuBasic} />
+
+```tsx
+import { DropdownMenu } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<DropdownMenu>
+			<DropdownMenu.Trigger>
+				<button type="button">Действия</button>
+			</DropdownMenu.Trigger>
+			<DropdownMenu.Content>
+				<DropdownMenu.Item>Редактировать</DropdownMenu.Item>
+				<DropdownMenu.Item>Удалить</DropdownMenu.Item>
+			</DropdownMenu.Content>
+		</DropdownMenu>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+
+## Сценарии использования
+
+### Базовый сценарий dropdown-menu
+
+Базовый сценарий dropdown-menu.
+
+<Canvas of={ContextMenuStories.DropdownMenuBasic} />
+
+### Базовое контекстное меню по правому клику
+
+Базовое контекстное меню по правому клику.
+
+<Canvas of={ContextMenuStories.ContextMenuBasic} />
+
+### Контролируемое открытие dropdown-menu
+
+Контролируемое открытие dropdown-menu.
+
+<Canvas of={ContextMenuStories.ControlledDropdown} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,67 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as StateSelectStories from "./StateSelect.stories";
+
+<Meta
+	of={StateSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>StateSelect</Title>
+<Subtitle>Специализированный select для выбора визуального статуса или семантического состояния</Subtitle>
+
+StateSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={StateSelectStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { StateSelect } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState("information");
+
+	return <StateSelect label="Состояние" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={StateSelectStories.Controlled} />
+
+### Кастомизация подписей и иконок состояний
+
+Кастомизация подписей и иконок состояний.
+
+<Canvas of={StateSelectStories.WithMeta} />
+
+### Ограниченный набор доступных состояний
+
+Ограниченный набор доступных состояний.
+
+<Canvas of={StateSelectStories.PaletteOnly} />
+
+## API
+
+<ArgTypes of={StateSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

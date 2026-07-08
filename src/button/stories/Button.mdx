@@ -1,0 +1,167 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ButtonStories from "./Button.stories";
+
+<Meta
+	of={ButtonStories}
+	parameters={{
+		atomicCanvas: true,
+		layout: "padded",
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Button</Title>
+<Subtitle>Базовая action-кнопка дизайн-системы для пользовательских действий, подтверждений и быстрых операций</Subtitle>
+
+`Button` используется как универсальная кнопка интерфейса: в формах, тулбарах, модальных окнах, карточках, таблицах и компактных icon-only сценариях.
+
+Ключевые особенности компонента:
+
+- безопасный `type="button"` по умолчанию;
+- готовые схемы через `variant`;
+- составная настройка через `tone + appearance`;
+- поддержка иконки слева и справа;
+- автоматический режим icon-only;
+- всплывающая подсказка через `title`.
+
+## Основной сценарий
+
+<Primary />
+
+```tsx
+import { Button } from "@/shared/ui";
+
+export function Example() {
+	return <Button>Сохранить</Button>;
+}
+```
+
+<Controls of={ButtonStories.Basic} />
+
+## Как выбирать схему оформления
+
+Для большинства сценариев достаточно `variant`: это готовые, согласованные значения дизайн-системы.
+
+Если нужна более гибкая настройка, можно передать `tone` и `appearance`. У них приоритет выше, чем у `variant`, поэтому они подходят для точной донастройки без создания нового варианта.
+
+### Готовые варианты
+
+<Canvas of={ButtonStories.Variants} />
+
+```tsx
+import { Button } from "@/shared/ui";
+
+export function ActionVariants() {
+	return (
+		<>
+			<Button variant="neutral">Основное действие</Button>
+			<Button variant="neutralOutline">Вторичное действие</Button>
+			<Button variant="ghost">Легкое действие</Button>
+			<Button variant="success">Подтвердить</Button>
+			<Button variant="errorOutline">Отменить</Button>
+			<Button variant="transparent">Действие в плотном интерфейсе</Button>
+		</>
+	);
+}
+```
+
+### Составная схема через `tone` и `appearance`
+
+<Canvas of={ButtonStories.ComposableScheme} />
+
+```tsx
+import { Button } from "@/shared/ui";
+
+export function CustomScheme() {
+	return (
+		<>
+			<Button tone="neutral" appearance="solid">
+				Neutral Solid
+			</Button>
+			<Button tone="neutral" appearance="outline">
+				Neutral Outline
+			</Button>
+			<Button tone="info" appearance="outline">
+				Показать детали
+			</Button>
+			<Button tone="success" appearance="solid">
+				Применить
+			</Button>
+			<Button tone="error" appearance="transparent">
+				Сбросить
+			</Button>
+		</>
+	);
+}
+```
+
+## Иконки и компактные действия
+
+Компонент поддерживает два сценария:
+
+- кнопка с текстом и иконкой;
+- кнопка только с иконкой.
+
+Если в кнопке есть только `icon`, обязательно нужно передать `title` или `aria-label`, чтобы управление было доступным для скринридеров. В текущей реализации `title` также используется как содержимое всплывающей подсказки.
+
+<Canvas of={ButtonStories.WithIcons} />
+
+```tsx
+import { BellIcon, CheckIcon, DownloadIcon, PlusIcon } from "lucide-react";
+
+import { Button } from "@/shared/ui";
+
+export function ButtonsWithIcons() {
+	return (
+		<>
+			<Button icon={<DownloadIcon />}>Скачать</Button>
+			<Button icon={<PlusIcon />} tone="info" appearance="solid">
+				Создать
+			</Button>
+			<Button icon={<CheckIcon />} iconEnd tone="success" appearance="solid">
+				Подтвердить
+			</Button>
+			<Button icon={<BellIcon />} title="Уведомления" />
+		</>
+	);
+}
+```
+
+## Использование в формах
+
+По умолчанию компонент рендерится как `type="button"`, поэтому он не отправляет форму случайно. Для submit-сценариев тип нужно указывать явно.
+
+```tsx
+import { Button } from "@/shared/ui";
+
+export function FormActions() {
+	return (
+		<form onSubmit={handleSubmit}>
+			<Button type="button" variant="transparent" onClick={handleReset}>
+				Сбросить
+			</Button>
+			<Button type="submit" variant="success">
+				Сохранить
+			</Button>
+		</form>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Для типовых сценариев сначала выбирай `variant`, а не комбинацию отдельных пропсов.
+- Для destructive-операций лучше использовать семантически явные схемы `error` или `errorOutline`.
+- Для иконки без текста всегда задавай `title` или `aria-label`.
+- Если нужна кнопка удаления с подтверждением в два шага, стоит рассмотреть `ButtonRemove` из того же модуля.
+- `disabled` блокирует нажатие, но не должен заменять явное объяснение пользователю, почему действие недоступно.
+
+## API
+
+<ArgTypes of={ButtonStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,16 @@
+.formattedCellValue {
+	width: 100%;
+	min-width: 0;
+}
+
+.formattedCell,
+.formattedCellInner {
+	@extend .formattedCellValue;
+
+	display: flex;
+	align-items: center;
+}
+
+.formattedCellInner {
+	gap: var(--space-xs);
+}

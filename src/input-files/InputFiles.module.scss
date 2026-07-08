@@ -1,0 +1,60 @@
+/* Контрол, имитирующий внешний вид InputText */
+.control {
+	height: var(--control-height);
+	width: 100%;
+	padding: 0 var(--space-sm);
+	font-size: var(--font-size-md);
+	cursor: pointer;
+
+	display: flex;
+	align-items: center;
+}
+
+/* Скрытый нативный input[type="file"] */
+.hiddenInput {
+	position: absolute;
+	width: 0;
+	height: 0;
+	opacity: 0;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+/* Список выбранных файлов */
+.fileList {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-xs);
+	margin-top: var(--space-xs);
+}
+
+/* Элемент списка — строка с именем файла и кнопкой удаления */
+.fileItem {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	padding: var(--space-xs) var(--space-sm);
+	background-color: var(--surface-2);
+	border-radius: var(--radius-sm);
+	// font-size: var(--font-size-sm);
+}
+
+/* Имя файла — обрезка с троеточием */
+.fileItemName {
+	flex: 1;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+/* Кнопка удаления файла из списка */
+.removeButton {
+	flex-shrink: 0;
+	width: 1.25em;
+	height: 1.25em;
+	color: var(--content-2);
+
+	&:hover {
+		color: var(--content-accent);
+	}
+}

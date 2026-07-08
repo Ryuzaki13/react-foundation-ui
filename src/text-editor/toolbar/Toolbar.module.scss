@@ -1,0 +1,16 @@
+.toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: start;
+	gap: var(--space-sm);
+	margin-bottom: var(--space-md);
+
+	hr {
+		margin: 0.5rem 0;
+	}
+}
+
+.groupControls {
+	display: flex;
+	gap: var(--space-sm);
+}

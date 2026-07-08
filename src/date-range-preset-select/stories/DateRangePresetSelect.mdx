@@ -1,0 +1,55 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as DateRangePresetSelectStories from "./DateRangePresetSelect.stories";
+
+<Meta
+	of={DateRangePresetSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>DateRangePresetSelect</Title>
+<Subtitle>Выбор готовых диапазонов дат для фильтров, отчетов и быстрых аналитических сценариев</Subtitle>
+
+DateRangePresetSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={DateRangePresetSelectStories.Default} />
+
+```tsx
+import { useState } from "react";
+
+import { DateRangePresetSelect } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState(undefined);
+
+	return <DateRangePresetSelect label="Период" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Если компонент участвует в фильтрации или поиске, заранее определите дефолтные значения и допустимые ограничения.
+
+## Сценарии использования
+
+### Сценарий со стандартным поведением и дефолтными настройками
+
+Сценарий со стандартным поведением и дефолтными настройками.
+
+<Canvas of={DateRangePresetSelectStories.Default} />
+
+## API
+
+<ArgTypes of={DateRangePresetSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

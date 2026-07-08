@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as InputImageStories from "./InputImage.stories";
+
+<Meta
+	of={InputImageStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>InputImage</Title>
+<Subtitle>Контрол загрузки и предварительного просмотра изображения в формах и карточках</Subtitle>
+
+InputImage уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={InputImageStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { InputImage } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState(null);
+
+	return <InputImage label="Изображение" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- При редактировании сущностей проверьте сценарий инициализации компонента уже существующими данными.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={InputImageStories.Controlled} />
+
+### Инициализация заранее загруженным изображением
+
+Инициализация заранее загруженным изображением.
+
+<Canvas of={InputImageStories.WithInitialImage} />
+
+### Сценарий работы с бинарными данными
+
+Сценарий работы с бинарными данными.
+
+<Canvas of={InputImageStories.ArrayBufferMode} />
+
+## API
+
+<ArgTypes of={InputImageStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

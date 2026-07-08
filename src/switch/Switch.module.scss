@@ -1,0 +1,45 @@
+.switchWrapper {
+	--size: calc(var(--control-height) - calc(var(--border-width) * 4));
+
+	display: block;
+	padding: 0 var(--border-width);
+}
+
+.switch {
+	width: calc(var(--control-height) * 2);
+	display: flex;
+	justify-content: space-between;
+
+	&[data-disabled] {
+		svg {
+			color: var(--content-2);
+		}
+	}
+}
+
+.iconWrapper {
+	border-radius: var(--radius-xs);
+	width: var(--size);
+	height: var(--size);
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	opacity: 0.25;
+
+	svg {
+		display: block;
+		color: var(--content-0);
+	}
+
+	&.auto {
+		width: 100%;
+		flex: 1 1 100%;
+	}
+
+	&.checked {
+		background-color: var(--surface-2);
+		opacity: 1;
+	}
+}

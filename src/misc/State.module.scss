@@ -1,0 +1,63 @@
+.stateWrapper {
+	text-decoration: none;
+	color: inherit;
+	display: block;
+
+	// border: var(--border-width) solid var(--state-border-color, transparent);
+	border-left-style: solid;
+	border-left-color: var(--state-border-color, transparent);
+	border-left-width: 0.0625em; // 1px
+	padding-left: 0.25em; // 4px + 1px border
+
+	&.status {
+		border-left-width: 0.3125em; // 5px
+		padding-left: 0;
+
+		&.information {
+			border-left-color: var(--status-info-fill);
+		}
+
+		&.success {
+			border-left-color: var(--status-success-fill);
+		}
+
+		&.warning {
+			border-left-color: var(--status-warning-fill);
+		}
+
+		&.error {
+			border-left-color: var(--status-error-fill);
+		}
+	}
+}
+
+.state {
+	&.information {
+		color: var(--status-info-text);
+
+		fill: var(--status-info-fill);
+		stroke: var(--status-info-on-fill);
+	}
+
+	&.success {
+		color: var(--status-success-text);
+
+		fill: var(--status-success-fill);
+		stroke: var(--status-success-on-fill);
+	}
+
+	&.warning {
+		color: var(--status-warning-text);
+
+		fill: var(--status-warning-fill);
+		stroke: var(--status-warning-on-fill);
+		stroke-width: 2px;
+	}
+
+	&.error {
+		color: var(--status-error-text);
+
+		fill: var(--status-error-fill);
+		stroke: var(--status-error-on-fill);
+	}
+}

@@ -1,0 +1,1007 @@
+{
+	"name": "@ryuzaki13/react-foundation-ui",
+	"version": "0.1.0",
+	"description": "Reusable React foundation UI primitives and Storybook stories.",
+	"license": "MIT",
+	"author": "Ryuzaki13",
+	"repository": {
+		"type": "git",
+		"url": "git+https://github.com/Ryuzaki13/react-foundation-ui.git"
+	},
+	"bugs": {
+		"url": "https://github.com/Ryuzaki13/react-foundation-ui/issues"
+	},
+	"homepage": "https://github.com/Ryuzaki13/react-foundation-ui#readme",
+	"keywords": [
+		"react",
+		"typescript",
+		"foundation",
+		"ui",
+		"storybook",
+		"vite",
+		"esm"
+	],
+	"packageManager": "npm@11.7.0",
+	"type": "module",
+	"sideEffects": [
+		"**/*.css",
+		"**/*.scss"
+	],
+	"files": [
+		"dist",
+		"styles",
+		"styles.scss",
+		"src/styles",
+		"README.md",
+		"LICENSE"
+	],
+	"exports": {
+		"./styles.css": "./dist/styles.css",
+		"./styles.scss": {
+			"sass": "./styles.scss",
+			"default": "./styles.scss"
+		},
+		"./styles/config": {
+			"sass": "./styles/config.scss",
+			"default": "./styles/config.scss"
+		},
+		"./styles/foundation": {
+			"sass": "./styles/foundation.scss",
+			"default": "./styles/foundation.scss"
+		},
+		"./styles/mixins": {
+			"sass": "./styles/mixins.scss",
+			"default": "./styles/mixins.scss"
+		},
+		"./styles/themes": {
+			"sass": "./styles/themes.scss",
+			"default": "./styles/themes.scss"
+		},
+		"./badge": {
+			"types": "./dist/badge/index.d.ts",
+			"import": "./dist/badge/index.js"
+		},
+		"./base-table": {
+			"types": "./dist/base-table/index.d.ts",
+			"import": "./dist/base-table/index.js"
+		},
+		"./button": {
+			"types": "./dist/button/index.d.ts",
+			"import": "./dist/button/index.js"
+		},
+		"./check-box": {
+			"types": "./dist/check-box/index.d.ts",
+			"import": "./dist/check-box/index.js"
+		},
+		"./context-menu": {
+			"types": "./dist/context-menu/index.d.ts",
+			"import": "./dist/context-menu/index.js"
+		},
+		"./date-input": {
+			"types": "./dist/date-input/index.d.ts",
+			"import": "./dist/date-input/index.js"
+		},
+		"./date-range-preset-select": {
+			"types": "./dist/date-range-preset-select/index.d.ts",
+			"import": "./dist/date-range-preset-select/index.js"
+		},
+		"./date-time-input": {
+			"types": "./dist/date-time-input/index.d.ts",
+			"import": "./dist/date-time-input/index.js"
+		},
+		"./detail": {
+			"types": "./dist/detail/index.d.ts",
+			"import": "./dist/detail/index.js"
+		},
+		"./dialog": {
+			"types": "./dist/dialog/index.d.ts",
+			"import": "./dist/dialog/index.js"
+		},
+		"./disclosure": {
+			"types": "./dist/disclosure/index.d.ts",
+			"import": "./dist/disclosure/index.js"
+		},
+		"./drop-zone": {
+			"types": "./dist/drop-zone/index.d.ts",
+			"import": "./dist/drop-zone/index.js"
+		},
+		"./errors": {
+			"types": "./dist/errors/index.d.ts",
+			"import": "./dist/errors/index.js"
+		},
+		"./expandable-action-panel": {
+			"types": "./dist/expandable-action-panel/index.d.ts",
+			"import": "./dist/expandable-action-panel/index.js"
+		},
+		"./flex": {
+			"types": "./dist/flex/index.d.ts",
+			"import": "./dist/flex/index.js"
+		},
+		"./floating-arrow": {
+			"types": "./dist/floating-arrow/index.d.ts",
+			"import": "./dist/floating-arrow/index.js"
+		},
+		"./fullscreen-portal": {
+			"types": "./dist/fullscreen-portal/index.d.ts",
+			"import": "./dist/fullscreen-portal/index.js"
+		},
+		"./grid": {
+			"types": "./dist/grid/index.d.ts",
+			"import": "./dist/grid/index.js"
+		},
+		"./image": {
+			"types": "./dist/image/index.d.ts",
+			"import": "./dist/image/index.js"
+		},
+		"./input": {
+			"types": "./dist/input/index.d.ts",
+			"import": "./dist/input/index.js"
+		},
+		"./input-date-time": {
+			"types": "./dist/input-date-time/index.d.ts",
+			"import": "./dist/input-date-time/index.js"
+		},
+		"./input-file": {
+			"types": "./dist/input-file/index.d.ts",
+			"import": "./dist/input-file/index.js"
+		},
+		"./input-files": {
+			"types": "./dist/input-files/index.d.ts",
+			"import": "./dist/input-files/index.js"
+		},
+		"./input-image": {
+			"types": "./dist/input-image/index.d.ts",
+			"import": "./dist/input-image/index.js"
+		},
+		"./input-search": {
+			"types": "./dist/input-search/index.d.ts",
+			"import": "./dist/input-search/index.js"
+		},
+		"./layout-picker": {
+			"types": "./dist/layout-picker/index.d.ts",
+			"import": "./dist/layout-picker/index.js"
+		},
+		"./list": {
+			"types": "./dist/list/index.d.ts",
+			"import": "./dist/list/index.js"
+		},
+		"./listbox": {
+			"types": "./dist/listbox/index.d.ts",
+			"import": "./dist/listbox/index.js"
+		},
+		"./misc": {
+			"types": "./dist/misc/index.d.ts",
+			"import": "./dist/misc/index.js"
+		},
+		"./modal": {
+			"types": "./dist/modal/index.d.ts",
+			"import": "./dist/modal/index.js"
+		},
+		"./multi-select": {
+			"types": "./dist/multi-select/index.d.ts",
+			"import": "./dist/multi-select/index.js"
+		},
+		"./notifications": {
+			"types": "./dist/notifications/index.d.ts",
+			"import": "./dist/notifications/index.js"
+		},
+		"./pages": {
+			"types": "./dist/pages/index.d.ts",
+			"import": "./dist/pages/index.js"
+		},
+		"./panel": {
+			"types": "./dist/panel/index.d.ts",
+			"import": "./dist/panel/index.js"
+		},
+		"./period-select": {
+			"types": "./dist/period-select/index.d.ts",
+			"import": "./dist/period-select/index.js"
+		},
+		"./picker": {
+			"types": "./dist/picker/index.d.ts",
+			"import": "./dist/picker/index.js"
+		},
+		"./polymorphic": {
+			"types": "./dist/polymorphic/index.d.ts",
+			"import": "./dist/polymorphic/index.js"
+		},
+		"./popover": {
+			"types": "./dist/popover/index.d.ts",
+			"import": "./dist/popover/index.js"
+		},
+		"./preset-range-date-input": {
+			"types": "./dist/preset-range-date-input/index.d.ts",
+			"import": "./dist/preset-range-date-input/index.js"
+		},
+		"./preset-select": {
+			"types": "./dist/preset-select/index.d.ts",
+			"import": "./dist/preset-select/index.js"
+		},
+		"./radio-button": {
+			"types": "./dist/radio-button/index.d.ts",
+			"import": "./dist/radio-button/index.js"
+		},
+		"./radio-group": {
+			"types": "./dist/radio-group/index.d.ts",
+			"import": "./dist/radio-group/index.js"
+		},
+		"./select": {
+			"types": "./dist/select/index.d.ts",
+			"import": "./dist/select/index.js"
+		},
+		"./separator": {
+			"types": "./dist/separator/index.d.ts",
+			"import": "./dist/separator/index.js"
+		},
+		"./simple-table": {
+			"types": "./dist/simple-table/index.d.ts",
+			"import": "./dist/simple-table/index.js"
+		},
+		"./slider": {
+			"types": "./dist/slider/index.d.ts",
+			"import": "./dist/slider/index.js"
+		},
+		"./sortable": {
+			"types": "./dist/sortable/index.d.ts",
+			"import": "./dist/sortable/index.js"
+		},
+		"./splitter": {
+			"types": "./dist/splitter/index.d.ts",
+			"import": "./dist/splitter/index.js"
+		},
+		"./state-select": {
+			"types": "./dist/state-select/index.d.ts",
+			"import": "./dist/state-select/index.js"
+		},
+		"./switch": {
+			"types": "./dist/switch/index.d.ts",
+			"import": "./dist/switch/index.js"
+		},
+		"./table": {
+			"types": "./dist/table/index.d.ts",
+			"import": "./dist/table/index.js"
+		},
+		"./table-column-interactions": {
+			"types": "./dist/table-column-interactions/index.d.ts",
+			"import": "./dist/table-column-interactions/index.js"
+		},
+		"./table-sorting": {
+			"types": "./dist/table-sorting/index.d.ts",
+			"import": "./dist/table-sorting/index.js"
+		},
+		"./tabs": {
+			"types": "./dist/tabs/index.d.ts",
+			"import": "./dist/tabs/index.js"
+		},
+		"./text": {
+			"types": "./dist/text/index.d.ts",
+			"import": "./dist/text/index.js"
+		},
+		"./text-editor": {
+			"types": "./dist/text-editor/index.d.ts",
+			"import": "./dist/text-editor/index.js"
+		},
+		"./text-editor/lexical/plugins": {
+			"types": "./dist/text-editor/lexical/plugins/index.d.ts",
+			"import": "./dist/text-editor/lexical/plugins/index.js"
+		},
+		"./text-editor/toolbar": {
+			"types": "./dist/text-editor/toolbar/index.d.ts",
+			"import": "./dist/text-editor/toolbar/index.js"
+		},
+		"./textarea": {
+			"types": "./dist/textarea/index.d.ts",
+			"import": "./dist/textarea/index.js"
+		},
+		"./three-scene": {
+			"types": "./dist/three-scene/index.d.ts",
+			"import": "./dist/three-scene/index.js"
+		},
+		"./toggle": {
+			"types": "./dist/toggle/index.d.ts",
+			"import": "./dist/toggle/index.js"
+		},
+		"./toolbar": {
+			"types": "./dist/toolbar/index.d.ts",
+			"import": "./dist/toolbar/index.js"
+		},
+		"./tree": {
+			"types": "./dist/tree/index.d.ts",
+			"import": "./dist/tree/index.js"
+		},
+		"./tree-select": {
+			"types": "./dist/tree-select/index.d.ts",
+			"import": "./dist/tree-select/index.js"
+		},
+		"./tree-table": {
+			"types": "./dist/tree-table/index.d.ts",
+			"import": "./dist/tree-table/index.js"
+		},
+		"./wheel-picker": {
+			"types": "./dist/wheel-picker/index.d.ts",
+			"import": "./dist/wheel-picker/index.js"
+		},
+		"./badge/stories/Badge.stories": {
+			"types": "./dist/badge/stories/Badge.stories.d.ts",
+			"import": "./dist/badge/stories/Badge.stories.js"
+		},
+		"./button/stories/Button.stories": {
+			"types": "./dist/button/stories/Button.stories.d.ts",
+			"import": "./dist/button/stories/Button.stories.js"
+		},
+		"./check-box/stories/CheckBox.stories": {
+			"types": "./dist/check-box/stories/CheckBox.stories.d.ts",
+			"import": "./dist/check-box/stories/CheckBox.stories.js"
+		},
+		"./context-menu/stories/ContextMenu.stories": {
+			"types": "./dist/context-menu/stories/ContextMenu.stories.d.ts",
+			"import": "./dist/context-menu/stories/ContextMenu.stories.js"
+		},
+		"./date-input/stories/DateInput.stories": {
+			"types": "./dist/date-input/stories/DateInput.stories.d.ts",
+			"import": "./dist/date-input/stories/DateInput.stories.js"
+		},
+		"./date-range-preset-select/stories/DateRangePresetSelect.stories": {
+			"types": "./dist/date-range-preset-select/stories/DateRangePresetSelect.stories.d.ts",
+			"import": "./dist/date-range-preset-select/stories/DateRangePresetSelect.stories.js"
+		},
+		"./date-time-input/stories/SingleDateTimeInput.stories": {
+			"types": "./dist/date-time-input/stories/SingleDateTimeInput.stories.d.ts",
+			"import": "./dist/date-time-input/stories/SingleDateTimeInput.stories.js"
+		},
+		"./date-time-input/stories/TimePanel.stories": {
+			"types": "./dist/date-time-input/stories/TimePanel.stories.d.ts",
+			"import": "./dist/date-time-input/stories/TimePanel.stories.js"
+		},
+		"./detail/stories/Detail.stories": {
+			"types": "./dist/detail/stories/Detail.stories.d.ts",
+			"import": "./dist/detail/stories/Detail.stories.js"
+		},
+		"./dialog/stories/Dialog.stories": {
+			"types": "./dist/dialog/stories/Dialog.stories.d.ts",
+			"import": "./dist/dialog/stories/Dialog.stories.js"
+		},
+		"./disclosure/stories/Disclosure.stories": {
+			"types": "./dist/disclosure/stories/Disclosure.stories.d.ts",
+			"import": "./dist/disclosure/stories/Disclosure.stories.js"
+		},
+		"./drop-zone/stories/DropZone.stories": {
+			"types": "./dist/drop-zone/stories/DropZone.stories.d.ts",
+			"import": "./dist/drop-zone/stories/DropZone.stories.js"
+		},
+		"./expandable-action-panel/stories/ExpandableActionPanel.stories": {
+			"types": "./dist/expandable-action-panel/stories/ExpandableActionPanel.stories.d.ts",
+			"import": "./dist/expandable-action-panel/stories/ExpandableActionPanel.stories.js"
+		},
+		"./flex/stories/Flex.stories": {
+			"types": "./dist/flex/stories/Flex.stories.d.ts",
+			"import": "./dist/flex/stories/Flex.stories.js"
+		},
+		"./grid/stories/Grid.stories": {
+			"types": "./dist/grid/stories/Grid.stories.d.ts",
+			"import": "./dist/grid/stories/Grid.stories.js"
+		},
+		"./input-date-time/stories/InputDateTime.stories": {
+			"types": "./dist/input-date-time/stories/InputDateTime.stories.d.ts",
+			"import": "./dist/input-date-time/stories/InputDateTime.stories.js"
+		},
+		"./input-file/stories/InputFile.stories": {
+			"types": "./dist/input-file/stories/InputFile.stories.d.ts",
+			"import": "./dist/input-file/stories/InputFile.stories.js"
+		},
+		"./input-files/stories/InputFiles.stories": {
+			"types": "./dist/input-files/stories/InputFiles.stories.d.ts",
+			"import": "./dist/input-files/stories/InputFiles.stories.js"
+		},
+		"./input-image/stories/InputImage.stories": {
+			"types": "./dist/input-image/stories/InputImage.stories.d.ts",
+			"import": "./dist/input-image/stories/InputImage.stories.js"
+		},
+		"./input/stories/Input.stories": {
+			"types": "./dist/input/stories/Input.stories.d.ts",
+			"import": "./dist/input/stories/Input.stories.js"
+		},
+		"./layout-picker/stories/LayoutPicker.stories": {
+			"types": "./dist/layout-picker/stories/LayoutPicker.stories.d.ts",
+			"import": "./dist/layout-picker/stories/LayoutPicker.stories.js"
+		},
+		"./listbox/stories/Listbox.stories": {
+			"types": "./dist/listbox/stories/Listbox.stories.d.ts",
+			"import": "./dist/listbox/stories/Listbox.stories.js"
+		},
+		"./modal/stories/Modal.stories": {
+			"types": "./dist/modal/stories/Modal.stories.d.ts",
+			"import": "./dist/modal/stories/Modal.stories.js"
+		},
+		"./multi-select/ui/stories/MultiSelect.stories": {
+			"types": "./dist/multi-select/ui/stories/MultiSelect.stories.d.ts",
+			"import": "./dist/multi-select/ui/stories/MultiSelect.stories.js"
+		},
+		"./notifications/ui/stories/NotificationsHost.stories": {
+			"types": "./dist/notifications/ui/stories/NotificationsHost.stories.d.ts",
+			"import": "./dist/notifications/ui/stories/NotificationsHost.stories.js"
+		},
+		"./period-select/stories/PeriodSelect.stories": {
+			"types": "./dist/period-select/stories/PeriodSelect.stories.d.ts",
+			"import": "./dist/period-select/stories/PeriodSelect.stories.js"
+		},
+		"./popover/stories/Popover.stories": {
+			"types": "./dist/popover/stories/Popover.stories.d.ts",
+			"import": "./dist/popover/stories/Popover.stories.js"
+		},
+		"./preset-range-date-input/ui/stories/PresetRangeDateInput.stories": {
+			"types": "./dist/preset-range-date-input/ui/stories/PresetRangeDateInput.stories.d.ts",
+			"import": "./dist/preset-range-date-input/ui/stories/PresetRangeDateInput.stories.js"
+		},
+		"./radio-button/stories/RadioButton.stories": {
+			"types": "./dist/radio-button/stories/RadioButton.stories.d.ts",
+			"import": "./dist/radio-button/stories/RadioButton.stories.js"
+		},
+		"./radio-group/stories/RadioGroup.stories": {
+			"types": "./dist/radio-group/stories/RadioGroup.stories.d.ts",
+			"import": "./dist/radio-group/stories/RadioGroup.stories.js"
+		},
+		"./select/stories/Select.stories": {
+			"types": "./dist/select/stories/Select.stories.d.ts",
+			"import": "./dist/select/stories/Select.stories.js"
+		},
+		"./select/stories/SerializableSelect.stories": {
+			"types": "./dist/select/stories/SerializableSelect.stories.d.ts",
+			"import": "./dist/select/stories/SerializableSelect.stories.js"
+		},
+		"./slider/stories/Slider.stories": {
+			"types": "./dist/slider/stories/Slider.stories.d.ts",
+			"import": "./dist/slider/stories/Slider.stories.js"
+		},
+		"./slider/stories/SliderInput.stories": {
+			"types": "./dist/slider/stories/SliderInput.stories.d.ts",
+			"import": "./dist/slider/stories/SliderInput.stories.js"
+		},
+		"./sortable/stories/Sortable.stories": {
+			"types": "./dist/sortable/stories/Sortable.stories.d.ts",
+			"import": "./dist/sortable/stories/Sortable.stories.js"
+		},
+		"./splitter/stories/Splitter.stories": {
+			"types": "./dist/splitter/stories/Splitter.stories.d.ts",
+			"import": "./dist/splitter/stories/Splitter.stories.js"
+		},
+		"./state-select/stories/StateSelect.stories": {
+			"types": "./dist/state-select/stories/StateSelect.stories.d.ts",
+			"import": "./dist/state-select/stories/StateSelect.stories.js"
+		},
+		"./switch/stories/Switch.stories": {
+			"types": "./dist/switch/stories/Switch.stories.d.ts",
+			"import": "./dist/switch/stories/Switch.stories.js"
+		},
+		"./tabs/stories/Tabs.stories": {
+			"types": "./dist/tabs/stories/Tabs.stories.d.ts",
+			"import": "./dist/tabs/stories/Tabs.stories.js"
+		},
+		"./textarea/stories/Textarea.stories": {
+			"types": "./dist/textarea/stories/Textarea.stories.d.ts",
+			"import": "./dist/textarea/stories/Textarea.stories.js"
+		},
+		"./toggle/stories/Toggle.stories": {
+			"types": "./dist/toggle/stories/Toggle.stories.d.ts",
+			"import": "./dist/toggle/stories/Toggle.stories.js"
+		},
+		"./tree-select/stories/TreeMultiSelect.stories": {
+			"types": "./dist/tree-select/stories/TreeMultiSelect.stories.d.ts",
+			"import": "./dist/tree-select/stories/TreeMultiSelect.stories.js"
+		},
+		"./tree-select/stories/TreeSelect.stories": {
+			"types": "./dist/tree-select/stories/TreeSelect.stories.d.ts",
+			"import": "./dist/tree-select/stories/TreeSelect.stories.js"
+		},
+		"./package.json": "./package.json"
+	},
+	"typesVersions": {
+		"*": {
+			"badge": [
+				"dist/badge/index.d.ts"
+			],
+			"base-table": [
+				"dist/base-table/index.d.ts"
+			],
+			"button": [
+				"dist/button/index.d.ts"
+			],
+			"check-box": [
+				"dist/check-box/index.d.ts"
+			],
+			"context-menu": [
+				"dist/context-menu/index.d.ts"
+			],
+			"date-input": [
+				"dist/date-input/index.d.ts"
+			],
+			"date-range-preset-select": [
+				"dist/date-range-preset-select/index.d.ts"
+			],
+			"date-time-input": [
+				"dist/date-time-input/index.d.ts"
+			],
+			"detail": [
+				"dist/detail/index.d.ts"
+			],
+			"dialog": [
+				"dist/dialog/index.d.ts"
+			],
+			"disclosure": [
+				"dist/disclosure/index.d.ts"
+			],
+			"drop-zone": [
+				"dist/drop-zone/index.d.ts"
+			],
+			"errors": [
+				"dist/errors/index.d.ts"
+			],
+			"expandable-action-panel": [
+				"dist/expandable-action-panel/index.d.ts"
+			],
+			"flex": [
+				"dist/flex/index.d.ts"
+			],
+			"floating-arrow": [
+				"dist/floating-arrow/index.d.ts"
+			],
+			"fullscreen-portal": [
+				"dist/fullscreen-portal/index.d.ts"
+			],
+			"grid": [
+				"dist/grid/index.d.ts"
+			],
+			"image": [
+				"dist/image/index.d.ts"
+			],
+			"input": [
+				"dist/input/index.d.ts"
+			],
+			"input-date-time": [
+				"dist/input-date-time/index.d.ts"
+			],
+			"input-file": [
+				"dist/input-file/index.d.ts"
+			],
+			"input-files": [
+				"dist/input-files/index.d.ts"
+			],
+			"input-image": [
+				"dist/input-image/index.d.ts"
+			],
+			"input-search": [
+				"dist/input-search/index.d.ts"
+			],
+			"layout-picker": [
+				"dist/layout-picker/index.d.ts"
+			],
+			"list": [
+				"dist/list/index.d.ts"
+			],
+			"listbox": [
+				"dist/listbox/index.d.ts"
+			],
+			"misc": [
+				"dist/misc/index.d.ts"
+			],
+			"modal": [
+				"dist/modal/index.d.ts"
+			],
+			"multi-select": [
+				"dist/multi-select/index.d.ts"
+			],
+			"notifications": [
+				"dist/notifications/index.d.ts"
+			],
+			"pages": [
+				"dist/pages/index.d.ts"
+			],
+			"panel": [
+				"dist/panel/index.d.ts"
+			],
+			"period-select": [
+				"dist/period-select/index.d.ts"
+			],
+			"picker": [
+				"dist/picker/index.d.ts"
+			],
+			"polymorphic": [
+				"dist/polymorphic/index.d.ts"
+			],
+			"popover": [
+				"dist/popover/index.d.ts"
+			],
+			"preset-range-date-input": [
+				"dist/preset-range-date-input/index.d.ts"
+			],
+			"preset-select": [
+				"dist/preset-select/index.d.ts"
+			],
+			"radio-button": [
+				"dist/radio-button/index.d.ts"
+			],
+			"radio-group": [
+				"dist/radio-group/index.d.ts"
+			],
+			"select": [
+				"dist/select/index.d.ts"
+			],
+			"separator": [
+				"dist/separator/index.d.ts"
+			],
+			"simple-table": [
+				"dist/simple-table/index.d.ts"
+			],
+			"slider": [
+				"dist/slider/index.d.ts"
+			],
+			"sortable": [
+				"dist/sortable/index.d.ts"
+			],
+			"splitter": [
+				"dist/splitter/index.d.ts"
+			],
+			"state-select": [
+				"dist/state-select/index.d.ts"
+			],
+			"switch": [
+				"dist/switch/index.d.ts"
+			],
+			"table": [
+				"dist/table/index.d.ts"
+			],
+			"table-column-interactions": [
+				"dist/table-column-interactions/index.d.ts"
+			],
+			"table-sorting": [
+				"dist/table-sorting/index.d.ts"
+			],
+			"tabs": [
+				"dist/tabs/index.d.ts"
+			],
+			"text": [
+				"dist/text/index.d.ts"
+			],
+			"text-editor": [
+				"dist/text-editor/index.d.ts"
+			],
+			"text-editor/lexical/plugins": [
+				"dist/text-editor/lexical/plugins/index.d.ts"
+			],
+			"text-editor/toolbar": [
+				"dist/text-editor/toolbar/index.d.ts"
+			],
+			"textarea": [
+				"dist/textarea/index.d.ts"
+			],
+			"three-scene": [
+				"dist/three-scene/index.d.ts"
+			],
+			"toggle": [
+				"dist/toggle/index.d.ts"
+			],
+			"toolbar": [
+				"dist/toolbar/index.d.ts"
+			],
+			"tree": [
+				"dist/tree/index.d.ts"
+			],
+			"tree-select": [
+				"dist/tree-select/index.d.ts"
+			],
+			"tree-table": [
+				"dist/tree-table/index.d.ts"
+			],
+			"wheel-picker": [
+				"dist/wheel-picker/index.d.ts"
+			],
+			"badge/stories/Badge.stories": [
+				"dist/badge/stories/Badge.stories.d.ts"
+			],
+			"button/stories/Button.stories": [
+				"dist/button/stories/Button.stories.d.ts"
+			],
+			"check-box/stories/CheckBox.stories": [
+				"dist/check-box/stories/CheckBox.stories.d.ts"
+			],
+			"context-menu/stories/ContextMenu.stories": [
+				"dist/context-menu/stories/ContextMenu.stories.d.ts"
+			],
+			"date-input/stories/DateInput.stories": [
+				"dist/date-input/stories/DateInput.stories.d.ts"
+			],
+			"date-range-preset-select/stories/DateRangePresetSelect.stories": [
+				"dist/date-range-preset-select/stories/DateRangePresetSelect.stories.d.ts"
+			],
+			"date-time-input/stories/SingleDateTimeInput.stories": [
+				"dist/date-time-input/stories/SingleDateTimeInput.stories.d.ts"
+			],
+			"date-time-input/stories/TimePanel.stories": [
+				"dist/date-time-input/stories/TimePanel.stories.d.ts"
+			],
+			"detail/stories/Detail.stories": [
+				"dist/detail/stories/Detail.stories.d.ts"
+			],
+			"dialog/stories/Dialog.stories": [
+				"dist/dialog/stories/Dialog.stories.d.ts"
+			],
+			"disclosure/stories/Disclosure.stories": [
+				"dist/disclosure/stories/Disclosure.stories.d.ts"
+			],
+			"drop-zone/stories/DropZone.stories": [
+				"dist/drop-zone/stories/DropZone.stories.d.ts"
+			],
+			"expandable-action-panel/stories/ExpandableActionPanel.stories": [
+				"dist/expandable-action-panel/stories/ExpandableActionPanel.stories.d.ts"
+			],
+			"flex/stories/Flex.stories": [
+				"dist/flex/stories/Flex.stories.d.ts"
+			],
+			"grid/stories/Grid.stories": [
+				"dist/grid/stories/Grid.stories.d.ts"
+			],
+			"input-date-time/stories/InputDateTime.stories": [
+				"dist/input-date-time/stories/InputDateTime.stories.d.ts"
+			],
+			"input-file/stories/InputFile.stories": [
+				"dist/input-file/stories/InputFile.stories.d.ts"
+			],
+			"input-files/stories/InputFiles.stories": [
+				"dist/input-files/stories/InputFiles.stories.d.ts"
+			],
+			"input-image/stories/InputImage.stories": [
+				"dist/input-image/stories/InputImage.stories.d.ts"
+			],
+			"input/stories/Input.stories": [
+				"dist/input/stories/Input.stories.d.ts"
+			],
+			"layout-picker/stories/LayoutPicker.stories": [
+				"dist/layout-picker/stories/LayoutPicker.stories.d.ts"
+			],
+			"listbox/stories/Listbox.stories": [
+				"dist/listbox/stories/Listbox.stories.d.ts"
+			],
+			"modal/stories/Modal.stories": [
+				"dist/modal/stories/Modal.stories.d.ts"
+			],
+			"multi-select/ui/stories/MultiSelect.stories": [
+				"dist/multi-select/ui/stories/MultiSelect.stories.d.ts"
+			],
+			"notifications/ui/stories/NotificationsHost.stories": [
+				"dist/notifications/ui/stories/NotificationsHost.stories.d.ts"
+			],
+			"period-select/stories/PeriodSelect.stories": [
+				"dist/period-select/stories/PeriodSelect.stories.d.ts"
+			],
+			"popover/stories/Popover.stories": [
+				"dist/popover/stories/Popover.stories.d.ts"
+			],
+			"preset-range-date-input/ui/stories/PresetRangeDateInput.stories": [
+				"dist/preset-range-date-input/ui/stories/PresetRangeDateInput.stories.d.ts"
+			],
+			"radio-button/stories/RadioButton.stories": [
+				"dist/radio-button/stories/RadioButton.stories.d.ts"
+			],
+			"radio-group/stories/RadioGroup.stories": [
+				"dist/radio-group/stories/RadioGroup.stories.d.ts"
+			],
+			"select/stories/Select.stories": [
+				"dist/select/stories/Select.stories.d.ts"
+			],
+			"select/stories/SerializableSelect.stories": [
+				"dist/select/stories/SerializableSelect.stories.d.ts"
+			],
+			"slider/stories/Slider.stories": [
+				"dist/slider/stories/Slider.stories.d.ts"
+			],
+			"slider/stories/SliderInput.stories": [
+				"dist/slider/stories/SliderInput.stories.d.ts"
+			],
+			"sortable/stories/Sortable.stories": [
+				"dist/sortable/stories/Sortable.stories.d.ts"
+			],
+			"splitter/stories/Splitter.stories": [
+				"dist/splitter/stories/Splitter.stories.d.ts"
+			],
+			"state-select/stories/StateSelect.stories": [
+				"dist/state-select/stories/StateSelect.stories.d.ts"
+			],
+			"switch/stories/Switch.stories": [
+				"dist/switch/stories/Switch.stories.d.ts"
+			],
+			"tabs/stories/Tabs.stories": [
+				"dist/tabs/stories/Tabs.stories.d.ts"
+			],
+			"textarea/stories/Textarea.stories": [
+				"dist/textarea/stories/Textarea.stories.d.ts"
+			],
+			"toggle/stories/Toggle.stories": [
+				"dist/toggle/stories/Toggle.stories.d.ts"
+			],
+			"tree-select/stories/TreeMultiSelect.stories": [
+				"dist/tree-select/stories/TreeMultiSelect.stories.d.ts"
+			],
+			"tree-select/stories/TreeSelect.stories": [
+				"dist/tree-select/stories/TreeSelect.stories.d.ts"
+			]
+		}
+	},
+	"scripts": {
+		"build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
+		"typecheck": "tsc -p tsconfig.build.json --noEmit",
+		"test": "vitest run",
+		"lint": "eslint .",
+		"lint:fix": "eslint . --fix",
+		"storybook": "storybook dev -p 6006",
+		"build-storybook": "storybook build",
+		"validate": "npm run lint && npm run typecheck && npm run test && npm run build",
+		"pack:dry-run": "npm run validate && npm pack --dry-run",
+		"prepublishOnly": "npm run validate"
+	},
+	"publishConfig": {
+		"access": "public",
+		"registry": "https://registry.npmjs.org/"
+	},
+	"peerDependencies": {
+		"@dnd-kit/core": "^6.3.1",
+		"@dnd-kit/modifiers": "^9.0.0",
+		"@dnd-kit/sortable": "^10.0.0",
+		"@dnd-kit/utilities": "^3.2.2",
+		"@floating-ui/react": "^0.27.19",
+		"@lexical/html": "^0.46.0",
+		"@lexical/link": "^0.46.0",
+		"@lexical/list": "^0.46.0",
+		"@lexical/react": "^0.46.0",
+		"@lexical/rich-text": "^0.46.0",
+		"@lexical/selection": "^0.46.0",
+		"@lexical/utils": "^0.46.0",
+		"@ryuzaki13/react-foundation-lib": ">=0.1.0 <2.0.0",
+		"@storybook/react-vite": "^10.4.6",
+		"@tanstack/react-query": "^5.101.1",
+		"@tanstack/react-router": "^1.170.16",
+		"@tanstack/react-table": "^8.21.3",
+		"@tanstack/react-virtual": "^3.14.4",
+		"lexical": "^0.46.0",
+		"lucide-react": "^1.21.0",
+		"motion": "^12.42.0",
+		"react": "^19.2.7",
+		"react-dom": "^19.2.7",
+		"react-easy-crop": "^6.0.2",
+		"storybook": "^10.4.6",
+		"zustand": "^5.0.14"
+	},
+	"peerDependenciesMeta": {
+		"@dnd-kit/core": {
+			"optional": true
+		},
+		"@dnd-kit/modifiers": {
+			"optional": true
+		},
+		"@dnd-kit/sortable": {
+			"optional": true
+		},
+		"@dnd-kit/utilities": {
+			"optional": true
+		},
+		"@floating-ui/react": {
+			"optional": true
+		},
+		"@lexical/html": {
+			"optional": true
+		},
+		"@lexical/link": {
+			"optional": true
+		},
+		"@lexical/list": {
+			"optional": true
+		},
+		"@lexical/react": {
+			"optional": true
+		},
+		"@lexical/rich-text": {
+			"optional": true
+		},
+		"@lexical/selection": {
+			"optional": true
+		},
+		"@lexical/utils": {
+			"optional": true
+		},
+		"@tanstack/react-query": {
+			"optional": true
+		},
+		"@tanstack/react-table": {
+			"optional": true
+		},
+		"@tanstack/react-virtual": {
+			"optional": true
+		},
+		"lexical": {
+			"optional": true
+		},
+		"lucide-react": {
+			"optional": true
+		},
+		"motion": {
+			"optional": true
+		},
+		"react-easy-crop": {
+			"optional": true
+		},
+		"zustand": {
+			"optional": true
+		},
+		"@tanstack/react-router": {
+			"optional": "true"
+		},
+		"storybook": {
+			"optional": "true"
+		},
+		"@storybook/react-vite": {
+			"optional": "true"
+		}
+	},
+	"devDependencies": {
+		"@dnd-kit/core": "^6.3.1",
+		"@dnd-kit/modifiers": "^9.0.0",
+		"@dnd-kit/sortable": "^10.0.0",
+		"@dnd-kit/utilities": "^3.2.2",
+		"@floating-ui/react": "^0.27.19",
+		"@lexical/html": "^0.46.0",
+		"@lexical/link": "^0.46.0",
+		"@lexical/list": "^0.46.0",
+		"@lexical/react": "^0.46.0",
+		"@lexical/rich-text": "^0.46.0",
+		"@lexical/selection": "^0.46.0",
+		"@lexical/utils": "^0.46.0",
+		"@ryuzaki13/react-foundation-lib": "^1.x",
+		"@storybook/addon-a11y": "^10.4.6",
+		"@storybook/addon-docs": "^10.4.6",
+		"@storybook/react-vite": "^10.4.6",
+		"@tanstack/react-query": "^5.101.1",
+		"@tanstack/react-router": "^1.170.17",
+		"@tanstack/react-table": "^8.21.3",
+		"@tanstack/react-virtual": "^3.14.4",
+		"@testing-library/dom": "^10.4.1",
+		"@testing-library/react": "^16.3.2",
+		"@testing-library/user-event": "^14.6.1",
+		"@types/node": "^26.1.1",
+		"@types/react": "^19.2.17",
+		"@types/react-dom": "^19.2.3",
+		"@vitejs/plugin-react": "^6.0.3",
+		"eslint": "^10.6.0",
+		"eslint-import-resolver-typescript": "^4.4.5",
+		"eslint-plugin-import-x": "^4.17.1",
+		"eslint-plugin-prettier": "^5.5.6",
+		"eslint-plugin-react-hooks": "^7.1.1",
+		"eslint-plugin-react-refresh": "^0.5.3",
+		"globals": "^17.7.0",
+		"jiti": "^2.7.0",
+		"jsdom": "^29.1.1",
+		"lexical": "^0.46.0",
+		"lucide-react": "^1.21.0",
+		"motion": "^12.42.0",
+		"react": "^19.2.7",
+		"react-dom": "^19.2.7",
+		"react-easy-crop": "^6.0.2",
+		"sass-embedded": "^1.100.0",
+		"storybook": "^10.4.6",
+		"typescript": "^6.0.3",
+		"typescript-eslint": "^8.63.0",
+		"vite": "^8.1.0",
+		"vitest": "^4.1.9",
+		"zustand": "^5.0.14"
+	},
+	"engines": {
+		"node": ">=24.0.0"
+	},
+	"release": {
+		"branches": [
+			"master",
+			{
+				"name": "beta",
+				"prerelease": true
+			}
+		]
+	}
+}

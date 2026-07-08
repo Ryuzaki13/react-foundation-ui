@@ -1,0 +1,67 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SwitchStories from "./Switch.stories";
+
+<Meta
+	of={SwitchStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Switch</Title>
+<Subtitle>Переключатель в виде слайдера для быстрых включений, отключений и tri-state сценариев</Subtitle>
+
+Switch уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны заблокированные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SwitchStories.BiState} />
+
+```tsx
+import { useState } from "react";
+
+import { Switch } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState(undefined);
+
+	return <Switch triState label="Автовыбор" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Заблокированное состояние лучше проверять отдельно, чтобы убедиться, что визуально и поведенчески оно остается понятным.
+
+## Сценарии использования
+
+### Классический двухсостоянный режим
+
+Классический двухсостоянный режим.
+
+<Canvas of={SwitchStories.BiState} />
+
+### Трехсостояние с промежуточным значением
+
+Трехсостояние с промежуточным значением.
+
+<Canvas of={SwitchStories.TriState} />
+
+### Проверка поведения в заблокированном состоянии
+
+Проверка поведения в заблокированном состоянии.
+
+<Canvas of={SwitchStories.Disabled} />
+
+## API
+
+<ArgTypes of={SwitchStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

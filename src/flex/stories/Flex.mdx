@@ -1,0 +1,116 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as FlexStories from "./Flex.stories";
+
+<Meta
+	of={FlexStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Flex</Title>
+<Subtitle>Набор flex-layout примитивов для строк, колонок и быстрых компоновок интерфейса</Subtitle>
+
+Flex уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={FlexStories.BasicRow} />
+
+```tsx
+import { Flex } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<Flex.Container gap="md" align="center">
+			<Flex.Item>Фильтры</Flex.Item>
+			<Flex.Item>Действия</Flex.Item>
+		</Flex.Container>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+
+## Сценарии использования
+
+### Базовый row-сценарий flex-раскладки
+
+Базовый row-сценарий flex-раскладки.
+
+<Canvas of={FlexStories.BasicRow} />
+
+### Базовый column-сценарий flex-раскладки
+
+Базовый column-сценарий flex-раскладки.
+
+<Canvas of={FlexStories.BasicColumn} />
+
+### Сравнение доступных направлений раскладки
+
+Сравнение доступных направлений раскладки.
+
+<Canvas of={FlexStories.Directions} />
+
+### Выравнивание элементов по главной оси
+
+Выравнивание элементов по главной оси.
+
+<Canvas of={FlexStories.JustifyContent} />
+
+### Выравнивание по поперечной оси
+
+Выравнивание по поперечной оси.
+
+<Canvas of={FlexStories.AlignItems} />
+
+### Поведение при переносе элементов
+
+Поведение при переносе элементов.
+
+<Canvas of={FlexStories.Wrapping} />
+
+### Сравнение интервалов между элементами
+
+Сравнение интервалов между элементами.
+
+<Canvas of={FlexStories.Gaps} />
+
+### Настройка поведения отдельных flex-элементов
+
+Настройка поведения отдельных flex-элементов.
+
+<Canvas of={FlexStories.FlexItems} />
+
+### Использование готовых преднастроенных вариантов
+
+Использование готовых преднастроенных вариантов.
+
+<Canvas of={FlexStories.Predefined} />
+
+### Режим inline-flex в составе потока
+
+Режим inline-flex в составе потока.
+
+<Canvas of={FlexStories.InlineFlex} />
+
+### Прикладной пример использования в интерфейсе
+
+Прикладной пример использования в интерфейсе.
+
+<Canvas of={FlexStories.RealWorld} />
+
+## API
+
+<ArgTypes of={FlexStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

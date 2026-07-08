@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ToggleStories from "./Toggle.stories";
+
+<Meta
+	of={ToggleStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Toggle</Title>
+<Subtitle>Переключаемый булев контрол для локальных режимов и простых опций</Subtitle>
+
+Toggle уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии, заблокированные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ToggleStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { Toggle } from "@/shared/ui";
+
+export function Example() {
+	const [enabled, setEnabled] = useState(false);
+
+	return <Toggle label="Режим просмотра" value={enabled} onChange={setEnabled} />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- Заблокированное состояние лучше проверять отдельно, чтобы убедиться, что визуально и поведенчески оно остается понятным.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={ToggleStories.Controlled} />
+
+### Размещение подписи после контрола
+
+Размещение подписи после контрола.
+
+<Canvas of={ToggleStories.LabelAfter} />
+
+### Проверка поведения в заблокированном состоянии
+
+Проверка поведения в заблокированном состоянии.
+
+<Canvas of={ToggleStories.Disabled} />
+
+## API
+
+<ArgTypes of={ToggleStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

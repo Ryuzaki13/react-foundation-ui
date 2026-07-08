@@ -1,0 +1,443 @@
+@use "./mixins" as *;
+
+body {
+	// @include fluid-font(17, 15);
+	// @include stepped-font-var(--clamped-font-size, 16, 16);
+	// font-size: var(--clamped-font-size);
+	@include stepped-font();
+	font-family: var(--font-family-base);
+
+	color: var(--content-0);
+	background-color: var(--surface-1);
+
+	letter-spacing: var(--letter-spacing);
+	word-spacing: var(--word-spacing);
+	line-height: var(--line-height);
+	text-size-adjust: 100%;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: auto;
+
+	position: relative;
+	height: 100%;
+	overflow: hidden;
+}
+
+#root {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	height: 100%;
+}
+
+// TODO: ВРЕМЕННО, не забыть убрать после адаптации шапки
+@include mobile {
+	#root {
+		grid-template-rows: 1fr;
+	}
+}
+
+#modal-root {
+	&:not(:empty) {
+		position: fixed;
+		z-index: var(--z-modal-root);
+		left: 0;
+		top: 0;
+		right: 0;
+		bottom: 0;
+		background-color: var(--overlay-glass);
+	}
+}
+
+h1,
+.h1 {
+	@include stepped-font(24);
+}
+
+h2,
+.h2 {
+	@include stepped-font(22);
+}
+
+h3,
+.h3 {
+	@include stepped-font(20);
+}
+
+h4,
+.h4 {
+	@include stepped-font(19);
+}
+
+h5,
+.h5 {
+	@include stepped-font(17);
+}
+
+h6,
+.h6 {
+	@include stepped-font(16);
+}
+
+h1,
+h2,
+h3,
+h4 {
+	font-weight: 700;
+	font-variation-settings: "wght" 700;
+}
+
+h5,
+h6 {
+	font-weight: 600;
+	font-variation-settings: "wght" 600;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin: 0;
+	// text-wrap-mode: wrap;
+	// text-wrap-style: balance;
+	color: var(--content-1);
+}
+
+.h0 {
+	margin: 0;
+	color: var(--content-1);
+	// @include fluid-font(17, 15);
+	font-size: inherit;
+	font-weight: 400;
+	font-variation-settings: "wght" 400;
+}
+
+strong {
+	font-weight: 700;
+	font-variation-settings: "wght" 700;
+}
+
+code {
+	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
+}
+
+table {
+	min-width: 100%;
+	border-collapse: separate;
+	border-spacing: 0;
+	table-layout: fixed;
+	// font-size: var(--font-size-sm);
+	text-align: left;
+
+	&:not([data-clear-table]) {
+		td,
+		th {
+			border-bottom: var(--border);
+			border-right: var(--border);
+			padding: var(--space-sm);
+
+			&:first-child {
+				border-left: var(--border);
+			}
+		}
+
+		tr {
+			&:first-child {
+				td,
+				th {
+					border-top: var(--border);
+				}
+			}
+		}
+
+		thead + tbody,
+		tbody + tfoot {
+			tr {
+				&:first-child {
+					td,
+					th {
+						border-top: none;
+					}
+				}
+			}
+		}
+
+		th {
+			background-color: var(--surface-1);
+			font-weight: 400;
+			font-variation-settings: "wght" 400;
+		}
+
+		tr > td {
+			vertical-align: top;
+		}
+	}
+}
+
+caption {
+	text-align: left;
+	margin-block: var(--space-sm);
+	color: var(--content-1);
+	@include stepped-font(20);
+}
+
+table {
+	&.alignCenter {
+		tr > td {
+			vertical-align: middle;
+		}
+	}
+}
+
+.lucide {
+	stroke-width: var(--stroke-width);
+	width: 1.25em;
+	height: 1.25em;
+	line-height: var(--line-height);
+}
+
+:focus-visible {
+	@include focusVisible;
+}
+
+.focusVisible {
+	@include focus-visible;
+}
+
+.visuallyHidden {
+	@include visuallyHidden;
+}
+
+.debug {
+	outline: 1px dashed rgb(255, 124, 216);
+	outline-offset: -1px;
+}
+// TODO: unused
+.debug1 {
+	outline: 1px dashed rgb(255, 220, 124);
+	outline-offset: -1px;
+}
+// TODO: unused
+.debug2 {
+	outline: 1px dashed rgb(124, 240, 255);
+	outline-offset: -1px;
+}
+// TODO: unused
+.debug3 {
+	outline: 1px dashed rgb(124, 255, 172);
+	outline-offset: -1px;
+}
+
+// OPACITY
+
+// TODO: unused
+.opacity0 {
+	opacity: 0;
+
+	&.opacityHover {
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+
+// TODO: unused
+.opacity20 {
+	opacity: 0.2;
+
+	&.opacityHover {
+		&:hover {
+			opacity: 0.8;
+		}
+	}
+}
+.opacity50 {
+	opacity: 0.5;
+
+	&.opacityHover {
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+// TODO: unused
+.opacity80 {
+	opacity: 0.8;
+
+	&.opacityHover {
+		&:hover {
+			opacity: 1;
+		}
+	}
+}
+// TODO: unused
+.opacityTransition {
+	transition: opacity var(--transition-fast) ease;
+}
+
+// BOX-SHADOW
+
+.shadowLg {
+	box-shadow: var(--shadow-lg);
+}
+.shadowMd {
+	box-shadow: var(--shadow-md);
+}
+.shadowSm {
+	box-shadow: var(--shadow-sm);
+}
+
+// CURSOR
+
+.cursorPointer {
+	cursor: pointer;
+}
+// TODO: unused
+.cursorDefault {
+	cursor: default;
+}
+// TODO: unused
+.cursorNotAllowed {
+	cursor: not-allowed;
+}
+
+// POINTER-EVENTS
+
+.noSelect {
+	user-select: none;
+}
+.noEvent {
+	pointer-events: none;
+}
+.noEvents {
+	@extend .noSelect;
+	@extend .noEvent;
+
+	cursor: default;
+	opacity: var(--disabled-opacity);
+	color: var(--content-2);
+}
+
+// TODO: unused
+.touchNoZoom {
+	touch-action: manipulation;
+}
+
+.componentLoader {
+	min-height: 10rem;
+}
+
+.skeletonLine {
+	background-color: var(--surface-2);
+	background-image: linear-gradient(
+		90deg,
+		var(--surface-2) 0%,
+		var(--surface-2) 40%,
+		var(--surface-0) 50%,
+		var(--surface-2) 52%,
+		var(--surface-2) 100%
+	);
+}
+
+// TODO: unused
+.skeletonTextLine {
+	@extend .skeletonLine;
+	height: var(--text-height);
+}
+
+.skeletonLineInverse {
+	background-color: var(--surface-2);
+	background-image: linear-gradient(
+		135deg,
+		var(--surface-2) 0%,
+		var(--surface-2) 40%,
+		var(--surface-0) 50%,
+		var(--surface-2) 52%,
+		var(--surface-2) 100%
+	);
+}
+
+.skeletonLine,
+.skeletonLineInverse {
+	background-position: -100% 0;
+	background-size: 200% 100%;
+	animation: skeletonLineMove var(--animation-2s) infinite linear;
+}
+
+@keyframes skeletonLineMove {
+	0% {
+		background-position: 100% 0;
+	}
+	100% {
+		background-position: -100% 0;
+	}
+}
+
+.routeLoadingOverlay {
+	position: fixed;
+	inset: 0;
+	z-index: 8000;
+	pointer-events: none;
+}
+
+.logoAnimated {
+	max-width: 10em;
+	margin: var(--space-md) auto;
+
+	svg {
+		display: block;
+		width: 100%;
+		height: 100%;
+	}
+}
+
+.logoSegment {
+	stroke: var(--content-2);
+	stroke-width: 30px;
+	stroke-miterlimit: 10;
+	opacity: 0.22;
+	animation: pulseSteps 1.8s ease-in-out infinite;
+}
+
+.logoOutline {
+	fill: none;
+}
+
+.logoFill {
+	fill: var(--content-2);
+}
+
+.logoS1 {
+	animation-delay: 0s;
+}
+.logoS2 {
+	animation-delay: 0.2s;
+}
+.logoS3 {
+	animation-delay: 0.4s;
+}
+.logoS4 {
+	animation-delay: 0.6s;
+}
+
+@keyframes pulseSteps {
+	0% {
+		opacity: 0.2;
+	}
+	35% {
+		opacity: 1;
+	}
+	55% {
+		opacity: 1;
+	}
+	100% {
+		opacity: 0.2;
+	}
+}
+
+// @media (prefers-reduced-motion: reduce) {
+// 	.logoSegment {
+// 		animation: none;
+// 		opacity: 1;
+// 	}
+// }

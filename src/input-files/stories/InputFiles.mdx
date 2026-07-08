@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as InputFilesStories from "./InputFiles.stories";
+
+<Meta
+	of={InputFilesStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>InputFiles</Title>
+<Subtitle>Выбор и хранение нескольких файлов в контролируемом режиме</Subtitle>
+
+InputFiles уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={InputFilesStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { InputFiles } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState([]);
+
+	return <InputFiles label="Вложения" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- При редактировании сущностей проверьте сценарий инициализации компонента уже существующими данными.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={InputFilesStories.Controlled} />
+
+### Инициализация заранее выбранными файлами
+
+Инициализация заранее выбранными файлами.
+
+<Canvas of={InputFilesStories.WithInitialFiles} />
+
+### Limit Reached
+
+Сценарий демонстрирует вариант `LimitReached` и помогает быстро сравнить его с остальными режимами компонента.
+
+<Canvas of={InputFilesStories.LimitReached} />
+
+## API
+
+<ArgTypes of={InputFilesStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

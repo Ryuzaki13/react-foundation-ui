@@ -1,0 +1,91 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ModalStories from "./Modal.stories";
+
+<Meta
+	of={ModalStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Modal</Title>
+<Subtitle>Составная модалка с контентом, toolbar и footer для пользовательских диалоговых сценариев</Subtitle>
+
+Modal уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии, размерные варианты.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ModalStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { Button } from "@/shared/ui";
+import { Modal, ModalContent, ModalFooter } from "@/shared/ui";
+
+export function Example() {
+	const [open, setOpen] = useState(false);
+
+	return (
+		<>
+			<Button onClick={() => setOpen(true)}>Открыть</Button>
+			<Modal isOpen={open} title="Редактирование" onClose={() => setOpen(false)}>
+				<ModalContent>Содержимое модального окна</ModalContent>
+				<ModalFooter>
+					<Button onClick={() => setOpen(false)}>Закрыть</Button>
+				</ModalFooter>
+			</Modal>
+		</>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- Проверьте размер компонента в реальном контексте интерфейса: в таблицах, тулбарах и формах требования обычно отличаются.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={ModalStories.Controlled} />
+
+### Композиция с toolbar и footer
+
+Композиция с toolbar и footer.
+
+<Canvas of={ModalStories.WithToolbarAndFooter} />
+
+### Прокручиваемое содержимое внутри контейнера
+
+Прокручиваемое содержимое внутри контейнера.
+
+<Canvas of={ModalStories.ScrollableContent} />
+
+### Сравнение размеров компонента
+
+Сравнение размеров компонента.
+
+<Canvas of={ModalStories.Sizes} />
+
+### Несколько модалок одновременно
+
+Несколько модалок одновременно.
+
+<Canvas of={ModalStories.StackedModals} />
+
+## API
+
+<ArgTypes of={ModalStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,299 @@
+@use "sass:math";
+@use "sass:map";
+@use "media" as *;
+
+// @function fluid($max: 100, $min: 10) {
+// 	$maxViewportWidth: 2560;
+// 	$minViewportWidth: 390;
+
+// 	$maxSize: math.div($max, 16);
+// 	$minSize: math.div($min, 16);
+// 	$maxWidth: math.div($maxViewportWidth, 16);
+// 	$minWidth: math.div($minViewportWidth, 16);
+
+// 	$slope: math.div(($maxSize - $minSize), ($maxWidth - $minWidth));
+// 	$yAxisIntersection: -$minWidth * $slope + $minSize;
+
+// 	@return clamp(#{$minSize * 1rem}, #{$yAxisIntersection * 1rem} + #{$slope * 100vw}, #{$maxSize * 1rem});
+// }
+
+@mixin stepped-font-var($name, $min: 14, $max: 16) {
+	// @if $min < 16 {
+	// 	@error "UI font-size добжен быть не менее 16px.";
+	// }
+
+	#{$name}: #{toEm($max)};
+
+	@include laptop {
+		#{$name}: #{toEm(math.max($min, $max - 1))};
+	}
+
+	@include tablet {
+		#{$name}: #{toEm(math.max($min, $max - 2))};
+	}
+
+	@include mobile {
+		#{$name}: #{toEm($min)};
+	}
+}
+
+@mixin stepped-font($base: 16) {
+	@if $base < 16 {
+		@error "UI font-size добжен быть не менее 16px.";
+	}
+
+	font-size: #{toRem($base + 4)};
+
+	@include laptop {
+		font-size: #{toRem($base)};
+	}
+
+	@include tablet {
+		font-size: #{toRem($base + 2)};
+	}
+
+	@include mobile {
+		font-size: #{toRem($base + 4)};
+	}
+}
+
+@mixin hide {
+	opacity: 0;
+	visibility: hidden;
+}
+
+@mixin srOnly {
+	position: absolute !important;
+	width: 1px !important;
+	height: 1px !important;
+	margin: -1px !important;
+	border: 0 !important;
+	padding: 0 !important;
+	white-space: nowrap !important;
+	clip-path: inset(100%) !important;
+	clip: rect(0 0 0 0) !important;
+	overflow: hidden !important;
+}
+
+@mixin visuallyHidden {
+	@include srOnly;
+}
+
+@mixin hover($includeFocus: false, $hashActiveEffectOnMobile: true) {
+	@if ($includeFocus) {
+		&:focus-visible {
+			@content;
+		}
+	}
+
+	@media (any-hover: hover) {
+		&:hover {
+			@content;
+		}
+	}
+
+	@if ($hashActiveEffectOnMobile) {
+		@media (any-hover: none) {
+			&:active {
+				@content;
+			}
+		}
+	}
+}
+
+@mixin focusVisible {
+	outline: var(--focus-width) solid var(--focus-ring);
+	outline-offset: var(--focus-offset);
+}
+
+@mixin focus-visible {
+	&:focus-visible {
+		@include focusVisible;
+	}
+}
+
+@function status-scale($L, $C, $H, $mode) {
+	@if $mode == light {
+		@return (
+			outline: (
+				base: oklch($L $C $H),
+				hover: oklch($L - 0.05 $C - 0.01 $H),
+				active: oklch($L - 0.1 $C - 0.03 $H),
+				focus: oklch($L - 0.06 $C + 0.03 $H)
+			),
+			border: (
+				base: oklch($L $C $H),
+				hover: oklch($L - 0.05 $C + 0.01 $H + 5),
+				active: oklch($L - 0.1 $C + 0.01 $H - 5),
+				focus: oklch($L + 0.1 $C + 0.15 $H - 5)
+			),
+			fill: (
+				base: oklch($L + 0.06 $C * 1.125 $H + 3),
+				hover: oklch($L + 0.03 $C * 1.125 $H + 3),
+				active: oklch($L $C * 1.125 $H + 6),
+				on-fill: oklch(1 0 0)
+			),
+			soft: oklch(0.94 ($C * 0.35) $H)
+		);
+	}
+
+	@if $mode == dark {
+		@return (
+			outline: (
+				base: oklch($L $C $H),
+				hover: oklch($L + 0.06 $C + 0.01 $H),
+				active: oklch($L - 0.04 $C $H),
+				focus: oklch($L + 0.06 $C + 0.02 $H)
+			),
+			border: (
+				base: oklch($L $C $H),
+				hover: oklch($L + 0.06 $C + 0.01 $H),
+				active: oklch($L - 0.04 $C $H),
+				focus: oklch($L + 0.06 $C + 0.02 $H)
+			),
+			fill: (
+				base: oklch($L + 0.14 $C * 0.95 $H),
+				hover: oklch($L + 0.2 $C * 0.95 $H),
+				active: oklch($L + 0.08 $C * 0.9 $H),
+				on-fill: oklch(0.26 ($C * 0.35) $H)
+			),
+			soft: oklch(0.3 ($C * 0.45) $H)
+		);
+	}
+}
+
+// Для нейтральной схемы никак общую логику не применить, поэтому отдельная обработка
+@function status-border-neutral($L, $C, $H, $mode) {
+	@if $mode == light {
+		@return (
+			base: oklch($L $C $H),
+			hover: oklch($L - 0.1 $C + 0.01 $H + 5),
+			active: oklch($L - 0.2 $C + 0.01 $H - 5),
+			focus: oklch($L - 0.3 $C $H)
+		);
+	}
+
+	@if $mode == dark {
+		@return (
+			base: oklch($L $C $H),
+			hover: oklch($L + 0.1 $C + 0.01 $H),
+			active: oklch($L + 0.2 $C + 0.01 $H),
+			focus: oklch($L + 0.2 $C + 0.02 $H)
+		);
+	}
+}
+
+@mixin generate-status-fill($name, $L, $C, $H, $mode) {
+	$s: status-scale($L, $C, $H, $mode);
+
+	--status-#{$name}-text: #{map.get(map.get($s, outline), base)};
+	--status-#{$name}-text-hover: #{map.get(map.get($s, outline), hover)};
+	--status-#{$name}-text-active: #{map.get(map.get($s, outline), active)};
+
+	--status-#{$name}-fill: #{map.get(map.get($s, fill), base)};
+	--status-#{$name}-fill-hover: #{map.get(map.get($s, fill), hover)};
+	--status-#{$name}-fill-active: #{map.get(map.get($s, fill), active)};
+	--status-#{$name}-on-fill: #{map.get(map.get($s, fill), on-fill)};
+
+	--status-#{$name}-soft: #{map.get($s, soft)};
+}
+
+@mixin generate-status-border($name, $L, $C, $H, $mode) {
+	@if $name == neutral {
+		$s: status-border-neutral($L, $C, $H, $mode);
+
+		--border-0: #{map.get($s, base)};
+		--border-1: #{map.get($s, hover)};
+		--border-2: #{map.get($s, active)};
+		--border-focus: #{map.get($s, focus)};
+
+		--status-#{$name}-border: var(--border-0);
+		--status-#{$name}-border-hover: var(--border-1);
+		--status-#{$name}-border-active: var(--border-2);
+		--status-#{$name}-border-focus: var(--border-focus);
+	} @else {
+		$s: status-scale($L, $C, $H, $mode);
+
+		--status-#{$name}-border: #{map.get(map.get($s, border), base)};
+		--status-#{$name}-border-hover: #{map.get(map.get($s, border), hover)};
+		--status-#{$name}-border-active: #{map.get(map.get($s, border), active)};
+		--status-#{$name}-border-focus: #{map.get(map.get($s, border), focus)};
+	}
+}
+
+@function status-border-neutral2($L, $C, $H, $mode) {
+	@if $mode == light {
+		@return (
+			base: oklch($L $C $H),
+			hover: oklch($L + 0.13 $C + 0.15 $H - 89),
+			active: oklch($L - 0.2 $C + 0.15 $H + 19),
+			focus: oklch($L + 0.15 $C + 0.2 $H - 89)
+		);
+	}
+
+	@if $mode == dark {
+		@return (
+			base: oklch($L $C $H),
+			hover: oklch($L + 0.1 $C + 0.01 $H),
+			active: oklch($L + 0.2 $C + 0.01 $H),
+			focus: oklch($L + 0.2 $C + 0.02 $H)
+		);
+	}
+}
+
+@mixin generate-neutral-border2() {
+	--status-neutral-border: var(--border-0);
+	--status-neutral-border-hover: var(--border-1);
+	--status-neutral-border-active: var(--border-2);
+	--status-neutral-border-focus: var(--border-focus);
+}
+
+@function status-border-neutral3($L, $C, $H, $mode) {
+	@if $mode == light {
+		@return (
+			base: oklch($L $C $H),
+			hover: oklch($L - 0.13 $C + 0.15 $H + 59),
+			active: oklch($L - 0.25 $C + 0.2 $H + 9),
+			focus: oklch($L - 0.15 $C + 0.2 $H + 59)
+		);
+	}
+
+	@if $mode == dark {
+		@return (
+			base: oklch($L $C $H),
+			hover: oklch($L + 0.1 $C + 0.01 $H),
+			active: oklch($L + 0.2 $C + 0.01 $H),
+			focus: oklch($L + 0.2 $C + 0.02 $H)
+		);
+	}
+}
+
+@mixin generate-neutral-border3($L, $C, $H, $mode) {
+	$s: status-border-neutral3($L, $C, $H, $mode);
+
+	--border-0: #{map.get($s, base)};
+	--border-1: #{map.get($s, hover)};
+	--border-2: #{map.get($s, active)};
+	--border-focus: #{map.get($s, focus)};
+
+	--status-neutral-border: var(--border-0);
+	--status-neutral-border-hover: var(--border-1);
+	--status-neutral-border-active: var(--border-2);
+	--status-neutral-border-focus: var(--border-focus);
+}
+
+@mixin generate-accent($L, $C, $H, $mode) {
+	@if $mode == light {
+		--content-accent: oklch(#{$L} #{$C} #{$H});
+		--surface-accent: oklch(0.94 #{$C - 0.2} #{$H - 15});
+		--border-accent: oklch(#{$L - 0.03} #{$C - 0.08} #{$H});
+		// --focus-accent: oklch(#{$L + 0.04} #{$C + 0.05} #{$H});
+	}
+
+	@if $mode == dark {
+		--content-accent: oklch(#{$L} #{$C} #{$H});
+		--surface-accent: oklch(#{$L - 0.4} #{$C - 0.15} #{$H - 10});
+		--border-accent: oklch(#{$L - 0.08} #{$C - 0.1} #{$H});
+		// --focus-accent: oklch(#{$L + 0.06} #{$C + 0.03} #{$H});
+	}
+}

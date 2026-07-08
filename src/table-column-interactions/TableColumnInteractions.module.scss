@@ -1,0 +1,21 @@
+.resizeHandle {
+	cursor: col-resize;
+	touch-action: none;
+	user-select: none;
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
+	width: 6px;
+	z-index: 1;
+
+	&:hover,
+	&:focus-visible {
+		background: var(--focus-ring);
+	}
+
+	&:focus-visible {
+		outline: var(--focus);
+		outline-offset: calc(var(--focus-offset) * -1);
+	}
+}

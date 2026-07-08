@@ -1,0 +1,64 @@
+.tooltipPanel {
+	padding: var(--space-sm);
+	// background-image: radial-gradient(var(--surface-0) 50%, var(--surface-1) 100%);
+	background-color: var(--surface-1);
+	border: var(--border-width) solid var(--border-1);
+	border-radius: var(--radius-sm);
+	color: var(--content-0);
+
+	filter: drop-shadow(var(--shadow-sm));
+
+	&.negative {
+		--border-1: var(--content-0);
+
+		background-color: var(--content-0);
+		border-color: var(--border-1);
+		color: var(--surface-1);
+	}
+
+	&.information {
+		--border-1: var(--status-info-text);
+
+		background-color: var(--status-info-text);
+		border-color: var(--status-info-text);
+		color: var(--status-info-on-fill);
+	}
+
+	&.error {
+		--border-1: var(--status-error-text);
+
+		background-color: var(--status-error-text);
+		border-color: var(--status-error-text);
+		color: var(--status-error-on-fill);
+	}
+
+	&.warning {
+		--border-1: var(--status-warning-text);
+
+		background-color: var(--status-warning-text);
+		border-color: var(--status-warning-text);
+		color: var(--status-warning-on-fill);
+	}
+
+	&.success {
+		--border-1: var(--status-success-text);
+
+		background-color: var(--status-success-text);
+		border-color: var(--status-success-text);
+		color: var(--status-success-on-fill);
+	}
+}
+
+.tooltip {
+	z-index: var(--z-tooltip);
+	pointer-events: none;
+
+	text-align: initial;
+	font-size: var(--font-size-sm);
+	font-style: normal;
+	font-weight: 500;
+	font-variation-settings: "wght" 500;
+	line-height: var(--line-height);
+
+	@extend .tooltipPanel;
+}

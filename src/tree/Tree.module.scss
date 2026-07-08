@@ -1,0 +1,38 @@
+.nodeItem {
+	display: flex;
+	flex-direction: column;
+}
+
+.treeContainer {
+	padding: var(--space-md);
+}
+
+.nestedList {
+	padding-left: var(--space-md);
+}
+
+.nestedСounter {
+	counter-reset: item;
+	list-style-type: none;
+	padding-left: var(--space-md);
+
+	.nestedList {
+		margin-left: var(--space-md);
+	}
+
+	ol {
+		counter-reset: item;
+	}
+
+	li {
+		counter-increment: item;
+		position: relative;
+
+		&::before {
+			content: counters(item, ".") ". ";
+			position: absolute;
+			left: 0;
+			transform: translateX(calc(-100% - 0.25em));
+		}
+	}
+}

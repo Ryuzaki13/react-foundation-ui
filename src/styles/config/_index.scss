@@ -1,0 +1,400 @@
+@use "sass:map";
+@use "sass:meta";
+
+$root-token-defaults: (
+	"--font-family": ("72", sans-serif),
+	"--letter-spacing": 0em,
+	"--word-spacing": 0em,
+	"--border-width": 1px,
+	"--stroke-width": 1px,
+	"--focus-width": 2px,
+	"--focus-offset": -2px,
+	"--border": var(--border-width) solid var(--border-0),
+	"--outline": var(--focus-width) solid var(--border-0),
+	"--focus": var(--focus-width) solid var(--focus-ring),
+	"--radius-xs": 3px,
+	"--radius-sm": 5px,
+	"--radius-md": 10px,
+	"--radius-lg": 20px,
+	"--radius-xl": 30px,
+	"--space-xxs": 2px,
+	"--space-xs": 3px,
+	"--space-sm": 5px,
+	"--space-md": 10px,
+	"--space-lg": 20px,
+	"--space-xl": 30px,
+	"--space-xxl": 40px,
+	"--font-family-base": var(--font-family),
+	"--font-family-mono": ("72-mono", monospace),
+	"--font-size-xs": 0.75em,
+	"--font-size-sm": 0.875em,
+	"--font-size-md": 1em,
+	"--font-size-lg": 1.25em,
+	"--font-size-xl": 1.5em,
+	"--line-height": 1.2,
+	"--text-height": calc(1em * var(--line-height)),
+	"--line-height-offset": 2px,
+	"--ui-width-xs": 128px,
+	"--ui-width-sm": 176px,
+	"--ui-width-md": 224px,
+	"--ui-width-lg": 272px,
+	"--ui-width-xl": 320px,
+	"--control-height-base": 16px,
+	"--control-height": calc(var(--control-height-base) + var(--line-height-offset)),
+	"--width-add": calc(10 * var(--letter-spacing) + 2 * var(--word-spacing)),
+	"--disabled-opacity": 0.4,
+	"--transition-fast": 0.2s,
+	"--transition-slow": 0.6s,
+	"--animation-1s": 1s,
+	"--animation-2s": 2s,
+	"--paragraph-margin": 1em,
+	"--brand-primary": var(--content-accent),
+	"--surface-primary": var(--surface-0),
+	"--surface-secondary": var(--surface-1),
+	"--text-accent": var(--content-accent),
+	"--text-secondary": var(--content-2),
+	"--z-main-menu": 10,
+	"--z-fullscreen-portal": 90,
+	"--z-modal-root": 100,
+	"--z-modal-backdrop": 110,
+	"--z-modal": 120,
+	"--z-dialog": 110,
+	"--z-popover": 140,
+	"--z-popup-root": 150,
+	"--z-dropdown": 180,
+	"--z-context-menu": 190,
+	"--z-tooltip": 200,
+	"--z-notify": 400,
+	"--white": oklch(1 0 0),
+	"--black": oklch(0 0 0)
+);
+
+$retina-token-defaults: (
+	"--drp-border-width": 0.0625em,
+	"--drp-stroke-width": 0.0625em,
+	"--drp-focus-width": 0.125em,
+	"--drp-focus-offset": -0.125em,
+	"--drp-ui-width-xs": 8em,
+	"--drp-ui-width-sm": 11em,
+	"--drp-ui-width-md": 14em,
+	"--drp-ui-width-lg": 17em,
+	"--drp-ui-width-xl": 20em,
+	"--radius-xs": 0.1875em,
+	"--radius-sm": 0.3125em,
+	"--radius-md": 0.625em,
+	"--radius-lg": 1.25em,
+	"--radius-xl": 1.875em,
+	"--space-xxs": 0.125em,
+	"--space-xs": 0.1875em,
+	"--space-sm": 0.3125em,
+	"--space-md": 0.625em,
+	"--space-lg": 1.25em,
+	"--space-xl": 1.875em,
+	"--space-xxl": 2em
+);
+
+$font-size-preset-defaults: (
+	small: (
+		"font-size": 14px,
+		"--control-height-base": 14px
+	),
+	normal: (
+		"font-size": 16px,
+		"--control-height-base": 16px
+	),
+	large: (
+		"font-size": 18px,
+		"--control-height-base": 18px
+	),
+	very-large: (
+		"font-size": 20px,
+		"--control-height-base": 20px
+	),
+	extra-large: (
+		"font-size": 22px,
+		"--control-height-base": 22px
+	),
+	auto: (
+		"font-size": initial
+	)
+);
+
+$line-height-preset-defaults: (
+	compact: (
+		"--line-height": 1,
+		"--line-height-offset": 10px
+	),
+	normal: (
+		"--line-height": 1.2,
+		"--line-height-offset": 12px
+	),
+	wide: (
+		"--line-height": 1.4,
+		"--line-height-offset": 14px
+	),
+	extra-wide: (
+		"--line-height": 1.6,
+		"--line-height-offset": 16px
+	)
+);
+
+$letter-spacing-preset-defaults: (
+	normal: (
+		"--letter-spacing": 0px
+	),
+	slightly-wide: (
+		"--letter-spacing": 0.5px
+	),
+	wide: (
+		"--letter-spacing": 1px
+	),
+	extra-wide: (
+		"--letter-spacing": 1.5px
+	)
+);
+
+$word-spacing-preset-defaults: (
+	normal: (
+		"--word-spacing": 0px
+	),
+	slightly-wide: (
+		"--word-spacing": 0.5px
+	),
+	wide: (
+		"--word-spacing": 1.5px
+	),
+	extra-wide: (
+		"--word-spacing": 2.5px
+	)
+);
+
+$paragraph-spacing-preset-defaults: (
+	compact: (
+		"--paragraph-margin": 0.5em
+	),
+	normal: (
+		"--paragraph-margin": 1em
+	),
+	wide: (
+		"--paragraph-margin": 1.5em
+	),
+	extra-wide: (
+		"--paragraph-margin": 2em
+	)
+);
+
+$light-theme-defaults: (
+	tokens: (
+		"--surface-0": #ffffff,
+		"--surface-1": #f7f8f9,
+		"--surface-2": #eceef0,
+		"--content-0": oklch(0.26 0.01 244),
+		"--content-1": oklch(0.44 0.02 268),
+		"--content-2": oklch(0.54 0.02 258),
+		"--focus-ring": oklch(0.5 0.3 270),
+		"--overlay-backdrop": rgba(0, 0, 0, 0.1),
+		"--overlay-glass": rgba(255, 255, 255, 0.8),
+		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
+		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
+		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
+		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25),
+		"--file-pdf": #d9534f,
+		"--file-word": #2a5699,
+		"--file-excel": #217346,
+		"--file-powerpoint": #d94a00,
+		"--file-image": #8e44ad,
+		"--file-archive": #34495e,
+		"--file-database": #6c757d,
+		"--file-graphics": #5d6d7e
+	),
+	accent: (
+		l: 0.55,
+		c: 0.22,
+		h: 245
+	),
+	status: (
+		neutral: (
+			fill: (
+				l: 0.26,
+				c: 0.01,
+				h: 244
+			),
+			border: (
+				l: 0.86,
+				c: 0.016,
+				h: 245
+			)
+		),
+		error: (
+			fill: (
+				l: 0.52,
+				c: 0.19,
+				h: 22
+			),
+			border: (
+				l: 0.52,
+				c: 0.19,
+				h: 22
+			)
+		),
+		warning: (
+			fill: (
+				l: 0.55,
+				c: 0.16,
+				h: 75
+			),
+			border: (
+				l: 0.55,
+				c: 0.16,
+				h: 75
+			)
+		),
+		success: (
+			fill: (
+				l: 0.5,
+				c: 0.14,
+				h: 160
+			),
+			border: (
+				l: 0.5,
+				c: 0.14,
+				h: 160
+			)
+		),
+		info: (
+			fill: (
+				l: 0.52,
+				c: 0.15,
+				h: 255
+			),
+			border: (
+				l: 0.52,
+				c: 0.15,
+				h: 255
+			)
+		)
+	)
+);
+
+$dark-theme-defaults: (
+	tokens: (
+		"--surface-0": #222a35,
+		"--surface-1": #27313f,
+		"--surface-2": #2d3646,
+		"--content-0": oklch(0.9 0.01 256),
+		"--content-1": oklch(0.8 0.02 256),
+		"--content-2": oklch(0.7 0.02 256),
+		"--focus-ring": oklch(0.88 0.2 94),
+		"--overlay-backdrop": rgba(30, 37, 47, 0.18),
+		"--overlay-glass": rgba(30, 37, 47, 0.8),
+		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
+		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
+		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
+		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25),
+		"--file-pdf": #ff6b6b,
+		"--file-word": #5c8ed8,
+		"--file-excel": #33b679,
+		"--file-powerpoint": #ff7b2c,
+		"--file-image": #c084e4,
+		"--file-archive": #5d6d7e,
+		"--file-database": #adb5bd,
+		"--file-graphics": #95a5a6
+	),
+	accent: (
+		l: 0.7,
+		c: 0.2,
+		h: 245
+	),
+	status: (
+		neutral: (
+			fill: (
+				l: 0.7,
+				c: 0.02,
+				h: 256
+			),
+			border: (
+				l: 0.4,
+				c: 0.02,
+				h: 256
+			)
+		),
+		error: (
+			fill: (
+				l: 0.7,
+				c: 0.18,
+				h: 22
+			),
+			border: (
+				l: 0.7,
+				c: 0.18,
+				h: 22
+			)
+		),
+		warning: (
+			fill: (
+				l: 0.72,
+				c: 0.14,
+				h: 75
+			),
+			border: (
+				l: 0.72,
+				c: 0.14,
+				h: 75
+			)
+		),
+		success: (
+			fill: (
+				l: 0.7,
+				c: 0.14,
+				h: 165
+			),
+			border: (
+				l: 0.7,
+				c: 0.14,
+				h: 165
+			)
+		),
+		info: (
+			fill: (
+				l: 0.7,
+				c: 0.16,
+				h: 258
+			),
+			border: (
+				l: 0.7,
+				c: 0.16,
+				h: 258
+			)
+		)
+	)
+);
+
+$root-token-overrides: () !default;
+$retina-token-overrides: () !default;
+$font-size-preset-overrides: () !default;
+$line-height-preset-overrides: () !default;
+$letter-spacing-preset-overrides: () !default;
+$word-spacing-preset-overrides: () !default;
+$paragraph-spacing-preset-overrides: () !default;
+$light-theme-overrides: () !default;
+$dark-theme-overrides: () !default;
+
+$root-tokens: map.deep-merge($root-token-defaults, $root-token-overrides);
+$retina-tokens: map.deep-merge($retina-token-defaults, $retina-token-overrides);
+$font-size-presets: map.deep-merge($font-size-preset-defaults, $font-size-preset-overrides);
+$line-height-presets: map.deep-merge($line-height-preset-defaults, $line-height-preset-overrides);
+$letter-spacing-presets: map.deep-merge($letter-spacing-preset-defaults, $letter-spacing-preset-overrides);
+$word-spacing-presets: map.deep-merge($word-spacing-preset-defaults, $word-spacing-preset-overrides);
+$paragraph-spacing-presets: map.deep-merge($paragraph-spacing-preset-defaults, $paragraph-spacing-preset-overrides);
+$light-theme: map.deep-merge($light-theme-defaults, $light-theme-overrides);
+$dark-theme: map.deep-merge($dark-theme-defaults, $dark-theme-overrides);
+
+@mixin emit-declarations($tokens) {
+	@each $name, $value in $tokens {
+		#{$name}: #{meta.inspect($value)};
+	}
+}
+
+@function theme-tokens($theme) {
+	@return map.get($theme, tokens);
+}

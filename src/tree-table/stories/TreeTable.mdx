@@ -1,0 +1,239 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as TreeTableStories from "./TreeTable.stories";
+
+<Meta
+	of={TreeTableStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>TreeTable</Title>
+<Subtitle>Древовидная таблица для плоских OData-данных на базе TanStack Table</Subtitle>
+
+`TreeTable` предназначен для сценариев, где данные приходят плоским списком, но в UI должны выглядеть как дерево.
+Компонент использует тот же базовый табличный каркас, что и `Table`, поэтому у них совпадают базовые states, выбор строк и табличная структура, а различия сосредоточены в tree-логике.
+`TreeTable` использует тот же formatting-runtime, что и `Table`, но вычисляет formatting до tree-shell, не смешивая его с логикой раскрытия дерева.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={TreeTableStories.Basic} />
+
+```tsx
+import { TreeTable, type TableColumnDef } from "@/shared/ui";
+
+interface MetricRow {
+	id: string;
+	parentId: string | null;
+	label: string;
+	jan: string;
+	feb: string;
+}
+
+const columns: TableColumnDef<MetricRow>[] = [
+	{
+		id: "label",
+		accessorKey: "label",
+		header: "Показатель",
+		meta: { width: "18em" }
+	},
+	{
+		id: "jan",
+		accessorKey: "jan",
+		header: "янв",
+		meta: { width: "8em", align: "right" }
+	},
+	{
+		id: "feb",
+		accessorKey: "feb",
+		header: "фев",
+		meta: { width: "8em", align: "right" }
+	}
+];
+
+export function Example({ rows }: { rows: MetricRow[] }) {
+	return (
+		<TreeTable
+			data={rows}
+			columns={columns}
+			hierarchy={{
+				getRowId: (row) => row.id,
+				getParentRowId: (row) => row.parentId
+			}}
+			selectionMode="single"
+			expandFirstLevel
+			height="22em"
+			indentSize={1}
+		/>
+	);
+}
+```
+
+## Форматирование ячеек
+
+`TreeTable` поддерживает тот же `meta.formatting`, что и `Table`:
+
+- typed formatting по `role/type`;
+- formula-based колонки;
+- pipeline display-formatting;
+- `emptyWhenZero` для скрытия нулей;
+- optional OData adapter для автоматического получения `role/type`.
+
+Семантика важна:
+
+- formatting вычисляется до tree-shell;
+- затем результат заворачивается в древовидную ячейку только для `treeColumnId`;
+- кастомный `cell` по-прежнему важнее `meta.formatting`;
+- `TreeTable` сам не ходит в OData и остаётся пригодным для plain local data.
+
+```tsx
+const columns: TableColumnDef<Row>[] = [
+	{
+		id: "amount",
+		accessorKey: "amount",
+		header: "Сумма",
+		meta: {
+			align: "right",
+			formatting: {
+				role: "measure",
+				type: "decimal",
+				formattersPipeline: pipelineConfig
+			}
+		}
+	}
+];
+```
+
+Для OData build-сценария колонки можно сгенерировать из metadata:
+
+```tsx
+import { createTableColumnsFromODataMetadata } from "@ryuzaki13/react-foundation-lib/table";
+
+const columns = createTableColumnsFromODataMetadata(metadata.columns);
+```
+
+Тот же сценарий удобнее собрать через `useODataTableColumns(...)`, а не через ручной вызов helper:
+
+```tsx
+import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
+import { TreeTable } from "@/shared/ui";
+
+function FinanceTree({ rows }: { rows: MetricRow[] }) {
+	const { columns, metadata, isLoading } = useODataTableColumns<MetricRow>({
+		service: "ZFI_REPORTING_SRV",
+		entity: "FinanceSet",
+		mode: "build"
+	});
+
+	return (
+		<TreeTable
+			title={metadata?.title ?? "Финансовая иерархия"}
+			data={rows}
+			columns={columns}
+			hierarchy={{
+				getRowId: (row) => row.id,
+				getParentRowId: (row) => row.parentId
+			}}
+			isLoading={isLoading}
+			expandFirstLevel
+		/>
+	);
+}
+```
+
+`enrich` для `TreeTable` работает так же, как и для `Table`: hook сохраняет ручные колонки дерева и дозаполняет их `meta.formatting.role/type`.
+
+## Слияние дубликатов
+
+`TreeTable` поддерживает тот же `meta.mergeDuplicates`, что и плоская таблица, но с дополнительным ограничением: объединение работает только внутри одной глубины `row.depth`.
+
+Важно:
+
+- tree-колонка с expander не участвует в слиянии, даже если на ней включён `mergeDuplicates`;
+- сравнение идёт по raw-значению `cell.getValue()`;
+- повторяющееся значение остаётся только в первой строке группы, а ниже рендерятся пустые ячейки;
+- если между двумя одинаковыми значениями есть строка другой глубины, объединение разрывается.
+
+## Что важно знать
+
+- Компонент принимает плоский массив строк и сам восстанавливает иерархию по `id` и `parentId`.
+- Если родитель не найден, строка не теряется и отображается как корневая.
+- Циклические связи не приводят к бесконечной рекурсии: проблемный фрагмент дерева отсекается.
+- `defaultExpandedRowIds` дополняет `expandFirstLevel` только на первом появлении данных.
+- `indentSize` можно задавать числом или строкой; число трактуется как `em`.
+- Поведение `selectionMode` совпадает с `Table`, а различие между компонентами сосредоточено в раскрытии веток и tree-cell.
+- Tree-shell и formatting остаются разделёнными слоями: раскрытие веток не зависит от formulas/pipeline.
+
+## Сценарии
+
+### Базовый режим
+
+<Canvas of={TreeTableStories.Basic} />
+
+### Множественный выбор
+
+<Canvas of={TreeTableStories.MultiSelect} />
+
+### Дерево свёрнуто по умолчанию
+
+<Canvas of={TreeTableStories.CollapsedByDefault} />
+
+### Предраскрытая ветка
+
+<Canvas of={TreeTableStories.WithDefaultExpandedBranch} />
+
+### Строки с ограничением выбора
+
+<Canvas of={TreeTableStories.WithDisabledRows} />
+
+### Фоновое обновление данных
+
+<Canvas of={TreeTableStories.Fetching} />
+
+### Пустое дерево
+
+<Canvas of={TreeTableStories.Empty} />
+
+### Первичная загрузка
+
+<Canvas of={TreeTableStories.Loading} />
+
+### Formula-based колонка
+
+<Canvas of={TreeTableStories.WithFormulaColumn} />
+
+### Форматирование tree-колонки
+
+<Canvas of={TreeTableStories.WithFormattedTreeColumn} />
+
+### Скрытие нулевых значений
+
+<Canvas of={TreeTableStories.WithHiddenZero} />
+
+### Слияние дубликатов
+
+<Canvas of={TreeTableStories.WithMergedDuplicates} />
+
+### OData metadata adapter
+
+<Canvas of={TreeTableStories.WithODataMetadataAdapter} />
+
+### useODataTableColumns: build
+
+<Canvas of={TreeTableStories.WithUseODataTableColumnsBuildHook} />
+
+### useODataTableColumns: enrich
+
+<Canvas of={TreeTableStories.WithUseODataTableColumnsEnrichHook} />
+
+## API
+
+<ArgTypes of={TreeTableStories} />
+
+## Все stories
+
+<Stories includePrimary={false} />

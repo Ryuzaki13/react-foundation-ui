@@ -1,0 +1,144 @@
+@use "@/styles/mixins" as *;
+
+// .uiOptionRow
+.treeRow {
+	display: flex;
+	align-items: stretch;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+
+	&:focus {
+		@include focusVisible;
+
+		background-color: var(--surface-accent);
+		border-color: var(--border-1);
+		cursor: pointer;
+	}
+
+	&:hover {
+		background-color: var(--surface-accent);
+		cursor: pointer;
+	}
+}
+
+// .uiOptionRowSelected
+.treeRowSelected {
+	background-color: var(--surface-2);
+	color: var(--content-accent);
+	cursor: default;
+}
+
+// .uiOptionRowActive
+.treeRowActive {
+	background-color: var(--surface-1);
+}
+
+.treeNodeButton {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	width: 100%;
+	padding: var(--space-xs) var(--space-xs) var(--space-xs) 0;
+	background: transparent;
+	text-align: left;
+	border-radius: var(--radius-sm);
+}
+
+.treeIndent {
+	flex-shrink: 0;
+	width: calc(var(--tree-level) * 1em);
+}
+
+.treeExpander,
+.treeExpanderPlaceholder {
+	flex-shrink: 0;
+	width: 1.5em;
+	height: 1.5em;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.treeExpander {
+	background: transparent;
+	border: none;
+	border-radius: var(--radius-sm);
+	color: var(--content-2);
+
+	&:hover {
+		color: var(--content-0);
+		background-color: var(--surface-0);
+	}
+}
+
+.treeExpanderIcon {
+	transition: transform var(--transition-fast) ease;
+}
+
+.treeExpanderIconExpanded {
+	transform: rotate(90deg);
+}
+
+.treeSelection {
+	flex-shrink: 0;
+	width: 1em;
+	height: 1em;
+	border: var(--border);
+	border-radius: var(--radius-xs);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	background-color: var(--surface-0);
+	color: transparent;
+}
+
+.treeSelectionChecked {
+	background-color: var(--status-info-text);
+	border-color: var(--status-info-text);
+	color: var(--white);
+
+	// outline: 1px dashed rgb(255, 100, 141);
+	// outline-offset: -1px;
+}
+
+.treeSelectionPartial {
+	background-color: var(--surface-1);
+	border-color: var(--status-info-text);
+	color: var(--status-info-text);
+}
+
+.treeSelectionIcon {
+	width: 0.75rem;
+	height: 0.75rem;
+}
+
+.treeSummary {
+	padding-right: calc(var(--control-height) * 2);
+}
+
+.inputWithOverlay {
+	color: transparent;
+	caret-color: transparent;
+}
+
+.valueOverlay {
+	position: absolute;
+	inset: 0 calc(var(--control-height) * 2) 0 var(--space-md);
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+	overflow: hidden;
+}
+
+.treeActions {
+	position: absolute;
+	right: 0;
+	top: 0;
+	height: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.treeClearButton {
+	color: var(--status-error-text);
+}

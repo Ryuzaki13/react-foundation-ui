@@ -1,0 +1,90 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as MultiSelectStories from "./MultiSelect.stories";
+
+<Meta
+	of={MultiSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>MultiSelect</Title>
+<Subtitle>Мультиселект для локальных коллекций с токенами, поиском и состояниями загрузки</Subtitle>
+
+MultiSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны загрузку, ошибочные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={MultiSelectStories.Basic} />
+
+```tsx
+import { useState } from "react";
+
+import { MultiSelect } from "@/shared/ui";
+
+const items = [
+	{ code: "MOW", label: "Москва" },
+	{ code: "EKB", label: "Екатеринбург" }
+];
+
+export function Example() {
+	const [value, setValue] = useState([]);
+	const [query, setQuery] = useState("");
+
+	return (
+		<MultiSelect
+			label="Города"
+			items={items}
+			value={value}
+			query={query}
+			onQuery={setQuery}
+			onChange={setValue}
+			codeKey="code"
+			textKey="label"
+		/>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Для асинхронных сценариев предусмотрите не только успешный путь, но и загрузку, пустой результат и ошибку.
+
+## Сценарии использования
+
+### Базовый сценарий без дополнительной логики
+
+Базовый сценарий без дополнительной логики.
+
+<Canvas of={MultiSelectStories.Basic} />
+
+### Состояние загрузки
+
+Состояние загрузки.
+
+<Canvas of={MultiSelectStories.Loading} />
+
+### Состояние ошибки
+
+Состояние ошибки.
+
+<Canvas of={MultiSelectStories.ErrorState} />
+
+### Пустое состояние
+
+Пустое состояние.
+
+<Canvas of={MultiSelectStories.Empty} />
+
+## API
+
+<ArgTypes of={MultiSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

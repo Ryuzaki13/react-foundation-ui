@@ -1,0 +1,68 @@
+.oneStepScroller {
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	min-width: 0;
+}
+
+.ossViewport {
+	overflow: hidden;
+	outline: none;
+	min-width: 0;
+	flex: 1 1 auto;
+}
+
+.ossScroller {
+	display: flex;
+	flex-wrap: nowrap;
+	gap: var(--space-sm);
+	align-items: end;
+	overflow-x: auto;
+	overflow-y: hidden;
+	scroll-behavior: smooth;
+	-webkit-overflow-scrolling: touch;
+	scrollbar-width: none; /* firefox */
+
+	::-webkit-scrollbar {
+		height: 0;
+	}
+}
+
+.ossButton {
+	// position: absolute;
+	top: 0;
+	z-index: 10;
+	width: var(--control-height);
+	height: 100%;
+	flex: 0 0 var(--control-height);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	// border: var(--border);
+	border-radius: var(--radius-sm);
+	color: var(--content-2);
+	// background-color: var(--surface-0);
+	// opacity: 0.75;
+
+	transition-property: opacity, color;
+	transition-duration: var(--transition-fast);
+
+	&:hover {
+		opacity: 1;
+		color: var(--content-0);
+	}
+
+	&:disabled {
+		opacity: 0.5;
+		pointer-events: none;
+	}
+
+	// &.prev {
+	// 	left: 0;
+	// }
+
+	// &.next {
+	// 	right: 0;
+	// }
+}

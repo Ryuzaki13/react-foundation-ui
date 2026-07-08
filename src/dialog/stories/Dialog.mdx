@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as DialogStories from "./Dialog.stories";
+
+<Meta
+	of={DialogStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Dialog</Title>
+<Subtitle>Легковесное диалоговое окно для коротких подтверждений и критичных действий</Subtitle>
+
+Dialog уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={DialogStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { Button, Dialog } from "@/shared/ui";
+
+export function Example() {
+	const [open, setOpen] = useState(false);
+
+	return (
+		<>
+			<Button onClick={() => setOpen(true)}>Удалить</Button>
+			<Dialog title="Подтверждение" description="Действие нельзя отменить" open={open} onClose={() => setOpen(false)}>
+				<Button onClick={() => setOpen(false)}>Понятно</Button>
+			</Dialog>
+		</>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={DialogStories.Controlled} />
+
+### Компонент открыт сразу при первом рендере
+
+Компонент открыт сразу при первом рендере.
+
+<Canvas of={DialogStories.Opened} />
+
+## API
+
+<ArgTypes of={DialogStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

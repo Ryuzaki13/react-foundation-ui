@@ -1,0 +1,41 @@
+@use "./config" as stylesConfig;
+
+:root {
+	@include stylesConfig.emit-declarations(stylesConfig.$root-tokens);
+
+	@each $name, $tokens in stylesConfig.$font-size-presets {
+		&[data-font-size="#{$name}"] {
+			@include stylesConfig.emit-declarations($tokens);
+		}
+	}
+
+	@each $name, $tokens in stylesConfig.$line-height-presets {
+		&[data-line-height="#{$name}"] {
+			@include stylesConfig.emit-declarations($tokens);
+		}
+	}
+
+	@each $name, $tokens in stylesConfig.$letter-spacing-presets {
+		&[data-letter-spacing="#{$name}"] {
+			@include stylesConfig.emit-declarations($tokens);
+		}
+	}
+
+	@each $name, $tokens in stylesConfig.$word-spacing-presets {
+		&[data-word-spacing="#{$name}"] {
+			@include stylesConfig.emit-declarations($tokens);
+		}
+	}
+
+	@each $name, $tokens in stylesConfig.$paragraph-spacing-presets {
+		&[data-paragraph-spacing="#{$name}"] {
+			@include stylesConfig.emit-declarations($tokens);
+		}
+	}
+}
+
+@media (min-resolution: 2dppx) {
+	:root {
+		@include stylesConfig.emit-declarations(stylesConfig.$retina-tokens);
+	}
+}

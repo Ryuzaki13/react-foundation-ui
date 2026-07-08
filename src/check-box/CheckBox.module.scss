@@ -1,0 +1,35 @@
+.row {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+}
+
+.wrapper {
+	width: var(--control-height);
+	height: var(--control-height);
+	flex-shrink: 0;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+}
+
+.input {
+	width: 1.5em;
+	height: 1.5em;
+	border-radius: var(--radius-xs);
+}
+
+.icon {
+	width: 1.5em;
+	height: 1.5em;
+
+	svg {
+		display: block;
+		width: 1em;
+		height: 1em;
+		fill: currentColor;
+		stroke: none;
+	}
+}

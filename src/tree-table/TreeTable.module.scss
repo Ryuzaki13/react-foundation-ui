@@ -1,0 +1,52 @@
+.treeColumnCell {
+	padding-inline-start: var(--space-sm);
+}
+
+.selectedIndicatorCell {
+	box-shadow: inset 0.1875rem 0 0 var(--content-accent);
+}
+
+.treeCell {
+	display: flex;
+	align-items: center;
+	gap: var(--space-xs);
+	min-width: 0;
+}
+
+.treeCellContent {
+	min-width: 0;
+	flex: 1 1 auto;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.expanderButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: 0 0 1.5rem;
+	width: 1.5rem;
+	height: 1.5rem;
+	padding: 0;
+	border: 0;
+	border-radius: var(--radius-xs);
+	background: transparent;
+	color: var(--content-0);
+	cursor: pointer;
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--surface-2);
+	}
+}
+
+.expanderSpacer {
+	flex: 0 0 1.5rem;
+	width: 1.5rem;
+	height: 1.5rem;
+}
+
+.sentinel {
+	height: 1px;
+}

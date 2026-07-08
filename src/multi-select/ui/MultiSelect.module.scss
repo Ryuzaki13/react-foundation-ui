@@ -1,0 +1,47 @@
+@use "@/styles/mixins" as *;
+
+.multiSelect {
+	// Общий контейнер
+	padding: 0;
+}
+
+.multiSelectTokens {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+
+	height: calc(100% - var(--space-sm));
+	max-width: calc(100% - var(--control-height) * 2);
+
+	// overflow: hidden;
+
+	&:empty {
+		display: none;
+	}
+}
+
+.multiSelectToken {
+	// font-size: var(--font-size-sm);
+
+	// flex: 1 1 0%;
+	// min-width: 0;
+	max-width: 70%;
+
+	overflow: hidden;
+	white-space: nowrap;
+	word-break: normal;
+	text-overflow: ellipsis;
+
+	pointer-events: none;
+}
+
+.selectAllButton {
+	// font-size: var(--font-size-sm);
+	padding-block: var(--space-xs);
+	border-radius: var(--radius-sm);
+
+	&:hover {
+		// color: var(--content-accent);
+		background-color: var(--surface-2);
+	}
+}

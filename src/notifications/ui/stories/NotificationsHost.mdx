@@ -1,0 +1,72 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as NotificationsHostStories from "./NotificationsHost.stories";
+
+<Meta
+	of={NotificationsHostStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>NotificationsHost</Title>
+<Subtitle>Хост глобальных уведомлений для очереди toast-сообщений и длинных пользовательских операций</Subtitle>
+
+NotificationsHost уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={NotificationsHostStories.Showcase} />
+
+```tsx
+import { Button } from "@/shared/ui";
+import { NotificationApi, NotificationsHost, NotificationsProvider } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<NotificationsProvider>
+			<Button
+				onClick={() =>
+					NotificationApi.push({
+						title: "Готово",
+						description: "Операция завершена",
+						tone: "success"
+					})
+				}>
+				Показать уведомление
+			</Button>
+			<NotificationsHost />
+		</NotificationsProvider>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+
+## Сценарии использования
+
+### Общий showcase для обзорной проверки компонента
+
+Общий showcase для обзорной проверки компонента.
+
+<Canvas of={NotificationsHostStories.Showcase} />
+
+### Интерактивная песочница для ручной проверки поведения
+
+Интерактивная песочница для ручной проверки поведения.
+
+<Canvas of={NotificationsHostStories.InteractivePlayground} />
+
+## API
+
+<ArgTypes of={NotificationsHostStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

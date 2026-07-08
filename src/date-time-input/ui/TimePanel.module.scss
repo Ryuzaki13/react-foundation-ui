@@ -1,0 +1,32 @@
+.timePanel {
+	height: 100%;
+}
+
+.hint {
+	font-size: var(--font-size-xs);
+	color: var(--content-1);
+}
+
+.fields {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: var(--space-sm);
+	min-height: 10em;
+	height: 100%;
+}
+
+.field {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	gap: var(--space-xs);
+	min-height: 0;
+}
+
+.label {
+	// font-size: var(--font-size-sm);
+	color: var(--content-1);
+}
+
+.wheel {
+	min-height: 10em;
+}

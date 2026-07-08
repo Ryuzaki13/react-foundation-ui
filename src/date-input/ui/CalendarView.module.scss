@@ -1,0 +1,13 @@
+.calendarView {
+	width: calc(18em + var(--width-add));
+}
+
+.calendarHeader {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	padding-bottom: var(--space-sm);
+	margin-bottom: var(--space-sm);
+	gap: var(--space-sm);
+	border-bottom: var(--border);
+}

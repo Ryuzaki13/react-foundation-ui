@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as InputDateTimeStories from "./InputDateTime.stories";
+
+<Meta
+	of={InputDateTimeStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>InputDateTime</Title>
+<Subtitle>Маскированный ввод даты, времени и объединенного значения дата-время</Subtitle>
+
+InputDateTime уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={InputDateTimeStories.DateOnly} />
+
+```tsx
+import { useState } from "react";
+
+import { InputDateTime } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState("");
+
+	return <InputDateTime label="Дата и время" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+
+## Сценарии использования
+
+### Ввод только даты
+
+Ввод только даты.
+
+<Canvas of={InputDateTimeStories.DateOnly} />
+
+### Ввод только времени
+
+Ввод только времени.
+
+<Canvas of={InputDateTimeStories.TimeOnly} />
+
+### Совмещенный ввод даты и времени
+
+Совмещенный ввод даты и времени.
+
+<Canvas of={InputDateTimeStories.DateAndTime} />
+
+### Использование собственной маски ввода
+
+Использование собственной маски ввода.
+
+<Canvas of={InputDateTimeStories.CustomMask} />
+
+## API
+
+<ArgTypes of={InputDateTimeStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

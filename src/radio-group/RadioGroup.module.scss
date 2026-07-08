@@ -1,0 +1,48 @@
+.radioGroup {
+	display: flex;
+	align-content: flex-start;
+	flex-wrap: wrap;
+	// min-height: var(--control-height);
+	height: auto;
+
+	&.noWrap {
+		flex-wrap: nowrap;
+	}
+
+	&.horizontal {
+		flex-direction: row;
+	}
+
+	&.vertical {
+		flex-direction: column;
+		align-content: stretch;
+	}
+}
+
+.radioItem {
+	display: block;
+	flex: 1 0 0;
+	color: var(--content-2);
+	border-radius: var(--radius-xs);
+	padding: 0 var(--space-md);
+	margin: var(--border-width);
+	// baseInputControl = --control-height, + borderTop/Bottom + transparentLineTop/Bottom
+	min-height: calc(var(--control-height) - calc(var(--border-width) * 4));
+
+	cursor: pointer;
+
+	&:hover {
+		color: var(--content-accent);
+		// background-color: var(--surface-1);
+	}
+
+	&.checked {
+		color: var(--status-neutral-on-fill);
+		background-color: var(--status-neutral-fill);
+		// border-color: var(--border-0);
+	}
+
+	&:disabled {
+		opacity: var(--disabled-opacity);
+	}
+}

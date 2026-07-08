@@ -1,0 +1,94 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SelectStories from "./Select.stories";
+
+<Meta
+	of={SelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Select</Title>
+<Subtitle>Getter-based select для примитивов и сложных объектных option</Subtitle>
+
+Select уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны заблокированные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SelectStories.ControlledObjects} />
+
+```tsx
+import { useState } from "react";
+
+import { Select } from "@/shared/ui";
+
+const options = [
+	{ id: 1, name: "Отдел продаж", code: "SLS" },
+	{ id: 2, name: "Закупки", code: "PRC" }
+];
+
+export function Example() {
+	const [value, setValue] = useState(undefined);
+
+	return (
+		<Select
+			label="Подразделение"
+			value={value}
+			onChange={setValue}
+			options={options}
+			getOptionKey={(option) => option.id}
+			getOptionLabel={(option) => option.name}
+			getOptionCode={(option) => option.code}
+		/>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Заблокированное состояние лучше проверять отдельно, чтобы убедиться, что визуально и поведенчески оно остается понятным.
+
+## Сценарии использования
+
+### Работа с объектами как со значениями option
+
+Работа с объектами как со значениями option.
+
+<Canvas of={SelectStories.ControlledObjects} />
+
+### Работа с примитивными option
+
+Работа с примитивными option.
+
+<Canvas of={SelectStories.PrimitiveOptions} />
+
+### Поведение без выбранного значения
+
+Поведение без выбранного значения.
+
+<Canvas of={SelectStories.Placeholder} />
+
+### Кастомный рендер option и выбранного значения
+
+Кастомный рендер option и выбранного значения.
+
+<Canvas of={SelectStories.CustomOptionLayout} />
+
+### Проверка поведения в заблокированном состоянии
+
+Проверка поведения в заблокированном состоянии.
+
+<Canvas of={SelectStories.Disabled} />
+
+## API
+
+<ArgTypes of={SelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,267 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as TableStories from "./Table.stories";
+
+<Meta
+	of={TableStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Table</Title>
+<Subtitle>Плоская таблица как React-альтернатива `sap.m.Table`</Subtitle>
+
+`Table` предназначен для плоских данных и по поведению осознанно сближен с `TreeTable`.
+Оба компонента используют общий табличный каркас, поэтому здесь совпадают states загрузки, визуальная структура, обработка выбора строк и клавиатурная активация.
+`Table` также поддерживает декларативное форматирование через `meta.formatting`, formulas, безопасное pipeline-formatting и optional OData adapter.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={TableStories.Basic} />
+
+```tsx
+import { Table, type TableColumnDef } from "@/shared/ui";
+
+interface DealRow {
+	id: string;
+	number: string;
+	client: string;
+	amount: string;
+}
+
+const columns: TableColumnDef<DealRow>[] = [
+	{
+		id: "number",
+		accessorKey: "number",
+		header: "Номер",
+		meta: { width: "9em" }
+	},
+	{
+		id: "client",
+		accessorKey: "client",
+		header: "Клиент",
+		meta: { width: "14em" }
+	},
+	{
+		id: "amount",
+		accessorKey: "amount",
+		header: "Сумма",
+		meta: { width: "10em", align: "right" }
+	}
+];
+
+export function Example({ rows }: { rows: DealRow[] }) {
+	return <Table data={rows} columns={columns} getRowId={(row) => row.id} selectionMode="single" height="20em" />;
+}
+```
+
+## Форматирование ячеек
+
+`meta.formatting` добавляет к колонке декларативный runtime-контракт:
+
+- typed formatting по `role/type`;
+- formula-based вычисление значения;
+- pipeline display-formatting (`normalizeLeadingZeros`, `resolveValueState`, `typedValueFormat`);
+- `emptyWhenZero` для скрытия нулевых значений;
+- `overflowTooltip` для длинного текста.
+
+Важно:
+
+- `meta.formatting` применяется только если у колонки нет кастомного `cell`;
+- formulas и pipeline компилируются один раз на снимок колонок;
+- ошибки formula/pipeline не роняют таблицу и не подставляют универсальный `0`;
+- OData adapter остаётся внешней прослойкой, а не частью `Table`.
+
+```tsx
+const columns: TableColumnDef<Row>[] = [
+	{
+		id: "amount",
+		accessorKey: "amount",
+		header: "Сумма",
+		meta: {
+			align: "right",
+			formatting: {
+				role: "measure",
+				type: "decimal",
+				emptyWhenZero: true
+			}
+		}
+	}
+];
+```
+
+Для OData-сценариев можно не прописывать `role/type` вручную, а обогатить колонки через adapter:
+
+```tsx
+import { enrichTableColumnsWithODataFormatting } from "@ryuzaki13/react-foundation-lib/table";
+
+const columns = enrichTableColumnsWithODataFormatting(manualColumns, metadata.columns);
+```
+
+## Слияние дубликатов
+
+`meta.mergeDuplicates` включает display-only слияние подряд идущих одинаковых raw-значений без изменения структуры строк.
+
+Важно:
+
+- сравнение идёт по `cell.getValue()`, а не по formatted display;
+- объединяются только подряд идущие строки;
+- `null`, `undefined` и пустая строка `""` не объединяются;
+- повторяющееся значение остаётся только в первой строке группы, а ниже рендерятся пустые ячейки;
+- если сервер не отсортировал данные так, чтобы дубликаты шли подряд, слияния не будет.
+
+```tsx
+const columns: TableColumnDef<Row>[] = [
+	{
+		id: "division",
+		accessorKey: "division",
+		header: "Дивизион",
+		meta: {
+			mergeDuplicates: true
+		}
+	}
+];
+```
+
+## Хук `useODataTableColumns`
+
+Наиболее частый кейс - работать не с pure-helper напрямую, а с hook-слоем `useODataTableColumns(...)`.
+
+`build` стоит выбирать, когда колонки можно полностью собрать из `metadata.columns`:
+
+```tsx
+import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
+import { Table } from "@/shared/ui";
+
+function DealsTable({ rows }: { rows: DealRow[] }) {
+	const { columns, metadata, isLoading } = useODataTableColumns<DealRow>({
+		service: "ZSD_SALES_SRV",
+		entity: "DealSet",
+		mode: "build"
+	});
+
+	return (
+		<Table
+			title={metadata?.title ?? "Сделки"}
+			data={rows}
+			columns={columns}
+			isLoading={isLoading}
+			getRowId={(row) => row.id}
+			selectionMode="single"
+		/>
+	);
+}
+```
+
+`enrich` подходит, когда колонки уже описаны вручную и нужно только дозаполнить `meta.formatting.role/type`:
+
+```tsx
+import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
+import { Table } from "@/shared/ui";
+
+const manualColumns: TableColumnDef<DealRow>[] = [
+	{ id: "product", accessorKey: "product", header: "Позиция" },
+	{ id: "createdAt", accessorKey: "createdAt", header: "Создано" },
+	{ id: "totalAmount", accessorKey: "totalAmount", header: "Итог", meta: { align: "right" } }
+];
+
+function DealsTable({ rows }: { rows: DealRow[] }) {
+	const { columns, isLoading } = useODataTableColumns<DealRow>({
+		service: "ZSD_SALES_SRV",
+		entity: "DealSet",
+		mode: "enrich",
+		columns: manualColumns
+	});
+
+	return <Table data={rows} columns={columns} isLoading={isLoading} getRowId={(row) => row.id} selectionMode="single" />;
+}
+```
+
+Практическая семантика хука:
+
+- `columns` уже готовы для прямой передачи в `Table`;
+- `metadata` можно использовать для заголовка, пустых состояний или дополнительной UI-подписи;
+- `isLoading` нужно прокидывать в `Table`, чтобы сохранить единое табличное состояние загрузки;
+- сам `Table` остаётся OData-независимым и получает только готовые `columns`.
+
+## Что важно знать
+
+- Компонент принимает именно плоский массив строк и не содержит древовидной логики.
+- Поведение `selectionMode` идентично `TreeTable`: `single` не снимает выбор повторным кликом по уже выбранной строке.
+- `height` и ширины колонок можно задавать строками в `em`, `rem`, `%` и других CSS-единицах; числовые значения трактуются как `em`.
+- `onReachEnd` срабатывает внутри scroll-контейнера и подходит для постепенной догрузки длинного списка.
+- `Table` не зависит от OData напрямую и продолжает работать на plain local data без metadata.
+
+## Сценарии
+
+### Базовый режим
+
+<Canvas of={TableStories.Basic} />
+
+### Left-pinning столбцов
+
+<Canvas of={TableStories.WithColumnPinning} />
+
+### Множественный выбор
+
+<Canvas of={TableStories.MultiSelect} />
+
+### Строки с ограничением выбора
+
+<Canvas of={TableStories.WithDisabledRows} />
+
+### Фоновое обновление данных
+
+<Canvas of={TableStories.Fetching} />
+
+### Пустая таблица
+
+<Canvas of={TableStories.Empty} />
+
+### Достижение конца списка
+
+<Canvas of={TableStories.ReachEnd} />
+
+### Первичная загрузка
+
+<Canvas of={TableStories.Loading} />
+
+### Formula-based колонка
+
+<Canvas of={TableStories.WithFormulaColumn} />
+
+### Pipeline display-formatting
+
+<Canvas of={TableStories.WithFormattingPipeline} />
+
+### Скрытие нулевых значений
+
+<Canvas of={TableStories.WithHiddenZero} />
+
+### Слияние дубликатов
+
+<Canvas of={TableStories.WithMergedDuplicates} />
+
+### OData metadata adapter
+
+<Canvas of={TableStories.WithODataMetadataAdapter} />
+
+### useODataTableColumns: build
+
+<Canvas of={TableStories.WithUseODataTableColumnsBuildHook} />
+
+### useODataTableColumns: enrich
+
+<Canvas of={TableStories.WithUseODataTableColumnsEnrichHook} />
+
+## API
+
+<ArgTypes of={TableStories} />
+
+## Все stories
+
+<Stories includePrimary={false} />

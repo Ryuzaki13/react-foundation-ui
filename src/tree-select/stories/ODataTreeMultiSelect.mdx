@@ -1,0 +1,31 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ODataTreeMultiSelectStories from "./ODataTreeMultiSelect.stories";
+
+<Meta of={ODataTreeMultiSelectStories} parameters={{ docs: { toc: true } }} />
+
+<Title>ODataTreeMultiSelect</Title>
+<Subtitle>Мультивыбор по одной OData-цепочке в виде дерева</Subtitle>
+
+`ODataTreeMultiSelect` строит дерево из одной OData-цепочки и отдает наружу канонизированный выбор в формате `Record<string, string[]>`.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ODataTreeMultiSelectStories.Basic} />
+
+## Сценарии
+
+<Canvas of={ODataTreeMultiSelectStories.Basic} />
+<Canvas of={ODataTreeMultiSelectStories.ParentCompression} />
+<Canvas of={ODataTreeMultiSelectStories.MixedSelection} />
+<Canvas of={ODataTreeMultiSelectStories.LoadingState} />
+<Canvas of={ODataTreeMultiSelectStories.ErrorState} />
+
+## API
+
+<ArgTypes of={ODataTreeMultiSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

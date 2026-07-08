@@ -1,0 +1,45 @@
+.yearView {
+	padding: 0;
+}
+
+.yearsGrid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: var(--border-width);
+}
+
+.year {
+	height: var(--control-height);
+	cursor: pointer;
+	border-radius: var(--radius-xs);
+	// font-size: var(--font-size-sm);
+
+	background-color: var(--surface-1);
+
+	&:hover:not(.disabled) {
+		background-color: var(--surface-accent);
+	}
+
+	&.range {
+		background-color: var(--surface-accent);
+		color: var(--content-0);
+	}
+
+	&.selected,
+	&.rangeStart,
+	&.rangeEnd {
+		background-color: var(--surface-accent);
+		color: var(--content-accent);
+		font-weight: 600;
+		font-variation-settings: "wght" 600;
+	}
+
+	&.disabled {
+		color: var(--content-2);
+		cursor: not-allowed;
+
+		&:hover {
+			background: none;
+		}
+	}
+}

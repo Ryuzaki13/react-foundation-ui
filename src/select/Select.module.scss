@@ -1,0 +1,13 @@
+.inputWithOverlay {
+	color: transparent;
+	caret-color: transparent;
+}
+
+.valueOverlay {
+	position: absolute;
+	inset: 0 calc(var(--control-height) + var(--space-xs)) 0 var(--space-md);
+	display: flex;
+	align-items: center;
+	pointer-events: none;
+	overflow: hidden;
+}

@@ -1,0 +1,288 @@
+@use "./mixins" as *;
+
+@use "base";
+@use "margin";
+@use "border";
+@use "color";
+
+.w100 {
+	width: 100%;
+}
+
+.h100 {
+	height: 100%;
+}
+
+.block {
+	display: block;
+}
+.inline {
+	display: inline;
+}
+// TODO: unused
+.inlineBlock {
+	display: inline-block;
+}
+.hidden {
+	display: none;
+}
+
+@include mobile {
+	.hiddenMobile {
+		display: none;
+	}
+}
+
+@include tablet {
+	// TODO: unused
+	.hiddenTablet {
+		display: none;
+	}
+}
+
+.relative {
+	position: relative;
+}
+.absolute {
+	position: absolute;
+}
+.fixed {
+	position: fixed;
+}
+.sticky {
+	position: sticky;
+}
+
+.stickyTop {
+	@extend .sticky;
+	top: 0;
+}
+
+// TODO: unused
+.z1 {
+	z-index: 1;
+}
+
+// TODO: unused
+.z10 {
+	z-index: 10;
+}
+
+// TODO: unused
+.transformCenter {
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.inset0 {
+	top: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+}
+
+.bottomLeft {
+	bottom: 0;
+	left: 0;
+}
+
+.bottomRight {
+	bottom: 0;
+	right: 0;
+}
+
+.topLeft {
+	top: 0;
+	left: 0;
+}
+
+.topRight {
+	top: 0;
+	right: 0;
+}
+
+.transformTopRight25 {
+	@extend .topRight;
+	transform: translate(25%, -25%);
+}
+// TODO: unused
+.transformTopLeft25 {
+	@extend .topLeft;
+	transform: translate(-25%, -25%);
+}
+// TODO: unused
+.transformBottomRight25 {
+	@extend .bottomRight;
+	transform: translate(25%, 25%);
+}
+// TODO: unused
+.transformBottomLeft25 {
+	@extend .bottomLeft;
+	transform: translate(-25%, 25%);
+}
+
+// TODO: unused
+.insetXs {
+	inset: var(--space-xs);
+}
+
+// TODO: unused
+.insetSm {
+	inset: var(--space-sm);
+}
+
+// TODO: unused
+.insetMd {
+	inset: var(--space-md);
+}
+
+// TODO: unused
+.insetLg {
+	inset: var(--space-lg);
+}
+
+.topXs {
+	top: var(--space-xs);
+}
+.topSm {
+	top: var(--space-sm);
+}
+.topMd {
+	top: var(--space-md);
+}
+// TODO: unused
+.topLg {
+	top: var(--space-lg);
+}
+
+.rightXs {
+	right: var(--space-xs);
+}
+.rightSm {
+	right: var(--space-sm);
+}
+.rightMd {
+	right: var(--space-md);
+}
+// TODO: unused
+.rightLg {
+	right: var(--space-lg);
+}
+
+.bottomXs {
+	bottom: var(--space-xs);
+}
+.bottomSm {
+	bottom: var(--space-sm);
+}
+.bottomMd {
+	bottom: var(--space-md);
+}
+// TODO: unused
+.bottomLg {
+	bottom: var(--space-lg);
+}
+
+.leftXs {
+	left: var(--space-xs);
+}
+.leftSm {
+	left: var(--space-sm);
+}
+.leftMd {
+	left: var(--space-md);
+}
+// TODO: unused
+.leftLg {
+	left: var(--space-lg);
+}
+
+// TODO: unused
+.topLeftXs {
+	@extend .topXs;
+	@extend .leftXs;
+}
+
+// TODO: unused
+.topRightXs {
+	@extend .topXs;
+	@extend .rightXs;
+}
+
+// TODO: unused
+.bottomLeftXs {
+	@extend .bottomXs;
+	@extend .leftXs;
+}
+
+// TODO: unused
+.bottomRightXs {
+	@extend .bottomXs;
+	@extend .rightXs;
+}
+
+// TODO: unused
+.topLeftSm {
+	@extend .topSm;
+	@extend .leftSm;
+}
+
+// TODO: unused
+.topRightSm {
+	@extend .topSm;
+	@extend .rightSm;
+}
+
+// TODO: unused
+.bottomLeftSm {
+	@extend .bottomSm;
+	@extend .leftSm;
+}
+
+// TODO: unused
+.bottomRightSm {
+	@extend .bottomSm;
+	@extend .rightSm;
+}
+
+// TODO: unused
+.topLeftMd {
+	@extend .topMd;
+	@extend .leftMd;
+}
+
+// TODO: unused
+.topRightMd {
+	@extend .topMd;
+	@extend .rightMd;
+}
+
+// TODO: unused
+.bottomLeftMd {
+	@extend .bottomMd;
+	@extend .leftMd;
+}
+
+// TODO: unused
+.bottomRightMd {
+	@extend .bottomMd;
+	@extend .rightMd;
+}
+
+.container {
+	@extend .paddingLg;
+	@extend .radiusLg;
+}
+
+.section {
+	@extend .paddingLg;
+	@extend .marginLg;
+}
+
+.sectionPanel {
+	// @extend .surface0;
+	@extend .border;
+	@extend .paddingLg;
+	@extend .radiusMd;
+}

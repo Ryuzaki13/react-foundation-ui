@@ -1,0 +1,57 @@
+// Отступы
+.gapNone {
+	gap: unset;
+}
+
+.gapRowXs {
+	row-gap: var(--space-xs);
+}
+.gapRowSm {
+	row-gap: var(--space-sm);
+}
+.gapRowMd {
+	row-gap: var(--space-md);
+}
+.gapRowLg {
+	row-gap: var(--space-lg);
+}
+.gapRowXl {
+	row-gap: var(--space-xl);
+}
+
+.gapColumnXs {
+	column-gap: var(--space-xs);
+}
+.gapColumnSm {
+	column-gap: var(--space-sm);
+}
+.gapColumnMd {
+	column-gap: var(--space-md);
+}
+.gapColumnLg {
+	column-gap: var(--space-lg);
+}
+.gapColumnXl {
+	column-gap: var(--space-xl);
+}
+
+.gapXs {
+	@extend .gapRowXs;
+	@extend .gapColumnXs;
+}
+.gapSm {
+	@extend .gapRowSm;
+	@extend .gapColumnSm;
+}
+.gapMd {
+	@extend .gapRowMd;
+	@extend .gapColumnMd;
+}
+.gapLg {
+	@extend .gapRowLg;
+	@extend .gapColumnLg;
+}
+.gapXl {
+	@extend .gapRowXl;
+	@extend .gapColumnXl;
+}

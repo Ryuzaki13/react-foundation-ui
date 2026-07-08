@@ -1,0 +1,181 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as BadgeStories from "./Badge.stories";
+
+<Meta
+	of={BadgeStories}
+	parameters={{
+		atomicCanvas: true,
+		layout: "padded",
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Badge</Title>
+<Subtitle>Компактная текстовая метка для статусов, категорий, фильтров и коротких служебных пометок</Subtitle>
+
+Badge подходит для коротких подписей, которые должны быстро читаться и не перегружать интерфейс:
+
+- статусы и состояния записи;
+- выбранные фильтры и теги;
+- служебные пометки рядом с полями, карточками и строками таблиц;
+- компактные списки значений с возможностью удаления.
+
+Компонент принимает только строковый `children`. Длинный текст автоматически ограничивается по ширине и сокращается через `TextOverflow`, поэтому Badge лучше использовать для коротких и однозначных формулировок.
+
+## Основной сценарий
+
+<Primary />
+
+```tsx
+import { Badge } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<Badge tone="info" appearance="solid">
+			Новый
+		</Badge>
+	);
+}
+```
+
+<Controls of={BadgeStories.Basic} />
+
+## Визуальная схема
+
+В компоненте есть два уровня настройки:
+
+- `tone` задает семантику: `neutral`, `success`, `warning`, `error`, `info`;
+- `appearance` задает форму отображения: `solid`, `outline`, `ghost`, `transparent`.
+
+Если схема не передана полностью, компонент достраивает ее сам:
+
+- без пропсов будет использован `neutral + outline`;
+- если задан цветной `tone`, но не задан `appearance`, по умолчанию используется `solid`;
+- проп `color` поддерживается только для обратной совместимости и считается устаревшим.
+
+### Тоны
+
+<Canvas of={BadgeStories.Tones} />
+
+```tsx
+import { Badge, BadgeList } from "@/shared/ui";
+
+export function StatusBadges() {
+	return (
+		<BadgeList>
+			<Badge tone="neutral" appearance="outline">
+				Черновик
+			</Badge>
+			<Badge tone="success" appearance="solid">
+				Успешно
+			</Badge>
+			<Badge tone="warning" appearance="solid">
+				Внимание
+			</Badge>
+			<Badge tone="error" appearance="solid">
+				Ошибка
+			</Badge>
+			<Badge tone="info" appearance="solid">
+				Информация
+			</Badge>
+		</BadgeList>
+	);
+}
+```
+
+### Варианты отображения
+
+<Canvas of={BadgeStories.Appearances} />
+
+```tsx
+import { Badge, BadgeList } from "@/shared/ui";
+
+export function AppearanceBadges() {
+	return (
+		<BadgeList>
+			<Badge tone="neutral" appearance="solid">
+				Solid
+			</Badge>
+			<Badge tone="neutral" appearance="outline">
+				Outline
+			</Badge>
+			<Badge tone="info" appearance="ghost">
+				Ghost
+			</Badge>
+			<Badge tone="warning" appearance="transparent">
+				Transparent
+			</Badge>
+		</BadgeList>
+	);
+}
+```
+
+## Размеры
+
+Badge поддерживает размеры от `xs` до `xl`. На практике чаще всего используются `sm` и `md`: они лучше всего подходят для строк таблиц, панелей фильтрации и карточек.
+
+<Canvas of={BadgeStories.Sizes} />
+
+```tsx
+import { Badge, BadgeList } from "@/shared/ui";
+
+export function SizeBadges() {
+	return (
+		<BadgeList>
+			<Badge size="xs">XS</Badge>
+			<Badge size="sm">SM</Badge>
+			<Badge size="md">MD</Badge>
+			<Badge size="lg">LG</Badge>
+			<Badge size="xl">XL</Badge>
+		</BadgeList>
+	);
+}
+```
+
+## Списки фильтров и выбранных значений
+
+Для набора бейджей в одну строку или в несколько переносимых строк есть вспомогательный контейнер `BadgeList`. Это самый частый сценарий в проекте: выбранные фильтры, категории, теги и активные параметры поиска.
+
+<Canvas of={BadgeStories.RemovableList} />
+
+```tsx
+import { useState } from "react";
+
+import { Badge, BadgeList } from "@/shared/ui";
+
+export function SelectedFilters() {
+	const [items, setItems] = useState(["Фильтр A", "Фильтр B", "Фильтр C"]);
+
+	return (
+		<BadgeList>
+			{items.map((item) => (
+				<Badge
+					key={item}
+					tone="info"
+					appearance="outline"
+					onRemove={() => setItems((prev) => prev.filter((value) => value !== item))}>
+					{item}
+				</Badge>
+			))}
+		</BadgeList>
+	);
+}
+```
+
+## Поведение и ограничения
+
+- `children` должен быть строкой, а не произвольным JSX.
+- Без `onRemove` бейдж считается пассивным и не участвует во взаимодействии мышью.
+- При передаче `onRemove` справа появляется встроенная кнопка удаления.
+- Для длинных значений лучше использовать короткий видимый текст, потому что Badge рассчитан на компактные подписи, а не на развернутые описания.
+- Для новых сценариев рекомендуется использовать `tone` и `appearance`, а не `color`.
+
+## API
+
+<ArgTypes of={BadgeStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

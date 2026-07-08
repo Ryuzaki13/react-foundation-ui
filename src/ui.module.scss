@@ -1,0 +1,486 @@
+@use "@/styles/mixins" as *;
+
+.uiSizable {
+	--base-width: 100%;
+
+	width: var(--base-width);
+
+	&.xs {
+		--base-width: calc(var(--drp-ui-width-xs, var(--ui-width-xs)) - var(--width-add));
+	}
+
+	&.sm {
+		--base-width: calc(var(--drp-ui-width-sm, var(--ui-width-sm)) - var(--width-add));
+	}
+
+	&.md {
+		--base-width: calc(var(--drp-ui-width-md, var(--ui-width-md)) - var(--width-add));
+	}
+
+	&.lg {
+		--base-width: calc(var(--drp-ui-width-lg, var(--ui-width-lg)) - var(--width-add));
+	}
+
+	&.xl {
+		--base-width: calc(var(--drp-ui-width-xl, var(--ui-width-xl)) - var(--width-add));
+	}
+}
+
+// TODO: Тестовый класс
+.uiErrorElement {
+	--grid-size: var(--space-sm);
+	--grid-line-size: var(--border-width);
+	--grid-line-color: var(--status-error-soft);
+
+	height: var(--control-height);
+	width: 100%; // calc(10em - var(--width-add));
+	flex-shrink: 0;
+
+	display: flex;
+	align-items: center;
+	justify-content: center;
+
+	border: var(--focus-width) solid var(--status-error-border);
+	border-radius: var(--radius-sm);
+	outline: none;
+
+	font-weight: 700;
+	font-variation-settings: "wght" 700;
+
+	color: var(--status-error-text);
+	background-color: var(--surface-0);
+	background-image:
+		repeating-linear-gradient(
+			45deg,
+			var(--grid-line-color) 0 var(--grid-line-size),
+			transparent var(--grid-line-size) var(--grid-size)
+		),
+		repeating-linear-gradient(
+			-45deg,
+			var(--grid-line-color) 0 var(--grid-line-size),
+			transparent var(--grid-line-size) var(--grid-size)
+		);
+}
+
+.uiContainer {
+	position: relative;
+	width: 100%;
+}
+
+.uiInputContainer {
+	@extend .uiContainer;
+
+	--padding-right: var(--control-height);
+}
+
+.uiLabelBase {
+	display: inline-block;
+	font-weight: 400;
+	font-variation-settings: "wght" 400;
+
+	&:has(~ :required) {
+		&::after {
+			content: " *";
+			color: var(--status-error-text);
+		}
+	}
+}
+
+.uiLabel {
+	@extend .uiLabelBase;
+
+	margin-block: var(--space-xs);
+}
+
+.uiDescription {
+	--paragraph-margin: 0;
+
+	padding-bottom: var(--space-xs);
+	color: var(--content-2);
+	font-weight: 300;
+	font-variation-settings: "wght" 300;
+}
+
+.uiLabel,
+.uiDescription {
+	margin-inline: var(--space-xs);
+	// user-select: none;
+}
+
+.uiPlaceholder {
+	color: var(--content-2);
+
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.uiControl {
+	@include ui-tone("neutral");
+	@include ui-appearance-outline;
+	@include ui-control-base;
+
+	--ui-radius: var(--radius-sm);
+
+	&.invalid,
+	&:invalid {
+		@include ui-tone("error");
+		@include ui-appearance-outline;
+	}
+
+	&::placeholder {
+		@extend .uiPlaceholder;
+	}
+}
+
+.uiToneNeutral {
+	@include ui-tone("neutral");
+}
+
+.uiToneError {
+	@include ui-tone("error");
+}
+
+.uiToneWarning {
+	@include ui-tone("warning");
+}
+
+.uiToneSuccess {
+	@include ui-tone("success");
+}
+
+.uiToneInfo {
+	@include ui-tone("info");
+}
+
+.uiAppearanceSolid {
+	@include ui-appearance-solid;
+}
+
+.uiAppearanceOutline {
+	@include ui-appearance-outline;
+}
+
+.uiAppearanceGhost {
+	@include ui-appearance-ghost;
+}
+
+.uiAppearanceTransparent {
+	@include ui-appearance-transparent;
+}
+
+.uiInputControl {
+	@extend .uiControl;
+
+	height: var(--control-height);
+}
+
+.uiInputWithToggle {
+	@extend .uiInputControl;
+
+	color: var(--content-0);
+
+	padding: 0 var(--padding-right) 0 var(--space-sm);
+	width: 100%;
+	text-align: left;
+
+	// &[type="button"] {
+	// 	white-space: nowrap;
+	// }
+}
+
+.uiSelectionControl {
+	// @extend .uiControl;
+	@include ui-control-base;
+
+	--ui-color: var(--content-0);
+	--ui-color-hover: var(--content-0);
+	--ui-color-active: var(--content-0);
+	--ui-background: var(--surface-0);
+	--ui-background-hover: var(--ui-tone-soft);
+	--ui-background-active: var(--ui-tone-soft);
+	--ui-border-color: var(--ui-tone-border);
+	--ui-border-hover: var(--ui-tone-border-hover);
+	--ui-border-active: var(--ui-tone-border-active);
+	--ui-border-focus: var(--ui-tone-border-focus);
+
+	appearance: none;
+	margin: 0;
+	cursor: pointer;
+
+	&:checked {
+		& + .uiSelectionIcon {
+			color: var(--ui-tone-fill);
+		}
+	}
+
+	&:disabled {
+		cursor: default;
+
+		--ui-border-color: var(--border-0);
+
+		&:checked {
+			& + .uiSelectionIcon {
+				color: var(--border-0);
+			}
+		}
+	}
+}
+
+.uiSelectionIcon {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	pointer-events: none;
+	color: transparent;
+	transition:
+		color var(--transition-fast) ease,
+		opacity var(--transition-fast) ease;
+}
+
+.uiElement,
+.uiSelectOption,
+.uiPopupOption {
+	&.disabled,
+	&:disabled {
+		cursor: default;
+		pointer-events: none;
+		user-select: none;
+
+		.uiLabel,
+		.uiDescription {
+			color: var(--content-2);
+		}
+
+		.uiPlaceholder,
+		.uiOptionText,
+		.uiOptionCode {
+			opacity: 0.25;
+		}
+	}
+}
+
+.uiPanel {
+	background-color: var(--ui-panel-background, var(--surface-0));
+	color: var(--content-0);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	padding: var(--space-sm);
+}
+
+.uiPopupOptions {
+	@extend .uiPanel;
+
+	background-color: var(--surface-0);
+
+	--anchor-gap: var(--space-xs);
+	--anchor-padding: var(--space-xs);
+	--anchor-offset: 0;
+	--input-width: min(100vw, var(--base-width, 15em));
+
+	display: flex;
+	flex-direction: column;
+
+	min-width: var(--input-width);
+	transform-origin: top;
+	box-shadow: var(--shadow-md);
+	z-index: var(--z-dropdown);
+
+	&:empty {
+		visibility: hidden;
+	}
+}
+
+.uiStateFocus {
+	@include focusVisible;
+
+	background-color: var(--surface-1);
+	border-color: var(--border-1);
+	cursor: pointer;
+}
+
+.uiOptionBase {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--space-sm);
+	height: 100%;
+	width: 100%;
+	text-align: left;
+}
+
+.uiPopupOption {
+	@extend .uiOptionBase;
+
+	height: auto;
+	padding: var(--space-xs) var(--space-sm);
+}
+
+.uiSelectOption,
+.uiPopupOption {
+	border-radius: var(--radius-sm);
+	border: none;
+	background-color: transparent;
+	color: var(--content-0);
+
+	transition:
+		background-color var(--transition-fast) ease,
+		color var(--transition-fast) ease;
+
+	.uiMenuOptionIcon,
+	.uiPopupOptionIcon {
+		flex-shrink: 0;
+		width: var(--space-md);
+		height: var(--space-md);
+	}
+
+	.uiMenuOptionIcon,
+	.keyboard {
+		color: var(--content-2);
+	}
+
+	&.selected {
+		color: var(--content-accent);
+		cursor: default;
+	}
+
+	&.uiPopupOptionActive {
+		background-color: var(--surface-1);
+	}
+
+	&:focus {
+		@extend .uiStateFocus;
+	}
+
+	@include hover(true) {
+		background-color: var(--surface-accent);
+		cursor: pointer;
+	}
+}
+
+.uiPopupOptionSeparator {
+	border-top: var(--border);
+	margin-block: var(--space-xs);
+}
+
+.uiPopupGroupLabel {
+	padding: var(--space-xs) var(--space-sm);
+	color: var(--content-2);
+	font-weight: 300;
+	text-transform: uppercase;
+	// font-size: var(--font-size-sm);
+}
+
+.uiMenuOptionIcon {
+	display: flex;
+	align-items: center;
+}
+
+.uiSelectOption {
+	display: grid;
+	grid-template-columns: auto 1fr;
+	gap: var(--space-xs);
+
+	padding-right: var(--space-xs);
+}
+
+.uiOptionText {
+	// font-size: var(--font-size-sm);
+	flex: 1;
+	// .flexEllipsis
+}
+
+.uiOptionCode {
+	font-family: var(--font-family-mono);
+	// font-size: var(--font-size-sm);
+	color: var(--content-1);
+	font-variation-settings: "wght" 300;
+}
+
+.uiToggleButtonContainer {
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	height: 100%;
+	width: 100%;
+
+	transition-property: width;
+	transition-duration: var(--transition-fast);
+	transition-timing-function: cubic-bezier(1, 0, 0.5, 0.5);
+
+	> button {
+		background: transparent;
+		border: none;
+		cursor: pointer;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		height: var(--control-height);
+		width: var(--control-height);
+		border-radius: var(--radius-sm);
+		flex: 0 0 var(--control-height);
+	}
+
+	// &[data-disabled] {
+	// 	cursor: default;
+	// 	pointer-events: none;
+	// 	opacity: var(--disabled-opacity);
+	// }
+}
+
+.uiToggleButton {
+	color: var(--content-0);
+}
+
+.uiToggleIcon {
+	transition: transform var(--transition-fast) ease-in-out;
+
+	&.uiToggleIconOpen {
+		transform: rotate(180deg);
+	}
+}
+
+@include mobile {
+	.uiPopupOptions {
+		--input-width: calc(100dvw - var(--space-xl));
+	}
+}
+
+// TODO: пока в свалку стили для дата-подобных компонентов
+
+// Для компонентов, который не являются input, но выставляют себя за него
+.uiInputControlFake {
+	@extend .uiInputControl;
+
+	width: 100%;
+	padding: 0 var(--space-sm);
+	font-size: var(--font-size-md);
+
+	display: flex;
+	align-items: center;
+
+	cursor: text;
+}
+
+.uiClearButton {
+	color: var(--status-error-text);
+
+	&:disabled {
+		opacity: 0;
+		pointer-events: none;
+		width: 0;
+		height: 0;
+		padding: 0;
+		margin: 0;
+		overflow: hidden;
+	}
+}
+
+.uiButtonSeparator {
+	border-left: var(--border);
+	height: calc(100% - var(--space-sm));
+}

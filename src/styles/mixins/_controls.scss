@@ -1,0 +1,125 @@
+@use "./mixin" as *;
+
+@mixin ui-tone($tone) {
+	--ui-tone-text: var(--status-#{$tone}-text);
+	--ui-tone-text-hover: var(--status-#{$tone}-text-hover);
+	--ui-tone-text-active: var(--status-#{$tone}-text-active);
+	--ui-tone-fill: var(--status-#{$tone}-fill);
+	--ui-tone-fill-hover: var(--status-#{$tone}-fill-hover);
+	--ui-tone-fill-active: var(--status-#{$tone}-fill-active);
+	--ui-tone-on-fill: var(--status-#{$tone}-on-fill);
+	--ui-tone-soft: var(--status-#{$tone}-soft);
+	--ui-tone-border: var(--status-#{$tone}-border);
+	--ui-tone-border-hover: var(--status-#{$tone}-border-hover);
+	--ui-tone-border-active: var(--status-#{$tone}-border-active);
+	--ui-tone-border-focus: var(--status-#{$tone}-border-focus);
+	--ui-tone-ghost-hover: color-mix(in srgb, var(--status-#{$tone}-fill-hover) 10%, var(--surface-0));
+	--ui-tone-ghost-active: color-mix(in srgb, var(--status-#{$tone}-fill-active) 20%, var(--surface-0));
+}
+
+@mixin ui-appearance-solid {
+	--ui-color: var(--ui-tone-on-fill);
+	--ui-color-hover: var(--ui-tone-on-fill);
+	--ui-color-active: var(--ui-tone-on-fill);
+	--ui-background: var(--ui-tone-fill);
+	--ui-background-hover: var(--ui-tone-fill-hover);
+	--ui-background-active: var(--ui-tone-fill-active);
+	--ui-border-color: transparent;
+	--ui-border-hover: transparent;
+	--ui-border-active: transparent;
+	--ui-border-focus: transparent;
+}
+
+@mixin ui-appearance-outline {
+	--ui-color: var(--ui-tone-text);
+	--ui-color-hover: var(--ui-tone-text-hover);
+	--ui-color-active: var(--ui-tone-text-active);
+	--ui-background: var(--surface-0);
+	--ui-background-hover: var(--surface-0);
+	--ui-background-active: var(--surface-0);
+	--ui-border-color: var(--ui-tone-border);
+	--ui-border-hover: var(--ui-tone-border-hover);
+	--ui-border-active: var(--ui-tone-border-active);
+	--ui-border-focus: var(--ui-tone-border-focus);
+}
+
+@mixin ui-appearance-ghost {
+	--ui-color: var(--ui-tone-text);
+	--ui-color-hover: var(--ui-tone-text-hover);
+	--ui-color-active: var(--ui-tone-text-active);
+	--ui-background: transparent;
+	--ui-background-hover: var(--ui-tone-ghost-hover);
+	--ui-background-active: var(--ui-tone-ghost-active);
+	--ui-border-color: transparent;
+	--ui-border-hover: transparent;
+	--ui-border-active: transparent;
+	--ui-border-focus: transparent;
+}
+
+@mixin ui-appearance-transparent {
+	--ui-color: var(--ui-tone-text);
+	--ui-color-hover: var(--ui-tone-text-hover);
+	--ui-color-active: var(--ui-tone-text-active);
+	--ui-background: transparent;
+	--ui-background-hover: transparent;
+	--ui-background-active: transparent;
+	--ui-border-color: transparent;
+	--ui-border-hover: transparent;
+	--ui-border-active: transparent;
+	--ui-border-focus: transparent;
+}
+
+@mixin ui-control-base {
+	color: var(--ui-color, var(--content-0));
+	background-color: var(--ui-background, var(--surface-0));
+	border: var(--border-width) solid var(--ui-border-color, transparent);
+	border-radius: var(--ui-radius, var(--radius-sm));
+	outline: none;
+
+	transition-property: border-color, color, background-color, box-shadow, padding, opacity, transform;
+	transition-duration: var(--transition-fast);
+	transition-timing-function: ease;
+
+	&:hover {
+		color: var(--ui-color-hover, var(--ui-color, var(--content-0)));
+		background-color: var(--ui-background-hover, var(--ui-background, transparent));
+		border-color: var(--ui-border-hover, var(--ui-border-color, transparent));
+	}
+
+	&:active {
+		color: var(--ui-color-active, var(--ui-color-hover, var(--ui-color, var(--content-0))));
+		background-color: var(--ui-background-active, var(--ui-background-hover, var(--ui-background, transparent)));
+		border-color: var(--ui-border-active, var(--ui-border-hover, var(--ui-border-color, transparent)));
+	}
+
+	&:focus,
+	&:focus-within {
+		border-color: var(--ui-border-focus, var(--ui-border-active, var(--ui-border-color, transparent)));
+	}
+
+	&:focus-visible {
+		@include focusVisible;
+	}
+
+	// Для нормальных компонентов с реальным input/button элементов
+	&:disabled,
+	// Для специфичных компонентов, которые выдают внешне за input/button и имеют класс .uiInputControlFake
+	&[data-disabled] {
+		cursor: default;
+		pointer-events: none;
+		// opacity: var(--disabled-opacity);
+		color: var(--content-2);
+		background-color: var(--surface-2);
+		border-color: var(--overlay-backdrop);
+	}
+}
+
+@mixin ui-static-surface {
+	color: var(--ui-color, var(--content-0));
+	background-color: var(--ui-background, transparent);
+	border: var(--border-width) solid var(--ui-border-color, transparent);
+	border-radius: var(--ui-radius, var(--radius-sm));
+	transition-property: border-color, color, background-color, opacity;
+	transition-duration: var(--transition-fast);
+	transition-timing-function: ease;
+}

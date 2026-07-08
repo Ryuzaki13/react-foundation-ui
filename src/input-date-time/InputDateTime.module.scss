@@ -1,0 +1,45 @@
+@use "@/styles/mixins" as *;
+
+.segmentInput {
+	border: none;
+	background: transparent;
+	outline: none;
+	padding: 0;
+	margin: 0;
+	font-family: var(--font-family-mono);
+	color: inherit;
+	text-align: center;
+	caret-color: var(--content-0);
+	font-variant-numeric: tabular-nums;
+
+	&::placeholder {
+		color: var(--content-2);
+		// font-size: var(--font-size-sm);
+	}
+
+	&::selection {
+		background-color: var(--focus-ring);
+		color: var(--surface-0);
+	}
+
+	// Remove spin buttons
+	&::-webkit-inner-spin-button,
+	&::-webkit-outer-spin-button {
+		-webkit-appearance: none;
+		margin: 0;
+	}
+
+	&:disabled {
+		opacity: 0.25;
+	}
+}
+
+.separator {
+	user-select: none;
+	color: var(--content-2);
+	flex-shrink: 0;
+
+	&[data-disabled] {
+		opacity: 0.25;
+	}
+}

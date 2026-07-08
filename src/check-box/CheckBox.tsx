@@ -1,0 +1,78 @@
+import React, { useId } from "react";
+
+import { SquareIcon } from "lucide-react";
+
+import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+
+import uiStyles from "../ui.module.scss";
+import { getUiToneClassName } from "../uiClasses";
+
+import styles from "./CheckBox.module.scss";
+
+import type { UiBaseProps, UiTone } from "../types";
+
+interface CheckBoxProps
+	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "checked" | "value" | "onChange" | "type">, UiBaseProps<boolean> {
+	tone?: UiTone;
+	noWrap?: boolean;
+}
+
+/**
+ * Компонент флажка для выбора булевого значения в формах и списках.
+ * Поддерживает tone + appearance и использует общие selection utility-классы из ui.module.scss.
+ */
+export function CheckBox({
+	label,
+	description,
+	placeholder,
+	disabled,
+	size,
+	className,
+	onChange,
+	value,
+	noWrap,
+	id: externalId,
+	tone = "neutral",
+	...props
+}: CheckBoxProps) {
+	const autoId = useId();
+	const id = externalId ?? autoId;
+	const descriptionId = description ? `${id}-description` : undefined;
+	const text = label ?? placeholder;
+	const checked = value ?? false;
+
+	return (
+		<div
+			className={cn(uiStyles.uiElement, size && uiStyles.uiSizable, size && uiStyles[size], disabled && uiStyles.disabled, className)}
+			aria-disabled={disabled || undefined}>
+			<div className={styles.row}>
+				<div className={cn(styles.wrapper, getUiToneClassName(tone))}>
+					<input
+						{...props}
+						id={id}
+						type="checkbox"
+						checked={checked}
+						disabled={disabled}
+						aria-checked={checked}
+						aria-describedby={descriptionId}
+						className={cn(uiStyles.uiSelectionControl, styles.input)}
+						onChange={() => onChange?.(!checked)}
+					/>
+					<div className={cn(uiStyles.uiSelectionIcon, styles.icon)} aria-hidden="true">
+						<SquareIcon />
+					</div>
+				</div>
+				{text && (
+					<label htmlFor={id} className={cn(uiStyles.uiLabelBase, noWrap && "textNoWrap")}>
+						{text}
+					</label>
+				)}
+			</div>
+			{description && (
+				<p id={descriptionId} className={uiStyles.uiDescription}>
+					{description}
+				</p>
+			)}
+		</div>
+	);
+}

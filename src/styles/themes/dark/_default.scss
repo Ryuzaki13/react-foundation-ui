@@ -1,0 +1,24 @@
+@use "../../config" as stylesConfig;
+@use "../theme" as theme;
+
+@mixin dark-theme {
+	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens(stylesConfig.$dark-theme));
+	@include theme.generated-theme-palette(stylesConfig.$dark-theme, dark);
+}
+
+/* Для WebKit браузеров (Chrome, Safari, Edge) */
+input:-webkit-autofill {
+	-webkit-text-fill-color: var(--content-0) !important;
+	-webkit-box-shadow: 0 0 0 1000px var(--surface-0) inset !important;
+}
+
+/* Для Firefox */
+input:autofill {
+	background: var(--surface-0) !important;
+}
+
+/* Общие стили */
+// TODO: unused
+input.autofilled {
+	background: var(--surface-0) !important;
+}

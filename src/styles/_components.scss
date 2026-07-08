@@ -1,0 +1,14 @@
+.listItem {
+	background-color: var(--surface-0);
+
+	&:hover:not(.selected) {
+		// filter: contrast(0.9);
+		background-color: var(--surface-accent);
+	}
+
+	&.selected {
+		cursor: default;
+		// color: var(--content-accent);
+		background-color: var(--surface-1);
+	}
+}

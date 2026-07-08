@@ -1,0 +1,76 @@
+@use "@/styles/mixins" as *;
+
+.badge {
+	@include ui-static-surface;
+
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	max-width: 100%;
+	padding: 0 var(--space-xs);
+
+	font-weight: 500;
+	font-variation-settings: "wght" 500;
+	vertical-align: middle;
+}
+
+.passive {
+	pointer-events: none;
+	user-select: none;
+}
+
+.sizeXs {
+	font-size: var(--font-size-xs);
+}
+
+.sizeSm {
+	font-size: var(--font-size-sm);
+}
+
+.sizeMd {
+	font-size: var(--font-size-md);
+}
+
+.sizeLg {
+	font-size: var(--font-size-lg);
+}
+
+.sizeXl {
+	font-size: var(--font-size-xl);
+}
+
+.content {
+	min-width: 0;
+}
+
+.removeButton {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+	width: 1.25em;
+	height: 1.25em;
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-xs);
+	background: transparent;
+	color: inherit;
+	transition:
+		color var(--transition-fast) ease,
+		background-color var(--transition-fast) ease,
+		scale var(--transition-fast) ease;
+
+	&:hover {
+		background-color: var(--status-error-soft);
+		color: var(--status-error-text);
+		scale: 1.1;
+	}
+
+	&:focus-visible {
+		@include focusVisible;
+	}
+
+	svg {
+		display: block;
+	}
+}

@@ -1,0 +1,67 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as DropZoneStories from "./DropZone.stories";
+
+<Meta
+	of={DropZoneStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>DropZone</Title>
+<Subtitle>Зона drag-and-drop для загрузки файлов кликом или перетаскиванием</Subtitle>
+
+DropZone уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны заблокированные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={DropZoneStories.Basic} />
+
+```tsx
+import { useState } from "react";
+
+import { DropZone } from "@/shared/ui";
+
+export function Example() {
+	const [files, setFiles] = useState([]);
+
+	return <DropZone value={files} onChange={setFiles} />;
+}
+```
+
+## Практические рекомендации
+
+- Заблокированное состояние лучше проверять отдельно, чтобы убедиться, что визуально и поведенчески оно остается понятным.
+
+## Сценарии использования
+
+### Базовый сценарий без дополнительной логики
+
+Базовый сценарий без дополнительной логики.
+
+<Canvas of={DropZoneStories.Basic} />
+
+### Режим выбора только одного файла
+
+Режим выбора только одного файла.
+
+<Canvas of={DropZoneStories.SingleFile} />
+
+### Проверка поведения в заблокированном состоянии
+
+Проверка поведения в заблокированном состоянии.
+
+<Canvas of={DropZoneStories.Disabled} />
+
+## API
+
+<ArgTypes of={DropZoneStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,17 @@
+@use "sass:map";
+
+@use "../mixins/" as *;
+
+@mixin generated-theme-palette($theme, $mode) {
+	$accent: map.get($theme, accent);
+
+	@include generate-accent(map.get($accent, l), map.get($accent, c), map.get($accent, h), $mode);
+
+	@each $name, $status in map.get($theme, status) {
+		$fill: map.get($status, fill);
+		$border: map.get($status, border);
+
+		@include generate-status-fill($name, map.get($fill, l), map.get($fill, c), map.get($fill, h), $mode);
+		@include generate-status-border($name, map.get($border, l), map.get($border, c), map.get($border, h), $mode);
+	}
+}

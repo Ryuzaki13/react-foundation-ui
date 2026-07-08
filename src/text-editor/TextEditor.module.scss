@@ -1,0 +1,21 @@
+@use "@/styles/mixins/mixin" as *;
+
+.textEditor {
+	font-size: inherit;
+}
+
+.textEditorContent {
+	position: relative;
+	padding: var(--space-md);
+	border-radius: var(--radius-md);
+	background-color: var(--surface-secondary);
+	border: var(--border);
+
+	&.focused {
+		border-color: var(--brand-primary);
+	}
+}
+
+.wrapper {
+	font-size: inherit;
+}

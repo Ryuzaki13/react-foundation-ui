@@ -1,0 +1,106 @@
+import { ArgTypes, Canvas, Controls, Meta, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as TabsStories from "./Tabs.stories";
+
+<Meta
+	of={TabsStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Tabs</Title>
+<Subtitle>Набор tabs-компонентов с разделением простого scroll-сценария и составного panel-layout сценария</Subtitle>
+
+После рефакторинга `tabs` разделены на два независимых сценария:
+
+- `TabsBox` — простой items-based компонент, который сам управляет областью панели и её прокруткой.
+- `TabsLayout` — compound-компонент, который управляет только переключением вкладок и каркасом панели.
+- `Tabs` — deprecated-совместимость для старого API. Используется только как переходный фасад.
+
+## Что выбрать
+
+- Выбирай `TabsBox`, если у вкладки один основной scroll-контент и встроенный padding подходит по умолчанию.
+- Выбирай `TabsLayout`, если внутри панели нужны `toolbar`, `footer` или несколько независимых scroll-областей.
+- Используй `Tabs` только для постепенной миграции существующего кода.
+
+## TabsBox
+
+<Canvas of={TabsStories.BoxBasic} />
+
+<Controls of={TabsStories.BoxBasic} />
+
+```tsx
+import { TabsBox, type TabsBoxItem } from "@/shared/ui";
+
+const items: TabsBoxItem[] = [
+	{ id: "profile", title: "Профиль", content: <div>Содержимое профиля</div> },
+	{ id: "settings", title: "Настройки", content: <div>Содержимое настроек</div> }
+];
+
+export function Example() {
+	return <TabsBox items={items} aria-label="Разделы профиля" />;
+}
+```
+
+`TabsBox` сохраняет встроенный padding панели, поддерживает `loading`/`empty` и остаётся подходящим дефолтом для модалок, карточек и классических вкладок с одним scroll-контейнером.
+
+### Сценарии `TabsBox`
+
+<Canvas of={TabsStories.BoxControlled} />
+
+<Canvas of={TabsStories.BoxVertical} />
+
+<Canvas of={TabsStories.BoxMountStrategies} />
+
+<Canvas of={TabsStories.DisabledTabs} />
+
+<Canvas of={TabsStories.Loading} />
+
+<Canvas of={TabsStories.Empty} />
+
+## TabsLayout
+
+<Canvas of={TabsStories.LayoutPanels} />
+
+```tsx
+import { Scrollable, TabsLayout } from "@/shared/ui";
+
+export function Example() {
+	return (
+		<TabsLayout bordered h100 aria-label="Панели документа">
+			<TabsLayout.Tab id="details" title="Детали">
+				<TabsLayout.Toolbar>Панель инструментов</TabsLayout.Toolbar>
+				<TabsLayout.Content>
+					<Scrollable className="h100">Контент сам управляет scroll.</Scrollable>
+				</TabsLayout.Content>
+				<TabsLayout.Footer>Футер панели</TabsLayout.Footer>
+			</TabsLayout.Tab>
+		</TabsLayout>
+	);
+}
+```
+
+Семантика `TabsLayout` после рефакторинга:
+
+- `Toolbar` и `Footer` всегда исключены из scroll-контента.
+- `Content` не получает встроенный `overflow` и не оборачивается во внутренний padding от tabs-компонента.
+- `loading` и `empty` состояния рендерятся снаружи вызывающим кодом.
+
+## Deprecated Tabs
+
+<Canvas of={TabsStories.LegacyTabs} />
+
+`Tabs` сохранён только для обратной совместимости. Семантика до/после:
+
+- До: один публичный компонент пытался одновременно управлять и tabs-state, и layout панели, и scroll-сценариями.
+- После: `Tabs` остаётся тонким фасадом над `TabsBox`, а новые сценарии идут через отдельные `TabsBox` и `TabsLayout`.
+
+## API
+
+<ArgTypes of={TabsStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

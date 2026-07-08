@@ -1,0 +1,195 @@
+@use "@/styles/mixins" as *;
+
+.slider {
+	display: flex;
+	flex-direction: column;
+	gap: var(--space-sm);
+}
+
+.sliderCompact {
+	gap: 0;
+}
+
+.trackShell {
+	position: relative;
+	padding-inline: calc((var(--control-height) - var(--space-xs)) / 2);
+}
+
+.track {
+	position: relative;
+	height: var(--control-height);
+	cursor: pointer;
+	touch-action: none;
+	user-select: none;
+}
+
+.rail,
+.fill {
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	height: var(--space-xs);
+	border-radius: 999px;
+}
+
+.rail {
+	left: 0;
+	right: 0;
+	background-color: var(--surface-2);
+	border: var(--border);
+}
+
+.fill {
+	background-color: var(--content-0);
+}
+
+.thumb {
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	width: calc(var(--control-height) - var(--space-xs));
+	height: calc(var(--control-height) - var(--space-xs));
+	border: var(--border);
+	border-radius: 50%;
+	background-color: var(--surface-0);
+	color: var(--content-0);
+	box-shadow: var(--shadow-sm);
+	cursor: grab;
+	z-index: 2;
+	transition:
+		transform var(--transition-fast) ease,
+		border-color var(--transition-fast) ease,
+		box-shadow var(--transition-fast) ease,
+		background-color var(--transition-fast) ease;
+
+	&:active,
+	&:hover {
+		border-color: var(--border-1);
+	}
+
+	&:focus-visible {
+		@include focusVisible;
+	}
+
+	&[data-dragging] {
+		cursor: grabbing;
+		transform: translate(-50%, -50%) scale(1.04);
+		box-shadow: var(--shadow-md);
+	}
+}
+
+.marks {
+	position: relative;
+	min-height: calc(var(--font-size-sm) + var(--space-md));
+	margin-inline: calc((var(--control-height) - var(--space-xs)) / 2);
+}
+
+.mark {
+	position: absolute;
+	top: 0;
+	transform: translateX(-50%);
+	display: inline-flex;
+	flex-direction: column;
+	align-items: center;
+	gap: var(--space-xs);
+	border: none;
+	background: transparent;
+	padding: 0;
+	color: var(--content-2);
+	cursor: pointer;
+	white-space: nowrap;
+
+	&:focus-visible {
+		@include focusVisible;
+		border-radius: var(--radius-sm);
+	}
+
+	&[data-active] {
+		color: var(--content-0);
+	}
+}
+
+.compactMark {
+	position: absolute;
+	top: 50%;
+	transform: translate(-50%, -50%);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: var(--control-height);
+	height: var(--control-height);
+	border: none;
+	background: transparent;
+	padding: 0;
+	color: var(--content-2);
+	cursor: pointer;
+	z-index: 1;
+
+	&:focus-visible {
+		@include focusVisible;
+		border-radius: var(--radius-sm);
+	}
+
+	&[data-active] {
+		color: var(--content-0);
+	}
+
+	&:disabled {
+		cursor: default;
+	}
+}
+
+.markDot {
+	width: var(--space-sm);
+	height: var(--space-sm);
+	border-radius: 50%;
+	background-color: currentColor;
+	// opacity: 0.55;
+}
+
+.markLabel {
+	font-size: var(--font-size-sm);
+}
+
+.popoverContent {
+	min-width: min(24em, calc(100vw - var(--space-xl)));
+}
+
+.rangeInputControl {
+	gap: var(--space-xs);
+	cursor: text;
+}
+
+.rangeSegmentInput {
+	min-width: 0;
+	width: 7ch;
+	border: none;
+	background: transparent;
+	outline: none;
+	padding: 0;
+	margin: 0;
+	font-family: var(--font-family-mono);
+	color: inherit;
+	text-align: center;
+	caret-color: var(--content-0);
+	font-variant-numeric: tabular-nums;
+
+	&::selection {
+		background-color: var(--focus-ring);
+		color: var(--surface-0);
+	}
+
+	&:disabled {
+		opacity: 0.25;
+	}
+}
+
+.rangeSeparator {
+	user-select: none;
+	color: var(--content-2);
+	flex-shrink: 0;
+
+	&[data-disabled] {
+		opacity: 0.25;
+	}
+}

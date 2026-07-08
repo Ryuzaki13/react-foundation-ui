@@ -1,0 +1,222 @@
+.textCenter {
+	text-align: center;
+}
+.textLeft {
+	text-align: left;
+}
+.textRight {
+	text-align: right;
+}
+// TODO: unused
+.textJustify {
+	text-align: justify;
+}
+
+// TODO: unused
+.verticalTop {
+	vertical-align: top;
+}
+.verticalMiddle {
+	vertical-align: middle;
+}
+// TODO: unused
+.verticalBottom {
+	vertical-align: bottom;
+}
+
+.fontBolded {
+	font-weight: 900;
+	font-variation-settings: "wght" 900;
+}
+.fontBold {
+	font-weight: 700;
+	font-variation-settings: "wght" 700;
+}
+.fontMedium {
+	font-weight: 500;
+	font-variation-settings: "wght" 500;
+}
+.fontRegular {
+	font-weight: 400;
+	font-variation-settings: "wght" 400;
+}
+.fontLight {
+	font-weight: 300;
+	font-variation-settings: "wght" 300;
+}
+.fontLighter {
+	font-weight: 200;
+	font-variation-settings: "wght" 200;
+}
+.fontItalic {
+	font-style: italic;
+}
+// TODO: unused
+.fontNormal {
+	font-style: normal;
+}
+// TODO: unused
+.fontUnderline {
+	text-decoration: underline;
+}
+
+.fontSizeXs {
+	font-size: var(--font-size-xs);
+}
+.fontSizeSm {
+	font-size: var(--font-size-sm);
+}
+.fontSizeMd {
+	font-size: var(--font-size-md);
+}
+.fontSizeLg {
+	font-size: var(--font-size-lg);
+}
+.fontSizeXl {
+	font-size: var(--font-size-xl);
+}
+
+// TODO: unused
+.textLineHeight {
+	height: calc(1em * var(--line-height));
+}
+.controlHeight {
+	height: var(--control-height);
+}
+
+.textWrap {
+	white-space: pre-wrap;
+	word-break: break-word;
+}
+
+.textNoWrap {
+	white-space: nowrap;
+	word-break: normal;
+}
+
+.textEllipsis {
+	text-overflow: ellipsis;
+}
+
+.scrollable {
+	min-height: 0;
+
+	scrollbar-color: var(--border-0) transparent;
+	transition: scrollbar-color 0.1s ease-out;
+
+	overflow: auto;
+
+	&.stable {
+		scrollbar-gutter: stable;
+	}
+
+	&.overscroll {
+		overscroll-behavior: contain;
+	}
+
+	&.thin {
+		scrollbar-width: thin;
+	}
+}
+
+.scrollableY {
+	@extend .scrollable;
+
+	overflow-x: hidden;
+}
+// TODO: unused
+.scrollableX {
+	@extend .scrollable;
+
+	overflow-y: hidden;
+}
+
+.overflowHidden {
+	overflow: hidden;
+}
+// TODO: unused
+.overflowScroll {
+	@extend .scrollable;
+	overflow: scroll;
+}
+.overflowAuto {
+	@extend .scrollable;
+	overflow: auto;
+}
+
+.textOverflow {
+	@extend .textNoWrap;
+	@extend .overflowHidden;
+	@extend .textEllipsis;
+}
+
+.flexEllipsis {
+	@extend .textOverflow;
+
+	flex: 1 1 0%;
+	min-width: 0;
+}
+
+// Базовый класс для многострочного обрезания текста
+.textClampBase {
+	@extend .overflowHidden;
+	@extend .textEllipsis;
+
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+
+	&::after {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		background: inherit;
+	}
+}
+
+// Миксин для line-clamp с фолбэком
+@mixin textClamp($lines) {
+	-webkit-line-clamp: $lines;
+
+	@supports not (-webkit-line-clamp: #{$lines}) {
+		max-height: #{1.5 * $lines}em;
+		position: relative;
+
+		&::after {
+			content: "...";
+		}
+	}
+}
+
+// Конкретные реализации
+// TODO: unused
+.textClamp2Lines {
+	@extend .textClampBase;
+	@include textClamp(2);
+}
+
+// TODO: unused
+.textClamp3Lines {
+	@extend .textClampBase;
+	@include textClamp(3);
+}
+
+// TODO: unused
+.textClamp4Lines {
+	@extend .textClampBase;
+	@include textClamp(4);
+}
+
+// TODO: unused
+.textClamp6Lines {
+	@extend .textClampBase;
+	@include textClamp(6);
+}
+
+// TODO: unused
+.textStriked {
+	text-decoration: line-through;
+}
+
+.textUppercase {
+	text-transform: uppercase;
+}

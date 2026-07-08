@@ -1,0 +1,112 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SortableStories from "./Sortable.stories";
+
+<Meta
+	of={SortableStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Sortable</Title>
+<Subtitle>Headless-набор для сортируемых коллекций на базе `dnd-kit` с поддержкой list, horizontal и grid-layout</Subtitle>
+
+`Sortable` не навязывает визуальный вид элементов и используется как композиционный слой поверх `dnd-kit`.
+Он дает единый API для `DndContext`, `SortableContext`, sortable-item и drag-handle, а бизнес-логика reorder остается у потребителя.
+Для типовой визуальной ручки есть `Sortable.DragHandle`; низкоуровневый `Sortable.Handle` нужен, когда внешний вид полностью задает потребитель.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SortableStories.Basic} />
+
+```tsx
+import { Sortable, getSortableReorderResult } from "@/shared/ui";
+
+function Example({ items, setItems }: { items: string[]; setItems: (next: string[]) => void }) {
+	return (
+		<Sortable.Root
+			onDragEnd={(event) => {
+				const reorder = getSortableReorderResult({
+					event,
+					items: {
+						list: items
+					}
+				});
+				if (!reorder) return;
+
+				const next = [...items];
+				const [moved] = next.splice(reorder.fromIndex, 1);
+				next.splice(reorder.toIndex, 0, moved!);
+				setItems(next);
+			}}>
+			<Sortable.Container containerId="list" items={items} layout="vertical">
+				{items.map((item) => (
+					<Sortable.Item key={item} id={item}>
+						<Sortable.DragHandle title={`Перетащить ${item}`} />
+						<span>{item}</span>
+					</Sortable.Item>
+				))}
+			</Sortable.Container>
+		</Sortable.Root>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Используйте `Sortable.Root` как общий контекст drag-and-drop для одного сценария взаимодействия.
+- Для нескольких независимых списков внутри одного экрана задавайте отдельные `containerId` через `Sortable.Container`.
+- Логику reorder удобнее выносить в helper `getSortableReorderResult`, если перенос между контейнерами не нужен.
+- Для вложенных сценариев размещайте несколько `Sortable.Container` внутри одного `Sortable.Root`.
+- `Sortable.Item` отвечает только за DnD-bindings и inline-style трансформации; визуальный каркас строки или карточки должен оставаться у потребителя.
+- Используйте `Sortable.DragHandle` для стандартной ручки с `GripIcon`, локальными стилями и состояниями disabled/dragging.
+
+## Сценарии использования
+
+### Базовый вертикальный список
+
+Базовый headless-сценарий сортировки элементов по вертикали.
+
+<Canvas of={SortableStories.Basic} />
+
+### Горизонтальный список
+
+Использование `layout="horizontal"` для toolbar, чипов и полос вкладок.
+
+<Canvas of={SortableStories.HorizontalList} />
+
+### Grid-карточки
+
+Использование `layout="grid"` для карточек и flow-раскладок.
+
+<Canvas of={SortableStories.GridCards} />
+
+### Отключенные элементы
+
+Проверка поведения для элементов, которые видны в списке, но не должны перетаскиваться.
+
+<Canvas of={SortableStories.DisabledItems} />
+
+### Handle-only drag
+
+Перетаскивание доступно только через handle, а не через весь элемент.
+
+<Canvas of={SortableStories.HandleOnly} />
+
+### Вложенные контейнеры
+
+Два уровня `Sortable.Container` внутри одного `Sortable.Root` без переноса между контейнерами.
+
+<Canvas of={SortableStories.NestedContainers} />
+
+## API
+
+<ArgTypes of={SortableStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

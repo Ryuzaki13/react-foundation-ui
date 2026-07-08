@@ -1,0 +1,15 @@
+// Главный файл общих стилей foundation-ui. Подключается один раз в host-приложении.
+
+// Нормализация подключается здесь же, чтобы не было проблем с сортировкой импортов, ограниченными eslint
+@use "normalize";
+@use "variables";
+@use "base";
+@use "flex";
+@use "grid";
+@use "margin";
+@use "border";
+@use "text";
+@use "color";
+@use "controls";
+@use "layout";
+@use "components";

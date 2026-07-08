@@ -1,0 +1,98 @@
+@use "align";
+
+.flex {
+	display: flex;
+}
+
+// TODO: unused
+.flexInline {
+	display: inline-flex;
+	vertical-align: middle;
+}
+
+.flexWrap {
+	@extend .flex;
+	flex-wrap: wrap;
+}
+
+// TODO: unused
+.flexNoWrap {
+	@extend .flex;
+	flex-wrap: nowrap;
+}
+
+.flexWrapReverse {
+	@extend .flex;
+	flex-wrap: wrap-reverse;
+}
+
+// TODO: unused
+.flexRow {
+	@extend .flex;
+	flex-direction: row;
+}
+
+.flexColumn {
+	@extend .flex;
+	flex-direction: column;
+}
+
+// TODO: unused
+.flexRowReverse {
+	@extend .flex;
+	flex-direction: row-reverse;
+}
+
+.flexColumnReverse {
+	@extend .flex;
+	flex-direction: column-reverse;
+}
+
+// TODO: unused
+.flexBasis0 {
+	flex-basis: 0;
+}
+
+.flexBasisAuto {
+	flex-basis: auto;
+}
+
+.flexGrow0 {
+	flex-grow: 0;
+}
+
+.flexGrow1 {
+	flex-grow: 1;
+}
+
+.flexShrink0 {
+	flex-shrink: 0;
+}
+
+.flexShrink1 {
+	flex-shrink: 1;
+}
+
+.flex0 {
+	@extend .flexGrow0;
+	@extend .flexShrink0;
+	@extend .flexBasisAuto;
+}
+
+.flex1 {
+	@extend .flexGrow1;
+	@extend .flexShrink1;
+	@extend .flexBasisAuto;
+}
+
+.flexCenter {
+	@extend .flex;
+	@extend .alignItemsCenter;
+	@extend .justifyContentCenter;
+}
+
+.flexCenterBetween {
+	@extend .flex;
+	@extend .alignItemsCenter;
+	@extend .justifyContentBetween;
+}

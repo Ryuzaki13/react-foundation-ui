@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as InputStories from "./Input.stories";
+
+<Meta
+	of={InputStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Input</Title>
+<Subtitle>Базовое текстовое и числовое поле для форм, фильтров и служебных панелей</Subtitle>
+
+Input уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={InputStories.TextControlled} />
+
+```tsx
+import { useState } from "react";
+
+import { Input } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState("");
+
+	return <Input label="Название" value={value} onChange={setValue} placeholder="Введите значение" />;
+}
+```
+
+## Практические рекомендации
+
+- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+
+## Сценарии использования
+
+### Контролируемое текстовое поле
+
+Контролируемое текстовое поле.
+
+<Canvas of={InputStories.TextControlled} />
+
+### Контролируемое числовое поле
+
+Контролируемое числовое поле.
+
+<Canvas of={InputStories.NumberControlled} />
+
+### Сценарий с валидацией формата
+
+Сценарий с валидацией формата.
+
+<Canvas of={InputStories.PatternValidation} />
+
+### Состояние с ошибкой
+
+Состояние с ошибкой.
+
+<Canvas of={InputStories.WithError} />
+
+## API
+
+<ArgTypes of={InputStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

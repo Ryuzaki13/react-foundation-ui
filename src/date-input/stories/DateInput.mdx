@@ -1,0 +1,74 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as DateInputStories from "./DateInput.stories";
+
+<Meta
+	of={DateInputStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>DateInput</Title>
+<Subtitle>Календарный ввод одной даты или диапазона с ограничениями и различными размерами</Subtitle>
+
+DateInput уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны размерные варианты.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={DateInputStories.Single} />
+
+```tsx
+import { useState } from "react";
+
+import { RangeDateInput } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState(null);
+
+	return <RangeDateInput label="Период" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Проверьте размер компонента в реальном контексте интерфейса: в таблицах, тулбарах и формах требования обычно отличаются.
+- Если компонент участвует в фильтрации или поиске, заранее определите дефолтные значения и допустимые ограничения.
+
+## Сценарии использования
+
+### Сценарий выбора одной даты
+
+Сценарий выбора одной даты.
+
+<Canvas of={DateInputStories.Single} />
+
+### Сценарий выбора диапазона
+
+Сценарий выбора диапазона.
+
+<Canvas of={DateInputStories.Range} />
+
+### Ограничения по допустимым значениям
+
+Ограничения по допустимым значениям.
+
+<Canvas of={DateInputStories.WithLimits} />
+
+### Сравнение размеров компонента
+
+Сравнение размеров компонента.
+
+<Canvas of={DateInputStories.Sizes} />
+
+## API
+
+<ArgTypes of={DateInputStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

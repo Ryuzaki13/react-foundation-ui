@@ -1,0 +1,68 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as InputFileStories from "./InputFile.stories";
+
+<Meta
+	of={InputFileStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>InputFile</Title>
+<Subtitle>Контрол для выбора одного файла с поддержкой предварительного значения и бинарного режима</Subtitle>
+
+InputFile уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={InputFileStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { InputFile } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState(null);
+
+	return <InputFile label="Файл" value={value} onChange={setValue} />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- При редактировании сущностей проверьте сценарий инициализации компонента уже существующими данными.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={InputFileStories.Controlled} />
+
+### Инициализация предварительно выбранным значением
+
+Инициализация предварительно выбранным значением.
+
+<Canvas of={InputFileStories.WithInitialValue} />
+
+### Сценарий работы с бинарными данными
+
+Сценарий работы с бинарными данными.
+
+<Canvas of={InputFileStories.ArrayBufferMode} />
+
+## API
+
+<ArgTypes of={InputFileStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

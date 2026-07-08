@@ -1,0 +1,26 @@
+.popupLayout {
+	display: grid;
+	grid-template-rows: auto 1fr;
+	min-height: 0;
+	max-height: 75vh;
+	overflow: hidden;
+
+	flex: 1 1 auto;
+}
+
+.popupBody {
+	min-height: 0;
+}
+
+.status {
+	padding: var(--space-xs) var(--space-sm);
+	color: var(--content-2);
+}
+
+.statusError {
+	color: var(--status-error-text);
+}
+
+.triggerContainer {
+	position: relative;
+}

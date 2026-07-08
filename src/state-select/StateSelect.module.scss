@@ -1,0 +1,85 @@
+.button {
+	padding-left: var(--space-sm);
+}
+
+.valueContainer {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	width: 100%;
+	min-height: 1.5em;
+	min-width: 0;
+}
+
+.swatch {
+	--state-color: transparent;
+
+	width: 1.25em;
+	height: 1.25em;
+	flex-shrink: 0;
+	display: inline-block;
+	border-radius: var(--radius-xs);
+	border: var(--border-width) solid var(--border-0);
+	background-color: var(--state-color);
+
+	&[data-empty] {
+		background-color: var(--surface-0);
+		background-image: repeating-linear-gradient(135deg, var(--border-0), var(--border-0) 0.25em, transparent 0.25em, transparent 0.5em);
+	}
+}
+
+// .options {
+// 	padding: var(--space-xs);
+// }
+
+.optionsPalette {
+	--input-width: auto;
+
+	display: grid;
+	grid-template-columns: repeat(5, minmax(0, 1fr));
+	gap: var(--space-xs);
+}
+
+.optionsDetailed {
+	--input-width: 16em;
+}
+
+.option {
+	border-radius: var(--radius-sm);
+	outline: none;
+	user-select: none;
+}
+
+.optionPalette {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: var(--space-sm);
+	min-width: 2.25em;
+}
+
+.optionDetailed {
+	display: flex;
+	align-items: center;
+	gap: var(--space-sm);
+	padding: var(--space-xs) var(--space-sm);
+}
+
+.optionMeta {
+	display: inline-flex;
+	align-items: center;
+	gap: var(--space-xs);
+	min-width: 0;
+}
+
+.optionMetaIcon {
+	display: inline-flex;
+	align-items: center;
+}
+
+.optionMetaLabel {
+	min-width: 0;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+}

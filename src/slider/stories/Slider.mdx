@@ -1,0 +1,103 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SliderStories from "./Slider.stories";
+
+<Meta
+	of={SliderStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Slider</Title>
+<Subtitle>Компактные single и range слайдеры с marks, tooltip и открытыми границами</Subtitle>
+
+`Slider` и `SliderRange` — отдельные публичные компоненты. Оба используют общую числовую шкалу, но не смешивают single/range через prop.
+
+- `Slider` возвращает одно finite-число;
+- `SliderRange` возвращает `[number | null, number | null]`;
+- `null` в range означает открытую границу;
+- `marks` всегда задают snap-домен;
+- `marksPosition="index"` размещает marks с равным визуальным шагом.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SliderStories.SingleStep} />
+
+```tsx
+import { useState } from "react";
+
+import { Slider } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState<number | undefined>(35);
+
+	return <Slider label="Громкость" min={0} max={100} step={5} value={value} onChange={setValue} />;
+}
+```
+
+## Range с открытой границей
+
+```tsx
+import { useState } from "react";
+
+import { SliderRange, type SliderRangeValue } from "@/shared/ui";
+
+const marks = [
+	{ value: 0, label: "До 3 мес.", outputValue: null },
+	{ value: 3, label: "3 мес." },
+	{ value: 6, label: "6 мес." },
+	{ value: 24, label: "От 24 мес.", outputValue: null }
+] as const;
+
+export function Example() {
+	const [value, setValue] = useState<SliderRangeValue | undefined>([null, 6]);
+
+	return <SliderRange label="Период" min={0} max={24} marks={marks} marksPosition="index" value={value} onChange={setValue} />;
+}
+```
+
+## Сценарии использования
+
+### Single со step
+
+<Canvas of={SliderStories.SingleStep} />
+
+### Single с compact marks
+
+<Canvas of={SliderStories.SingleWithMarks} />
+
+### Равные расстояния между неравномерными значениями
+
+<Canvas of={SliderStories.MonthsIndexMarks} />
+
+### Range без outputValue
+
+<Canvas of={SliderStories.RangePlain} />
+
+### Range с открытыми границами без outputValue у обычных marks
+
+<Canvas of={SliderStories.RangeOpenWithoutExplicitMiddleOutput} />
+
+### Range с outputValue: месяцы на шкале, дни в фильтре
+
+<Canvas of={SliderStories.RangeMonthToDaysOutput} />
+
+### Range с outputValue и открытыми границами
+
+<Canvas of={SliderStories.RangeOpenMonthToDaysOutput} />
+
+### Disabled
+
+<Canvas of={SliderStories.Disabled} />
+
+## API
+
+<ArgTypes of={SliderStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,315 @@
+// MARGIN
+
+.marginTopXs {
+	margin-top: var(--space-xs);
+}
+.marginTopSm {
+	margin-top: var(--space-sm);
+}
+.marginTopMd {
+	margin-top: var(--space-md);
+}
+.marginTopLg {
+	margin-top: var(--space-lg);
+}
+.marginTopXl {
+	margin-top: var(--space-xl);
+}
+
+.marginRightXs {
+	margin-right: var(--space-xs);
+}
+.marginRightSm {
+	margin-right: var(--space-sm);
+}
+.marginRightMd {
+	margin-right: var(--space-md);
+}
+.marginRightLg {
+	margin-right: var(--space-lg);
+}
+.marginRightXl {
+	margin-right: var(--space-xl);
+}
+
+.marginBottomXs {
+	margin-bottom: var(--space-xs);
+}
+.marginBottomSm {
+	margin-bottom: var(--space-sm);
+}
+.marginBottomMd {
+	margin-bottom: var(--space-md);
+}
+.marginBottomLg {
+	margin-bottom: var(--space-lg);
+}
+.marginBottomXl {
+	margin-bottom: var(--space-xl);
+}
+
+.marginLeftXs {
+	margin-left: var(--space-xs);
+}
+.marginLeftSm {
+	margin-left: var(--space-sm);
+}
+.marginLeftMd {
+	margin-left: var(--space-md);
+}
+.marginLeftLg {
+	margin-left: var(--space-lg);
+}
+.marginLeftXl {
+	margin-left: var(--space-xl);
+}
+
+.marginInlineXs {
+	@extend .marginLeftXs;
+	@extend .marginRightXs;
+}
+.marginInlineSm {
+	@extend .marginLeftSm;
+	@extend .marginRightSm;
+}
+.marginInlineMd {
+	@extend .marginLeftMd;
+	@extend .marginRightMd;
+}
+.marginInlineLg {
+	@extend .marginLeftLg;
+	@extend .marginRightLg;
+}
+.marginInlineXl {
+	@extend .marginLeftXl;
+	@extend .marginRightXl;
+}
+
+.marginBlockXs {
+	@extend .marginTopXs;
+	@extend .marginBottomXs;
+}
+.marginBlockSm {
+	@extend .marginTopSm;
+	@extend .marginBottomSm;
+}
+.marginBlockMd {
+	@extend .marginTopMd;
+	@extend .marginBottomMd;
+}
+.marginBlockLg {
+	@extend .marginTopLg;
+	@extend .marginBottomLg;
+}
+.marginBlockXl {
+	@extend .marginTopXl;
+	@extend .marginBottomXl;
+}
+
+// TODO: unused
+.marginXs {
+	@extend .marginBlockXs;
+	@extend .marginInlineXs;
+}
+// TODO: unused
+.marginSm {
+	@extend .marginBlockSm;
+	@extend .marginInlineSm;
+}
+.marginMd {
+	@extend .marginBlockMd;
+	@extend .marginInlineMd;
+}
+.marginLg {
+	@extend .marginBlockLg;
+	@extend .marginInlineLg;
+}
+// TODO: unused
+.marginXl {
+	@extend .marginBlockXl;
+	@extend .marginInlineXl;
+}
+
+.marginTop0 {
+	margin-top: 0;
+}
+.marginRight0 {
+	margin-right: 0;
+}
+.marginBottom0 {
+	margin-bottom: 0;
+}
+.marginLeft0 {
+	margin-left: 0;
+}
+.marginBlock0 {
+	@extend .marginTop0;
+	@extend .marginBottom0;
+}
+.marginInline0 {
+	@extend .marginRight0;
+	@extend .marginLeft0;
+}
+.margin0 {
+	@extend .marginBlock0;
+	@extend .marginInline0;
+}
+
+// TODO: unused
+.paragraph0 {
+	--paragraph-margin: 0;
+}
+
+// PADDING
+
+.paddingTopXs {
+	padding-top: var(--space-xs);
+}
+.paddingTopSm {
+	padding-top: var(--space-sm);
+}
+.paddingTopMd {
+	padding-top: var(--space-md);
+}
+.paddingTopLg {
+	padding-top: var(--space-lg);
+}
+.paddingTopXl {
+	padding-top: var(--space-xl);
+}
+
+.paddingRightXs {
+	padding-right: var(--space-xs);
+}
+.paddingRightSm {
+	padding-right: var(--space-sm);
+}
+.paddingRightMd {
+	padding-right: var(--space-md);
+}
+.paddingRightLg {
+	padding-right: var(--space-lg);
+}
+.paddingRightXl {
+	padding-right: var(--space-xl);
+}
+
+.paddingBottomXs {
+	padding-bottom: var(--space-xs);
+}
+.paddingBottomSm {
+	padding-bottom: var(--space-sm);
+}
+.paddingBottomMd {
+	padding-bottom: var(--space-md);
+}
+.paddingBottomLg {
+	padding-bottom: var(--space-lg);
+}
+.paddingBottomXl {
+	padding-bottom: var(--space-xl);
+}
+
+.paddingLeftXs {
+	padding-left: var(--space-xs);
+}
+.paddingLeftSm {
+	padding-left: var(--space-sm);
+}
+.paddingLeftMd {
+	padding-left: var(--space-md);
+}
+.paddingLeftLg {
+	padding-left: var(--space-lg);
+}
+.paddingLeftXl {
+	padding-left: var(--space-xl);
+}
+
+.paddingInlineXs {
+	@extend .paddingLeftXs;
+	@extend .paddingRightXs;
+}
+.paddingInlineSm {
+	@extend .paddingLeftSm;
+	@extend .paddingRightSm;
+}
+.paddingInlineMd {
+	@extend .paddingLeftMd;
+	@extend .paddingRightMd;
+}
+.paddingInlineLg {
+	@extend .paddingLeftLg;
+	@extend .paddingRightLg;
+}
+.paddingInlineXl {
+	@extend .paddingLeftXl;
+	@extend .paddingRightXl;
+}
+
+.paddingBlockXs {
+	@extend .paddingTopXs;
+	@extend .paddingBottomXs;
+}
+.paddingBlockSm {
+	@extend .paddingTopSm;
+	@extend .paddingBottomSm;
+}
+.paddingBlockMd {
+	@extend .paddingTopMd;
+	@extend .paddingBottomMd;
+}
+.paddingBlockLg {
+	@extend .paddingTopLg;
+	@extend .paddingBottomLg;
+}
+.paddingBlockXl {
+	@extend .paddingTopXl;
+	@extend .paddingBottomXl;
+}
+
+.paddingXs {
+	@extend .paddingBlockXs;
+	@extend .paddingInlineXs;
+}
+.paddingSm {
+	@extend .paddingBlockSm;
+	@extend .paddingInlineSm;
+}
+.paddingMd {
+	@extend .paddingBlockMd;
+	@extend .paddingInlineMd;
+}
+.paddingLg {
+	@extend .paddingBlockLg;
+	@extend .paddingInlineLg;
+}
+.paddingXl {
+	@extend .paddingBlockXl;
+	@extend .paddingInlineXl;
+}
+
+.paddingTop0 {
+	padding-top: 0;
+}
+.paddingRight0 {
+	padding-right: 0;
+}
+.paddingBottom0 {
+	padding-bottom: 0;
+}
+.paddingLeft0 {
+	padding-left: 0;
+}
+.paddingBlock0 {
+	@extend .paddingTop0;
+	@extend .paddingBottom0;
+}
+.paddingInline0 {
+	@extend .paddingRight0;
+	@extend .paddingLeft0;
+}
+.padding0 {
+	@extend .paddingBlock0;
+	@extend .paddingInline0;
+}

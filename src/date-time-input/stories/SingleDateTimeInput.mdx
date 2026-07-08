@@ -1,0 +1,84 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SingleDateTimeInputStories from "./SingleDateTimeInput.stories";
+
+<Meta
+	of={SingleDateTimeInputStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>SingleDateTimeInput</Title>
+<Subtitle>Строгий сегментный ввод даты-времени и времени с popover picker</Subtitle>
+
+`SingleDateTimeInput` объединяет два сценария:
+
+- ручной ввод по фиксированной маске `dd.MM.yyyy HH:mm`;
+- выбор даты и времени через popover picker с wheel-прокруткой;
+- выбор только времени по маске `HH:mm` с технической датой `1970-01-01`.
+
+Семантика компонента фиксирована и отличается от существующих компонентов так:
+
+- до: `DateInput` работал только с календарной датой и нормализовал значение к границам суток;
+- до: `InputDateTime` давал сегментный ввод, но без picker и без опоры на shared date-formatters;
+- после: `SingleDateTimeInput` хранит дату-время с точностью до минуты и использует строгий parse/format через общие date-formatters.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SingleDateTimeInputStories.Default} />
+
+```tsx
+import { useState } from "react";
+
+import { SingleDateTimeInput } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState<Date | null>(null);
+
+	return <SingleDateTimeInput label="Дата и время" value={value} onChange={setValue} />;
+}
+```
+
+## Практические замечания
+
+- Поле вызывает `onChange` только для полной и валидной даты-времени.
+- Неполный или невалидный ручной ввод при потере фокуса откатывается к последнему committed значению.
+- Полностью очищенные сегменты трактуются как `null`.
+- Ограничения `minDate` и `maxDate` применяются и к календарю, и к времени внутри того же дня.
+- В режиме `mode="time"` компонент возвращает `Date` на технической дате `1970-01-01`, а `minDate` и `maxDate` сравниваются только по `HH:mm`.
+- Wheel-панель блокирует прокрутку страницы во время взаимодействия и доводит выбранное значение в центр.
+- Размещение панели времени управляется через `timePanelPlacement="bottom" | "right"`.
+
+## Сценарии использования
+
+### Базовый сценарий
+
+<Canvas of={SingleDateTimeInputStories.Default} />
+
+### Пустое значение
+
+<Canvas of={SingleDateTimeInputStories.Empty} />
+
+### Ограниченный диапазон
+
+<Canvas of={SingleDateTimeInputStories.WithLimits} />
+
+### Панель времени справа
+
+<Canvas of={SingleDateTimeInputStories.WithRightPanel} />
+
+### Только время
+
+<Canvas of={SingleDateTimeInputStories.TimeOnly} />
+
+## API
+
+<ArgTypes of={SingleDateTimeInputStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

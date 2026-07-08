@@ -1,0 +1,161 @@
+@use "./mixins" as *;
+
+// TODO: unused
+.overlayBackdrop {
+	background-color: var(--overlay-backdrop);
+}
+
+.overlayGlass {
+	background-color: var(--overlay-glass);
+}
+
+@supports (backdrop-filter: blur(0.5em)) {
+	.overlayBackdrop {
+		backdrop-filter: blur(0.5em);
+	}
+
+	.overlayGlass {
+		backdrop-filter: blur(0.5em);
+	}
+}
+
+.surface0 {
+	background-color: var(--surface-0);
+}
+
+.surface1 {
+	background-color: var(--surface-1);
+}
+
+.surface2 {
+	background-color: var(--surface-2);
+}
+
+// TODO: unused
+.surfaceAccent {
+	background-color: var(--surface-accent);
+}
+
+.surfaceBackdrop {
+	background-color: var(--overlay-backdrop);
+}
+
+// TODO: unused
+.surfaceGlass {
+	background-color: var(--overlay-glass);
+}
+
+.colorTransparent {
+	color: transparent;
+}
+
+.content0 {
+	color: var(--content-0);
+}
+
+.content1 {
+	color: var(--content-1);
+}
+
+.content2 {
+	color: var(--content-2);
+}
+
+.contentAccent {
+	color: var(--content-accent);
+}
+
+.statusSuccess {
+	color: var(--status-success-text);
+}
+
+.statusError {
+	color: var(--status-error-text);
+}
+
+.textColorDanger {
+	color: var(--status-error-text);
+}
+
+.statusWarning {
+	color: var(--status-warning-text);
+}
+
+.statusInfo {
+	color: var(--status-info-text);
+}
+
+.statusNone {
+	color: var(--content-1);
+}
+
+// Состояния
+// TODO: unused
+.colorSchemeNeutral {
+	@include ui-tone("neutral");
+	@include ui-appearance-solid;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}
+
+// TODO: unused
+.colorSchemeSuccess {
+	@include ui-tone("success");
+	@include ui-appearance-solid;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}
+
+.colorSchemeError {
+	@include ui-tone("error");
+	@include ui-appearance-solid;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}
+
+// TODO: unused
+.colorSchemeWarning {
+	@include ui-tone("warning");
+	@include ui-appearance-solid;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}
+
+// TODO: unused
+.colorSchemeInfo {
+	@include ui-tone("info");
+	@include ui-appearance-solid;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}
+
+// Нейтральные схемы
+// TODO: unused
+.colorSchemeGhost {
+	@include ui-tone("neutral");
+	@include ui-appearance-ghost;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}
+
+// TODO: unused
+.colorSchemeLight {
+	@include ui-tone("neutral");
+	@include ui-appearance-outline;
+
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border-color: var(--ui-border-color);
+}

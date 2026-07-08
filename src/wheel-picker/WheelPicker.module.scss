@@ -1,0 +1,88 @@
+@use "@/styles/mixins" as *;
+
+.wheelPicker {
+	--wheel-picker-min-height: 10em;
+	--wheel-picker-viewport-height: var(--wheel-picker-min-height);
+	--wheel-picker-item-height: calc(var(--wheel-picker-viewport-height) / 7);
+	--wheel-picker-edge-padding: calc((var(--wheel-picker-viewport-height) / 2) - (var(--wheel-picker-item-height) / 2));
+
+	position: relative;
+	min-height: var(--wheel-picker-min-height);
+	height: 100%;
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background: linear-gradient(to bottom, var(--surface-0), transparent 18%, transparent 82%, var(--surface-0)), var(--surface-1);
+	overflow: hidden;
+}
+
+.viewport {
+	position: relative;
+	height: var(--wheel-picker-viewport-height);
+}
+
+.scroller {
+	height: 100%;
+	overflow-y: auto;
+	overscroll-behavior: contain;
+	scroll-snap-type: y mandatory;
+	scrollbar-width: none;
+	padding-block: var(--wheel-picker-edge-padding);
+	outline: none;
+
+	&::-webkit-scrollbar {
+		display: none;
+	}
+
+	&:focus-visible {
+		@include focusVisible;
+	}
+}
+
+.items {
+	display: grid;
+}
+
+.item {
+	height: var(--wheel-picker-item-height);
+	padding: 0 var(--space-sm);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	scroll-snap-align: center;
+	background: transparent;
+	color: var(--content-2);
+	font-family: var(--font-family-mono);
+	font-variant-numeric: tabular-nums;
+	transition:
+		color var(--transition-fast) ease,
+		background-color var(--transition-fast) ease,
+		font-variation-settings var(--transition-fast) ease;
+
+	&[data-selected] {
+		color: var(--content-0);
+		font-weight: 600;
+		font-variation-settings: "wght" 600;
+	}
+
+	&:hover:not(:disabled) {
+		background: color-mix(in srgb, var(--surface-accent) 40%, transparent);
+	}
+
+	&:disabled {
+		cursor: default;
+	}
+}
+
+.selectionFrame {
+	position: absolute;
+	top: 50%;
+	left: 0;
+	right: 0;
+	height: var(--wheel-picker-item-height);
+	transform: translateY(-50%);
+	border-top: var(--border);
+	border-bottom: var(--border);
+	// border-radius: var(--radius-xs);
+	background: color-mix(in srgb, var(--surface-accent) 28%, transparent);
+	pointer-events: none;
+}

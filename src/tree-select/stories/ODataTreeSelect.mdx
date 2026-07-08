@@ -1,0 +1,30 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ODataTreeSelectStories from "./ODataTreeSelect.stories";
+
+<Meta of={ODataTreeSelectStories} parameters={{ docs: { toc: true } }} />
+
+<Title>ODataTreeSelect</Title>
+<Subtitle>Single-select по одной OData-цепочке в виде дерева</Subtitle>
+
+`ODataTreeSelect` загружает одну OData-коллекцию, строит дерево по цепочке codeKey и позволяет выбрать любой узел.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ODataTreeSelectStories.Basic} />
+
+## Сценарии
+
+<Canvas of={ODataTreeSelectStories.Basic} />
+<Canvas of={ODataTreeSelectStories.SelectParent} />
+<Canvas of={ODataTreeSelectStories.LoadingState} />
+<Canvas of={ODataTreeSelectStories.ErrorState} />
+
+## API
+
+<ArgTypes of={ODataTreeSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

@@ -1,0 +1,99 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ODataMultiSelectStories from "./ODataMultiSelect.stories";
+
+<Meta
+	of={ODataMultiSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>ODataMultiSelect</Title>
+<Subtitle>Мультиселект с загрузкой коллекций по OData и зависимостями от внешних фильтров</Subtitle>
+
+ODataMultiSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны загрузку, ошибочные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ODataMultiSelectStories.BasicDivision} />
+
+```tsx
+import { useState } from "react";
+
+import { ODataMultiSelect } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState([]);
+
+	return (
+		<ODataMultiSelect label="Подразделения" value={value} onChange={setValue} entitySet="Departments" textKey="Name" codeKey="Code" />
+	);
+}
+```
+
+## Практические рекомендации
+
+- Для асинхронных сценариев предусмотрите не только успешный путь, но и загрузку, пустой результат и ошибку.
+
+## Сценарии использования
+
+### Базовый сценарий загрузки OData-коллекции
+
+Базовый сценарий загрузки OData-коллекции.
+
+<Canvas of={ODataMultiSelectStories.BasicDivision} />
+
+### Сценарий скрытия кода option в интерфейсе
+
+Сценарий скрытия кода option в интерфейсе.
+
+<Canvas of={ODataMultiSelectStories.HideCode} />
+
+### Работа с текстовым значением
+
+Работа с текстовым значением.
+
+<Canvas of={ODataMultiSelectStories.SelectTextValue} />
+
+### Статическая зависимость от другого фильтра
+
+Статическая зависимость от другого фильтра.
+
+<Canvas of={ODataMultiSelectStories.StaticDependency} />
+
+### Связка нескольких фильтров между собой
+
+Связка нескольких фильтров между собой.
+
+<Canvas of={ODataMultiSelectStories.LinkedFilters} />
+
+### Состояние загрузки данных
+
+Состояние загрузки данных.
+
+<Canvas of={ODataMultiSelectStories.LoadingState} />
+
+### Ошибки загрузки или разбора метаданных
+
+Ошибки загрузки или разбора метаданных.
+
+<Canvas of={ODataMultiSelectStories.MetadataError} />
+
+### Ошибки получения коллекции значений
+
+Ошибки получения коллекции значений.
+
+<Canvas of={ODataMultiSelectStories.CollectionError} />
+
+## API
+
+<ArgTypes of={ODataMultiSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

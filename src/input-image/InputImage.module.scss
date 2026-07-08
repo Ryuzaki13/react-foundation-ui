@@ -1,0 +1,24 @@
+.control {
+	height: var(--control-height);
+	width: 100%;
+	padding: 0 var(--space-sm);
+	font-size: var(--font-size-md);
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+}
+
+.fileName {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.hiddenInput {
+	position: absolute;
+	width: 0;
+	height: 0;
+	opacity: 0;
+	overflow: hidden;
+	pointer-events: none;
+}

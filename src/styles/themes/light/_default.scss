@@ -1,0 +1,7 @@
+@use "../../config" as stylesConfig;
+@use "../theme" as theme;
+
+@mixin light-theme {
+	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens(stylesConfig.$light-theme));
+	@include theme.generated-theme-palette(stylesConfig.$light-theme, light);
+}

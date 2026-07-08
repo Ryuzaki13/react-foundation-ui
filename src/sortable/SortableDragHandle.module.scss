@@ -1,0 +1,39 @@
+.dragHandle {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
+
+	width: var(--control-height);
+	height: var(--control-height);
+	padding: 0;
+	border: none;
+	border-radius: var(--radius-sm);
+	background: transparent;
+	color: inherit;
+	line-height: 1;
+	user-select: none;
+	touch-action: none;
+	cursor: grab;
+
+	&:focus-visible {
+		outline: var(--focus);
+		outline-offset: var(--focus-offset);
+	}
+
+	&:active,
+	&[data-sortable-handle-dragging="true"] {
+		cursor: grabbing;
+	}
+
+	&[data-sortable-handle-disabled="true"] {
+		cursor: default;
+		opacity: 0.25;
+	}
+
+	svg {
+		display: block;
+		width: 1.25em;
+		height: 1.25em;
+	}
+}

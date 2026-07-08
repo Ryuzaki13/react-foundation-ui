@@ -1,0 +1,69 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as RadioButtonStories from "./RadioButton.stories";
+
+<Meta
+	of={RadioButtonStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>RadioButton</Title>
+<Subtitle>Одиночная radio-кнопка для ручной сборки наборов выбора и специальных компоновок</Subtitle>
+
+RadioButton уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии, заблокированные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={RadioButtonStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { RadioButton } from "@/shared/ui";
+
+export function Example() {
+	const [checked, setChecked] = useState(true);
+
+	return <RadioButton label="Основной вариант" value={checked} onChange={setChecked} />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- Сначала выберите семантику и визуальную схему, а затем уже подстраивайте остальные пропсы компонента.
+- Заблокированное состояние лучше проверять отдельно, чтобы убедиться, что визуально и поведенчески оно остается понятным.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={RadioButtonStories.Controlled} />
+
+### Работа группы взаимосвязанных элементов
+
+Работа группы взаимосвязанных элементов.
+
+<Canvas of={RadioButtonStories.Group} />
+
+### Проверка поведения в заблокированном состоянии
+
+Проверка поведения в заблокированном состоянии.
+
+<Canvas of={RadioButtonStories.Disabled} />
+
+## API
+
+<ArgTypes of={RadioButtonStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

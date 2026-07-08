@@ -1,0 +1,63 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as PeriodSelectStories from "./PeriodSelect.stories";
+
+<Meta
+	of={PeriodSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>PeriodSelect</Title>
+<Subtitle>Выбор периода детализации дат с ограничением вариантов по связанному диапазону</Subtitle>
+
+PeriodSelect используется для выбора уровня детализации: `day`, `week` или `month`. Компонент хранит только id выбранного периода, а недоступность вариантов вычисляет по переданному `dateRange` и порогам `maxDayRangeDays` / `maxWeekRangeWeeks`.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={PeriodSelectStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { PeriodSelect } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState("day");
+	const dateRange = [new Date(2026, 2, 1), new Date(2026, 2, 14)] as const;
+
+	return <PeriodSelect label="Период" value={value} onChange={setValue} dateRange={dateRange} maxDayRangeDays={31} />;
+}
+```
+
+## Практические рекомендации
+
+- Передавайте `dateRange`, если период должен зависеть от выбранного диапазона дат.
+- Настраивайте `maxDayRangeDays` и `maxWeekRangeWeeks` в конфиге параметрического контрола, а не в потребителях runtime.
+- В story `Controlled` значения обновляются через `useArgs`, поэтому Controls и сам Select остаются синхронизированы.
+
+## Сценарии использования
+
+### Контролируемый выбор с редактированием props через Storybook Controls
+
+<Canvas of={PeriodSelectStories.Controlled} />
+
+### Автопереключение при слишком большом диапазоне
+
+<Canvas of={PeriodSelectStories.AutoSwitchByRange} />
+
+### Заблокированное состояние
+
+<Canvas of={PeriodSelectStories.Disabled} />
+
+## API
+
+<ArgTypes of={PeriodSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

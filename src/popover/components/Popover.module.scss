@@ -1,0 +1,20 @@
+.popover {
+	padding: var(--space-sm);
+	// background-image: radial-gradient(var(--surface-0) 50%, var(--surface-1) 100%);
+
+	border: var(--border-width) solid var(--border-1);
+	border-radius: var(--radius-sm);
+	color: var(--content-0);
+
+	filter: drop-shadow(var(--shadow-md));
+
+	z-index: var(--z-popover);
+
+	&.primary {
+		background-color: var(--surface-0);
+	}
+
+	&.secondary {
+		background-color: var(--surface-1);
+	}
+}

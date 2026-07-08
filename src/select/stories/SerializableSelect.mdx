@@ -1,0 +1,85 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SerializableSelectStories from "./SerializableSelect.stories";
+
+<Meta
+	of={SerializableSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>SerializableSelect</Title>
+<Subtitle>Select для сериализуемых значений и конфигурационных сценариев с key/label описанием option</Subtitle>
+
+SerializableSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны контролируемые сценарии, заблокированные состояния.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SerializableSelectStories.Controlled} />
+
+```tsx
+import { useState } from "react";
+
+import { SerializableSelect } from "@/shared/ui";
+
+const options = [
+	{ key: "draft", label: "Черновик" },
+	{ key: "done", label: "Завершен" }
+];
+
+export function Example() {
+	const [value, setValue] = useState(undefined);
+
+	return <SerializableSelect label="Статус" value={value} onChange={setValue} options={options} optionKey="key" optionLabel="label" />;
+}
+```
+
+## Практические рекомендации
+
+- Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- Заблокированное состояние лучше проверять отдельно, чтобы убедиться, что визуально и поведенчески оно остается понятным.
+
+## Сценарии использования
+
+### Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте
+
+Компонент работает в контролируемом режиме, когда состояние хранится во внешнем компоненте.
+
+<Canvas of={SerializableSelectStories.Controlled} />
+
+### Поведение без выбранного значения
+
+Поведение без выбранного значения.
+
+<Canvas of={SerializableSelectStories.Placeholder} />
+
+### With Code
+
+Сценарий демонстрирует вариант `WithCode` и помогает быстро сравнить его с остальными режимами компонента.
+
+<Canvas of={SerializableSelectStories.WithCode} />
+
+### Сценарий, близкий к асинхронной перезагрузке данных
+
+Сценарий, близкий к асинхронной перезагрузке данных.
+
+<Canvas of={SerializableSelectStories.AsyncReloadLike} />
+
+### Проверка поведения в заблокированном состоянии
+
+Проверка поведения в заблокированном состоянии.
+
+<Canvas of={SerializableSelectStories.Disabled} />
+
+## API
+
+<ArgTypes of={SerializableSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

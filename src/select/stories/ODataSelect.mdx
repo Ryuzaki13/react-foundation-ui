@@ -1,0 +1,90 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ODataSelectStories from "./ODataSelect.stories";
+
+<Meta
+	of={ODataSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>ODataSelect</Title>
+<Subtitle>Single-select с загрузкой OData-справочника, поиском и зависимостями от внешних фильтров</Subtitle>
+
+ODataSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={ODataSelectStories.BasicDivision} />
+
+```tsx
+import { useState } from "react";
+
+import { ODataSelect } from "@/shared/ui";
+
+export function Example() {
+	const [value, setValue] = useState<string | undefined>(undefined);
+
+	return (
+		<ODataSelect
+			label="Регион"
+			value={value}
+			onChange={setValue}
+			odata={{ service: "DEMO_REFERENCE_SRV", target: "DemoReferenceItems" }}
+			model={{ codeKey: "REGION" }}
+			segment={{ placeholder: "Регион" }}
+		/>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Для OData-сценариев проверяйте не только выбор значения, но и поиск, загрузку, пустой результат и ошибочные ответы сервиса.
+
+## Сценарии использования
+
+### Базовый сценарий загрузки OData-коллекции
+
+<Canvas of={ODataSelectStories.BasicDivision} />
+
+### Сценарий скрытия кода option в интерфейсе
+
+<Canvas of={ODataSelectStories.HideCode} />
+
+### Работа с текстовым значением
+
+<Canvas of={ODataSelectStories.SelectTextValue} />
+
+### Статическая зависимость от другого фильтра
+
+<Canvas of={ODataSelectStories.StaticDependency} />
+
+### Связка нескольких фильтров между собой
+
+<Canvas of={ODataSelectStories.LinkedFilters} />
+
+### Состояние загрузки данных
+
+<Canvas of={ODataSelectStories.LoadingState} />
+
+### Ошибки загрузки или разбора метаданных
+
+<Canvas of={ODataSelectStories.MetadataError} />
+
+### Ошибки получения коллекции значений
+
+<Canvas of={ODataSelectStories.CollectionError} />
+
+## API
+
+<ArgTypes of={ODataSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

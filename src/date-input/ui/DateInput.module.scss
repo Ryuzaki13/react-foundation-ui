@@ -1,0 +1,11 @@
+.calendarButton {
+	&:hover {
+		color: var(--focus-ring);
+	}
+}
+
+.selectionModeControl {
+	margin-top: var(--space-sm);
+	padding-top: var(--space-sm);
+	border-top: var(--border);
+}

@@ -1,0 +1,29 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as TreeMultiSelectStories from "./TreeMultiSelect.stories";
+
+<Meta of={TreeMultiSelectStories} parameters={{ docs: { toc: true } }} />
+
+<Title>TreeMultiSelect</Title>
+<Subtitle>Мультивыбор узлов дерева с компрессией subtree в parent</Subtitle>
+
+`TreeMultiSelect` хранит наружу не “все листья”, а канонизированный frontier по уровням дерева.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={TreeMultiSelectStories.Basic} />
+
+## Сценарии
+
+<Canvas of={TreeMultiSelectStories.Basic} />
+<Canvas of={TreeMultiSelectStories.ParentCompression} />
+<Canvas of={TreeMultiSelectStories.MixedSelection} />
+
+## API
+
+<ArgTypes of={TreeMultiSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

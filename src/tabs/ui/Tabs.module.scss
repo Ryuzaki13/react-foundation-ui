@@ -1,0 +1,137 @@
+.tabsContainer {
+	--tabs-border: none;
+	--tabs-panel-border: none;
+	--tabs-panel-padding: var(--space-md);
+	--tabs-panel-bg: var(--surface-1);
+
+	display: grid;
+	gap: var(--space-sm);
+	min-width: 0;
+	min-height: 0;
+	height: 100%;
+	overflow: hidden;
+}
+
+.bordered {
+	--tabs-border: var(--border);
+	--tabs-panel-border: var(--border);
+}
+
+.cleanPanel {
+	--tabs-panel-padding: 0;
+	--tabs-panel-bg: none;
+	--tabs-panel-border: none;
+}
+
+.tabs {
+	display: flex;
+	gap: var(--space-xs);
+	min-width: 0;
+
+	border: var(--tabs-border);
+	background-color: var(--surface-1);
+	padding: var(--space-xs);
+}
+
+.panels {
+	min-width: 0;
+	min-height: 0;
+	border: var(--tabs-panel-border);
+	background-color: var(--tabs-panel-bg);
+}
+
+.tabs,
+.panels {
+	border-radius: var(--radius-sm);
+}
+
+.horizontal {
+	grid-template-rows: auto minmax(0, 1fr);
+
+	// .tabs {
+	// 	flex-wrap: wrap;
+	// }
+}
+
+.vertical {
+	grid-template-columns: 10em minmax(0, 1fr);
+	min-height: 0;
+
+	.tabs {
+		flex-direction: column;
+	}
+}
+
+.panelScrollable {
+	overflow: auto;
+}
+
+.tab {
+	text-align: left;
+
+	position: relative;
+	min-height: var(--control-height);
+	padding: var(--space-xs) var(--space-md);
+	color: var(--content-2);
+	border-radius: var(--radius-sm);
+	font-weight: 700;
+	font-variation-settings: "wght" 700;
+
+	flex-shrink: 0;
+
+	&:hover {
+		cursor: pointer;
+		color: var(--content-accent);
+		// background-color: var(--surface-accent);
+	}
+
+	&.selected {
+		color: var(--status-neutral-on-fill);
+		background-color: var(--status-neutral-fill);
+		border-color: var(--border-0);
+
+		box-shadow: var(--shadow-xs);
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+		color: var(--content-2);
+		background-color: var(--surface-2);
+	}
+}
+
+.panel {
+	padding: 0;
+	min-width: 0;
+	min-height: 0;
+	height: 100%;
+}
+
+.panelBody {
+	min-width: 0;
+	min-height: 0;
+
+	height: 100%;
+	padding: var(--tabs-panel-padding);
+}
+
+.layoutPanels {
+	overflow: hidden;
+}
+
+.layoutPanel {
+	display: grid;
+	gap: var(--space-md);
+	min-width: 0;
+	min-height: 0;
+	height: 100%;
+	padding: var(--tabs-panel-padding);
+}
+
+.layoutSection {
+	min-width: 0;
+}
+
+.layoutContent {
+	min-height: 0;
+}

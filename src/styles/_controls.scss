@@ -1,0 +1,42 @@
+@use "./mixins" as *;
+
+.uiToneNeutral {
+	@include ui-tone("neutral");
+}
+
+.uiToneError {
+	@include ui-tone("error");
+}
+
+.uiToneWarning {
+	@include ui-tone("warning");
+}
+
+.uiToneSuccess {
+	@include ui-tone("success");
+}
+
+.uiToneInfo {
+	@include ui-tone("info");
+}
+
+.uiAppearanceSolid {
+	@include ui-appearance-solid;
+}
+
+.uiAppearanceOutline {
+	@include ui-appearance-outline;
+}
+
+.uiAppearanceGhost {
+	@include ui-appearance-ghost;
+}
+
+.uiAppearanceTransparent {
+	@include ui-appearance-transparent;
+}
+
+// TODO: unused
+.uiInteractiveControl {
+	@include ui-control-base;
+}

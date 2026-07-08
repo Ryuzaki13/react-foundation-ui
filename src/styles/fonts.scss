@@ -1,0 +1,47 @@
+@font-face {
+	font-family: "72";
+	font-style: normal;
+	font-weight: 100;
+	src:
+		url("/assets/fonts/72-Light.woff2") format("woff2"),
+		url("/assets/fonts/72-Light.woff") format("woff");
+}
+
+@font-face {
+	font-family: "72";
+	font-style: normal;
+	font-weight: 400;
+	src:
+		url("/assets/fonts/72-Regular.woff2") format("woff2"),
+		url("/assets/fonts/72-Regular.woff") format("woff");
+}
+
+@font-face {
+	font-family: "72";
+	font-style: normal;
+	font-weight: 700;
+	src: url("/assets/fonts/72-Bold.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "72";
+	font-style: normal;
+	font-weight: 900;
+	src: url("/assets/fonts/72-Black.woff2") format("woff2");
+}
+
+@font-face {
+	font-family: "72";
+	font-style: italic;
+	font-weight: normal;
+	src:
+		url("/assets/fonts/72-Italic.woff2") format("woff2"),
+		url("/assets/fonts/72-Italic.woff") format("woff");
+}
+
+@font-face {
+	font-family: "72-mono";
+	src:
+		url("/assets/fonts/72-MonoRegular.woff2") format("woff2"),
+		url("/assets/fonts/72-MonoRegular.woff") format("woff");
+}
