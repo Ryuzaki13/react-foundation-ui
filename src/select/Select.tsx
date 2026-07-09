@@ -17,7 +17,7 @@ import {
 	usePickerQuery,
 	usePickerTriggerController
 } from "../picker";
-import { UiBaseProps } from "../types";
+import { ChangeHandler, UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
 import { getOptionSearchText } from "./lib";
@@ -31,10 +31,7 @@ export type SelectOptionState = {
 	disabled: boolean;
 };
 
-export interface SelectProps<TOption extends InputType, TChangeValue extends TOption | undefined = TOption> extends UiBaseProps<
-	TChangeValue,
-	TOption | undefined
-> {
+type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TOption | undefined>, "onChange"> & {
 	options: readonly TOption[];
 	getOptionKey: (option: TOption) => SelectOptionKey;
 	getOptionLabel: (option: TOption) => ReactNode;
@@ -58,45 +55,56 @@ export interface SelectProps<TOption extends InputType, TChangeValue extends TOp
 	loadingState?: ReactNode;
 	errorState?: ReactNode;
 	placement?: Placement;
-	clearable?: boolean;
-}
+};
+
+type SelectChangeValue<TOption extends InputType, TClearable extends boolean | undefined> = true extends TClearable
+	? TOption | undefined
+	: TOption;
+
+export type SelectProps<TOption extends InputType, TClearable extends boolean | undefined = false> = SelectSharedProps<TOption> & {
+	clearable?: TClearable;
+	onChange: ChangeHandler<SelectChangeValue<TOption, TClearable>>;
+};
 
 /**
  * Выпадающий список выбора значения из набора опций. Подходит для форм, фильтров и простых справочников.
  */
-export function Select<TOption extends InputType, TChangeValue extends TOption | undefined = TOption>({
-	label,
-	description,
-	disabled,
-	placeholder,
-	size,
-	options,
-	value,
-	onChange,
-	getOptionKey,
-	getOptionLabel,
-	getOptionCode,
-	getOptionDisabled,
-	getOptionAriaLabel,
-	getOptionClassName,
-	renderOption,
-	renderValue,
-	className,
-	buttonClassName,
-	optionsClassName,
-	optionsContentClassName,
-	searchable = false,
-	defaultFilter = true,
-	query,
-	defaultQuery,
-	onQuery,
-	renderPopupHeader,
-	emptyState,
-	loadingState,
-	errorState,
-	placement = "bottom-start",
-	clearable = false
-}: SelectProps<TOption, TChangeValue>) {
+export function Select<TOption extends InputType, TClearable extends boolean | undefined = false>(props: SelectProps<TOption, TClearable>) {
+	const {
+		label,
+		description,
+		disabled,
+		placeholder,
+		size,
+		options,
+		value,
+		onChange,
+		getOptionKey,
+		getOptionLabel,
+		getOptionCode,
+		getOptionDisabled,
+		getOptionAriaLabel,
+		getOptionClassName,
+		renderOption,
+		renderValue,
+		className,
+		buttonClassName,
+		optionsClassName,
+		optionsContentClassName,
+		searchable = false,
+		defaultFilter = true,
+		query,
+		defaultQuery,
+		onQuery,
+		renderPopupHeader,
+		emptyState,
+		loadingState,
+		errorState,
+		placement = "bottom-start",
+		clearable = false
+	} = props;
+	const emitChange = onChange as ChangeHandler<TOption | undefined>;
+
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [open, setOpen] = useState(false);
 	const triggerMode = searchable ? "search-single" : "display";
@@ -145,7 +153,7 @@ export function Select<TOption extends InputType, TChangeValue extends TOption |
 		open,
 		onOpenChange: setOpen,
 		getOptionDisabled,
-		onSelect: (option) => onChange(option as TChangeValue),
+		onSelect: emitChange,
 		disabled,
 		placement,
 		triggerMode
@@ -181,7 +189,7 @@ export function Select<TOption extends InputType, TChangeValue extends TOption |
 	};
 	const handleClear = () => {
 		if (clearable) {
-			onChange(undefined as TChangeValue);
+			emitChange(undefined);
 		}
 
 		setQuery("");

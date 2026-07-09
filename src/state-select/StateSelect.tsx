@@ -91,7 +91,7 @@ export function StateSelect({
 	const hasDetailedOptions = stateOptions.some((stateOption) => hasStateMeta(stateMeta?.[stateOption]));
 
 	const sharedSelectProps: Pick<
-		SelectProps<State, State | undefined>,
+		SelectProps<State>,
 		| "getOptionKey"
 		| "getOptionLabel"
 		| "getOptionAriaLabel"
@@ -117,7 +117,7 @@ export function StateSelect({
 	};
 
 	return (
-		<Select<State, State | undefined>
+		<Select
 			label={label}
 			description={description}
 			disabled={disabled}

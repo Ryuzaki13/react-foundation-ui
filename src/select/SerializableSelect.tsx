@@ -73,7 +73,7 @@ export function SerializableSelect<
 		value === undefined ? undefined : options.find((option) => getSerializableOptionKey(option, optionKey) === value);
 
 	return (
-		<Select<TOption, TOption | undefined>
+		<Select
 			label={label}
 			description={description}
 			disabled={disabled}
@@ -81,10 +81,10 @@ export function SerializableSelect<
 			size={size}
 			options={options}
 			value={selectedOption}
-			onChange={(option) => onChange(option ? getSerializableOptionKey(option, optionKey) : undefined)}
-			getOptionKey={(option) => getSerializableOptionKey(option, optionKey)}
-			getOptionLabel={(option) => getSerializableOptionLabel(option, optionLabel, optionKey)}
-			getOptionCode={renderCode ? (option) => getSerializableOptionKey(option, optionKey) : undefined}
+			onChange={(option: TOption | undefined) => onChange(option ? getSerializableOptionKey(option, optionKey) : undefined)}
+			getOptionKey={(option: TOption) => getSerializableOptionKey(option, optionKey)}
+			getOptionLabel={(option: TOption) => getSerializableOptionLabel(option, optionLabel, optionKey)}
+			getOptionCode={renderCode ? (option: TOption) => getSerializableOptionKey(option, optionKey) : undefined}
 			className={className}
 			clearable={clearable}
 		/>

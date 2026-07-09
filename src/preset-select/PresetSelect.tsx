@@ -40,13 +40,13 @@ export function PresetSelect<TOption extends PresetOption>({
 	const selectedOption = getPresetOption(value, options) ?? undefined;
 
 	return (
-		<Select<TOption, TOption | undefined>
+		<Select
 			{...props}
 			options={options}
 			value={selectedOption}
-			onChange={(option) => onChange(option?.id)}
-			getOptionKey={(option) => option.id}
-			getOptionLabel={(option) => option.label}
+			onChange={(option: TOption | undefined) => onChange(option?.id)}
+			getOptionKey={(option: TOption) => option.id}
+			getOptionLabel={(option: TOption) => option.label}
 			getOptionCode={getOptionCode}
 			getOptionDisabled={getOptionDisabled}
 			getOptionAriaLabel={getOptionAriaLabel}

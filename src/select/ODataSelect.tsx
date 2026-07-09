@@ -51,7 +51,7 @@ export const ODataSelect: React.FC<ODataSelectProps> = ({
 	const resolvedTextKey = getODataOptionTextKey(odataModel.selectedItem ?? odataModel.options[0], odataModel.textKey, odataModel.codeKey);
 
 	return (
-		<Select<CollectionItem, CollectionItem | undefined>
+		<Select
 			size={size}
 			label={label}
 			description={description}
