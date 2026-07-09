@@ -297,7 +297,7 @@ export function InputNumber({
 	endAdornmentClassName,
 	endAdornmentWidth,
 	...props
-}: BaseInputProps<number, number | undefined>) {
+}: BaseInputProps<number>) {
 	const inputProps = props as InputHTMLAttributes<HTMLInputElement>;
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
 		id: props.id,
