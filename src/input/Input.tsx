@@ -174,7 +174,7 @@ function createEndAdornment({ endAdornment, onClear, disabled }: { endAdornment?
 	);
 }
 
-export interface BaseInputProps<T extends number | string, V = T>
+export interface BaseInputProps<T extends number | string | undefined, V = T>
 	extends Omit<InputHTMLAttributes<HTMLInputElement>, "size" | "value" | "type" | "defaultValue" | "onChange">, UiBaseProps<T, V> {
 	onClear?: () => void;
 	error?: string;
@@ -226,7 +226,7 @@ export function InputText({
 			setInternalInvalid(newValue !== "" && !allowedPattern.test(newValue));
 		}
 
-		onChange?.(newValue);
+		onChange(newValue);
 		if (error && onClearError) onClearError();
 	};
 
@@ -297,7 +297,7 @@ export function InputNumber({
 	endAdornmentClassName,
 	endAdornmentWidth,
 	...props
-}: BaseInputProps<number>) {
+}: BaseInputProps<number | undefined>) {
 	const inputProps = props as InputHTMLAttributes<HTMLInputElement>;
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
 		id: props.id,
@@ -331,15 +331,7 @@ export function InputNumber({
 		const raw = e.target.value;
 		setRawValue(raw);
 
-		const parsed = toFiniteNumber(raw) ?? value ?? 0;
-		// const isEmpty = raw.trim() === "";
-
-		// const minNum = min !== undefined ? Number(min) : undefined;
-		// const maxNum = max !== undefined ? Number(max) : undefined;
-		// const isValidNumber = !isEmpty && !isNaN(parsed);
-		// const isInRange = isValidNumber && (minNum === undefined || parsed >= minNum) && (maxNum === undefined || parsed <= maxNum);
-
-		// setInternalInvalid(!isEmpty && (!isValidNumber || !isInRange));
+		const parsed = toFiniteNumber(raw); // ?? value ?? 0;
 
 		onChange(parsed);
 		if (error && onClearError) onClearError();
