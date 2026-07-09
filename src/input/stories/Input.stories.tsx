@@ -84,7 +84,7 @@ export const TextControlled: Story = {
 
 export const NumberControlled: Story = {
 	render: () => {
-		const [value, setValue] = useState<number>(25);
+		const [value, setValue] = useState<number | undefined>(25);
 
 		return (
 			<InputNumber
