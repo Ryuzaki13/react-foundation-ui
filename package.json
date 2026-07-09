@@ -550,7 +550,6 @@
 		"build-storybook": "storybook build",
 		"validate": "npm run lint && npm run typecheck && npm run test && npm run build",
 		"pack:dry-run": "npm run validate && npm run build-storybook && npm pack --dry-run",
-		"prepublishOnly": "npm run validate && npm run build-storybook",
 		"build-package": "npm run build && npm run build-storybook",
 		"serve-storybook": "npx http-server storybook-static"
 	},

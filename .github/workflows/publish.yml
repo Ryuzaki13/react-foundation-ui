@@ -58,7 +58,6 @@ jobs:
         with:
           node-version: 24
           cache: npm
-          registry-url: https://registry.npmjs.org/
 
       - name: Use npm with trusted publishing support
         run: npm install -g npm@11
@@ -67,7 +66,7 @@ jobs:
         run: npm ci
 
       - name: Build package
-        run: npm run build
+        run: npm run build-package
 
       - name: Release
         run: npx semantic-release
