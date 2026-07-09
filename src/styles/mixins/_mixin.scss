@@ -285,15 +285,15 @@
 @mixin generate-accent($L, $C, $H, $mode) {
 	@if $mode == light {
 		--content-accent: oklch(#{$L} #{$C} #{$H});
-		--surface-accent: oklch(0.94 #{$C - 0.2} #{$H - 15});
-		--border-accent: oklch(#{$L - 0.03} #{$C - 0.08} #{$H});
+		--surface-accent: oklch(0.94 #{math.max(0, $C - 0.2)} #{$H - 15});
+		--border-accent: oklch(#{$L - 0.03} #{math.max(0, $C - 0.08)} #{$H});
 		// --focus-accent: oklch(#{$L + 0.04} #{$C + 0.05} #{$H});
 	}
 
 	@if $mode == dark {
 		--content-accent: oklch(#{$L} #{$C} #{$H});
-		--surface-accent: oklch(#{$L - 0.4} #{$C - 0.15} #{$H - 10});
-		--border-accent: oklch(#{$L - 0.08} #{$C - 0.1} #{$H});
+		--surface-accent: oklch(#{$L - 0.4} #{math.max(0, $C - 0.15)} #{$H - 10});
+		--border-accent: oklch(#{$L - 0.08} #{math.max(0, $C - 0.1)} #{$H});
 		// --focus-accent: oklch(#{$L + 0.06} #{$C + 0.03} #{$H});
 	}
 }

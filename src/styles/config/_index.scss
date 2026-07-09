@@ -186,83 +186,83 @@ $paragraph-spacing-preset-defaults: (
 $light-theme-defaults: (
 	tokens: (
 		"--surface-0": #ffffff,
-		"--surface-1": #f7f8f9,
-		"--surface-2": #eceef0,
-		"--content-0": oklch(0.26 0.01 244),
-		"--content-1": oklch(0.44 0.02 268),
-		"--content-2": oklch(0.54 0.02 258),
-		"--focus-ring": oklch(0.5 0.3 270),
-		"--overlay-backdrop": rgba(0, 0, 0, 0.1),
-		"--overlay-glass": rgba(255, 255, 255, 0.8),
-		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
-		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
-		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
-		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25)
+		"--surface-1": #f5f5f5,
+		"--surface-2": #e5e5e5,
+		"--content-0": #111111,
+		"--content-1": #444444,
+		"--content-2": #777777,
+		"--focus-ring": #000000,
+		"--overlay-backdrop": rgba(0, 0, 0, 0.12),
+		"--overlay-glass": rgba(255, 255, 255, 0.86),
+		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.12),
+		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.2),
+		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.24),
+		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.28)
 	),
 	accent: (
-		l: 0.55,
-		c: 0.22,
-		h: 245
+		l: 0.2,
+		c: 0,
+		h: 0
 	),
 	status: (
 		neutral: (
 			fill: (
-				l: 0.26,
-				c: 0.01,
-				h: 244
+				l: 0.2,
+				c: 0,
+				h: 0
 			),
 			border: (
-				l: 0.86,
-				c: 0.016,
-				h: 245
+				l: 0.82,
+				c: 0,
+				h: 0
 			)
 		),
 		error: (
 			fill: (
 				l: 0.52,
-				c: 0.19,
-				h: 22
+				c: 0.2,
+				h: 25
 			),
 			border: (
 				l: 0.52,
-				c: 0.19,
-				h: 22
+				c: 0.2,
+				h: 25
 			)
 		),
 		warning: (
 			fill: (
-				l: 0.55,
+				l: 0.65,
 				c: 0.16,
-				h: 75
+				h: 90
 			),
 			border: (
-				l: 0.55,
+				l: 0.65,
 				c: 0.16,
-				h: 75
+				h: 90
 			)
 		),
 		success: (
 			fill: (
 				l: 0.5,
-				c: 0.14,
-				h: 160
+				c: 0.16,
+				h: 145
 			),
 			border: (
 				l: 0.5,
-				c: 0.14,
-				h: 160
+				c: 0.16,
+				h: 145
 			)
 		),
 		info: (
 			fill: (
 				l: 0.52,
-				c: 0.15,
-				h: 255
+				c: 0.16,
+				h: 250
 			),
 			border: (
 				l: 0.52,
-				c: 0.15,
-				h: 255
+				c: 0.16,
+				h: 250
 			)
 		)
 	)
@@ -270,84 +270,84 @@ $light-theme-defaults: (
 
 $dark-theme-defaults: (
 	tokens: (
-		"--surface-0": #222a35,
-		"--surface-1": #27313f,
-		"--surface-2": #2d3646,
-		"--content-0": oklch(0.9 0.01 256),
-		"--content-1": oklch(0.8 0.02 256),
-		"--content-2": oklch(0.7 0.02 256),
-		"--focus-ring": oklch(0.88 0.2 94),
-		"--overlay-backdrop": rgba(30, 37, 47, 0.18),
-		"--overlay-glass": rgba(30, 37, 47, 0.8),
+		"--surface-0": #000000,
+		"--surface-1": #111111,
+		"--surface-2": #222222,
+		"--content-0": #ffffff,
+		"--content-1": #cccccc,
+		"--content-2": #999999,
+		"--focus-ring": #ffffff,
+		"--overlay-backdrop": rgba(255, 255, 255, 0.12),
+		"--overlay-glass": rgba(0, 0, 0, 0.86),
 		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
 		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
 		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
 		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25)
 	),
 	accent: (
-		l: 0.7,
-		c: 0.2,
-		h: 245
+		l: 0.92,
+		c: 0,
+		h: 0
 	),
 	status: (
 		neutral: (
 			fill: (
-				l: 0.7,
-				c: 0.02,
-				h: 256
+				l: 0.88,
+				c: 0,
+				h: 0
 			),
 			border: (
-				l: 0.4,
-				c: 0.02,
-				h: 256
+				l: 0.35,
+				c: 0,
+				h: 0
 			)
 		),
 		error: (
 			fill: (
-				l: 0.7,
-				c: 0.18,
-				h: 22
+				l: 0.72,
+				c: 0.2,
+				h: 25
 			),
 			border: (
-				l: 0.7,
-				c: 0.18,
-				h: 22
+				l: 0.72,
+				c: 0.2,
+				h: 25
 			)
 		),
 		warning: (
 			fill: (
-				l: 0.72,
-				c: 0.14,
-				h: 75
+				l: 0.8,
+				c: 0.16,
+				h: 90
 			),
 			border: (
-				l: 0.72,
-				c: 0.14,
-				h: 75
+				l: 0.8,
+				c: 0.16,
+				h: 90
 			)
 		),
 		success: (
 			fill: (
-				l: 0.7,
-				c: 0.14,
-				h: 165
+				l: 0.75,
+				c: 0.16,
+				h: 145
 			),
 			border: (
-				l: 0.7,
-				c: 0.14,
-				h: 165
+				l: 0.75,
+				c: 0.16,
+				h: 145
 			)
 		),
 		info: (
 			fill: (
-				l: 0.7,
+				l: 0.76,
 				c: 0.16,
-				h: 258
+				h: 250
 			),
 			border: (
-				l: 0.7,
+				l: 0.76,
 				c: 0.16,
-				h: 258
+				h: 250
 			)
 		)
 	)
