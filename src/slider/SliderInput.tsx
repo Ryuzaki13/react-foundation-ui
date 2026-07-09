@@ -54,14 +54,14 @@ interface SliderInputCommonProps {
 	onClearError?: () => void;
 }
 
-export interface SliderInputProps extends UiBaseProps<number, number | undefined>, SliderInputCommonProps {
+export interface SliderInputProps extends UiBaseProps<number>, SliderInputCommonProps {
 	/**
 	 * Marks single-слайдера. Single-компонент отдаёт наружу `mark.value`.
 	 */
 	marks?: readonly SliderMark[];
 }
 
-export interface SliderRangeInputProps extends UiBaseProps<SliderRangeValue, SliderRangeValue | undefined>, SliderInputCommonProps {
+export interface SliderRangeInputProps extends UiBaseProps<SliderRangeValue>, SliderInputCommonProps {
 	/**
 	 * Marks range-слайдера. `value` задаёт координату на шкале, `outputValue` задаёт публичное значение для потребителя.
 	 */
