@@ -96,7 +96,7 @@ function RangePreview({
 
 export const Basic: Story = {
 	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(args.value as number | undefined);
+		const [value, setValue] = useState<number>(args.value);
 
 		return (
 			<SliderInput
@@ -112,7 +112,7 @@ export const Basic: Story = {
 
 export const MarksSnap: Story = {
 	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(40);
+		const [value, setValue] = useState<number>(40);
 
 		return <SliderInput {...args} label="Готовый пресет" marks={percentMarks} value={value} onChange={setValue} />;
 	}
@@ -120,7 +120,7 @@ export const MarksSnap: Story = {
 
 export const DecimalManualInput: Story = {
 	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(17.5);
+		const [value, setValue] = useState<number>(17.5);
 
 		return <SliderInput {...args} label="Десятичное значение" value={value} onChange={setValue} />;
 	},
@@ -131,7 +131,7 @@ export const DecimalManualInput: Story = {
 
 export const RangeInputPlain: Story = {
 	render: () => {
-		const [value, setValue] = useState<SliderRangeValue | undefined>([20, 80]);
+		const [value, setValue] = useState<SliderRangeValue>([20, 80]);
 
 		return (
 			<>
@@ -152,7 +152,7 @@ export const RangeInputPlain: Story = {
 
 export const RangeInputOpenWithoutExplicitMiddleOutput: Story = {
 	render: () => {
-		const [value, setValue] = useState<SliderRangeValue | undefined>([null, 12]);
+		const [value, setValue] = useState<SliderRangeValue>([null, 12]);
 
 		return (
 			<>
@@ -174,7 +174,7 @@ export const RangeInputOpenWithoutExplicitMiddleOutput: Story = {
 
 export const RangeInputMonthToDaysOutput: Story = {
 	render: () => {
-		const [value, setValue] = useState<SliderRangeValue | undefined>([90, 360]);
+		const [value, setValue] = useState<SliderRangeValue>([90, 360]);
 
 		return (
 			<>
@@ -196,7 +196,7 @@ export const RangeInputMonthToDaysOutput: Story = {
 
 export const RangeInputOpenMonthToDaysOutput: Story = {
 	render: () => {
-		const [value, setValue] = useState<SliderRangeValue | undefined>([null, 720]);
+		const [value, setValue] = useState<SliderRangeValue>([null, 720]);
 
 		return (
 			<>
@@ -218,7 +218,7 @@ export const RangeInputOpenMonthToDaysOutput: Story = {
 
 export const RangeInputReadonlyText: Story = {
 	render: () => {
-		const [value, setValue] = useState<SliderRangeValue | undefined>([90, 180]);
+		const [value, setValue] = useState<SliderRangeValue>([90, 180]);
 
 		return (
 			<>
