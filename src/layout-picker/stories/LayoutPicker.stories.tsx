@@ -151,7 +151,6 @@ const meta = {
 			}
 		}
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		id: {
 			description: "ID кнопки выбора. Если не передан, компонент создаёт стабильный `useId`.",

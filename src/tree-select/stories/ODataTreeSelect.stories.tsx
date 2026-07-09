@@ -53,8 +53,7 @@ const meta = {
 		segments: { control: false },
 		value: { control: false },
 		onChange: { control: false }
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof ODataTreeSelect>;
 
 export default meta;

@@ -122,7 +122,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	args: {
 		direction: "vertical",
 		initial: 0.45,

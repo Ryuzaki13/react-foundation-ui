@@ -1,6 +1,9 @@
 import { resolve } from "node:path";
+import { fileURLToPath } from "node:url";
 
 import type { StorybookConfig } from "@storybook/react-vite";
+
+const configDirectory = fileURLToPath(new URL(".", import.meta.url));
 
 const config: StorybookConfig = {
 	stories: ["../src/**/*.stories.@(ts|tsx)", "../src/**/*.mdx"],
@@ -15,8 +18,8 @@ const config: StorybookConfig = {
 			...config.resolve,
 			alias: [
 				...(Array.isArray(config.resolve?.alias) ? config.resolve.alias : []),
-				{ find: "@/shared/ui", replacement: resolve(__dirname, "../src/index.ts") },
-				{ find: "@/styles", replacement: resolve(__dirname, "../src/styles") }
+				{ find: "@/shared/ui", replacement: resolve(configDirectory, "../src/index.ts") },
+				{ find: "@/styles", replacement: resolve(configDirectory, "../src/styles") }
 			]
 		},
 		define: {

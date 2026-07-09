@@ -18,7 +18,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		columnCount: {
 			description: "Количество колонок (1-5).",

@@ -44,8 +44,7 @@ const meta = {
 		nodes: { control: false },
 		value: { control: false },
 		onChange: { control: false }
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof TreeMultiSelect>;
 
 export default meta;

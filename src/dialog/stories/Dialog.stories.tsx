@@ -20,7 +20,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		title: {
 			description: "Заголовок диалогового окна.",

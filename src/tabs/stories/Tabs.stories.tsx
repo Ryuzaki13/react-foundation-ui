@@ -144,7 +144,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		items: {
 			description: "Набор вкладок для `TabsBox`. Каждая вкладка задаётся через `id`, `title`, `content` и опциональный `disabled`.",

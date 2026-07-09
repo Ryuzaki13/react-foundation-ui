@@ -12,8 +12,7 @@ const meta = {
 	parameters: {
 		atomicCanvas: true,
 		layout: "centered"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta;
 
 export default meta;

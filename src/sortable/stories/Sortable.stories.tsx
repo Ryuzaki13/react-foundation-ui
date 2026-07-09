@@ -104,7 +104,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		containerId: {
 			description: "Идентификатор `SortableContext`, который используется для вычисления reorder внутри контейнера.",

@@ -51,7 +51,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		options: {
 			description: "Массив доступных опций списка.",

@@ -55,7 +55,6 @@ const meta = {
 			}
 		}
 	},
-	tags: ["autodocs"],
 	decorators: [
 		(story) => (
 			<ModalManagerProvider>

@@ -1,9 +1,6 @@
 @use "./mixins" as *;
 
 body {
-	// @include fluid-font(17, 15);
-	// @include stepped-font-var(--clamped-font-size, 16, 16);
-	// font-size: var(--clamped-font-size);
 	@include stepped-font();
 	font-family: var(--font-family-base);
 
@@ -20,6 +17,17 @@ body {
 	position: relative;
 	height: 100%;
 	overflow: hidden;
+}
+
+/* Для WebKit браузеров (Chrome, Safari, Edge) */
+input:-webkit-autofill {
+	-webkit-text-fill-color: var(--content-0) !important;
+	-webkit-box-shadow: 0 0 0 1000px var(--surface-0) inset !important;
+}
+
+/* Для Firefox */
+input:autofill {
+	background: var(--surface-0) !important;
 }
 
 #root {

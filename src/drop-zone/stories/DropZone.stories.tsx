@@ -21,7 +21,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		onChange: {
 			description: "Вызывается с массивом успешно прочитанных файлов.",

@@ -1,4 +1,4 @@
-import { readdirSync, readFileSync } from "node:fs";
+import { readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 
@@ -51,16 +51,6 @@ function toEntryName(filePath: string): string {
 		.replace(/\.tsx?$/, "");
 }
 
-function isApiBoundStory(filePath: string): boolean {
-	const entryName = toEntryName(filePath);
-	if (entryName.includes("OData")) return true;
-	if (entryName === "table/stories/Table.stories") return true;
-	if (entryName === "tree-table/stories/TreeTable.stories") return true;
-
-	const source = readFileSync(filePath, "utf8");
-	return source.includes("@ryuzaki13/react-foundation-api/");
-}
-
 function collectEntries(): Record<string, string> {
 	const entries: Record<string, string> = {};
 
@@ -75,11 +65,6 @@ function collectEntries(): Record<string, string> {
 		if (entryName.endsWith("/ui/index")) continue;
 
 		entries[entryName] = filePath;
-	}
-
-	for (const filePath of walkSourceFiles(resolve("src"), (file) => /\/stories\/[^/]+\.stories\.tsx?$/.test(file))) {
-		if (isApiBoundStory(filePath)) continue;
-		entries[toEntryName(filePath)] = filePath;
 	}
 
 	return Object.fromEntries(Object.entries(entries).sort(([left], [right]) => left.localeCompare(right)));

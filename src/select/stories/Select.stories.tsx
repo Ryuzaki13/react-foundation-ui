@@ -47,7 +47,6 @@ const meta = {
 			}
 		}
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		label: {
 			description: "Заголовок поля.",

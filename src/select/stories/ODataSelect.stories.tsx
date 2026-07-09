@@ -138,8 +138,7 @@ const meta = {
 		onChange: { control: false },
 		value: { control: false },
 		dependencies: { control: false }
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof ODataSelect>;
 
 export default meta;

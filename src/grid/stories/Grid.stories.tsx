@@ -43,8 +43,7 @@ const meta = {
 	component: Grid.Container,
 	parameters: {
 		layout: "padded"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof Grid.Container>;
 
 export default meta;

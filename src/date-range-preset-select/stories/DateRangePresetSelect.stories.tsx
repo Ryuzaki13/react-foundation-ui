@@ -17,8 +17,7 @@ const meta = {
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof DateRangePresetSelect>;
 
 export default meta;

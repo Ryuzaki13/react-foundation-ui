@@ -14,8 +14,7 @@ const meta = {
 	parameters: {
 		atomicCanvas: true,
 		layout: "centered"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof TimePanel>;
 
 export default meta;

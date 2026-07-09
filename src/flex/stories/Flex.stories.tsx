@@ -43,8 +43,7 @@ const meta = {
 	component: Flex.Container,
 	parameters: {
 		layout: "padded"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof Flex.Container>;
 
 export default meta;

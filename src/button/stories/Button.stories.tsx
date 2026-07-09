@@ -19,7 +19,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		children: {
 			description: "Текстовое содержимое кнопки.",

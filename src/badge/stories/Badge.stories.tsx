@@ -18,7 +18,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		children: {
 			description: "Текст внутри бейджа.",

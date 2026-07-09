@@ -57,8 +57,7 @@ const meta = {
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof SliderInput>;
 
 export default meta;

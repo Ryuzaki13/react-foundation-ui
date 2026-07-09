@@ -18,8 +18,7 @@ const meta = {
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded"
-	},
-	tags: ["autodocs"]
+	}
 } satisfies Meta<typeof PresetRangeDateInput>;
 
 export default meta;

@@ -32,7 +32,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		label: {
 			description: "Заголовок поля множественной загрузки.",

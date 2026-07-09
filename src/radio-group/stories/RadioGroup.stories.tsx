@@ -33,7 +33,6 @@ const meta = {
 		atomicCanvas: true,
 		layout: "padded"
 	},
-	tags: ["autodocs"],
 	argTypes: {
 		value: {
 			description: "Текущее выбранное значение.",
