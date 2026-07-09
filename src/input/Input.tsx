@@ -341,7 +341,7 @@ export function InputNumber({
 
 		// setInternalInvalid(!isEmpty && (!isValidNumber || !isInRange));
 
-		onChange?.(parsed);
+		onChange(parsed);
 		if (error && onClearError) onClearError();
 	};
 
