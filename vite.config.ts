@@ -1,4 +1,4 @@
-import { readdirSync } from "node:fs";
+import { existsSync, readdirSync } from "node:fs";
 import { createRequire } from "node:module";
 import { resolve } from "node:path";
 
@@ -27,44 +27,20 @@ function isExternalPackage(id: string): boolean {
 	return externalPackages.some((packageName) => id === packageName || id.startsWith(packageName + "/"));
 }
 
-function walkSourceFiles(directory: string, predicate: (filePath: string) => boolean): string[] {
-	const result: string[] = [];
-
-	for (const entry of readdirSync(directory, { withFileTypes: true })) {
-		const filePath = resolve(directory, entry.name);
-
-		if (entry.isDirectory()) {
-			result.push(...walkSourceFiles(filePath, predicate));
-		} else if (predicate(filePath)) {
-			result.push(filePath);
-		}
-	}
-
-	return result;
-}
-
-function toEntryName(filePath: string): string {
-	return filePath
-		.replace(resolve("src"), "")
-		.replace(/^\//, "")
-		.replace(/\\/g, "/")
-		.replace(/\.tsx?$/, "");
-}
-
 function collectEntries(): Record<string, string> {
+	const sourceRoot = resolve("src");
 	const entries: Record<string, string> = {};
 
 	entries["styles-entry"] = resolve("src/styles-entry.ts");
 	entries["types"] = resolve("src/types.ts");
 
-	for (const filePath of walkSourceFiles(resolve("src"), (file) => file.endsWith("/index.ts"))) {
-		const entryName = toEntryName(filePath);
-		if (entryName.includes("/stories/")) continue;
-		if (entryName.endsWith("/model/index")) continue;
-		if (entryName.endsWith("/lib/index")) continue;
-		if (entryName.endsWith("/ui/index")) continue;
+	for (const entry of readdirSync(sourceRoot, { withFileTypes: true })) {
+		if (!entry.isDirectory()) continue;
 
-		entries[entryName] = filePath;
+		const filePath = resolve(sourceRoot, entry.name, "index.ts");
+		if (!existsSync(filePath)) continue;
+
+		entries[`${entry.name}/index`] = filePath;
 	}
 
 	return Object.fromEntries(Object.entries(entries).sort(([left], [right]) => left.localeCompare(right)));
