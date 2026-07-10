@@ -4,12 +4,12 @@ import { ResolvedProps } from "@ryuzaki13/react-foundation-lib/media";
 
 import styles from "./Grid.module.scss";
 
-import type { GridContainerProps, GridItemProps } from "./types";
+import type { GridContainerLayoutProps, GridItemLayoutProps } from "./types";
 
 type ClassName = string | undefined | null | false;
 
-export type ResolvedGridContainerProps = Omit<ResolvedProps<GridContainerProps>, "children" | "className" | "as" | "style">;
-export type ResolvedGridItemProps = Omit<ResolvedProps<GridItemProps>, "children" | "className" | "as" | "style">;
+export type ResolvedGridContainerProps = ResolvedProps<GridContainerLayoutProps>;
+export type ResolvedGridItemProps = ResolvedProps<GridItemLayoutProps>;
 
 export const useGridContainerClasses = (props: ResolvedGridContainerProps) => {
 	return useMemo(() => {

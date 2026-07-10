@@ -1,11 +1,11 @@
-import type { CSSProperties, JSX } from "react";
+import type { CSSProperties, HTMLAttributes, JSX } from "react";
 
 import { ResponsiveValue } from "@ryuzaki13/react-foundation-lib/media";
 
 export type GridTemplate = string | number;
 export type GridAuto = "auto" | "min-content" | "max-content" | "1fr" | string;
 
-export interface GridContainerProps {
+export interface GridContainerProps extends HTMLAttributes<HTMLElement> {
 	id?: string;
 
 	/**
@@ -235,7 +235,7 @@ export interface GridContainerProps {
 	style?: CSSProperties;
 }
 
-export interface GridItemProps {
+export interface GridItemProps extends HTMLAttributes<HTMLElement> {
 	/**
 	 * Именованная область для размещения элемента
 	 *
@@ -332,3 +332,26 @@ export interface GridItemProps {
 	 */
 	style?: CSSProperties;
 }
+
+export type GridContainerLayoutProps = Pick<
+	GridContainerProps,
+	| "inline"
+	| "row"
+	| "column"
+	| "dense"
+	| "gap"
+	| "gapRow"
+	| "gapColumn"
+	| "align"
+	| "justify"
+	| "alignContent"
+	| "justifyContent"
+	| "templateColumns"
+	| "templateRows"
+	| "autoColumns"
+	| "autoRows"
+	| "areas"
+	| "variant"
+>;
+
+export type GridItemLayoutProps = Pick<GridItemProps, "area" | "column" | "row" | "alignSelf" | "justifySelf">;

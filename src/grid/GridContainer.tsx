@@ -6,31 +6,55 @@ import { GridContainerProps } from "./types";
 import { useGridContainerClasses, useGridContainerStyles } from "./useGridClasses";
 
 export const GridContainer = forwardRef<HTMLElement, GridContainerProps>(
-	({ children, className = "", as, style, templateColumns, templateRows, autoColumns, autoRows, areas, ...props }, ref) => {
+	(
+		{
+			children,
+			className = "",
+			as,
+			style,
+			inline,
+			row,
+			column,
+			dense,
+			gap,
+			gapRow,
+			gapColumn,
+			align,
+			justify,
+			alignContent,
+			justifyContent,
+			templateColumns,
+			templateRows,
+			autoColumns,
+			autoRows,
+			areas,
+			variant,
+			...htmlProps
+		},
+		ref
+	) => {
 		const { activeBreakpoint } = useMatchMedia();
 
 		const resolved = useMemo(() => {
 			return {
-				...props,
+				inline: resolveResponsiveValue(inline, activeBreakpoint),
 
-				inline: resolveResponsiveValue(props.inline, activeBreakpoint),
+				row: resolveResponsiveValue(row, activeBreakpoint),
+				column: resolveResponsiveValue(column, activeBreakpoint),
+				dense: resolveResponsiveValue(dense, activeBreakpoint),
 
-				row: resolveResponsiveValue(props.row, activeBreakpoint),
-				column: resolveResponsiveValue(props.column, activeBreakpoint),
-				dense: resolveResponsiveValue(props.dense, activeBreakpoint),
+				gap: resolveResponsiveValue(gap, activeBreakpoint),
+				gapRow: resolveResponsiveValue(gapRow, activeBreakpoint),
+				gapColumn: resolveResponsiveValue(gapColumn, activeBreakpoint),
 
-				gap: resolveResponsiveValue(props.gap, activeBreakpoint),
-				gapRow: resolveResponsiveValue(props.gapRow, activeBreakpoint),
-				gapColumn: resolveResponsiveValue(props.gapColumn, activeBreakpoint),
+				align: resolveResponsiveValue(align, activeBreakpoint),
+				justify: resolveResponsiveValue(justify, activeBreakpoint),
+				alignContent: resolveResponsiveValue(alignContent, activeBreakpoint),
+				justifyContent: resolveResponsiveValue(justifyContent, activeBreakpoint),
 
-				align: resolveResponsiveValue(props.align, activeBreakpoint),
-				justify: resolveResponsiveValue(props.justify, activeBreakpoint),
-				alignContent: resolveResponsiveValue(props.alignContent, activeBreakpoint),
-				justifyContent: resolveResponsiveValue(props.justifyContent, activeBreakpoint),
-
-				variant: resolveResponsiveValue(props.variant, activeBreakpoint)
+				variant: resolveResponsiveValue(variant, activeBreakpoint)
 			};
-		}, [activeBreakpoint, props]);
+		}, [activeBreakpoint, align, alignContent, column, dense, gap, gapColumn, gapRow, inline, justify, justifyContent, row, variant]);
 
 		const resolvedStyles = useMemo(() => {
 			return {
@@ -53,6 +77,7 @@ export const GridContainer = forwardRef<HTMLElement, GridContainerProps>(
 			Component,
 
 			{
+				...htmlProps,
 				ref,
 				className: finalClassName,
 				style: finalStyle

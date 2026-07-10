@@ -6,16 +6,15 @@ import { GridItemProps } from "./types";
 import { useGridItemClasses, useGridItemStyles } from "./useGridClasses";
 
 export const GridItem = forwardRef<HTMLElement, GridItemProps>(
-	({ children, className = "", as, style, area, column, row, ...props }, ref) => {
+	({ children, className = "", as, style, area, column, row, alignSelf, justifySelf, ...htmlProps }, ref) => {
 		const { activeBreakpoint } = useMatchMedia();
 
 		const resolvedProps = useMemo(() => {
 			return {
-				...props,
-				alignSelf: resolveResponsiveValue(props.alignSelf, activeBreakpoint),
-				justifySelf: resolveResponsiveValue(props.justifySelf, activeBreakpoint)
+				alignSelf: resolveResponsiveValue(alignSelf, activeBreakpoint),
+				justifySelf: resolveResponsiveValue(justifySelf, activeBreakpoint)
 			};
-		}, [activeBreakpoint, props]);
+		}, [activeBreakpoint, alignSelf, justifySelf]);
 
 		const resolvedPlacement = useMemo(() => {
 			return {
@@ -36,6 +35,7 @@ export const GridItem = forwardRef<HTMLElement, GridItemProps>(
 			Component,
 
 			{
+				...htmlProps,
 				ref,
 				className: finalClassName,
 				style: finalStyle

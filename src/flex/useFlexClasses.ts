@@ -4,12 +4,12 @@ import { ResolvedProps } from "@ryuzaki13/react-foundation-lib/media";
 
 import styles from "./Flex.module.scss";
 
-import type { FlexContainerProps, FlexItemProps } from "./types";
+import type { FlexContainerLayoutProps, FlexItemLayoutProps } from "./types";
 
 type ClassName = string | undefined | null | false;
 
-export type ResolvedFlexContainerProps = ResolvedProps<Omit<FlexContainerProps, "children" | "className" | "as" | "style">>;
-export type ResolvedFlexItemProps = ResolvedProps<Omit<FlexItemProps, "children" | "className" | "as" | "style">>;
+export type ResolvedFlexContainerProps = ResolvedProps<FlexContainerLayoutProps>;
+export type ResolvedFlexItemProps = ResolvedProps<FlexItemLayoutProps>;
 
 export const useFlexContainerClasses = (props: ResolvedFlexContainerProps) => {
 	return useMemo(() => {

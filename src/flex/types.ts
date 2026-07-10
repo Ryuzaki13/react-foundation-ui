@@ -1,4 +1,4 @@
-import { CSSProperties, JSX } from "react";
+import type { CSSProperties, HTMLAttributes, JSX } from "react";
 
 import { ResponsiveValue } from "@ryuzaki13/react-foundation-lib/media";
 
@@ -7,7 +7,7 @@ export type FlexJustify = "start" | "center" | "end" | "stretch" | "between" | "
 export type FlexGap = "none" | "xs" | "sm" | "md" | "lg" | "xl";
 export type FlexBasis = "0" | "auto";
 
-export interface FlexContainerProps {
+export interface FlexContainerProps extends HTMLAttributes<HTMLElement> {
 	/** Тип display `flex | inline-flex` */
 	inline?: ResponsiveValue<boolean>;
 
@@ -51,7 +51,7 @@ export interface FlexContainerProps {
 	style?: CSSProperties;
 }
 
-export interface FlexItemProps {
+export interface FlexItemProps extends HTMLAttributes<HTMLElement> {
 	/**
 	 * Способность расти
 	 * @default false = 0
@@ -94,3 +94,23 @@ export interface FlexItemProps {
 export interface PredefinedFlexProps extends Omit<FlexContainerProps, "row" | "column" | "rowReverse" | "columnReverse"> {
 	variant?: "center" | "centerBetween" | "columnCenter";
 }
+
+export type FlexContainerLayoutProps = Pick<
+	FlexContainerProps,
+	| "inline"
+	| "row"
+	| "column"
+	| "rowReverse"
+	| "columnReverse"
+	| "wrap"
+	| "nowrap"
+	| "wrapReverse"
+	| "align"
+	| "justify"
+	| "alignContent"
+	| "gap"
+	| "gapRow"
+	| "gapColumn"
+>;
+
+export type FlexItemLayoutProps = Pick<FlexItemProps, "flex0" | "flex1" | "grow" | "shrink" | "basis" | "alignSelf" | "justifySelf">;
