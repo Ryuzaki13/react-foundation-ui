@@ -3,12 +3,21 @@ import React, { useCallback, useEffect, useRef, useState } from "react";
 
 import { ModalManagerContext } from "./useModalManager";
 
+export interface ModalManagerProviderProps {
+	children: React.ReactNode;
+	/** Компенсирует исчезновение скроллбара правым padding у body. */
+	compensateScrollbar?: boolean;
+}
+
 /**
  * Провайдер для централизованного управления стеком модальных окон. Дает вложенным компонентам доступ к открытию и закрытию модалок через контекст.
  */
-export function ModalManagerProvider({ children }: { children: React.ReactNode }) {
+export function ModalManagerProvider({ children, compensateScrollbar = false }: ModalManagerProviderProps) {
 	const [modals, setModals] = useState<string[]>([]);
 	const prevModalsLength = useRef(0);
+	const scrollbarWidth = useRef(0);
+	const bodyPaddingRight = useRef("");
+	const isScrollbarCompensated = useRef(false);
 
 	const openModal = useCallback((id: string) => {
 		setModals((prev) => [...prev, id]);
@@ -31,17 +40,28 @@ export function ModalManagerProvider({ children }: { children: React.ReactNode }
 		if (wasEmpty && modals.length > 0) {
 			// первая модалка открыта — ставим стили
 			const scrollY = window.scrollY;
-			// const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
 			const appRoot = document.querySelector("#app-root");
+			scrollbarWidth.current = Math.max(0, window.innerWidth - document.documentElement.clientWidth);
+			bodyPaddingRight.current = document.body.style.paddingRight;
 
 			document.body.style.position = "fixed";
 			document.body.style.top = `-${scrollY}px`;
 			document.body.style.width = "100%";
-			// document.body.style.paddingRight = `${scrollbarWidth}px`;
+
+			if (compensateScrollbar) {
+				document.body.style.paddingRight = `${scrollbarWidth.current}px`;
+				isScrollbarCompensated.current = true;
+			}
+
 			appRoot?.setAttribute("inert", "true");
 
 			prevModalsLength.current = modals.length;
 			return;
+		}
+
+		if (!wasEmpty && modals.length > 0 && compensateScrollbar !== isScrollbarCompensated.current) {
+			document.body.style.paddingRight = compensateScrollbar ? `${scrollbarWidth.current}px` : bodyPaddingRight.current;
+			isScrollbarCompensated.current = compensateScrollbar;
 		}
 
 		if (!wasEmpty && modals.length === 0) {
@@ -52,7 +72,11 @@ export function ModalManagerProvider({ children }: { children: React.ReactNode }
 			document.body.style.position = "";
 			document.body.style.top = "";
 			document.body.style.width = "";
-			// document.body.style.paddingRight = "";
+
+			if (isScrollbarCompensated.current) {
+				document.body.style.paddingRight = bodyPaddingRight.current;
+				isScrollbarCompensated.current = false;
+			}
 
 			appRoot?.removeAttribute("inert");
 
@@ -60,7 +84,7 @@ export function ModalManagerProvider({ children }: { children: React.ReactNode }
 		}
 
 		prevModalsLength.current = modals.length;
-	}, [modals.length]);
+	}, [compensateScrollbar, modals.length]);
 
 	return <ModalManagerContext.Provider value={{ modals, openModal, closeModal, isTopModal }}>{children}</ModalManagerContext.Provider>;
 }
