@@ -1,16 +1,13 @@
 import { type CSSProperties, type ImgHTMLAttributes, type ReactNode, useEffect, useRef, useState } from "react";
 
+import { type ImageLayout, type ImageSource } from "../model/imageTypes";
+
 import { ImagePlaceholder } from "./ImagePlaceholder";
 
-export type ImageSource = {
-	srcSet: string;
-	type?: string;
-	sizes?: string;
-};
-
-export interface ImageRendererProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src"> {
+export interface ImageRendererProps extends Omit<ImgHTMLAttributes<HTMLImageElement>, "src" | "width" | "height"> {
 	src: string;
 	sources?: readonly ImageSource[];
+	layout?: ImageLayout;
 	alt?: string;
 	role?: string;
 	ariaLabel?: string;
@@ -18,6 +15,10 @@ export interface ImageRendererProps extends Omit<ImgHTMLAttributes<HTMLImageElem
 	fallback?: ReactNode;
 	useFigure?: boolean;
 	aspectRatio?: string | "unset";
+	width?: CSSProperties["width"];
+	height?: CSSProperties["height"];
+	intrinsicWidth?: number;
+	intrinsicHeight?: number;
 	wrapperStyle?: CSSProperties;
 }
 
@@ -34,9 +35,14 @@ export function ImageRenderer({
 	caption,
 	fallback,
 	useFigure = false,
+	layout = "cover",
 	width = "100%",
 	height = "100%",
-	aspectRatio = "16 / 9",
+	aspectRatio,
+	intrinsicWidth,
+	intrinsicHeight,
+	onLoad,
+	onError,
 	style,
 	wrapperStyle,
 	...imgProps
@@ -48,6 +54,13 @@ export function ImageRenderer({
 	const [hasError, setHasError] = useState(false);
 
 	useEffect(() => {
+		if (typeof IntersectionObserver === "undefined") {
+			// Отложенный fallback сохраняет одинаковый первый render на сервере и в браузере без IntersectionObserver.
+			const timeoutId = window.setTimeout(() => setIsVisible(true), 0);
+
+			return () => window.clearTimeout(timeoutId);
+		}
+
 		const observer = new IntersectionObserver(
 			([entry]) => {
 				if (entry.isIntersecting) {
@@ -68,8 +81,28 @@ export function ImageRenderer({
 		return () => observer.disconnect();
 	}, []);
 
+	const isIntrinsic = layout === "intrinsic";
+	const resolvedHeight = isIntrinsic ? "auto" : height;
+	const intrinsicAspectRatio = intrinsicWidth && intrinsicHeight ? `${intrinsicWidth} / ${intrinsicHeight}` : undefined;
+	const resolvedAspectRatio = isIntrinsic ? (intrinsicAspectRatio ?? aspectRatio ?? "auto") : (aspectRatio ?? "16 / 9");
+	const placeholderHeight = isIntrinsic && resolvedAspectRatio !== "auto" && resolvedAspectRatio !== "unset" ? "100%" : resolvedHeight;
 	const sizesAttr = containerWidth ? `${containerWidth}px` : "100vw";
-	const defaultFallback = <ImagePlaceholder width={width} height={height} aspectRatio={aspectRatio} />;
+	const defaultFallback = <ImagePlaceholder width={width} height={placeholderHeight} aspectRatio={resolvedAspectRatio} />;
+	const loadedImageStyle: CSSProperties = isIntrinsic
+		? {
+				...style,
+				display: "block",
+				width: "100%",
+				height: "auto",
+				objectFit: undefined
+			}
+		: {
+				display: "block",
+				width: "100%",
+				height: "100%",
+				objectFit: layout,
+				...style
+			};
 
 	const content = (
 		<>
@@ -89,12 +122,18 @@ export function ImageRenderer({
 						alt={alt}
 						role={role}
 						aria-label={ariaLabel}
-						onLoad={() => setHasLoaded(true)}
-						onError={() => setHasError(true)}
-						style={!hasLoaded ? { display: "none" } : { width: "100%", height: "100%", objectFit: "cover", ...style }}
+						onLoad={(event) => {
+							setHasLoaded(true);
+							onLoad?.(event);
+						}}
+						onError={(event) => {
+							setHasError(true);
+							onError?.(event);
+						}}
+						style={!hasLoaded ? { display: "none" } : loadedImageStyle}
 						aria-busy={!hasLoaded}
-						width="100%"
-						height="100%"
+						width={intrinsicWidth}
+						height={intrinsicHeight}
 						{...imgProps}
 					/>
 				</picture>
@@ -104,7 +143,7 @@ export function ImageRenderer({
 	);
 
 	const wrapped = (
-		<div ref={wrapperRef} style={{ width, height, aspectRatio, ...wrapperStyle }}>
+		<div ref={wrapperRef} style={{ width, height: resolvedHeight, aspectRatio: resolvedAspectRatio, ...wrapperStyle }}>
 			{content}
 		</div>
 	);

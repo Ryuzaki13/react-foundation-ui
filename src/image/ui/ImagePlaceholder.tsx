@@ -1,4 +1,4 @@
-interface ImagePlaceholderProps {
+export interface ImagePlaceholderProps {
 	width?: number | string;
 	height?: number | string;
 	aspectRatio?: string | "unset";

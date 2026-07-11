@@ -2,46 +2,90 @@ import { useCallback, useState } from "react";
 
 import Cropper from "react-easy-crop";
 
-export type CroppedAreaPixels = {
-	x: number;
-	y: number;
-	width: number;
-	height: number;
-};
+import { type ImageCropArea, type ImageCropperProps, type ImageCropPoint } from "../model/imageCropTypes";
 
+const DEFAULT_CROP: ImageCropPoint = { x: 0, y: 0 };
+
+/**
+ * Управляемая или автономная область обрезки изображения.
+ * Числовой aspect задаётся вызывающим кодом и не связан с назначением изображения.
+ */
 export function ImageCropper({
 	image,
-	aspect = 1200 / 630,
-	width,
+	aspect = 16 / 9,
+	width = "100%",
+	className,
+	style,
+	crop,
+	defaultCrop = DEFAULT_CROP,
+	zoom,
+	defaultZoom = 1,
+	minZoom = 1,
+	maxZoom = 3,
+	zoomSpeed = 0.1,
+	objectFit = "contain",
+	disabled = false,
+	onCropChange,
+	onZoomChange,
 	onCropComplete
-}: {
-	image: string;
-	aspect?: number;
-	width?: number;
-	onCropComplete?: (croppedAreaPixels: CroppedAreaPixels) => void;
-}) {
-	const [crop, setCrop] = useState({ x: 0, y: 0 });
-	const [zoom, setZoom] = useState(1);
+}: ImageCropperProps) {
+	const [uncontrolledCrop, setUncontrolledCrop] = useState(defaultCrop);
+	const [uncontrolledZoom, setUncontrolledZoom] = useState(defaultZoom);
+	const resolvedCrop = crop ?? uncontrolledCrop;
+	const resolvedZoom = zoom ?? uncontrolledZoom;
+
+	const handleCropChange = useCallback(
+		(nextCrop: ImageCropPoint) => {
+			if (disabled) return;
+
+			if (crop === undefined) {
+				setUncontrolledCrop(nextCrop);
+			}
+
+			onCropChange?.(nextCrop);
+		},
+		[crop, disabled, onCropChange]
+	);
+
+	const handleZoomChange = useCallback(
+		(nextZoom: number) => {
+			if (disabled) return;
+
+			if (zoom === undefined) {
+				setUncontrolledZoom(nextZoom);
+			}
+
+			onZoomChange?.(nextZoom);
+		},
+		[disabled, onZoomChange, zoom]
+	);
 
 	const handleCropComplete = useCallback(
-		(_croppedArea: unknown, croppedAreaPixels: CroppedAreaPixels) => {
-			onCropComplete?.(croppedAreaPixels);
+		(croppedAreaPercentages: ImageCropArea, croppedAreaPixels: ImageCropArea) => {
+			if (disabled) return;
+
+			onCropComplete?.(croppedAreaPixels, croppedAreaPercentages);
 		},
-		[onCropComplete]
+		[disabled, onCropComplete]
 	);
 
 	return (
-		<div style={{ position: "relative", width: width ?? "100%", aspectRatio: aspect }}>
+		<div
+			className={className}
+			style={{ position: "relative", width, aspectRatio: aspect, pointerEvents: disabled ? "none" : undefined, ...style }}>
 			<Cropper
 				image={image}
-				crop={crop}
-				zoom={zoom}
+				crop={resolvedCrop}
+				zoom={resolvedZoom}
 				aspect={aspect}
-				onCropChange={setCrop}
-				onZoomChange={setZoom}
+				minZoom={minZoom}
+				maxZoom={maxZoom}
+				zoomSpeed={zoomSpeed}
+				objectFit={objectFit}
+				onCropChange={handleCropChange}
+				onZoomChange={handleZoomChange}
 				onCropComplete={handleCropComplete}
-				zoomSpeed={0.1}
-				objectFit="contain"
+				cropperProps={{ "aria-disabled": disabled || undefined }}
 			/>
 		</div>
 	);
