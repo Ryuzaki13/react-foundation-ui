@@ -1,4 +1,4 @@
-import { ReactNode, useRef, useState } from "react";
+import { Fragment, ReactNode, useRef, useState } from "react";
 
 import { Placement } from "@floating-ui/react";
 import { InputType } from "@ryuzaki13/react-foundation-lib/types";
@@ -21,9 +21,11 @@ import { ChangeHandler, UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
 import { getOptionSearchText } from "./lib";
+import { createSelectOptionSections } from "./lib/createSelectOptionSections";
 import styles from "./Select.module.scss";
+import { type SelectOptionGroup, type SelectOptionKey } from "./SelectOptionGroup";
 
-export type SelectOptionKey = string | number;
+export { type SelectOptionGroup, type SelectOptionKey } from "./SelectOptionGroup";
 
 export type SelectOptionState = {
 	active: boolean;
@@ -38,6 +40,7 @@ type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TO
 	getOptionCode?: (option: TOption) => ReactNode;
 	getOptionDisabled?: (option: TOption) => boolean;
 	getOptionAriaLabel?: (option: TOption) => string;
+	getOptionGroup?: (option: TOption) => SelectOptionGroup | undefined;
 	getOptionClassName?: (option: TOption, state: SelectOptionState) => string | undefined;
 	renderOption?: (option: TOption, state: SelectOptionState) => ReactNode;
 	renderValue?: (option: TOption) => ReactNode;
@@ -84,6 +87,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		getOptionCode,
 		getOptionDisabled,
 		getOptionAriaLabel,
+		getOptionGroup,
 		getOptionClassName,
 		renderOption,
 		renderValue,
@@ -126,9 +130,11 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 			getOptionSearchText({
 				option,
 				getOptionLabel,
-				getOptionCode
+				getOptionCode,
+				getOptionGroup
 			})
 	});
+	const optionSections = createSelectOptionSections(visibleOptions, getOptionGroup);
 	const selectedIndex = selectedKey === undefined ? -1 : visibleOptions.findIndex((option) => getOptionKey(option) === selectedKey);
 	const {
 		activeIndex,
@@ -297,46 +303,63 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							header={renderPopupHeader}>
 							<div className={cn(optionsContentClassName, "h100 scrollable")}>
 								{hasOptions ? (
-									visibleOptions.map((option, index) => {
-										const optionKey = getOptionKey(option);
-										const selected = selectedKey !== undefined && optionKey === selectedKey;
-										const active = index === activeIndex;
-										const optionDisabled = getOptionDisabled?.(option) ?? false;
-										const optionState = { active, selected, disabled: optionDisabled };
+									optionSections.map((section, sectionIndex) => {
+										const groupLabelId = section.group ? `${listId}-group-${sectionIndex}` : undefined;
+										const optionNodes = section.items.map(({ option, index }) => {
+											const optionKey = getOptionKey(option);
+											const selected = selectedKey !== undefined && optionKey === selectedKey;
+											const active = index === activeIndex;
+											const optionDisabled = getOptionDisabled?.(option) ?? false;
+											const optionState = { active, selected, disabled: optionDisabled };
 
-										return (
+											return (
+												<div
+													key={optionKey}
+													id={getOptionId(listId, index)}
+													ref={(node) => setOptionRef(index, node)}
+													role="option"
+													aria-selected={selected}
+													aria-disabled={optionDisabled || undefined}
+													aria-label={getOptionAriaLabel?.(option)}
+													className={cn(
+														uiStyles.uiPopupOption,
+														optionDisabled && uiStyles.disabled,
+														active && uiStyles.uiPopupOptionActive,
+														selected && uiStyles.selected,
+														getOptionClassName?.(option, optionState)
+													)}
+													onClick={() => selectOption(option)}>
+													{renderOption ? (
+														renderOption(option, optionState)
+													) : (
+														<>
+															{selected ? (
+																<CheckIcon className={uiStyles.uiPopupOptionIcon} />
+															) : (
+																<span className={uiStyles.uiPopupOptionIcon} />
+															)}
+															<div className={uiStyles.uiOptionText}>{getOptionLabel(option)}</div>
+															{getOptionCode && (
+																<div className={uiStyles.uiOptionCode}>{getOptionCode(option)}</div>
+															)}
+														</>
+													)}
+												</div>
+											);
+										});
+
+										return section.group ? (
 											<div
-												key={optionKey}
-												id={getOptionId(listId, index)}
-												ref={(node) => setOptionRef(index, node)}
-												role="option"
-												aria-selected={selected}
-												aria-disabled={optionDisabled || undefined}
-												aria-label={getOptionAriaLabel?.(option)}
-												className={cn(
-													uiStyles.uiPopupOption,
-													optionDisabled && uiStyles.disabled,
-													active && uiStyles.uiPopupOptionActive,
-													selected && uiStyles.selected,
-													getOptionClassName?.(option, optionState)
-												)}
-												onClick={() => selectOption(option)}>
-												{renderOption ? (
-													renderOption(option, optionState)
-												) : (
-													<>
-														{selected ? (
-															<CheckIcon className={uiStyles.uiPopupOptionIcon} />
-														) : (
-															<span className={uiStyles.uiPopupOptionIcon} />
-														)}
-														<div className={uiStyles.uiOptionText}>{getOptionLabel(option)}</div>
-														{getOptionCode && (
-															<div className={uiStyles.uiOptionCode}>{getOptionCode(option)}</div>
-														)}
-													</>
-												)}
+												key={`group-${String(section.group.key)}-${sectionIndex}`}
+												role="group"
+												aria-labelledby={groupLabelId}>
+												<div id={groupLabelId} className={uiStyles.uiPopupGroupLabel}>
+													{section.group.label}
+												</div>
+												{optionNodes}
 											</div>
+										) : (
+											<Fragment key={`options-${sectionIndex}`}>{optionNodes}</Fragment>
 										);
 									})
 								) : (

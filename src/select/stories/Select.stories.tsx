@@ -9,14 +9,15 @@ type DepartmentOption = {
 	name: string;
 	code: string;
 	manager: string;
+	direction: string;
 	disabled?: boolean;
 };
 
 const departmentOptions: DepartmentOption[] = [
-	{ id: 1, name: "Отдел продаж", code: "SLS", manager: "Елена Миронова" },
-	{ id: 2, name: "Закупки", code: "PRC", manager: "Антон Мелихов" },
-	{ id: 3, name: "Логистика", code: "LGS", manager: "Мария Климова", disabled: true },
-	{ id: 4, name: "Поддержка клиентов", code: "SUP", manager: "Ирина Белова" }
+	{ id: 1, name: "Отдел продаж", code: "SLS", manager: "Елена Миронова", direction: "Коммерческий блок" },
+	{ id: 2, name: "Закупки", code: "PRC", manager: "Антон Мелихов", direction: "Коммерческий блок" },
+	{ id: 3, name: "Логистика", code: "LGS", manager: "Мария Климова", direction: "Операционный блок", disabled: true },
+	{ id: 4, name: "Поддержка клиентов", code: "SUP", manager: "Ирина Белова", direction: "Операционный блок" }
 ];
 
 const primitiveOptions = ["Новый", "В работе", "Завершён", "Архив"] as const;
@@ -90,6 +91,10 @@ const meta = {
 		},
 		getOptionAriaLabel: {
 			description: "Опциональная функция для aria-label option.",
+			control: false
+		},
+		getOptionGroup: {
+			description: "Опциональная функция, которая объединяет соседние option под доступным заголовком группы.",
 			control: false
 		},
 		getOptionClassName: {
@@ -171,6 +176,22 @@ export const Placeholder: Story = {
 		const [value, setValue] = useState<DepartmentOption | undefined>(undefined);
 
 		return <Select {...args} value={value} onChange={setValue} />;
+	}
+};
+
+export const GroupedOptions: Story = {
+	name: "Группированные опции",
+	render: (args) => {
+		const [value, setValue] = useState<DepartmentOption | undefined>();
+
+		return (
+			<Select
+				{...args}
+				value={value}
+				onChange={setValue}
+				getOptionGroup={(option) => ({ key: option.direction, label: option.direction })}
+			/>
+		);
 	}
 };
 

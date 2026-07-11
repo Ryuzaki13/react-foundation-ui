@@ -13,12 +13,20 @@ import { SerializableSelect } from "./SerializableSelect";
 type Option = {
 	id: number;
 	label: string;
+	group?: string;
 };
 
 const OPTIONS: Option[] = [
 	{ id: 1, label: "Альфа" },
 	{ id: 2, label: "Бета" },
 	{ id: 3, label: "Гамма" }
+];
+
+const GROUPED_OPTIONS: Option[] = [
+	{ id: 1, label: "Без группы" },
+	{ id: 2, label: "Альфа", group: "Первое направление" },
+	{ id: 3, label: "Бета", group: "Первое направление" },
+	{ id: 4, label: "Гамма", group: "Второе направление" }
 ];
 
 function ControlledSelectHarness() {
@@ -91,6 +99,27 @@ function ClearableSearchableSelectHarness() {
 			onChange={setValue}
 			getOptionKey={(option) => option.id}
 			getOptionLabel={(option) => option.label}
+		/>
+	);
+}
+
+function GroupedSelectHarness() {
+	const [value, setValue] = useState<Option | undefined>();
+	const [query, setQuery] = useState("");
+
+	return (
+		<Select
+			label="Группа"
+			placeholder="Поиск"
+			searchable
+			query={query}
+			onQuery={setQuery}
+			options={GROUPED_OPTIONS}
+			value={value}
+			onChange={setValue}
+			getOptionKey={(option) => option.id}
+			getOptionLabel={(option) => option.label}
+			getOptionGroup={(option) => (option.group ? { key: option.group, label: option.group } : undefined)}
 		/>
 	);
 }
@@ -260,6 +289,34 @@ describe("Select", () => {
 		expect(input.value).toBe("");
 		expect(input.placeholder).toBe("Поиск");
 		expect(input.getAttribute("aria-expanded")).toBe("false");
+	});
+
+	it("группирует соседние option, сохраняет негруппированные option и ищет по заголовку группы", async () => {
+		await renderNode(<GroupedSelectHarness />);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
+
+		await act(async () => {
+			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+		});
+
+		const groups = Array.from(document.querySelectorAll<HTMLElement>('[role="group"]'));
+		expect(groups).toHaveLength(2);
+		expect(groups.map((group) => group.textContent?.trim())).toEqual(["Первое направлениеАльфаБета", "Второе направлениеГамма"]);
+		expect(document.querySelectorAll('[role="option"]')).toHaveLength(4);
+		expect(document.querySelector('[role="option"]')?.parentElement?.getAttribute("role")).not.toBe("group");
+
+		await act(async () => {
+			const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+			valueSetter?.call(input, "Второе");
+			input.dispatchEvent(new Event("input", { bubbles: true }));
+		});
+
+		expect(Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).map((option) => option.textContent?.trim())).toEqual([
+			"Гамма"
+		]);
+		expect(document.querySelector('[role="group"]')?.textContent?.trim()).toBe("Второе направлениеГамма");
 	});
 
 	it("SerializableSelect при очистке возвращает undefined", async () => {
