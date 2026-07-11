@@ -266,6 +266,10 @@
 			"types": "./dist/switch/index.d.ts",
 			"import": "./dist/switch/index.js"
 		},
+		"./tag-input": {
+			"types": "./dist/tag-input/index.d.ts",
+			"import": "./dist/tag-input/index.js"
+		},
 		"./table": {
 			"types": "./dist/table/index.d.ts",
 			"import": "./dist/table/index.js"
