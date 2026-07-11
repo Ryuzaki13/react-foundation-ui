@@ -1,19 +1,21 @@
+import { type ReactNode } from "react";
+
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { AnimatedLogo } from "./AnimatedLogo";
 import styles from "./LoadingMessage.module.scss";
 import { Message } from "./Message";
 
-interface LoadingMessageProps {
+type LoadingMessageProps = {
 	className?: string;
+	/** Готовый брендовый знак, которым host-проект при необходимости дополняет сообщение о загрузке. */
+	logo?: ReactNode;
 	text?: string;
-	withLogo?: boolean;
-}
+};
 
-export function LoadingMessage({ className, text, withLogo }: LoadingMessageProps) {
+export function LoadingMessage({ className, logo, text }: LoadingMessageProps) {
 	return (
-		<Message className={cn(styles.componentLoader, withLogo ? "" : "skeletonLine", className)}>
-			{withLogo && <AnimatedLogo />}
+		<Message className={cn(styles.componentLoader, logo ? undefined : "skeletonLine", className)}>
+			{logo}
 
 			{text || "Загрузка..."}
 		</Message>

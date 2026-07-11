@@ -1,0 +1,37 @@
+.logo {
+	max-width: 10em;
+	margin: var(--space-md) auto;
+
+	svg {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+}
+
+.segment {
+	opacity: 0.22;
+	animation: pulseSteps 1.8s ease-in-out infinite;
+}
+
+@keyframes pulseSteps {
+	0% {
+		opacity: 0.2;
+	}
+
+	35%,
+	55% {
+		opacity: 1;
+	}
+
+	100% {
+		opacity: 0.2;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.segment {
+		animation: none;
+		opacity: 1;
+	}
+}

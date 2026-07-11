@@ -1,4 +1,5 @@
 export * from "./AnimatedLogo";
+export * from "./AnimatedLogoSegment";
 export { CopyTextWrapper } from "./CopyTextWrapper";
 export { IconWrapper } from "./IconWrapper";
 export { LazyDynamicComponent } from "./LazyDynamicComponent";
