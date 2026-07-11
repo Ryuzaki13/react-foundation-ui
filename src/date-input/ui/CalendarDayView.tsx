@@ -12,9 +12,9 @@ import {
 } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import styles from "./CalendarDayView.module.scss";
+import { type DateInputSelectionMode, type DateInputWeekEndDay } from "../lib";
 
-import type { DateInputSelectionMode, DateInputWeekEndDay } from "../lib";
+import styles from "./CalendarDayView.module.scss";
 
 const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const dayLabelFormatter = new Intl.DateTimeFormat("ru-RU", {
@@ -98,6 +98,8 @@ export const CalendarDayView: React.FC<DayViewProps> = ({
 	const selectedSinglePeriod = getCalendarPeriod(selectedDate, selectionOptions);
 	const hoveredPeriod = getCalendarPeriod(hoveredDate, selectionOptions);
 	const previewEndDate = selectedEndDate ?? (selectedStartDate ? (hoveredPeriod?.end ?? null) : null);
+	const previewsWeekPeriod = selectionMode === "week";
+	const previewsStandalonePeriod = previewsWeekPeriod && (!selectsRange || !selectedStartDate);
 
 	/**
 	 * Проверяет, лежит ли день внутри выбранного или preview-диапазона.
@@ -123,15 +125,21 @@ export const CalendarDayView: React.FC<DayViewProps> = ({
 	 * Обновляет preview-конец диапазона при движении мыши.
 	 */
 	const handleDayHover = (date: Date, disabled: boolean) => {
-		if (!selectsRange || !selectedStartDate || selectedEndDate || disabled) return;
-		setHoveredDate(date);
+		if (disabled) return;
+
+		if (previewsWeekPeriod) {
+			setHoveredDate(date);
+		}
+
+		if (!selectsRange || !selectedStartDate || selectedEndDate) return;
+		if (!previewsWeekPeriod) setHoveredDate(date);
 	};
 
 	/**
 	 * Сбрасывает preview незавершённого диапазона при уходе курсора.
 	 */
 	const handleGridLeave = () => {
-		if (!selectedEndDate) {
+		if (previewsWeekPeriod || !selectedEndDate) {
 			setHoveredDate(null);
 		}
 	};
@@ -152,6 +160,7 @@ export const CalendarDayView: React.FC<DayViewProps> = ({
 						{week.map((day, dayIndex) => {
 							const isCurrentMonth = day.getMonth() === currentDate.getMonth();
 							const isSelected = isDateInsideCalendarPeriod(day, selectedSinglePeriod);
+							const isPeriodPreview = previewsStandalonePeriod && isDateInsideCalendarPeriod(day, hoveredPeriod);
 							const isRange = isInRange(day);
 							const isStart = isSameCalendarDay(day, selectedStartDate);
 							const isEnd = isSameCalendarDay(day, previewEndDate);
@@ -169,6 +178,8 @@ export const CalendarDayView: React.FC<DayViewProps> = ({
 									data-action="select-calendar-day"
 									className={cn(styles.day, {
 										[styles.outsideMonth]: !isCurrentMonth,
+										[styles.periodSelection]: selectionMode === "week",
+										[styles.periodPreview]: isPeriodPreview && !isSelected,
 										[styles.selected]: isSelected,
 										[styles.range]: isRange && !isStart && !isEnd,
 										[styles.rangeStart]: isStart,

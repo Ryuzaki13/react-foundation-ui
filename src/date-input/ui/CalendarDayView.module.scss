@@ -44,6 +44,19 @@
 		color: var(--content-2);
 	}
 
+	&.periodSelection:hover:not(.disabled):not(.periodPreview):not(.selected) {
+		background-color: var(--surface-1);
+	}
+
+	&.periodSelection.outsideMonth:hover:not(.disabled):not(.periodPreview):not(.selected) {
+		background-color: transparent;
+	}
+
+	&.periodPreview {
+		background-color: var(--surface-accent);
+		color: var(--content-0);
+	}
+
 	&.range {
 		background-color: var(--surface-accent);
 		color: var(--content-0);

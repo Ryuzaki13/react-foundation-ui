@@ -30,6 +30,18 @@ describe("dateInputValue", () => {
 		);
 	});
 
+	it("отображает одиночную неделю как включительный диапазон", () => {
+		expect(formatSingleDateValue(new Date(2026, 6, 2), { selectionMode: "week", weekEndDay: "saturday" })).toBe(
+			"29.06.2026 - 04.07.2026"
+		);
+	});
+
+	it("отображает начало незавершённого диапазона недель без второй границы", () => {
+		expect(formatRangeDateValue([new Date(2026, 5, 29), null], { selectionMode: "week", weekEndDay: "saturday" })).toBe(
+			"29.06.2026 - "
+		);
+	});
+
 	it("учитывает уровень выбора месяца при форматировании", () => {
 		expect(formatSingleDateValue(baseDate, { datePreset: "date-long", datePickerLevel: "month" })).toBe("март 2026 г.");
 		expect(formatSingleDateValue(baseDate, { dateFormat: "dd.MM.yyyy", datePickerLevel: "month" })).toBe("03.2026");
@@ -71,6 +83,15 @@ describe("dateInputValue", () => {
 	it("парсит человекочитаемые ru-RU даты из пресетов", () => {
 		expect(parseSingleDateValue("3 мар. 2026 г.", { datePreset: "date-medium" })).toEqual(new Date(2026, 2, 3, 0, 0, 0));
 		expect(parseSingleDateValue("3 марта 2026 г.", { datePreset: "date-long" })).toEqual(new Date(2026, 2, 3, 0, 0, 0));
+	});
+
+	it("парсит отображаемый диапазон одиночной недели в её начало", () => {
+		expect(
+			parseSingleDateValue("29.06.2026 - 04.07.2026", {
+				selectionMode: "week",
+				weekEndDay: "saturday"
+			})
+		).toEqual(new Date(2026, 5, 29, 0, 0, 0));
 	});
 
 	it("форматирует и парсит day+month пресеты", () => {

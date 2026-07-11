@@ -212,6 +212,15 @@ export function formatSingleDateValue(
 	if (!date) return "";
 
 	const options = normalizeDateInputValueOptions(optionsOrPreset, datePickerLevel);
+	const period = getCalendarPeriod(date, resolveCalendarPeriodOptions(options));
+
+	// Single-поле хранит начало недели, но показывает обе включительные границы выбранного периода.
+	if (options.selectionMode === "week" && period) {
+		return formatDateRange(period.start, period.end, resolveDateInputFormatPreset(options), {
+			precision: resolveDateInputPrecision(options)
+		});
+	}
+
 	return formatDate(date, resolveDateInputFormatPreset(options), {
 		precision: resolveDateInputPrecision(options)
 	});
@@ -236,7 +245,9 @@ export function formatRangeDateValue(
 	}
 
 	if (startDate) {
-		return `${formatSingleDateValue(startDate, options)}${RANGE_SEPARATOR}`;
+		return `${formatDate(startDate, resolveDateInputFormatPreset(options), {
+			precision: resolveDateInputPrecision(options)
+		})}${RANGE_SEPARATOR}`;
 	}
 
 	return "";
@@ -266,7 +277,10 @@ export function parseSingleDateValue(
 	datePickerLevel?: DateFormatPrecision
 ): Date | null {
 	const options = normalizeDateInputValueOptions(optionsOrPreset, datePickerLevel);
-	return normalizeSingleDateValue(parseDateTimeValue(value, options), options);
+	// Для отображаемого диапазона single-week источником значения остаётся его первая граница.
+	const singleValue = options.selectionMode === "week" ? (value.split(RANGE_SEPARATOR)[0] ?? "") : value;
+
+	return normalizeSingleDateValue(parseDateTimeValue(singleValue, options), options);
 }
 
 /**

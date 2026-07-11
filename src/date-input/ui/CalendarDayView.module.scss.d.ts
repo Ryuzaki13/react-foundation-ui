@@ -7,6 +7,8 @@ declare const styles: {
   readonly day: "day";
   readonly disabled: "disabled";
   readonly outsideMonth: "outsideMonth";
+  readonly periodSelection: "periodSelection";
+  readonly periodPreview: "periodPreview";
   readonly range: "range";
   readonly selected: "selected";
   readonly rangeStart: "rangeStart";
