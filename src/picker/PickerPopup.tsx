@@ -23,6 +23,7 @@ interface PickerPopupProps {
 	returnFocus?: boolean;
 	tabIndex?: number;
 	className?: string;
+	maxWidth?: CSSProperties["maxWidth"];
 	layoutClassName?: string;
 	headerClassName?: string;
 	bodyClassName?: string;
@@ -49,6 +50,7 @@ export function PickerPopup({
 	returnFocus = false,
 	tabIndex = 0,
 	className,
+	maxWidth,
 	layoutClassName,
 	headerClassName,
 	bodyClassName,
@@ -62,7 +64,7 @@ export function PickerPopup({
 					<FloatingFocusManager context={context} modal={false} initialFocus={initialFocus} returnFocus={returnFocus}>
 						<motion.div
 							ref={setFloating}
-							style={floatingStyles}
+							style={{ ...floatingStyles, maxWidth }}
 							initial={{ opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
 							exit={{ opacity: 0, scale: 0.95 }}

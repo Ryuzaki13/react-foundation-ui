@@ -121,6 +121,10 @@ const meta = {
 			description: "Дополнительный CSS-класс контейнера списка.",
 			control: "text"
 		},
+		optionsMaxWidth: {
+			description: "Максимальная ширина выпадающего списка в любом допустимом CSS-формате.",
+			control: "text"
+		},
 		size: {
 			description: "Размер поля и подписей.",
 			control: "select",
@@ -190,6 +194,7 @@ export const GroupedOptions: Story = {
 				value={value}
 				onChange={setValue}
 				getOptionGroup={(option) => ({ key: option.direction, label: option.direction })}
+				optionsMaxWidth="40rem"
 			/>
 		);
 	}

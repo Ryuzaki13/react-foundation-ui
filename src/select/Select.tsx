@@ -1,4 +1,4 @@
-import { Fragment, ReactNode, useRef, useState } from "react";
+import { type CSSProperties, Fragment, ReactNode, useCallback, useMemo, useRef, useState } from "react";
 
 import { Placement } from "@floating-ui/react";
 import { InputType } from "@ryuzaki13/react-foundation-lib/types";
@@ -47,6 +47,7 @@ type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TO
 	className?: string;
 	buttonClassName?: string;
 	optionsClassName?: string;
+	optionsMaxWidth?: CSSProperties["maxWidth"];
 	optionsContentClassName?: string;
 	searchable?: boolean;
 	query?: string;
@@ -94,6 +95,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		className,
 		buttonClassName,
 		optionsClassName,
+		optionsMaxWidth,
 		optionsContentClassName,
 		searchable = false,
 		defaultFilter = true,
@@ -122,19 +124,26 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		onQuery,
 		triggerMode
 	});
-	const visibleOptions = usePickerDefaultFilter({
-		options,
-		query: currentQuery,
-		enabled: searchable && defaultFilter,
-		getSearchText: (option) =>
+	const getSearchText = useCallback(
+		(option: TOption) =>
 			getOptionSearchText({
 				option,
 				getOptionLabel,
 				getOptionCode,
 				getOptionGroup
-			})
+			}),
+		[getOptionCode, getOptionGroup, getOptionLabel]
+	);
+	const visibleOptions = usePickerDefaultFilter({
+		options,
+		query: currentQuery,
+		enabled: searchable && defaultFilter,
+		getSearchText
 	});
-	const optionSections = createSelectOptionSections(visibleOptions, getOptionGroup);
+	const optionSections = useMemo(
+		() => (getOptionGroup ? createSelectOptionSections(visibleOptions, getOptionGroup) : undefined),
+		[getOptionGroup, visibleOptions]
+	);
 	const selectedIndex = selectedKey === undefined ? -1 : visibleOptions.findIndex((option) => getOptionKey(option) === selectedKey);
 	const {
 		activeIndex,
@@ -200,6 +209,42 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 
 		setQuery("");
 		close();
+	};
+	const renderOptionNode = (listId: string, option: TOption, index: number) => {
+		const optionKey = getOptionKey(option);
+		const selected = selectedKey !== undefined && optionKey === selectedKey;
+		const active = index === activeIndex;
+		const optionDisabled = getOptionDisabled?.(option) ?? false;
+		const optionState = { active, selected, disabled: optionDisabled };
+
+		return (
+			<div
+				key={optionKey}
+				id={getOptionId(listId, index)}
+				ref={(node) => setOptionRef(index, node)}
+				role="option"
+				aria-selected={selected}
+				aria-disabled={optionDisabled || undefined}
+				aria-label={getOptionAriaLabel?.(option)}
+				className={cn(
+					uiStyles.uiPopupOption,
+					optionDisabled && uiStyles.disabled,
+					active && uiStyles.uiPopupOptionActive,
+					selected && uiStyles.selected,
+					getOptionClassName?.(option, optionState)
+				)}
+				onClick={() => selectOption(option)}>
+				{renderOption ? (
+					renderOption(option, optionState)
+				) : (
+					<>
+						{selected ? <CheckIcon className={uiStyles.uiPopupOptionIcon} /> : <span className={uiStyles.uiPopupOptionIcon} />}
+						<div className={uiStyles.uiOptionText}>{getOptionLabel(option)}</div>
+						{getOptionCode && <div className={uiStyles.uiOptionCode}>{getOptionCode(option)}</div>}
+					</>
+				)}
+			</div>
+		);
 	};
 
 	return (
@@ -300,68 +345,34 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handleFloatingKeyDown}
 							className={cn(uiStyles.uiPopupOptions, optionsClassName)}
+							maxWidth={optionsMaxWidth}
 							header={renderPopupHeader}>
 							<div className={cn(optionsContentClassName, "h100 scrollable")}>
 								{hasOptions ? (
-									optionSections.map((section, sectionIndex) => {
-										const groupLabelId = section.group ? `${listId}-group-${sectionIndex}` : undefined;
-										const optionNodes = section.items.map(({ option, index }) => {
-											const optionKey = getOptionKey(option);
-											const selected = selectedKey !== undefined && optionKey === selectedKey;
-											const active = index === activeIndex;
-											const optionDisabled = getOptionDisabled?.(option) ?? false;
-											const optionState = { active, selected, disabled: optionDisabled };
-
-											return (
-												<div
-													key={optionKey}
-													id={getOptionId(listId, index)}
-													ref={(node) => setOptionRef(index, node)}
-													role="option"
-													aria-selected={selected}
-													aria-disabled={optionDisabled || undefined}
-													aria-label={getOptionAriaLabel?.(option)}
-													className={cn(
-														uiStyles.uiPopupOption,
-														optionDisabled && uiStyles.disabled,
-														active && uiStyles.uiPopupOptionActive,
-														selected && uiStyles.selected,
-														getOptionClassName?.(option, optionState)
-													)}
-													onClick={() => selectOption(option)}>
-													{renderOption ? (
-														renderOption(option, optionState)
-													) : (
-														<>
-															{selected ? (
-																<CheckIcon className={uiStyles.uiPopupOptionIcon} />
-															) : (
-																<span className={uiStyles.uiPopupOptionIcon} />
-															)}
-															<div className={uiStyles.uiOptionText}>{getOptionLabel(option)}</div>
-															{getOptionCode && (
-																<div className={uiStyles.uiOptionCode}>{getOptionCode(option)}</div>
-															)}
-														</>
-													)}
-												</div>
+									optionSections ? (
+										optionSections.map((section, sectionIndex) => {
+											const groupLabelId = section.group ? `${listId}-group-${sectionIndex}` : undefined;
+											const optionNodes = section.items.map(({ option, index }) =>
+												renderOptionNode(listId, option, index)
 											);
-										});
 
-										return section.group ? (
-											<div
-												key={`group-${String(section.group.key)}-${sectionIndex}`}
-												role="group"
-												aria-labelledby={groupLabelId}>
-												<div id={groupLabelId} className={uiStyles.uiPopupGroupLabel}>
-													{section.group.label}
+											return section.group ? (
+												<div
+													key={`group-${String(section.group.key)}-${sectionIndex}`}
+													role="group"
+													aria-labelledby={groupLabelId}>
+													<div id={groupLabelId} className={uiStyles.uiPopupGroupLabel}>
+														{section.group.label}
+													</div>
+													{optionNodes}
 												</div>
-												{optionNodes}
-											</div>
-										) : (
-											<Fragment key={`options-${sectionIndex}`}>{optionNodes}</Fragment>
-										);
-									})
+											) : (
+												<Fragment key={`options-${sectionIndex}`}>{optionNodes}</Fragment>
+											);
+										})
+									) : (
+										visibleOptions.map((option, index) => renderOptionNode(listId, option, index))
+									)
 								) : (
 									<PickerStatus emptyState={emptyState} loadingState={loadingState} errorState={errorState} />
 								)}

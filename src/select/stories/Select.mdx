@@ -76,6 +76,7 @@ export function Example() {
 ### Группировка опций
 
 `getOptionGroup` объединяет соседние опции с одинаковым `key` под доступным заголовком. Опции без группы остаются обычными элементами списка.
+Для длинных заголовков ширину popup можно ограничить через `optionsMaxWidth`, например `optionsMaxWidth="40rem"`.
 
 <Canvas of={SelectStories.GroupedOptions} />
 

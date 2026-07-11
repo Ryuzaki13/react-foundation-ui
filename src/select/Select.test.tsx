@@ -29,6 +29,8 @@ const GROUPED_OPTIONS: Option[] = [
 	{ id: 4, label: "Гамма", group: "Второе направление" }
 ];
 
+const getGroupedOptionGroup = vi.fn((option: Option) => (option.group ? { key: option.group, label: option.group } : undefined));
+
 function ControlledSelectHarness() {
 	const [value, setValue] = useState<Option | undefined>(OPTIONS[0]);
 
@@ -41,6 +43,7 @@ function ControlledSelectHarness() {
 			onChange={setValue}
 			getOptionKey={(option) => option.id}
 			getOptionLabel={(option) => option.label}
+			optionsMaxWidth="32rem"
 		/>
 	);
 }
@@ -119,7 +122,7 @@ function GroupedSelectHarness() {
 			onChange={setValue}
 			getOptionKey={(option) => option.id}
 			getOptionLabel={(option) => option.label}
-			getOptionGroup={(option) => (option.group ? { key: option.group, label: option.group } : undefined)}
+			getOptionGroup={getGroupedOptionGroup}
 		/>
 	);
 }
@@ -185,6 +188,7 @@ describe("Select", () => {
 
 		expect(input.getAttribute("aria-expanded")).toBe("true");
 		expect(document.querySelectorAll('[role="option"]')).toHaveLength(3);
+		expect((document.querySelector('[role="listbox"]') as HTMLElement | null)?.style.maxWidth).toBe("32rem");
 
 		const closeButton = document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement;
 
@@ -292,7 +296,9 @@ describe("Select", () => {
 	});
 
 	it("группирует соседние option, сохраняет негруппированные option и ищет по заголовку группы", async () => {
+		getGroupedOptionGroup.mockClear();
 		await renderNode(<GroupedSelectHarness />);
+		expect(getGroupedOptionGroup).toHaveBeenCalledTimes(GROUPED_OPTIONS.length);
 
 		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
 		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
@@ -300,6 +306,7 @@ describe("Select", () => {
 		await act(async () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
+		expect(getGroupedOptionGroup).toHaveBeenCalledTimes(GROUPED_OPTIONS.length);
 
 		const groups = Array.from(document.querySelectorAll<HTMLElement>('[role="group"]'));
 		expect(groups).toHaveLength(2);

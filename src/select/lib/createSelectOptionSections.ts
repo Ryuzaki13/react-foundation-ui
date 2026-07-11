@@ -15,12 +15,12 @@ export type SelectOptionSection<TOption> = {
  */
 export function createSelectOptionSections<TOption>(
 	options: readonly TOption[],
-	getOptionGroup: ((option: TOption) => SelectOptionGroup | undefined) | undefined
+	getOptionGroup: (option: TOption) => SelectOptionGroup | undefined
 ): readonly SelectOptionSection<TOption>[] {
 	const sections: Array<{ group: SelectOptionGroup | undefined; items: SelectOptionSectionItem<TOption>[] }> = [];
 
 	options.forEach((option, index) => {
-		const group = getOptionGroup?.(option);
+		const group = getOptionGroup(option);
 		const currentSection = sections.at(-1);
 		const belongsToCurrentSection = currentSection?.group?.key === group?.key;
 
