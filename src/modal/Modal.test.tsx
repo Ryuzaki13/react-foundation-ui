@@ -22,13 +22,16 @@ beforeEach(() => {
 
 afterEach(() => {
 	vi.unstubAllGlobals();
+	document.getElementById("modal-root")?.remove();
+	document.getElementById("app-root")?.remove();
 });
 
 function ControlledModal() {
-	const [isOpen, setIsOpen] = useState(true);
+	const [isOpen, setIsOpen] = useState(false);
 
 	return (
 		<ModalManagerProvider>
+			<Button onClick={() => setIsOpen(true)}>Открыть</Button>
 			<Modal isOpen={isOpen} title="Проверка анимации" onClose={() => setIsOpen(false)}>
 				<ModalContent>Содержимое</ModalContent>
 				<ModalFooter>
@@ -40,8 +43,15 @@ function ControlledModal() {
 }
 
 describe("Modal", () => {
-	it("сохраняет dialog в portal до завершения exit-анимации", async () => {
-		render(<ControlledModal />);
+	it("сохраняет dialog до завершения exit-анимации и возвращает фокус", async () => {
+		const appRoot = document.createElement("div");
+		appRoot.id = "app-root";
+		document.body.append(appRoot);
+		render(<ControlledModal />, { container: appRoot });
+
+		const trigger = screen.getByRole("button", { name: "Открыть" });
+		trigger.focus();
+		act(() => fireEvent.click(trigger));
 
 		const dialog = await screen.findByRole("dialog", { name: "Проверка анимации" });
 
@@ -49,5 +59,6 @@ describe("Modal", () => {
 
 		expect(screen.getByRole("dialog", { name: "Проверка анимации" })).toBe(dialog);
 		await waitFor(() => expect(screen.queryByRole("dialog", { name: "Проверка анимации" })).toBeNull());
+		await waitFor(() => expect(document.activeElement).toBe(trigger));
 	});
 });

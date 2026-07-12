@@ -1,6 +1,6 @@
-import React, { Children, useEffect, useId } from "react";
+import React, { Children, useEffect, useId, useRef } from "react";
 
-import { getOrCreatePortalRoot, useEscapeDismiss, useFocusTrap } from "@ryuzaki13/react-foundation-lib/dom";
+import { getOrCreatePortalRoot, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { X } from "lucide-react";
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
@@ -73,6 +73,8 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 
 	const { modals, openModal, closeModal, isTopModal } = useModalManager();
 	const shouldReduceMotion = useReducedMotion();
+	const restoreFocusTargetRef = useRef<HTMLElement | null>(null);
+	const restoreFocusAnimationFrameRef = useRef(0);
 
 	/**
 	 * Если provider менеджера не подключен, считаем одиночную модалку активной,
@@ -80,7 +82,13 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 	 */
 	const isActive = isOpen && (modals.length === 0 || isTopModal(modalId));
 
-	const modalRef = useFocusTrap(isOpen || false);
+	useEffect(() => {
+		if (isOpen) {
+			restoreFocusTargetRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+		}
+	}, [isOpen]);
+
+	const modalRef = useOverlayFocus<HTMLDivElement>({ active: isOpen || false, trapFocus: true, restoreFocus: false });
 
 	useEscapeDismiss({
 		active: isActive || false,
@@ -95,12 +103,26 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 	}, [isOpen, modalId, openModal]);
 
 	useEffect(() => {
-		return () => closeModal(modalId);
+		return () => {
+			window.cancelAnimationFrame(restoreFocusAnimationFrameRef.current);
+			closeModal(modalId);
+		};
 	}, [closeModal, modalId]);
 
 	function handleExitComplete() {
-		// Блокировка страницы снимается после exit, пока исчезающая modal-панель еще защищает фон.
 		closeModal(modalId);
+		const restoreFocusTarget = restoreFocusTargetRef.current;
+
+		/**
+		 * Менеджер снимает inert в passive effect после обновления стека.
+		 * Следующий animation frame гарантирует, что trigger снова доступен для фокуса.
+		 */
+		restoreFocusAnimationFrameRef.current = window.requestAnimationFrame(() => {
+			if (restoreFocusTarget?.isConnected) {
+				restoreFocusTarget.focus();
+			}
+			restoreFocusTargetRef.current = null;
+		});
 	}
 
 	const modalRoot = getOrCreatePortalRoot("modal-root");
@@ -158,7 +180,6 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 							icon={<X />}
 							className={styles.headerButton}
 							variant={"ghost"}
-							autoFocus={true}
 							aria-label={"Закрыть модальное окно"}
 							onClick={onClose}
 						/>
