@@ -6,6 +6,7 @@ export { ImageRenderer } from "./ui/ImageRenderer";
 export { ImageSelectionModal } from "./ui/ImageSelectionModal";
 export { ImageSelectionPanel } from "./ui/ImageSelectionPanel";
 export { ImageView } from "./ui/ImageView";
+export { ImageViewer } from "./ui/ImageViewer";
 
 export type { ImageCropArea, ImageCropperObjectFit, ImageCropperProps, ImageCropPoint } from "./model/imageCropTypes";
 export type {
@@ -24,6 +25,13 @@ export type {
 	SelectedImageData,
 	SelectedImageFile
 } from "./model/imageSelectionTypes";
+export type {
+	ImageViewerFeatures,
+	ImageViewerImage,
+	ImageViewerLabels,
+	ImageViewerProps,
+	ImageViewerStyle
+} from "./model/imageViewerTypes";
 export type { ImagePlaceholderProps } from "./ui/ImagePlaceholder";
 export type { ImageRendererProps } from "./ui/ImageRenderer";
 export type { ImageViewProps } from "./ui/ImageView";

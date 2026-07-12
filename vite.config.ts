@@ -24,6 +24,10 @@ if (missingPeerDevDependencies.length > 0) {
 }
 
 function isExternalPackage(id: string): boolean {
+	// CSS-файлы implementation-зависимостей входят в общий styles.css пакета,
+	// а JavaScript peer-зависимостей остаётся внешним и разрешается host-приложением.
+	if (id.endsWith(".css")) return false;
+
 	return externalPackages.some((packageName) => id === packageName || id.startsWith(packageName + "/"));
 }
 

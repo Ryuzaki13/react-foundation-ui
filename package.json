@@ -379,6 +379,7 @@
 		"react-dom": "^19.2.7",
 		"react-easy-crop": "^6.0.2",
 		"storybook": "^10.4.6",
+		"yet-another-react-lightbox": "^3.32.1",
 		"zustand": "^5.0.14"
 	},
 	"peerDependenciesMeta": {
@@ -448,6 +449,9 @@
 		"storybook": {
 			"optional": true
 		},
+		"yet-another-react-lightbox": {
+			"optional": true
+		},
 		"@storybook/react-vite": {
 			"optional": true
 		}
@@ -505,6 +509,7 @@
 		"typescript-eslint": "^8.63.0",
 		"vite": "^8.1.0",
 		"vitest": "^4.1.9",
+		"yet-another-react-lightbox": "^3.32.1",
 		"zustand": "^5.0.14"
 	},
 	"engines": {

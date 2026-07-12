@@ -106,6 +106,92 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 Обычно в host-проекте это оформляется отдельным entrypoint, например `src/app/styles/shared.scss`, который сначала настраивает foundation config, затем подключает foundation styles, темы и доменные CSS-переменные приложения.
 
+## Просмотр изображений
+
+`ImageViewer` из точечного entrypoint `@ryuzaki13/react-foundation-ui/image` предоставляет controlled lightbox для одного изображения или галереи. Реализация использует Yet Another React Lightbox как внутренний runtime, но наружу публикует только foundation-контракты `ImageViewerImage`, `ImageViewerFeatures`, `ImageViewerLabels` и `ImageViewerStyle`.
+
+Поскольку lightbox подключён как optional peer dependency, host устанавливает совместимую версию явно:
+
+```bash
+npm install yet-another-react-lightbox@^3.32.1
+```
+
+Отдельно импортировать CSS Yet Another React Lightbox не нужно: необходимые core/plugin styles уже входят в общий `@ryuzaki13/react-foundation-ui/styles.css`.
+
+```tsx
+import { useState } from "react";
+
+import { ImageViewer, type ImageViewerImage } from "@ryuzaki13/react-foundation-ui/image";
+
+const images: readonly ImageViewerImage[] = [
+	{
+		src: "/images/42/primary-webp",
+		alt: "Учебный корпус",
+		intrinsicWidth: 1920,
+		intrinsicHeight: 1080,
+		candidates: [
+			{ src: "/images/42/640-webp", width: 640 },
+			{ src: "/images/42/1280-webp", width: 1280 }
+		],
+		thumbnail: "/images/42/320-webp"
+	}
+];
+
+export function MaterialGallery() {
+	const [open, setOpen] = useState(false);
+	const [index, setIndex] = useState(0);
+
+	return (
+		<>
+			<button type="button" onClick={() => setOpen(true)}>
+				Открыть галерею
+			</button>
+			<ImageViewer
+				open={open}
+				images={images}
+				index={index}
+				onIndexChange={setIndex}
+				onClose={() => setOpen(false)}
+			/>
+		</>
+	);
+}
+```
+
+По умолчанию включены Zoom и Fullscreen; Captions включаются при наличии `title`, `description` или `alt`, а Thumbnails и Counter — для галереи из нескольких изображений. Download отключён до явного `features={{ download: true }}`. Поля `thumbnail` и `download` принимают уже разрешённые URL и не знают о правилах storage host-приложения.
+
+Внешний вид настраивается стабильными CSS-переменными `--image-viewer-*`. Они могут быть глобальными либо scoped через переданные `className`/`style`; это важно, поскольку viewer рендерится в portal за пределами DOM-ветки trigger:
+
+```scss
+.projectImageViewer {
+	--image-viewer-z-index: 320;
+	--image-viewer-backdrop: rgb(5 10 20 / 96%);
+	--image-viewer-control-color: rgb(255 255 255 / 82%);
+	--image-viewer-control-active-color: #7dd3fc;
+	--image-viewer-control-disabled-color: rgb(255 255 255 / 38%);
+	--image-viewer-control-background: transparent;
+	--image-viewer-control-border: 0;
+	--image-viewer-control-radius: 0.3125rem;
+	--image-viewer-control-filter: drop-shadow(0 0.125rem 0.25rem rgb(0 0 0 / 70%));
+	--image-viewer-icon-size: 1.75rem;
+	--image-viewer-icon-stroke-width: 2;
+	--image-viewer-toolbar-padding: 0.625rem;
+	--image-viewer-focus: 0.125rem solid #7dd3fc;
+	--image-viewer-focus-offset: 0.125rem;
+	--image-viewer-image-radius: 0.3125rem;
+	--image-viewer-caption-background: rgb(5 10 20 / 72%);
+	--image-viewer-caption-color: #fff;
+	--image-viewer-counter-color: rgb(255 255 255 / 82%);
+	--image-viewer-thumbnail-background: rgb(255 255 255 / 8%);
+	--image-viewer-thumbnail-border-color: rgb(255 255 255 / 60%);
+	--image-viewer-thumbnail-active-border-color: #7dd3fc;
+	--image-viewer-loading-color: #fff;
+	--image-viewer-error-color: #ef4444;
+}
+```
+
+Публичный CSS-контракт не включает переменные `--yarl__*`: они остаются implementation detail и могут меняться вместе с внутренней библиотекой.
+
 ## Storybook
 
 Stories и MDX не экспортируются как public API пакета. Вместо этого пакет собирает готовую статическую документацию:
