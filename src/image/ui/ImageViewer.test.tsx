@@ -1,5 +1,5 @@
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { beforeEach, describe, expect, it, vi } from "vitest";
 import { type LightboxExternalProps, type Plugin } from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Counter from "yet-another-react-lightbox/plugins/counter";
@@ -52,7 +52,11 @@ const IMAGES: readonly ImageViewerImage[] = [
 ];
 
 describe("ImageViewer", () => {
-	it("передаёт controlled-состояние, русские labels и полный набор включённых plugins", () => {
+	beforeEach(() => {
+		lightboxMock.props = undefined;
+	});
+
+	it("передаёт controlled-состояние, русские labels и полный набор включённых plugins", async () => {
 		const onClose = vi.fn();
 		const onIndexChange = vi.fn();
 		const style = { "--image-viewer-backdrop": "rebeccapurple" } satisfies ImageViewerStyle;
@@ -70,6 +74,7 @@ describe("ImageViewer", () => {
 				style={style}
 			/>
 		);
+		await screen.findByRole("dialog");
 
 		expect(lightboxMock.props?.plugins).toEqual([Captions, Counter, Download, Fullscreen, Thumbnails, Zoom]);
 		expect(lightboxMock.props?.labels?.Close).toBe("Закрыть галерею");
@@ -86,19 +91,20 @@ describe("ImageViewer", () => {
 		expect(onClose).toHaveBeenCalledOnce();
 	});
 
-	it("не открывает viewer без изображений и ограничивает индекс доступным диапазоном", () => {
+	it("не открывает viewer без изображений и ограничивает индекс доступным диапазоном", async () => {
 		const { rerender } = render(<ImageViewer open images={[]} index={10} onClose={() => undefined} />);
 
-		expect(lightboxMock.props?.open).toBe(false);
+		await waitFor(() => expect(lightboxMock.props?.open).toBe(false));
 		expect(lightboxMock.props?.index).toBe(0);
 
 		rerender(<ImageViewer open images={IMAGES} index={10} onClose={() => undefined} />);
 
+		await screen.findByRole("dialog");
 		expect(lightboxMock.props?.open).toBe(true);
 		expect(lightboxMock.props?.index).toBe(1);
 	});
 
-	it("использует download override изображения и блокирует явно запрещённую загрузку", () => {
+	it("использует download override изображения и блокирует явно запрещённую загрузку", async () => {
 		render(
 			<ImageViewer
 				open
@@ -110,6 +116,7 @@ describe("ImageViewer", () => {
 				onClose={() => undefined}
 			/>
 		);
+		await screen.findByRole("dialog");
 
 		const saveAs = vi.fn();
 		const download = lightboxMock.props?.download?.download;

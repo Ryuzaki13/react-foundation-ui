@@ -116,7 +116,7 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 npm install yet-another-react-lightbox@^3.32.1
 ```
 
-Отдельно импортировать CSS Yet Another React Lightbox не нужно: необходимые core/plugin styles уже входят в общий `@ryuzaki13/react-foundation-ui/styles.css`.
+Отдельно импортировать CSS Yet Another React Lightbox не нужно: необходимые core/plugin styles уже входят в общий `@ryuzaki13/react-foundation-ui/styles.css`. JavaScript runtime YARL и его плагины загружаются отдельным динамическим chunk только при первом `open` и после загрузки остаются смонтированными для корректного завершения close lifecycle.
 
 ```tsx
 import { useState } from "react";

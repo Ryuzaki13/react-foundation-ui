@@ -46,7 +46,10 @@ function ViewerOverModalFixture() {
 			</Modal>
 			<ImageViewer
 				open={viewerOpen}
-				images={[{ src: "/preview.webp", alt: "Предпросмотр", intrinsicWidth: 1600, intrinsicHeight: 900 }]}
+				images={[
+					{ src: "/preview.webp", alt: "Предпросмотр", intrinsicWidth: 1600, intrinsicHeight: 900 },
+					{ src: "/preview-next.webp", alt: "Следующее изображение", intrinsicWidth: 1600, intrinsicHeight: 900 }
+				]}
 				onClose={() => setViewerOpen(false)}
 			/>
 		</ModalManagerProvider>
@@ -75,6 +78,8 @@ describe("ImageViewer поверх Modal", () => {
 
 		expect(modalRoot?.getAttribute("inert")).toBe("");
 		expect(modalRoot?.getAttribute("aria-hidden")).toBe("true");
+		const counter = viewer.querySelector<HTMLElement>(".yarl__counter");
+		expect(counter?.style.top).toBe("var(--_image-viewer-top-row-height)");
 		await waitFor(() => expect(viewer.contains(document.activeElement)).toBe(true));
 
 		fireEvent.keyDown(document.activeElement ?? viewer, { key: "Escape", bubbles: true, cancelable: true });

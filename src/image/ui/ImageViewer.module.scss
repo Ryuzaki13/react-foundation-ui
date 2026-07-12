@@ -1,5 +1,9 @@
 .viewer {
 	// Переменные YARL остаются внутренней деталью; потребители настраивают только стабильное пространство image-viewer.
+	--_image-viewer-top-row-height: calc(
+		var(--image-viewer-icon-size, 1.75rem) + var(--image-viewer-toolbar-padding, var(--space-md, 0.625rem)) +
+			var(--image-viewer-toolbar-padding, var(--space-md, 0.625rem)) + 1rem
+	);
 	--yarl__portal_zindex: var(--image-viewer-z-index, var(--z-image-viewer, 300));
 	--yarl__color_backdrop: var(--image-viewer-backdrop, rgb(0 0 0 / 92%));
 	--yarl__container_background_color: var(--image-viewer-backdrop, rgb(0 0 0 / 92%));
@@ -50,6 +54,12 @@
 
 .viewer :global(.yarl__slide_image) {
 	border-radius: var(--image-viewer-image-radius, var(--radius-sm, 0.3125rem));
+}
+
+.viewer :global(.yarl__slide_title_container) {
+	box-sizing: border-box;
+	height: var(--_image-viewer-top-row-height);
+	overflow: hidden;
 }
 
 .icon {
