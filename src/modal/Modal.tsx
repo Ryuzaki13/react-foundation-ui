@@ -1,8 +1,9 @@
-import React, { Children, useEffect, useEffectEvent, useId, useState } from "react";
+import React, { Children, useEffect, useId } from "react";
 
 import { getOrCreatePortalRoot, useEscapeDismiss, useFocusTrap } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { X } from "lucide-react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { createPortal } from "react-dom";
 
 import { Button } from "../button";
@@ -11,6 +12,7 @@ import { GridContainer } from "../grid";
 import { Scrollable } from "../misc";
 
 import styles from "./Modal.module.scss";
+import { modalMotionTransition, modalMotionVariants, reducedModalMotionTransition } from "./modalMotion";
 import { ModalSize } from "./types";
 import { useModalManager } from "./useModalManager";
 
@@ -70,9 +72,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 	const titleId = useId();
 
 	const { modals, openModal, closeModal, isTopModal } = useModalManager();
-	const [isMounted, setIsMounted] = useState(false);
-	const mountModal = useEffectEvent(() => setIsMounted(true));
-	const unmountModal = useEffectEvent(() => setIsMounted(false));
+	const shouldReduceMotion = useReducedMotion();
 
 	/**
 	 * Если provider менеджера не подключен, считаем одиночную модалку активной,
@@ -91,16 +91,17 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 	useEffect(() => {
 		if (isOpen) {
 			openModal(modalId);
-			mountModal();
 		}
+	}, [isOpen, modalId, openModal]);
 
-		return () => {
-			closeModal(modalId);
-			unmountModal();
-		};
-	}, [closeModal, isOpen, modalId, openModal]);
+	useEffect(() => {
+		return () => closeModal(modalId);
+	}, [closeModal, modalId]);
 
-	if (!isMounted) return null;
+	function handleExitComplete() {
+		// Блокировка страницы снимается после exit, пока исчезающая modal-панель еще защищает фон.
+		closeModal(modalId);
+	}
 
 	const modalRoot = getOrCreatePortalRoot("modal-root");
 
@@ -134,40 +135,47 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 	}
 
 	return createPortal(
-		<>
-			<div
-				ref={modalRef}
-				className={cn(styles.modal, styles[size])}
-				style={{ height }}
-				role="dialog"
-				aria-modal="true"
-				aria-labelledby={titleId}
-				aria-describedby={`${titleId}-content`}>
-				<div className={cn(styles.header, toolbar ? "" : "borderBottom")}>
-					<h3 className={styles.headerText} id={titleId}>
-						{title}
-					</h3>
-					<Button
-						icon={<X />}
-						className={styles.headerButton}
-						variant={"ghost"}
-						autoFocus={true}
-						aria-label={"Закрыть модальное окно"}
-						onClick={onClose}
-					/>
-				</div>
+		<AnimatePresence onExitComplete={handleExitComplete}>
+			{isOpen ? (
+				<motion.div
+					ref={modalRef}
+					className={cn(styles.modal, styles[size])}
+					style={{ height }}
+					role="dialog"
+					aria-modal="true"
+					aria-labelledby={titleId}
+					aria-describedby={`${titleId}-content`}
+					initial="hidden"
+					animate="visible"
+					exit="hidden"
+					variants={modalMotionVariants}
+					transition={shouldReduceMotion ? reducedModalMotionTransition : modalMotionTransition}>
+					<div className={cn(styles.header, toolbar ? "" : "borderBottom")}>
+						<h3 className={styles.headerText} id={titleId}>
+							{title}
+						</h3>
+						<Button
+							icon={<X />}
+							className={styles.headerButton}
+							variant={"ghost"}
+							autoFocus={true}
+							aria-label={"Закрыть модальное окно"}
+							onClick={onClose}
+						/>
+					</div>
 
-				<GridContainer
-					id={`${titleId}-content`}
-					templateRows={`${toolbar ? "auto" : ""} 1fr ${footer ? "auto" : ""}`.trim()}
-					// gap="md"
-					className={styles.body}>
-					{toolbar}
-					{content}
-					{footer}
-				</GridContainer>
-			</div>
-		</>,
+					<GridContainer
+						id={`${titleId}-content`}
+						templateRows={`${toolbar ? "auto" : ""} 1fr ${footer ? "auto" : ""}`.trim()}
+						// gap="md"
+						className={styles.body}>
+						{toolbar}
+						{content}
+						{footer}
+					</GridContainer>
+				</motion.div>
+			) : null}
+		</AnimatePresence>,
 		modalRoot
 	);
 };
