@@ -38,22 +38,22 @@
 }
 
 @mixin stepped-font($base: 16) {
-	@if $base < 16 {
-		@error "UI font-size добжен быть не менее 16px.";
-	}
+	// @if $min < 16 {
+	// 	@error "UI font-size добжен быть не менее 16px.";
+	// }
 
-	font-size: #{toRem($base + 4)};
+	font-size: #{toEm($base)}; // #{toEm($max)};
 
 	@include laptop {
-		font-size: #{toRem($base)};
+		font-size: #{toEm($base)}; // #{toEm(math.max($min, $max - 1))};
 	}
 
 	@include tablet {
-		font-size: #{toRem($base + 2)};
+		font-size: #{toEm($base + 2)}; // #{toEm(math.max($min, $max - 2))};
 	}
 
 	@include mobile {
-		font-size: #{toRem($base + 4)};
+		font-size: #{toEm($base + 4)}; // #{toEm($min)};
 	}
 }
 
@@ -285,7 +285,7 @@
 @mixin generate-accent($L, $C, $H, $mode) {
 	@if $mode == light {
 		--content-accent: oklch(#{$L} #{$C} #{$H});
-		--surface-accent: oklch(0.94 #{math.max(0, $C - 0.2)} #{$H - 15});
+		--surface-accent: oklch(#{$L + 0.4} #{math.max(0, $C - 0.2)} #{$H - 15});
 		--border-accent: oklch(#{$L - 0.03} #{math.max(0, $C - 0.08)} #{$H});
 		// --focus-accent: oklch(#{$L + 0.04} #{$C + 0.05} #{$H});
 	}
