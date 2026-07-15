@@ -7,7 +7,10 @@ import {
 import { getPresetOption, normalizePresetIds, type PresetOption, resolvePresetOptionsByIds } from "@ryuzaki13/react-foundation-lib/presets";
 import { isRecord } from "@ryuzaki13/react-foundation-lib/validators";
 
-export type PeriodSelectPresetId = "day" | "week" | "month";
+/**
+ * Идентификаторы встроенных уровней детализации периода.
+ */
+export type PeriodSelectPresetId = "day" | "week" | "month" | "year";
 export type PeriodSelectId = PeriodSelectPresetId | (string & {});
 
 export interface PeriodSelectOption extends PresetOption<PeriodSelectId> {
@@ -32,6 +35,10 @@ export const DEFAULT_PERIOD_SELECT_PRESET_ID = "day" satisfies PeriodSelectPrese
 export const DEFAULT_PERIOD_SELECT_MAX_DAY_RANGE_DAYS = 31;
 export const DEFAULT_PERIOD_SELECT_MAX_WEEK_RANGE_WEEKS = 26;
 
+/**
+ * Канонический каталог встроенных вариантов. Порядок элементов задает порядок
+ * отображения и автоматического перехода к следующему доступному уровню.
+ */
 export const PERIOD_SELECT_OPTIONS: readonly BuiltInPeriodSelectOption[] = Object.freeze([
 	{
 		id: "day",
@@ -44,10 +51,22 @@ export const PERIOD_SELECT_OPTIONS: readonly BuiltInPeriodSelectOption[] = Objec
 	{
 		id: "month",
 		label: "по месяцам"
+	},
+	{
+		id: "year",
+		label: "по годам"
 	}
 ]);
 
-export const DEFAULT_PERIOD_SELECT_PRESET_IDS = Object.freeze(["day", "week", "month"] as const satisfies readonly PeriodSelectPresetId[]);
+/**
+ * Полный набор встроенных вариантов, доступный при отсутствии явного allow-list.
+ */
+export const DEFAULT_PERIOD_SELECT_PRESET_IDS = Object.freeze([
+	"day",
+	"week",
+	"month",
+	"year"
+] as const satisfies readonly PeriodSelectPresetId[]);
 
 const PERIOD_SELECT_PRESET_ID_SET: ReadonlySet<string> = new Set(PERIOD_SELECT_OPTIONS.map((option) => option.id));
 
@@ -59,7 +78,13 @@ export function normalizePeriodSelectPresetIds(
 	value: unknown,
 	fallbackIds: readonly PeriodSelectPresetId[] = DEFAULT_PERIOD_SELECT_PRESET_IDS
 ): PeriodSelectPresetId[] {
-	return normalizePresetIds(value, isPeriodSelectPresetId, fallbackIds);
+	const normalizedIds = normalizePresetIds(value, isPeriodSelectPresetId, fallbackIds);
+	const resolvedIds = normalizedIds.length > 0 ? normalizedIds : DEFAULT_PERIOD_SELECT_PRESET_IDS;
+	const resolvedIdSet = new Set<PeriodSelectPresetId>(resolvedIds);
+
+	// Порядок runtime-опций является частью контракта: конфигурация только ограничивает
+	// каталог и не может переставить уровни либо оставить контрол без вариантов.
+	return DEFAULT_PERIOD_SELECT_PRESET_IDS.filter((presetId) => resolvedIdSet.has(presetId));
 }
 
 export function resolvePeriodSelectOptionsByIds(

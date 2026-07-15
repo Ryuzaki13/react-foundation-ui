@@ -5,7 +5,7 @@ import { fn } from "storybook/test";
 import { RangeDateInput } from "../../date-input";
 import { GridContainer } from "../../grid";
 import { Text } from "../../text";
-import { PeriodSelect, type PeriodSelectProps } from "../index";
+import { DEFAULT_PERIOD_SELECT_PRESET_IDS, PeriodSelect, type PeriodSelectProps } from "../index";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -21,6 +21,7 @@ const meta = {
 		placeholder: "Выберите период",
 		value: "day",
 		onChange: fn<NonNullable<PeriodSelectProps["onChange"]>>(),
+		presetIds: DEFAULT_PERIOD_SELECT_PRESET_IDS,
 		dateRange: defaultDateRange,
 		maxDayRangeDays: 31,
 		maxWeekRangeWeeks: 26,
@@ -53,15 +54,20 @@ const meta = {
 		value: {
 			description: "Текущий id периода.",
 			control: "select",
-			options: ["day", "week", "month"]
+			options: DEFAULT_PERIOD_SELECT_PRESET_IDS
 		},
 		onChange: {
 			description: "Вызывается с id выбранного периода.",
 			control: false
 		},
 		options: {
-			description: "Кастомный список периодов по контракту `PeriodSelectOption`.",
+			description: "Кастомный список периодов по контракту `PeriodSelectOption`; имеет приоритет над `presetIds`.",
 			control: false
+		},
+		presetIds: {
+			description: "Разрешенные встроенные периоды. Порядок отображения остается `day → week → month → year`.",
+			control: "check",
+			options: DEFAULT_PERIOD_SELECT_PRESET_IDS
 		},
 		dateRange: {
 			description: "Диапазон дат, по которому вычисляются заблокированные периоды.",
@@ -149,6 +155,38 @@ export const AutoSwitchByRange: Story = {
 	name: "Автопереключение по диапазону",
 	args: {
 		value: "day",
+		dateRange: longDateRange,
+		maxDayRangeDays: 31,
+		maxWeekRangeWeeks: 8
+	},
+	render: function Render(args) {
+		return <PeriodSelectStoryCanvas {...args} />;
+	}
+};
+
+/**
+ * Allow-list ограничивает встроенный каталог двумя крупными уровнями детализации.
+ */
+export const MonthAndYear: Story = {
+	name: "Только месяцы и годы",
+	args: {
+		value: "month",
+		presetIds: ["month", "year"]
+	},
+	render: function Render(args) {
+		return <PeriodSelectStoryCanvas {...args} />;
+	}
+};
+
+/**
+ * При длинном диапазоне все разрешенные варианты временно недоступны; внешний
+ * controlled-id сохраняется, и после сокращения диапазона отображение восстанавливается.
+ */
+export const AllAllowedOptionsDisabled: Story = {
+	name: "Все разрешенные варианты недоступны",
+	args: {
+		value: "day",
+		presetIds: ["day", "week"],
 		dateRange: longDateRange,
 		maxDayRangeDays: 31,
 		maxWeekRangeWeeks: 8
