@@ -33,6 +33,17 @@
 	background-color: var(--surface-1);
 }
 
+// Недоступность принадлежит option целиком; вложенный checkbox только визуализирует то же состояние.
+.treeRowDisabled {
+	cursor: not-allowed;
+	opacity: var(--disabled-opacity);
+
+	&:hover {
+		background-color: transparent;
+		cursor: not-allowed;
+	}
+}
+
 .treeNodeButton {
 	display: flex;
 	align-items: center;
@@ -42,6 +53,39 @@
 	background: transparent;
 	text-align: left;
 	border-radius: var(--radius-sm);
+}
+
+.treePopupHeader {
+	display: grid;
+	gap: var(--space-sm);
+}
+
+.treeColumns {
+	display: grid;
+	grid-auto-flow: column;
+	grid-template-columns: repeat(var(--tree-column-count, 1), minmax(0, 1fr));
+	grid-template-rows: repeat(var(--tree-row-count, 1), minmax(var(--control-height), auto));
+	column-gap: var(--space-sm);
+	align-content: start;
+	width: 100%;
+	min-width: 0;
+}
+
+.treeColumnRow {
+	min-width: 0;
+	break-inside: avoid;
+}
+
+.treeColumnCheckBox {
+	display: inline-flex;
+	flex-shrink: 0;
+}
+
+// Даёт общему option-content реальную сжимаемую ширину внутри колонки и включает ellipsis вместо выхода за границы.
+.treeNodeOptionContent {
+	flex: 1 1 0;
+	min-width: 0;
+	height: 100%;
 }
 
 .treeIndent {

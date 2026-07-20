@@ -1,7 +1,7 @@
 import React, { useId } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { SquareIcon } from "lucide-react";
+import { MinusIcon, SquareIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 import { getUiToneClassName } from "../uiClasses";
@@ -14,6 +14,8 @@ interface CheckBoxProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "checked" | "value" | "onChange" | "type">, UiBaseProps<boolean> {
 	tone?: UiTone;
 	noWrap?: boolean;
+	/** Показывает частично выбранную группу и публикует `aria-checked="mixed"`. */
+	indeterminate?: boolean;
 }
 
 /**
@@ -32,6 +34,7 @@ export function CheckBox({
 	noWrap,
 	id: externalId,
 	tone = "neutral",
+	indeterminate = false,
 	...props
 }: CheckBoxProps) {
 	const autoId = useId();
@@ -39,6 +42,11 @@ export function CheckBox({
 	const descriptionId = description ? `${id}-description` : undefined;
 	const text = label ?? placeholder;
 	const checked = value ?? false;
+	const setInputNode = (node: HTMLInputElement | null) => {
+		if (node) {
+			node.indeterminate = indeterminate;
+		}
+	};
 
 	return (
 		<div
@@ -48,17 +56,18 @@ export function CheckBox({
 				<div className={cn(styles.wrapper, getUiToneClassName(tone))}>
 					<input
 						{...props}
+						ref={setInputNode}
 						id={id}
 						type="checkbox"
 						checked={checked}
 						disabled={disabled}
-						aria-checked={checked}
+						aria-checked={indeterminate ? "mixed" : checked}
 						aria-describedby={descriptionId}
-						className={cn(uiStyles.uiSelectionControl, styles.input)}
+						className={cn(uiStyles.uiSelectionControl, styles.input, indeterminate && styles.inputIndeterminate)}
 						onChange={() => onChange?.(!checked)}
 					/>
 					<div className={cn(uiStyles.uiSelectionIcon, styles.icon)} aria-hidden="true">
-						<SquareIcon />
+						{indeterminate ? <MinusIcon /> : <SquareIcon />}
 					</div>
 				</div>
 				{text && (

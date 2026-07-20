@@ -154,6 +154,9 @@ function isNodeFullySelected(nodeId: string, selectedIds: Set<string>, index: Tr
 	if (selectedIds.has(nodeId)) {
 		return true;
 	}
+	if (index.nodeById.get(nodeId)?.disabled) {
+		return false;
+	}
 
 	const children = index.childrenById.get(nodeId) ?? [];
 	if (children.length === 0) {
@@ -179,7 +182,7 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 	for (const nodeId of orderedNodeIds) {
 		const children = index.childrenById.get(nodeId) ?? [];
 
-		if (children.length === 0 || nextSelectedIds.has(nodeId)) {
+		if (children.length === 0 || nextSelectedIds.has(nodeId) || index.nodeById.get(nodeId)?.disabled) {
 			continue;
 		}
 
@@ -199,7 +202,12 @@ function expandNearestSelectedAncestor(selectedIds: Set<string>, nodeId: string,
 		if (selectedIds.has(currentId)) {
 			selectedIds.delete(currentId);
 
-			for (const childId of index.childrenById.get(currentId) ?? []) {
+			/*
+			 * Узел мог стать disabled уже после сохранения выбора его ancestor.
+			 * При частичном снятии разворачиваем ancestor только в актуально
+			 * доступное покрытие, чтобы запрещённое значение не попало в onChange.
+			 */
+			for (const childId of getSelectableTreeNodeIds(index, index.childrenById.get(currentId) ?? [])) {
 				selectedIds.add(childId);
 			}
 
@@ -262,6 +270,30 @@ export function getTreeNodeSelectionState(selectedIds: Set<string>, index: TreeN
 	return state;
 }
 
+/**
+ * Строит каноническое покрытие всех доступных узлов для массового выбора.
+ * Ветка схлопывается в parent только тогда, когда внутри неё нет disabled-узлов;
+ * иначе выбираются доступные дочерние поддеревья, не затрагивая запреты.
+ */
+export function getSelectableTreeNodeIds(index: TreeNodeIndex, rootIds: readonly string[] = index.rootIds): Set<string> {
+	const collectSubtree = (nodeId: string): { containsDisabled: boolean; selectedIds: string[] } => {
+		const node = index.nodeById.get(nodeId);
+		const childSelections = (index.childrenById.get(nodeId) ?? []).map(collectSubtree);
+		const selectedChildIds = childSelections.flatMap((selection) => selection.selectedIds);
+		const containsDisabled = node?.disabled === true || childSelections.some((selection) => selection.containsDisabled);
+
+		if (!node || node.disabled) {
+			return { containsDisabled: true, selectedIds: selectedChildIds };
+		}
+
+		return containsDisabled
+			? { containsDisabled: true, selectedIds: selectedChildIds }
+			: { containsDisabled: false, selectedIds: [nodeId] };
+	};
+
+	return new Set(rootIds.flatMap((rootId) => collectSubtree(rootId).selectedIds));
+}
+
 export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | undefined, targetNodeId: string, index: TreeNodeIndex) {
 	const selectedIds = treeMultiValueToSelectedIds(currentValue, index);
 
@@ -283,7 +315,16 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 		selectedIds.add(targetId);
 	};
 
-	toggle(targetNodeId);
+	const selectableTargetIds = [...getSelectableTreeNodeIds(index, [targetNodeId])];
+	const allSelectableTargetsSelected =
+		selectableTargetIds.length > 0 && selectableTargetIds.every((nodeId) => isTreeNodeSelected(nodeId, selectedIds, index));
+
+	for (const selectableTargetId of selectableTargetIds) {
+		const selected = isTreeNodeSelected(selectableTargetId, selectedIds, index);
+		if ((allSelectableTargetsSelected && selected) || (!allSelectableTargetsSelected && !selected)) {
+			toggle(selectableTargetId);
+		}
+	}
 
 	return treeSelectedIdsToMultiValue(canonicalizeTreeSelection(selectedIds, index), index);
 }

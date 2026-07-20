@@ -4,7 +4,7 @@ import { UiBaseProps } from "../types";
 
 import { useODataTreeData } from "./model/useODataTreeData";
 import { TreeMultiSelect } from "./TreeMultiSelect";
-import { TreeMultiSelectValue } from "./types";
+import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "./types";
 
 export interface ODataTreeMultiSelectProps
 	extends Omit<ODataDependentBaseProps, "model" | "value" | "dependencies">, Omit<UiBaseProps<TreeMultiSelectValue>, "placeholder"> {
@@ -13,6 +13,8 @@ export interface ODataTreeMultiSelectProps
 	query?: string;
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
+	/** Переключает способ показа загруженного OData-дерева, не меняя формат value и запросов. */
+	optionsLayout?: TreeMultiSelectOptionsLayout;
 }
 
 export function ODataTreeMultiSelect({
@@ -24,6 +26,7 @@ export function ODataTreeMultiSelect({
 	query,
 	defaultQuery,
 	onQuery,
+	optionsLayout,
 	value,
 	onChange,
 	odata,
@@ -49,6 +52,7 @@ export function ODataTreeMultiSelect({
 			query={query}
 			defaultQuery={defaultQuery}
 			onQuery={onQuery}
+			optionsLayout={optionsLayout}
 			isLoading={treeData.isLoading}
 			error={treeData.isError ? "Ошибка загрузки" : undefined}
 		/>

@@ -34,14 +34,3 @@
 
 	pointer-events: none;
 }
-
-.selectAllButton {
-	// font-size: var(--font-size-sm);
-	padding-block: var(--space-xs);
-	border-radius: var(--radius-sm);
-
-	&:hover {
-		// color: var(--content-accent);
-		background-color: var(--surface-2);
-	}
-}

@@ -5,6 +5,9 @@ export type TreeSelectValue = {
 
 export type TreeMultiSelectValue = Record<string, string[]>;
 
+/** Вариант представления опций множественного выбора без изменения tree-value контракта. */
+export type TreeMultiSelectOptionsLayout = "tree" | "columns";
+
 export type TreeSelectNode = {
 	id: string;
 	codeKey: string;

@@ -2,9 +2,16 @@ import { useMemo } from "react";
 
 import { UiBaseProps } from "../types";
 
-import { createTreeNodeIndex, getTreeNodeSelectionState, toggleTreeMultiSelection, treeMultiValueToSelectedIds } from "./model/treeUtils";
+import {
+	createTreeNodeIndex,
+	getSelectableTreeNodeIds,
+	getTreeNodeSelectionState,
+	toggleTreeMultiSelection,
+	treeMultiValueToSelectedIds,
+	treeSelectedIdsToMultiValue
+} from "./model/treeUtils";
 import { TreePickerBase } from "./TreePickerBase";
-import { TreeMultiSelectValue, TreeSelectNode } from "./types";
+import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "./types";
 
 export interface TreeMultiSelectProps extends Omit<UiBaseProps<TreeMultiSelectValue>, "placeholder"> {
 	nodes: readonly TreeSelectNode[];
@@ -14,6 +21,8 @@ export interface TreeMultiSelectProps extends Omit<UiBaseProps<TreeMultiSelectVa
 	onQuery?: (value: string) => void;
 	isLoading?: boolean;
 	error?: string;
+	/** Определяет обычное раскрываемое дерево или полностью открытый адаптивный набор колонок. */
+	optionsLayout?: TreeMultiSelectOptionsLayout;
 }
 
 function formatTreeMultiSummary(selectedIds: Set<string>, treeIndex: ReturnType<typeof createTreeNodeIndex>) {
@@ -51,12 +60,16 @@ export function TreeMultiSelect({
 	defaultQuery,
 	onQuery,
 	isLoading,
-	error
+	error,
+	optionsLayout = "tree"
 }: TreeMultiSelectProps) {
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
 	const selectedIds = useMemo(() => treeMultiValueToSelectedIds(value, treeIndex), [treeIndex, value]);
 	const selectionState = useMemo(() => getTreeNodeSelectionState(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const selectedSummary = useMemo(() => formatTreeMultiSummary(selectedIds, treeIndex), [selectedIds, treeIndex]);
+	const selectAll = () => {
+		onChange(treeSelectedIdsToMultiValue(getSelectableTreeNodeIds(treeIndex), treeIndex));
+	};
 
 	return (
 		<TreePickerBase
@@ -69,6 +82,11 @@ export function TreeMultiSelect({
 			selectedIds={selectionState.selectedIds}
 			partialIds={selectionState.partialIds}
 			selectionMode="multi"
+			optionsLayout={optionsLayout}
+			bulkActions={{
+				onSelectAll: selectAll,
+				onDeselectAll: () => onChange({})
+			}}
 			triggerMode="search"
 			selectedSummary={selectedSummary}
 			query={query}

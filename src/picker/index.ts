@@ -1,5 +1,6 @@
 export * from "./PickerField";
 export * from "./PickerPopup";
+export * from "./PickerSelectionToolbar";
 export * from "./PickerStatus";
 export * from "./PickerTriggerActions";
 export * from "./PickerTriggerInput";

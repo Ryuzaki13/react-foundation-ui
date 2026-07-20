@@ -2,7 +2,7 @@ import { useState } from "react";
 
 import { baseOData, storyValues, treeSegments, withMockedOData } from "../../select/stories/odataStoryFixtures";
 import { ODataTreeMultiSelect } from "../ODataTreeMultiSelect";
-import { TreeMultiSelectValue } from "../types";
+import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "../types";
 
 import type { ODataCollectionConfig, ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -12,13 +12,15 @@ function StatefulODataTreeMultiSelect({
 	odata = baseOData,
 	segments = treeSegments,
 	label = "ODataTreeMultiSelect",
-	description
+	description,
+	optionsLayout = "tree"
 }: {
 	initialValue?: TreeMultiSelectValue;
 	odata?: ODataCollectionConfig;
 	segments?: ODataDependentBaseProps["segments"];
 	label?: string;
 	description?: string;
+	optionsLayout?: TreeMultiSelectOptionsLayout;
 }) {
 	const [value, setValue] = useState<TreeMultiSelectValue>(initialValue);
 
@@ -31,6 +33,7 @@ function StatefulODataTreeMultiSelect({
 				segments={segments}
 				value={value}
 				onChange={setValue}
+				optionsLayout={optionsLayout}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(value)}</div>
 		</div>
@@ -84,6 +87,17 @@ export const MixedSelection: Story = {
 			label="Смешанный выбор"
 			description="Смешанный frontier по соседним уровням в OData-дереве."
 			initialValue={{ BRANCH: [storyValues.branch], OWNER: [storyValues.ownerAlt] }}
+		/>
+	)
+};
+
+export const BalancedColumns: Story = {
+	render: () => (
+		<StatefulODataTreeMultiSelect
+			label="OData tree в столбцах"
+			description="Все уровни открыты, а popup балансирует ширину и высоту по доступному viewport."
+			optionsLayout="columns"
+			initialValue={{ BRANCH: [storyValues.branch] }}
 		/>
 	)
 };

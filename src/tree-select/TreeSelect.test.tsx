@@ -146,4 +146,15 @@ describe("TreeSelect", () => {
 		expect(input.getAttribute("aria-expanded")).toBe("false");
 		expect(container?.querySelector('button[aria-label="Очистить выбор"]')).toBeNull();
 	});
+
+	it("не помечает descendants выбранными в single-select", async () => {
+		await renderNode(<TreeSelect label="Дерево" nodes={NODES} value={{ codeKey: "DIV", value: "01" }} onChange={() => undefined} />);
+
+		await act(async () => (container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click());
+		await act(async () => (document.querySelector('[data-ui="tree-select-expander"]') as HTMLButtonElement).click());
+
+		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
+		expect(options[0]?.getAttribute("aria-selected")).toBe("true");
+		expect(options[1]?.getAttribute("aria-selected")).toBe("false");
+	});
 });

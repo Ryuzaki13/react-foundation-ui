@@ -1,5 +1,5 @@
 import { Placement } from "@floating-ui/react";
-import { useFloatingListbox } from "@ryuzaki13/react-foundation-lib/hooks";
+import { type FloatingListboxSizeResolver, useFloatingListbox } from "@ryuzaki13/react-foundation-lib/hooks";
 
 import { PickerTriggerMode, createPickerTriggerPolicy } from "./createPickerTriggerPolicy";
 
@@ -17,6 +17,7 @@ interface UsePickerFloatingListboxParams<T> {
 	allowOpenWithoutOptions?: boolean;
 	restoreFocusOnClose?: boolean;
 	triggerMode?: PickerTriggerMode;
+	resolveFloatingSize?: FloatingListboxSizeResolver;
 }
 
 /**

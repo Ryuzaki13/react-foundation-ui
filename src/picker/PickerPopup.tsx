@@ -14,8 +14,11 @@ interface PickerPopupProps {
 	floatingStyles: CSSProperties;
 	listId: string;
 	labelId?: string;
+	popupAriaLabel?: string;
 	descriptionId?: string;
 	activeOptionId?: string;
+	ariaMultiselectable?: boolean;
+	popupRole?: "listbox" | "dialog";
 	setFloating: (node: HTMLElement | null) => void;
 	getFloatingProps: (userProps?: Record<string, unknown>) => Record<string, unknown>;
 	onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
@@ -41,8 +44,11 @@ export function PickerPopup({
 	floatingStyles,
 	listId,
 	labelId,
+	popupAriaLabel,
 	descriptionId,
 	activeOptionId,
+	ariaMultiselectable,
+	popupRole = "listbox",
 	setFloating,
 	getFloatingProps,
 	onKeyDown,
@@ -70,10 +76,13 @@ export function PickerPopup({
 							exit={{ opacity: 0, scale: 0.95 }}
 							{...getFloatingProps({
 								id: listId,
+								role: popupRole,
 								tabIndex,
 								"aria-labelledby": labelId,
+								"aria-label": labelId ? undefined : popupAriaLabel,
 								"aria-describedby": descriptionId,
 								"aria-activedescendant": activeOptionId,
+								"aria-multiselectable": ariaMultiselectable || undefined,
 								onMouseDown: stopNestedFloatingMouseDown,
 								onKeyDown,
 								className

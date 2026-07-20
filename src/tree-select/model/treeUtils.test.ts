@@ -1,6 +1,12 @@
 import { describe, expect, it } from "vitest";
 
-import { createTreeNodeIndex, getTreeNodeSelectionState, toggleTreeMultiSelection, treeMultiValueToSelectedIds } from "./treeUtils";
+import {
+	createTreeNodeIndex,
+	getSelectableTreeNodeIds,
+	getTreeNodeSelectionState,
+	toggleTreeMultiSelection,
+	treeMultiValueToSelectedIds
+} from "./treeUtils";
 
 import type { TreeSelectNode } from "../types";
 
@@ -95,5 +101,45 @@ describe("tree selection utils", () => {
 		expect(selectionState.selectedIds.has("ZDIV:04/ZCFO1:0202/VSTEL:0601")).toBe(true);
 		expect(selectionState.partialIds.has("ZDIV:04/ZCFO1:0202")).toBe(true);
 		expect(selectionState.partialIds.has("ZDIV:04")).toBe(true);
+	});
+
+	it("массово выбирает только доступные поддеревья", () => {
+		const index = createTreeNodeIndex([
+			{
+				...nodes[0],
+				children: [{ ...nodes[0].children![0], disabled: true }, nodes[0].children![1]]
+			}
+		]);
+
+		const selectableIds = getSelectableTreeNodeIds(index);
+		expect([...selectableIds]).toEqual(["ZDIV:04/ZCFO1:0202/VSTEL:0601", "ZDIV:04/ZCFO1:0202/VSTEL:0604", "ZDIV:04/ZCFO1:0204"]);
+		expect(treeMultiValueToSelectedIds({ VSTEL: ["0601", "0604"], ZCFO1: ["0204"] }, index)).toEqual(selectableIds);
+	});
+
+	it("клик по ancestor не выбирает disabled descendants", () => {
+		const index = createTreeNodeIndex([
+			{
+				...nodes[0],
+				children: [nodes[0].children![0], { ...nodes[0].children![1], disabled: true }]
+			}
+		]);
+
+		expect(toggleTreeMultiSelection({}, "ZDIV:04", index)).toEqual({ ZCFO1: ["0202"] });
+		expect(toggleTreeMultiSelection({ ZCFO1: ["0202"] }, "ZDIV:04", index)).toEqual({});
+	});
+
+	it("не возвращает disabled descendant после раскрытия ранее выбранного ancestor", () => {
+		const index = createTreeNodeIndex([
+			{
+				...nodes[0],
+				children: [nodes[0].children![0], { ...nodes[0].children![1], disabled: true }]
+			}
+		]);
+
+		/*
+		 * Значение ancestor было сохранено до того, как дочерний узел стал
+		 * недоступным. Снятие доступной ветки не должно материализовать disabled-узел.
+		 */
+		expect(toggleTreeMultiSelection({ ZDIV: ["04"] }, "ZDIV:04/ZCFO1:0202", index)).toEqual({});
 	});
 });

@@ -3,10 +3,11 @@ import { CSSProperties } from "react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon, ChevronRightIcon, MinusIcon } from "lucide-react";
 
+import { CheckBox } from "../check-box";
 import { SelectOptionContent } from "../select/SelectOptionContent";
 
 import styles from "./TreeSelect.module.scss";
-import { TreeSelectNode } from "./types";
+import { TreeMultiSelectOptionsLayout, TreeSelectNode } from "./types";
 
 type TreeNodeContentProps = {
 	node: TreeSelectNode;
@@ -17,7 +18,9 @@ type TreeNodeContentProps = {
 	selected: boolean;
 	partial: boolean;
 	selectionMode: "single" | "multi";
+	optionsLayout?: TreeMultiSelectOptionsLayout;
 	onToggleExpand?: () => void;
+	onToggleSelection?: () => void;
 };
 
 export function TreeNodeContent({
@@ -29,12 +32,16 @@ export function TreeNodeContent({
 	selected,
 	partial,
 	selectionMode,
-	onToggleExpand
+	optionsLayout = "tree",
+	onToggleExpand,
+	onToggleSelection
 }: TreeNodeContentProps) {
+	const showExpansionControl = optionsLayout === "tree";
+
 	return (
 		<>
 			<span className={styles.treeIndent} style={{ "--tree-level": level } as CSSProperties} aria-hidden="true" />
-			{hasChildren ? (
+			{showExpansionControl && hasChildren ? (
 				<button
 					type="button"
 					className={styles.treeExpander}
@@ -47,11 +54,24 @@ export function TreeNodeContent({
 					data-action={isExpanded ? "collapse-tree-select-node" : "expand-tree-select-node"}>
 					<ChevronRightIcon className={cn(styles.treeExpanderIcon, isExpanded && styles.treeExpanderIconExpanded)} />
 				</button>
-			) : (
+			) : showExpansionControl ? (
 				<span className={styles.treeExpanderPlaceholder} aria-hidden="true" />
-			)}
+			) : null}
 
-			{selectionMode === "multi" && (
+			{selectionMode === "multi" && optionsLayout === "columns" ? (
+				<span
+					className={styles.treeColumnCheckBox}
+					onMouseDown={(event) => event.stopPropagation()}
+					onClick={(event) => event.stopPropagation()}>
+					<CheckBox
+						value={selected}
+						indeterminate={partial}
+						disabled={node.disabled}
+						aria-label={`Выбрать ${node.label}`}
+						onChange={() => onToggleSelection?.()}
+					/>
+				</span>
+			) : selectionMode === "multi" ? (
 				<span
 					className={cn(styles.treeSelection, selected && styles.treeSelectionChecked, partial && styles.treeSelectionPartial)}
 					aria-hidden="true">
@@ -61,9 +81,11 @@ export function TreeNodeContent({
 						<MinusIcon className={styles.treeSelectionIcon} />
 					) : null}
 				</span>
-			)}
+			) : null}
 
-			<SelectOptionContent label={node.label} code={node.code} highlight={highlight} />
+			<div className={styles.treeNodeOptionContent}>
+				<SelectOptionContent label={node.label} code={node.code} highlight={highlight} />
+			</div>
 		</>
 	);
 }

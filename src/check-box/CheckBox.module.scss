@@ -21,6 +21,10 @@
 	border-radius: var(--radius-xs);
 }
 
+.inputIndeterminate + .icon {
+	color: var(--ui-tone-fill);
+}
+
 .icon {
 	width: 1.5em;
 	height: 1.5em;

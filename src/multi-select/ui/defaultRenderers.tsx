@@ -1,7 +1,8 @@
 import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
+import { PickerSelectionToolbar } from "../../picker";
+
 import { MultiSelectOption } from "./MultiSelectOption";
-import { MultiSelectOptionsToolbar } from "./MultiSelectOptionsToolbar";
 import { MultiSelectToken } from "./MultiSelectToken";
 
 import type { MultiSelectItemState, MultiSelectRenderContext } from "./MultiSelect";
@@ -46,7 +47,7 @@ export function createDefaultMultiSelectTokenRenderer(config: MultiSelectRendere
 }
 
 export function renderDefaultMultiSelectToolbar(context: MultiSelectRenderContext) {
-	return <MultiSelectOptionsToolbar onSelectAll={context.selectAll} onDeselectAll={context.deselectAll} />;
+	return <PickerSelectionToolbar onSelectAll={context.selectAll} onDeselectAll={context.deselectAll} />;
 }
 
 export function createDefaultMultiSelectItemRenderer(config: MultiSelectRendererConfig) {

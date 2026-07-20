@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { TreeMultiSelect } from "../TreeMultiSelect";
-import { TreeMultiSelectValue } from "../types";
+import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "../types";
 
 import { demoTreeNodes } from "./treeStoryFixtures";
 
@@ -10,17 +10,26 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 function StatefulTreeMultiSelect({
 	initialValue = {},
 	label = "TreeMultiSelect",
-	description
+	description,
+	optionsLayout = "tree"
 }: {
 	initialValue?: TreeMultiSelectValue;
 	label?: string;
 	description?: string;
+	optionsLayout?: TreeMultiSelectOptionsLayout;
 }) {
 	const [value, setValue] = useState<TreeMultiSelectValue>(initialValue);
 
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-			<TreeMultiSelect label={label} description={description} nodes={demoTreeNodes} value={value} onChange={setValue} />
+			<TreeMultiSelect
+				label={label}
+				description={description}
+				nodes={demoTreeNodes}
+				value={value}
+				onChange={setValue}
+				optionsLayout={optionsLayout}
+			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(value)}</div>
 		</div>
 	);
@@ -70,6 +79,17 @@ export const MixedSelection: Story = {
 			label="Смешанный выбор"
 			description="Пример mixed frontier по соседним уровням."
 			initialValue={{ BRANCH: ["B0101"], OWNER: ["P0004"] }}
+		/>
+	)
+};
+
+export const BalancedColumns: Story = {
+	render: () => (
+		<StatefulTreeMultiSelect
+			label="Все уровни в столбцах"
+			description="Popover подбирает число столбцов по количеству опций и доступному viewport."
+			optionsLayout="columns"
+			initialValue={{ BRANCH: ["B0101"] }}
 		/>
 	)
 };
