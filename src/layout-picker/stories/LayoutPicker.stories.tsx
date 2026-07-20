@@ -114,7 +114,7 @@ function LayoutPreview({ value, presets }: { value: string; presets: readonly La
 }
 
 function ControlledExample() {
-	const [value, setValue] = useState("two-columns");
+	const [value, setValue] = useState("1x2");
 
 	return (
 		<div className={styles.canvas}>
@@ -138,6 +138,7 @@ const meta = {
 		presets: DEFAULT_LAYOUT_PICKER_PRESETS,
 		disabled: false,
 		placeholder: "Выберите layout",
+		showPlaceholder: false,
 		ariaLabel: "Выбрать layout",
 		placement: "bottom-start"
 	},
@@ -185,8 +186,12 @@ const meta = {
 			control: false
 		},
 		placeholder: {
-			description: "Текст в trigger, когда `value` не найден среди `presets`.",
+			description: "Текст, который можно явно показать рядом с превью через `showPlaceholder`.",
 			control: "text"
+		},
+		showPlaceholder: {
+			description: "Показывает рядом с превью именно строку `placeholder`. По умолчанию trigger содержит только иконку.",
+			control: "boolean"
 		},
 		ariaLabel: {
 			description: "Доступное имя trigger-кнопки. Если не передано, строится из текущего значения.",
@@ -222,7 +227,7 @@ type Story = StoryObj<typeof meta>;
 
 export const Controlled: Story = {
 	args: {
-		value: "two-rows"
+		value: "2x1"
 	},
 
 	name: "Контролируемый выбор",
@@ -260,6 +265,7 @@ export const Placeholder: Story = {
 					value={value}
 					presets={presets}
 					placeholder="Layout ещё не выбран"
+					showPlaceholder
 					onChange={(layoutId) => {
 						setValue(layoutId);
 						args.onChange(layoutId);
@@ -305,14 +311,14 @@ export const CustomPresets: Story = {
 export const DisabledPresets: Story = {
 	name: "Заблокированные пресеты",
 	render: (args) => {
-		const [value, setValue] = useState("single-cell");
+		const [value, setValue] = useState("1x1");
 
 		return (
 			<div className={styles.canvas}>
 				<LayoutPicker
 					{...args}
 					value={value}
-					getPresetDisabled={(preset) => preset.id === "two-columns" || preset.id === "large-left-two-right"}
+					getPresetDisabled={(preset) => preset.id === "1x2" || preset.id === "2x2-l"}
 					onChange={(layoutId) => {
 						setValue(layoutId);
 						args.onChange(layoutId);
@@ -334,6 +340,6 @@ export const Disabled: Story = {
 	name: "Заблокированный контрол",
 	args: {
 		disabled: true,
-		value: "two-columns"
+		value: "1x2"
 	}
 };

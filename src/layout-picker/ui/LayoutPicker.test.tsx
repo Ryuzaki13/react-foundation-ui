@@ -19,6 +19,16 @@ Object.defineProperty(HTMLElement.prototype, "scrollIntoView", {
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
 
+const TEST_LAYOUT_PICKER_PRESETS = [
+	{
+		id: "single-cell",
+		label: "Одна ячейка",
+		columns: 1,
+		rows: 1,
+		cells: [{ id: "cell", row: 1, column: 1 }]
+	}
+] as const satisfies readonly LayoutPickerPreset[];
+
 function getRequiredElement<TElement extends Element>(element: TElement | null | undefined, message: string): TElement {
 	if (!element) {
 		throw new Error(message);
@@ -53,7 +63,7 @@ function ControlledLayoutPickerHarness({
 	onChange?: (value: string) => void;
 	getPresetDisabled?: (preset: LayoutPickerPreset) => boolean;
 } = {}) {
-	const [value, setValue] = useState("single-cell");
+	const [value, setValue] = useState("1x1");
 
 	return (
 		<LayoutPicker
@@ -81,6 +91,61 @@ afterEach(async () => {
 });
 
 describe("LayoutPicker", () => {
+	it("по умолчанию отображает только иконку раскладки без текста", async () => {
+		await renderNode(
+			<LayoutPicker
+				value="single-cell"
+				onChange={vi.fn<(value: string) => void>()}
+				presets={TEST_LAYOUT_PICKER_PRESETS}
+				placeholder="Текст выбора раскладки"
+				ariaLabel="Выбрать раскладку"
+			/>
+		);
+
+		const trigger = getRequiredElement(
+			container?.querySelector<HTMLInputElement>('[data-ui="layout-picker-trigger"]'),
+			"Не найдена кнопка LayoutPicker"
+		);
+		const preview = getRequiredElement(
+			container?.querySelector<HTMLElement>('[data-ui="layout-picker-preview"]'),
+			"Не найдено превью текущей раскладки"
+		);
+
+		expect(preview.childElementCount).toBeGreaterThan(0);
+		expect(container?.querySelector('[data-ui="layout-picker-placeholder"]')).toBeNull();
+		expect(container?.textContent).not.toContain("Текст выбора раскладки");
+		expect(container?.textContent).not.toContain("Одна ячейка");
+		expect(trigger.value).toBe("Одна ячейка");
+		expect(trigger.getAttribute("aria-label")).toBe("Выбрать раскладку");
+	});
+
+	it("по showPlaceholder отображает именно переданный placeholder", async () => {
+		await renderNode(
+			<LayoutPicker
+				value="single-cell"
+				onChange={vi.fn<(value: string) => void>()}
+				presets={TEST_LAYOUT_PICKER_PRESETS}
+				placeholder="Выберите схему"
+				showPlaceholder
+			/>
+		);
+
+		const trigger = getRequiredElement(
+			container?.querySelector<HTMLInputElement>('[data-ui="layout-picker-trigger"]'),
+			"Не найдена кнопка LayoutPicker"
+		);
+		const placeholder = getRequiredElement(
+			container?.querySelector<HTMLElement>('[data-ui="layout-picker-placeholder"]'),
+			"Не найден текст placeholder LayoutPicker"
+		);
+		const overlay = getRequiredElement(placeholder.parentElement, "Не найден overlay значения LayoutPicker");
+
+		expect(placeholder.textContent).toBe("Выберите схему");
+		expect(overlay.textContent).toBe("Выберите схему");
+		expect(trigger.value).toBe("Одна ячейка");
+		expect(trigger.getAttribute("aria-label")).toBe("Выбрать layout. Текущее значение: Одна ячейка");
+	});
+
 	it("рендерит кнопку текущего layout и открывает popup с пресетами", async () => {
 		await renderNode(<ControlledLayoutPickerHarness />);
 
@@ -90,7 +155,7 @@ describe("LayoutPicker", () => {
 		);
 
 		expect(trigger.type).toBe("button");
-		// expect(trigger.textContent).toContain("1x1");
+		expect(trigger.value).toBe("1x1");
 		expect(trigger.getAttribute("aria-haspopup")).toBe("listbox");
 		expect(trigger.getAttribute("aria-expanded")).toBe("false");
 
@@ -123,14 +188,14 @@ describe("LayoutPicker", () => {
 
 		expect(onChange).toHaveBeenCalledTimes(1);
 		expect(onChange.mock.calls[0]?.[0]).toBe("1x2");
-		// expect(trigger.textContent).toContain("1x2");
+		expect(trigger.value).toBe("1x2");
 		expect(trigger.getAttribute("aria-expanded")).toBe("false");
 	});
 
 	it("поддерживает базовые props поля: label, description и size", async () => {
 		const onChange = vi.fn<(value: string) => void>();
 		await renderNode(
-			<LayoutPicker label="Layout панели" description="Схема размещения блоков" size="sm" value="single-cell" onChange={onChange} />
+			<LayoutPicker label="Layout панели" description="Схема размещения блоков" size="sm" value="1x1" onChange={onChange} />
 		);
 
 		const trigger = getRequiredElement(
@@ -189,7 +254,7 @@ describe("LayoutPicker", () => {
 			listbox.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 		});
 
-		// expect(trigger.textContent).toContain("Две строки");
+		expect(trigger.value).toBe("1x2");
 		expect(trigger.getAttribute("aria-expanded")).toBe("false");
 	});
 
@@ -215,6 +280,6 @@ describe("LayoutPicker", () => {
 		});
 
 		expect(onChange).not.toHaveBeenCalled();
-		// expect(trigger.textContent).toContain("1x1");
+		expect(trigger.value).toBe("1x1");
 	});
 });

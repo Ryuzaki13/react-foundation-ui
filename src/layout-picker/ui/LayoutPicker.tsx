@@ -22,6 +22,11 @@ export interface LayoutPickerProps extends UiBaseProps<string> {
 	id?: string;
 	presets?: readonly LayoutPickerPreset[];
 	getPresetDisabled?: (preset: LayoutPickerPreset) => boolean;
+	/**
+	 * Показывает рядом с превью переданный текст `placeholder`.
+	 * По умолчанию текст скрыт, поэтому trigger отображает только иконку раскладки.
+	 */
+	showPlaceholder?: boolean;
 	ariaLabel?: string;
 	className?: string;
 	triggerClassName?: string;
@@ -33,7 +38,11 @@ const DEFAULT_PLACEHOLDER = "Выберите раскладку";
 
 function LayoutPresetPreview({ preset, compact = false }: { preset: LayoutPickerPreset; compact?: boolean }) {
 	return (
-		<span className={cn(styles.preview, compact && styles.previewCompact)} style={getLayoutStyle(preset)} aria-hidden="true">
+		<span
+			className={cn(styles.preview, compact && styles.previewCompact)}
+			style={getLayoutStyle(preset)}
+			aria-hidden="true"
+			data-ui="layout-picker-preview">
 			{preset.cells.map((cell) => (
 				<span key={`${preset.id}:${cell.id}`} className={styles.previewCell} style={getLayoutCellStyle(cell)} />
 			))}
@@ -54,6 +63,7 @@ export function LayoutPicker({
 	disabled,
 	getPresetDisabled,
 	placeholder = DEFAULT_PLACEHOLDER,
+	showPlaceholder = false,
 	size,
 	ariaLabel,
 	className,
@@ -151,9 +161,13 @@ export function LayoutPicker({
 									) : (
 										<span className={styles.previewPlaceholder} />
 									)}
-									<span className={cn(styles.triggerText, !selectedPreset && uiStyles.uiPlaceholder)}>
-										{triggerLabel}
-									</span>
+									{showPlaceholder ? (
+										<span
+											className={cn(styles.triggerText, uiStyles.uiPlaceholder)}
+											data-ui="layout-picker-placeholder">
+											{placeholder}
+										</span>
+									) : null}
 								</div>
 							}
 							endAdornment={
