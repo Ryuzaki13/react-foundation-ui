@@ -318,6 +318,12 @@ describe("TreeMultiSelect columns layout", () => {
 		expect(container?.textContent).not.toContain("Выбрано 2 узл.");
 	});
 
+	it("сохраняет placeholder как доступное имя поля рядом с токеном", async () => {
+		await renderHarness({ initialValue: { BR: ["001"] }, label: null, open: false });
+
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("placeholder")).toBe("Выберите значения");
+	});
+
 	it("очищает открытый черновик через X и публикует очистку только после закрытия", async () => {
 		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
 		await renderHarness({ initialValue: { BR: ["001"] }, onChange });

@@ -165,6 +165,8 @@ export function TreePickerBase({
 	const triggerValue = showTriggerQuery ? currentQuery : (selectedSummaryText ?? "");
 	const showSummaryOverlay = triggerMode === "display" && Boolean(selectedSummary);
 	const showSummaryToken = resolvedTriggerMode === "search-multi" && Boolean(selectedSummary);
+	const showTriggerPlaceholder =
+		(triggerMode === "search" && (!selectedSummaryText || showTriggerQuery)) || (triggerMode === "display" && !hasSelection);
 	const triggerController = usePickerTriggerController({
 		mode: resolvedTriggerMode,
 		open,
@@ -263,7 +265,7 @@ export function TreePickerBase({
 							disabled={disabled || isLoading}
 							readOnly={triggerMode !== "search"}
 							value={triggerMode === "display" && showSummaryOverlay ? "" : triggerValue}
-							placeholder={hasSelection ? undefined : placeholder}
+							placeholder={showTriggerPlaceholder ? placeholder : undefined}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
 							aria-haspopup={optionsLayout === "columns" ? "dialog" : "listbox"}
