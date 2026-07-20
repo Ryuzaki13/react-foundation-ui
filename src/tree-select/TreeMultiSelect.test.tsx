@@ -55,6 +55,14 @@ const NODES: TreeSelectNode[] = [
 	}
 ];
 
+const ASYNC_NODES: TreeSelectNode[] = Array.from({ length: 12 }, (_, index) => ({
+	id: `DIV:${index}`,
+	codeKey: "DIV",
+	value: String(index),
+	label: `Дивизион ${index}`,
+	searchText: `${index} Дивизион ${index}`
+}));
+
 function Harness({
 	initialValue,
 	nodes = NODES,
@@ -160,6 +168,22 @@ describe("TreeMultiSelect columns layout", () => {
 		await renderHarness({}, NODES, null);
 
 		expect(document.querySelector('[role="dialog"]')?.getAttribute("aria-label")).toBe("Выберите значения");
+	});
+
+	it("пересчитывает сетку после асинхронного появления опций в открытом popup", async () => {
+		await renderHarness({}, []);
+		const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+
+		await vi.waitFor(() => {
+			expect(dialog.style.getPropertyValue("--tree-row-count")).toBe("1");
+		});
+
+		await act(async () => root?.render(<Harness initialValue={{}} nodes={ASYNC_NODES} />));
+
+		await vi.waitFor(() => {
+			expect(document.querySelectorAll('[data-ui="tree-select-option"]')).toHaveLength(ASYNC_NODES.length);
+			expect(dialog.style.getPropertyValue("--tree-row-count")).not.toBe("1");
+		});
 	});
 
 	it("не включает disabled-опции в массовый выбор", async () => {

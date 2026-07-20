@@ -151,6 +151,7 @@ export function TreePickerBase({
 		closeOnSelect: selectionMode === "single",
 		allowOpenWithoutOptions: true,
 		triggerMode: resolvedTriggerMode,
+		placementStrategy: optionsLayout === "columns" ? "auto" : "flip",
 		resolveFloatingSize: optionsLayout === "columns" ? resolveColumnsFloatingSize : undefined
 	});
 	const hasSelection = selectedIds.size > 0;

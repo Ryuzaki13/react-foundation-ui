@@ -1,22 +1,42 @@
 import { useState } from "react";
 
 import { TreeMultiSelect } from "../TreeMultiSelect";
-import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "../types";
+import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "../types";
 
 import { demoTreeNodes } from "./treeStoryFixtures";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+/**
+ * Повторяет объём справочника ZDIV, при котором popup должен пересчитать
+ * многоколоночную геометрию и рассмотреть боковые стороны viewport.
+ */
+const rightEdgeTreeNodes: TreeSelectNode[] = Array.from({ length: 66 }, (_, index) => {
+	const sequence = String(index + 1).padStart(2, "0");
+	const code = `D${sequence}`;
+
+	return {
+		id: `DIVISION:${code}`,
+		codeKey: "DIVISION",
+		value: code,
+		label: `Дивизион ${sequence}`,
+		code,
+		searchText: `${code} Дивизион ${sequence}`
+	};
+});
+
 function StatefulTreeMultiSelect({
 	initialValue = {},
 	label = "TreeMultiSelect",
 	description,
-	optionsLayout = "tree"
+	optionsLayout = "tree",
+	nodes = demoTreeNodes
 }: {
 	initialValue?: TreeMultiSelectValue;
 	label?: string;
 	description?: string;
 	optionsLayout?: TreeMultiSelectOptionsLayout;
+	nodes?: readonly TreeSelectNode[];
 }) {
 	const [value, setValue] = useState<TreeMultiSelectValue>(initialValue);
 
@@ -25,7 +45,7 @@ function StatefulTreeMultiSelect({
 			<TreeMultiSelect
 				label={label}
 				description={description}
-				nodes={demoTreeNodes}
+				nodes={nodes}
 				value={value}
 				onChange={setValue}
 				optionsLayout={optionsLayout}
@@ -91,5 +111,20 @@ export const BalancedColumns: Story = {
 			optionsLayout="columns"
 			initialValue={{ BRANCH: ["B0101"] }}
 		/>
+	)
+};
+
+export const RightEdgeColumns: Story = {
+	render: () => (
+		<div style={{ display: "flex", minHeight: "calc(100vh - 32px)", alignItems: "center", justifyContent: "flex-end" }}>
+			<div style={{ width: 260 }}>
+				<StatefulTreeMultiSelect
+					label="Контрол у правой границы"
+					description="Popover для 66 опций должен сравнить вертикальные и горизонтальные стороны и остаться внутри viewport."
+					optionsLayout="columns"
+					nodes={rightEdgeTreeNodes}
+				/>
+			</div>
+		</div>
 	)
 };
