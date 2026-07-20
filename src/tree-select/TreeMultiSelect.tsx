@@ -1,5 +1,7 @@
-import { useMemo } from "react";
+import { useMemo, useState } from "react";
 
+import { MultiSelectToken } from "../multi-select";
+import { usePickerSelectionLifecycle } from "../picker";
 import { UiBaseProps } from "../types";
 
 import {
@@ -37,14 +39,25 @@ function formatTreeMultiSummary(selectedIds: Set<string>, treeIndex: ReturnType<
 			return undefined;
 		}
 
-		if (selectedNode.code && selectedNode.code !== selectedNode.label) {
-			return `${selectedNode.label} · ${selectedNode.code}`;
-		}
-
 		return selectedNode.label;
 	}
 
-	return `Выбрано ${selectedIds.size} узл.`;
+	return `${selectedIds.size} элементов`;
+}
+
+/**
+ * Сравнивает семантический выбор по каноническим id дерева. Порядок ключей и
+ * значений во внешнем Record не должен приводить к лишнему commit при закрытии.
+ */
+function areTreeMultiSelectionsEqual(
+	left: TreeMultiSelectValue,
+	right: TreeMultiSelectValue,
+	treeIndex: ReturnType<typeof createTreeNodeIndex>
+) {
+	const leftIds = treeMultiValueToSelectedIds(left, treeIndex);
+	const rightIds = treeMultiValueToSelectedIds(right, treeIndex);
+
+	return leftIds.size === rightIds.size && [...leftIds].every((nodeId) => rightIds.has(nodeId));
 }
 
 export function TreeMultiSelect({
@@ -63,12 +76,34 @@ export function TreeMultiSelect({
 	error,
 	optionsLayout = "tree"
 }: TreeMultiSelectProps) {
+	const [open, setOpen] = useState(false);
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
-	const selectedIds = useMemo(() => treeMultiValueToSelectedIds(value, treeIndex), [treeIndex, value]);
+	const { draftValue, setDraftValue, prepareOpen } = usePickerSelectionLifecycle({
+		value,
+		open,
+		onCommit: onChange,
+		isEqual: (left, right) => areTreeMultiSelectionsEqual(left, right, treeIndex)
+	});
+	const currentValue = open ? draftValue : value;
+	const selectedIds = useMemo(() => treeMultiValueToSelectedIds(currentValue, treeIndex), [currentValue, treeIndex]);
 	const selectionState = useMemo(() => getTreeNodeSelectionState(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const selectedSummary = useMemo(() => formatTreeMultiSummary(selectedIds, treeIndex), [selectedIds, treeIndex]);
+	const handleOpenChange = (nextOpen: boolean) => {
+		if (nextOpen && !open) {
+			prepareOpen();
+		}
+
+		setOpen(nextOpen);
+	};
 	const selectAll = () => {
-		onChange(treeSelectedIdsToMultiValue(getSelectableTreeNodeIds(treeIndex), treeIndex));
+		setDraftValue(treeSelectedIdsToMultiValue(getSelectableTreeNodeIds(treeIndex), treeIndex));
+	};
+	const clearSelection = () => {
+		setDraftValue({});
+
+		if (!open) {
+			onChange({});
+		}
 	};
 
 	return (
@@ -83,17 +118,21 @@ export function TreeMultiSelect({
 			partialIds={selectionState.partialIds}
 			selectionMode="multi"
 			optionsLayout={optionsLayout}
+			open={open}
+			onOpenChange={handleOpenChange}
 			bulkActions={{
 				onSelectAll: selectAll,
-				onDeselectAll: () => onChange({})
+				onDeselectAll: () => setDraftValue({})
 			}}
 			triggerMode="search"
-			selectedSummary={selectedSummary}
+			selectedSummary={selectedSummary ? <MultiSelectToken value={selectedSummary} /> : undefined}
 			query={query}
 			defaultQuery={defaultQuery}
 			onQuery={onQuery}
-			onNodeActivate={(node) => onChange(toggleTreeMultiSelection(value, node.id, treeIndex))}
-			onClearSelection={() => onChange({})}
+			onNodeActivate={(node) => {
+				setDraftValue((currentDraftValue) => toggleTreeMultiSelection(currentDraftValue, node.id, treeIndex));
+			}}
+			onClearSelection={clearSelection}
 			isLoading={isLoading}
 			error={error}
 		/>

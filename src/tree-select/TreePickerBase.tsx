@@ -43,6 +43,8 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	partialIds: Set<string>;
 	selectionMode: "single" | "multi";
 	optionsLayout?: TreeMultiSelectOptionsLayout;
+	open?: boolean;
+	onOpenChange?: (open: boolean) => void;
 	bulkActions?: TreePickerBulkActions;
 	triggerMode?: "display" | "search";
 	selectedSummary?: ReactNode;
@@ -67,6 +69,8 @@ export function TreePickerBase({
 	partialIds,
 	selectionMode,
 	optionsLayout = "tree",
+	open: controlledOpen,
+	onOpenChange,
 	bulkActions,
 	triggerMode = "display",
 	selectedSummary,
@@ -83,7 +87,7 @@ export function TreePickerBase({
 	const selectAllButtonRef = useRef<HTMLButtonElement | null>(null);
 	const previousOpenRef = useRef(false);
 	const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
-	const resolvedTriggerMode = triggerMode === "search" ? "search-single" : "display";
+	const resolvedTriggerMode = triggerMode === "search" ? (selectionMode === "multi" ? "search-multi" : "search-single") : "display";
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
 	const { query: currentQuery, setQuery } = usePickerQuery({
 		open: true,
@@ -145,6 +149,8 @@ export function TreePickerBase({
 	} = usePickerFloatingListbox({
 		options: visibleEntries,
 		selectedIndex,
+		open: controlledOpen,
+		onOpenChange,
 		onSelect: (entry) => onNodeActivate(entry.node),
 		getOptionDisabled: (entry) => entry.node.disabled === true,
 		disabled: disabled || isLoading,
@@ -158,6 +164,7 @@ export function TreePickerBase({
 	const showTriggerQuery = triggerMode === "search" && (open || currentQuery.length > 0);
 	const triggerValue = showTriggerQuery ? currentQuery : (selectedSummaryText ?? "");
 	const showSummaryOverlay = triggerMode === "display" && Boolean(selectedSummary);
+	const showSummaryToken = resolvedTriggerMode === "search-multi" && Boolean(selectedSummary);
 	const triggerController = usePickerTriggerController({
 		mode: resolvedTriggerMode,
 		open,
@@ -214,7 +221,10 @@ export function TreePickerBase({
 	const handleClearSelection = () => {
 		onClearSelection?.();
 		setQuery("");
-		close();
+
+		if (selectionMode === "single") {
+			close();
+		}
 	};
 
 	const toggleExpand = (entry: TreeVisibleEntry) => {
@@ -253,15 +263,7 @@ export function TreePickerBase({
 							disabled={disabled || isLoading}
 							readOnly={triggerMode !== "search"}
 							value={triggerMode === "display" && showSummaryOverlay ? "" : triggerValue}
-							placeholder={
-								triggerMode === "search"
-									? !selectedSummaryText || showTriggerQuery
-										? placeholder
-										: undefined
-									: hasSelection
-										? undefined
-										: placeholder
-							}
+							placeholder={hasSelection ? undefined : placeholder}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
 							aria-haspopup={optionsLayout === "columns" ? "dialog" : "listbox"}
@@ -279,6 +281,8 @@ export function TreePickerBase({
 									disabled={disabled || isLoading}
 									onToggleMouseDown={triggerController.handleToggleMouseDown}
 									onToggleClick={triggerController.handleToggleClick}>
+									{showSummaryToken ? selectedSummary : null}
+
 									{hasSelection && onClearSelection ? (
 										<button
 											type="button"

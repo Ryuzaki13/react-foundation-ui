@@ -33,7 +33,7 @@ export function getDefaultMultiSelectTokenValue(items: CollectionItem[], codeKey
 	}
 
 	if (items.length > 1) {
-		return `${items.length} элемент${items.length > 5 ? "ов" : "а"})`;
+		return `${items.length} элементов`;
 	}
 
 	const resolvedTextKey = resolveMultiSelectTextKey(items, codeKey, textKey);
