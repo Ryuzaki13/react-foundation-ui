@@ -3,6 +3,7 @@ import React, { PropsWithChildren, useId, useState } from "react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
+import { FlexSpacer } from "../flex";
 import uiStyles from "../ui.module.scss";
 
 import styles from "./Disclosure.module.scss";
@@ -37,7 +38,12 @@ export function Disclosure({ label, defaultOpen, headerActions, children }: Disc
 					{open ? <ChevronUpIcon /> : <ChevronDownIcon />}
 					{label}
 				</button>
-				{headerActions ? <div className={styles.disclosureActions}>{headerActions}</div> : null}
+				{headerActions ? (
+					<>
+						<FlexSpacer />
+						{headerActions}
+					</>
+				) : null}
 			</div>
 
 			{open && (
