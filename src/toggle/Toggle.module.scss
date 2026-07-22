@@ -30,7 +30,7 @@
 		}
 
 		.checked {
-			color: var(--status-neutral-on-fill);
+			color: var(--status-info-on-fill);
 		}
 	}
 
@@ -41,7 +41,7 @@
 
 .track {
 	.unchecked {
-		color: var(--status-neutral-on-fill);
+		color: var(--status-info-on-fill);
 	}
 
 	.checked {
@@ -86,7 +86,7 @@
 	width: 50%; // calc(50% - var(--border-width));
 	height: 100%; // calc(100% - var(--border-width) * 2);
 	border-radius: var(--radius-xs);
-	background-color: var(--status-neutral-fill);
+	background-color: var(--status-info-fill);
 	transition:
 		transform var(--transition-fast) ease-in-out,
 		opacity var(--transition-fast) ease-in-out;
