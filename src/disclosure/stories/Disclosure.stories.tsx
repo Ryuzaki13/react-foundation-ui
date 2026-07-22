@@ -1,3 +1,4 @@
+import { Button } from "../../button";
 import { Disclosure } from "../Disclosure";
 import { DisclosureGroup } from "../DisclosureGroup";
 
@@ -24,6 +25,10 @@ const meta = {
 			description: "Начальное состояние (открыт/закрыт).",
 			control: "boolean"
 		},
+		headerActions: {
+			description: "Независимые действия в правой части заголовка.",
+			control: false
+		},
 		children: {
 			description: "Контент, который показывается в раскрытой панели.",
 			control: false
@@ -35,6 +40,16 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {};
+
+export const HeaderActions: Story = {
+	args: {
+		headerActions: (
+			<Button variant="transparent" onClick={() => undefined}>
+				Очистить
+			</Button>
+		)
+	}
+};
 
 export const Group: Story = {
 	render: () => (
