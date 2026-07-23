@@ -7,10 +7,14 @@ const configDirectory = fileURLToPath(new URL(".", import.meta.url));
 
 const config: StorybookConfig = {
 	stories: ["../src/**/*.stories.@(ts|tsx)", "../src/**/*.mdx"],
-	addons: ["@storybook/addon-docs", "@storybook/addon-a11y"],
+	addons: ["@chromatic-com/storybook", "@storybook/addon-docs", "@storybook/addon-a11y", "@storybook/addon-vitest"],
 	framework: {
 		name: "@storybook/react-vite",
 		options: {}
+	},
+	docs: {
+		defaultName: "Documentation",
+		docsMode: false
 	},
 	viteFinal: (config) => ({
 		...config,
