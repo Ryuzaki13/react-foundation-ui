@@ -8,6 +8,7 @@ type StoryLayout = "centered" | "fullscreen" | "padded";
 type StoryViewMode = "docs" | "story";
 
 export const THEME_STORAGE_KEY = "storybook-theme";
+const DEFAULT_THEME_MODE = "default";
 
 const shellStyle: CSSProperties = {
 	width: "100%",
@@ -135,7 +136,13 @@ export const resolveStoredTheme = (): DemoTheme => {
 		return "light";
 	}
 
-	return window.localStorage.getItem(THEME_STORAGE_KEY) === "dark" ? "dark" : "light";
+	const storedTheme = window.localStorage.getItem(THEME_STORAGE_KEY);
+
+	if (storedTheme === "dark" || storedTheme === "light") {
+		return storedTheme;
+	}
+
+	return document.documentElement.dataset.theme?.startsWith("dark:") ? "dark" : "light";
 };
 
 const normalizeLayout = (layout?: string): StoryLayout => {
@@ -146,16 +153,20 @@ const normalizeLayout = (layout?: string): StoryLayout => {
 	return "padded";
 };
 
+const resolveDocumentThemeMode = (): string => {
+	const [, themeModeFromTheme] = document.documentElement.dataset.theme?.split(":", 2) ?? [];
+	return themeModeFromTheme || document.documentElement.dataset.themeMode || DEFAULT_THEME_MODE;
+};
+
 /**
  * Синхронизирует полный набор theme-атрибутов, используемый foundation styles.
- * `data-theme` хранит только scheme, потому что token-селекторы используют точные
- * значения light/dark, а дополнительный mode передаётся отдельным атрибутом.
+ * При переключении scheme сохраняет theme, переданную host-проектом, поэтому
+ * `light:<theme>` и `dark:<theme>` остаются симметричной парой.
  */
-export const applyDocumentTheme = (theme: DemoTheme): void => {
+export const applyDocumentTheme = (theme: DemoTheme, themeMode = resolveDocumentThemeMode()): void => {
 	const html = document.documentElement;
-	const themeMode = "default";
 
-	html.setAttribute("data-theme", theme);
+	html.setAttribute("data-theme", `${theme}:${themeMode}`);
 	html.setAttribute("data-scheme", theme);
 	html.setAttribute("data-theme-mode", themeMode);
 	html.setAttribute("data-contrast", "auto");
