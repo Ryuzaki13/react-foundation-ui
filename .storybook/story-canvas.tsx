@@ -148,13 +148,14 @@ const normalizeLayout = (layout?: string): StoryLayout => {
 
 /**
  * Синхронизирует полный набор theme-атрибутов, используемый foundation styles.
- * Один `data-theme` недостаточен: scheme и mode участвуют в CSS-селекторах host-приложения.
+ * `data-theme` хранит только scheme, потому что token-селекторы используют точные
+ * значения light/dark, а дополнительный mode передаётся отдельным атрибутом.
  */
 export const applyDocumentTheme = (theme: DemoTheme): void => {
 	const html = document.documentElement;
 	const themeMode = "default";
 
-	html.setAttribute("data-theme", `${theme}:${themeMode}`);
+	html.setAttribute("data-theme", theme);
 	html.setAttribute("data-scheme", theme);
 	html.setAttribute("data-theme-mode", themeMode);
 	html.setAttribute("data-contrast", "auto");
