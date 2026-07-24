@@ -207,7 +207,7 @@ export function Option<T>({ value, label, description, className }: OptionProps<
 			onClick={handleChange}
 			onKeyDown={handleKeyDown}>
 			<p className="textNoWrap">{label}</p>
-			{description && <div className="fontSizeSm content2">{description}</div>}
+			{description && <div className="fontSizeSm">{description}</div>}
 		</button>
 	);
 }
