@@ -68,11 +68,13 @@ function Harness({
 	initialValue,
 	nodes = NODES,
 	label = "Оргструктура",
+	placeholder,
 	onChange
 }: {
 	initialValue: TreeMultiSelectValue;
 	nodes?: TreeSelectNode[];
 	label?: string | null;
+	placeholder?: string;
 	onChange?: (value: TreeMultiSelectValue) => void;
 }) {
 	const [value, setValue] = useState(initialValue);
@@ -83,7 +85,14 @@ function Harness({
 
 	return (
 		<>
-			<TreeMultiSelect label={label} nodes={nodes} value={value} onChange={handleChange} optionsLayout="columns" />
+			<TreeMultiSelect
+				label={label}
+				placeholder={placeholder}
+				nodes={nodes}
+				value={value}
+				onChange={handleChange}
+				optionsLayout="columns"
+			/>
 			<output data-testid="value">{JSON.stringify(value)}</output>
 		</>
 	);
@@ -96,16 +105,26 @@ type RenderHarnessOptions = {
 	initialValue: TreeMultiSelectValue;
 	nodes?: TreeSelectNode[];
 	label?: string | null;
+	placeholder?: string;
 	onChange?: (value: TreeMultiSelectValue) => void;
 	open?: boolean;
 };
 
-async function renderHarness({ initialValue, nodes = NODES, label = "Оргструктура", onChange, open = true }: RenderHarnessOptions) {
+async function renderHarness({
+	initialValue,
+	nodes = NODES,
+	label = "Оргструктура",
+	placeholder,
+	onChange,
+	open = true
+}: RenderHarnessOptions) {
 	container = document.createElement("div");
 	document.body.appendChild(container);
 	root = createRoot(container);
 
-	await act(async () => root?.render(<Harness initialValue={initialValue} nodes={nodes} label={label} onChange={onChange} />));
+	await act(async () =>
+		root?.render(<Harness initialValue={initialValue} nodes={nodes} label={label} placeholder={placeholder} onChange={onChange} />)
+	);
 
 	if (open) {
 		await openPopup();
@@ -318,10 +337,21 @@ describe("TreeMultiSelect columns layout", () => {
 		expect(container?.textContent).not.toContain("Выбрано 2 узл.");
 	});
 
-	it("сохраняет placeholder как доступное имя поля рядом с токеном", async () => {
-		await renderHarness({ initialValue: { BR: ["001"] }, label: null, open: false });
+	it("показывает настроенный placeholder только до выбора и сохраняет доступное имя поля", async () => {
+		await renderHarness({ initialValue: {}, label: null, placeholder: "Оргструктура", open: false });
 
-		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("placeholder")).toBe("Выберите значения");
+		const emptyInput = container?.querySelector('input[role="combobox"]');
+		expect(emptyInput?.getAttribute("placeholder")).toBe("Оргструктура");
+		expect(emptyInput?.getAttribute("aria-label")).toBe("Оргструктура");
+
+		await act(async () =>
+			root?.render(<Harness key="selected" initialValue={{ BR: ["001"] }} label={null} placeholder="Оргструктура" />)
+		);
+
+		const selectedInput = container?.querySelector('input[role="combobox"]');
+		expect(selectedInput?.getAttribute("placeholder")).toBeNull();
+		expect(selectedInput?.getAttribute("aria-label")).toBe("Оргструктура");
+		expect(findInnermostElementWithText("Филиал 1")).toBeTruthy();
 	});
 
 	it("очищает открытый черновик через X и публикует очистку только после закрытия", async () => {
