@@ -479,7 +479,7 @@ export function BaseTable<TData extends object>({
 					</>
 				</Scrollable>
 
-				<div className="absolute inset0 border radiusSm" style={{ pointerEvents: "none", zIndex: 20 }}>
+				<div className="absolute inset0 border" style={{ pointerEvents: "none", zIndex: 20 }}>
 					{!isLoading && !isFetching && !hasRows && <NoData className={styles.noData} />}
 					{isLoading && !hasRows && <LoadingMessage className="h100 w100" />}
 				</div>
