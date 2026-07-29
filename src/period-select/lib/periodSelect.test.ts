@@ -36,6 +36,24 @@ describe("periodSelect", () => {
 		]);
 	});
 
+	it("частично заменяет подписи встроенных опций без потери порогов и канонических значений", () => {
+		const options = createPeriodSelectOptions({
+			maxDayRangeDays: 31,
+			maxWeekRangeWeeks: 12,
+			labels: {
+				month: "за месяц",
+				year: "за год"
+			}
+		});
+
+		expect(options).toEqual([
+			{ id: "day", label: "по дням", maxRangeDays: 31 },
+			{ id: "week", label: "по неделям", maxRangeDays: 84 },
+			{ id: "month", label: "за месяц" },
+			{ id: "year", label: "за год" }
+		]);
+	});
+
 	it("ограничивает встроенные опции без изменения канонического порядка и порогов", () => {
 		const presetIds = normalizePeriodSelectPresetIds(["year", "week", "unknown", "week", "month"]);
 		const options = resolvePeriodSelectOptionsByIds(

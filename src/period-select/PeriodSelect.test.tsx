@@ -107,6 +107,15 @@ describe("PeriodSelect", () => {
 		expect(container?.querySelector<HTMLInputElement>('input[role="combobox"]')?.value).toBe("по дням");
 	});
 
+	it("применяет частичные labels к встроенным options без изменения выбранного id", async () => {
+		const onChange = vi.fn<(value: PeriodSelectOption["id"] | undefined) => void>();
+
+		await renderNode(<PeriodSelect value="month" onChange={onChange} labels={{ month: "за месяц" }} presetIds={["month", "year"]} />);
+
+		expect(onChange).not.toHaveBeenCalled();
+		expect(container?.querySelector<HTMLInputElement>('input[role="combobox"]')?.value).toBe("за месяц");
+	});
+
 	it("использует кастомные options вместо presetIds", async () => {
 		const onChange = vi.fn<(value: PeriodSelectOption["id"] | undefined) => void>();
 		const options = [{ id: "quarter", label: "по кварталам" }] satisfies readonly PeriodSelectOption[];
@@ -115,5 +124,17 @@ describe("PeriodSelect", () => {
 
 		expect(onChange).not.toHaveBeenCalled();
 		expect(container?.querySelector<HTMLInputElement>('input[role="combobox"]')?.value).toBe("по кварталам");
+	});
+
+	it("сохраняет высший приоритет custom options над labels", async () => {
+		const onChange = vi.fn<(value: PeriodSelectOption["id"] | undefined) => void>();
+		const options = [{ id: "month", label: "месяц из custom options" }] satisfies readonly PeriodSelectOption[];
+
+		await renderNode(
+			<PeriodSelect value="month" onChange={onChange} options={options} labels={{ month: "за месяц" }} presetIds={["year"]} />
+		);
+
+		expect(onChange).not.toHaveBeenCalled();
+		expect(container?.querySelector<HTMLInputElement>('input[role="combobox"]')?.value).toBe("месяц из custom options");
 	});
 });

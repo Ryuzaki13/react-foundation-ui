@@ -61,8 +61,13 @@ const meta = {
 			control: false
 		},
 		options: {
-			description: "Кастомный список периодов по контракту `PeriodSelectOption`; имеет приоритет над `presetIds`.",
+			description:
+				"Кастомный список периодов по контракту `PeriodSelectOption`; имеет приоритет над `presetIds`, `labels` и порогами диапазона.",
 			control: false
+		},
+		labels: {
+			description: "Частичные подписи встроенных периодов поверх канонического каталога.",
+			control: "object"
 		},
 		presetIds: {
 			description: "Разрешенные встроенные периоды. Порядок отображения остается `day → week → month → year`.",
@@ -172,6 +177,26 @@ export const MonthAndYear: Story = {
 	args: {
 		value: "month",
 		presetIds: ["month", "year"]
+	},
+	render: function Render(args) {
+		return <PeriodSelectStoryCanvas {...args} />;
+	}
+};
+
+/**
+ * Частичный labels override меняет формулировки встроенных вариантов,
+ * сохраняя их id, порядок и ограничения доступности.
+ */
+export const AlternativeLabels: Story = {
+	name: "Альтернативные подписи",
+	args: {
+		value: "month",
+		labels: {
+			day: "за день",
+			week: "за неделю",
+			month: "за месяц",
+			year: "за год"
+		}
 	},
 	render: function Render(args) {
 		return <PeriodSelectStoryCanvas {...args} />;

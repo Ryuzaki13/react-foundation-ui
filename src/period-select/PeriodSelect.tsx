@@ -8,6 +8,7 @@ import {
 	normalizePeriodSelectPresetIds,
 	resolvePeriodSelectAvailableValue,
 	resolvePeriodSelectOptionsByIds,
+	type PeriodSelectLabels,
 	type PeriodSelectOption,
 	type PeriodSelectPresetId
 } from "./lib";
@@ -16,7 +17,17 @@ import type { UiBaseProps } from "../types";
 import type { DateRangeInput } from "@ryuzaki13/react-foundation-lib/formatters";
 
 export interface PeriodSelectProps extends UiBaseProps<PeriodSelectOption["id"] | undefined> {
+	/**
+	 * Полный список custom options с высшим приоритетом. При его передаче
+	 * встроенные `presetIds`, `labels` и пороги диапазона не применяются.
+	 */
 	options?: readonly PeriodSelectOption[];
+	/**
+	 * Частично заменяет подписи встроенных вариантов, не изменяя их id,
+	 * канонический порядок и правила доступности.
+	 * Не применяется, когда передан собственный `options`.
+	 */
+	labels?: Partial<PeriodSelectLabels>;
 	/**
 	 * Разрешенные встроенные варианты периода. Значение нормализуется в канонический
 	 * порядок, а пустой либо невалидный список безопасно заменяется полным набором.
@@ -35,6 +46,7 @@ export function PeriodSelect({
 	value,
 	onChange,
 	options,
+	labels,
 	presetIds,
 	dateRange,
 	maxDayRangeDays,
@@ -46,9 +58,9 @@ export function PeriodSelect({
 			options ??
 			resolvePeriodSelectOptionsByIds(
 				normalizePeriodSelectPresetIds(presetIds),
-				createPeriodSelectOptions({ maxDayRangeDays, maxWeekRangeWeeks })
+				createPeriodSelectOptions({ maxDayRangeDays, maxWeekRangeWeeks, labels })
 			),
-		[maxDayRangeDays, maxWeekRangeWeeks, options, presetIds]
+		[labels, maxDayRangeDays, maxWeekRangeWeeks, options, presetIds]
 	);
 	const availableValue = useMemo(
 		() => resolvePeriodSelectAvailableValue(value, resolvedOptions, dateRange),

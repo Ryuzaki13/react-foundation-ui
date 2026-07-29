@@ -13,6 +13,13 @@ import { isRecord } from "@ryuzaki13/react-foundation-lib/validators";
 export type PeriodSelectPresetId = "day" | "week" | "month" | "year";
 export type PeriodSelectId = PeriodSelectPresetId | (string & {});
 
+/**
+ * Полный типизированный набор подписей встроенных уровней детализации.
+ * Потребитель может передать его частично, сохранив канонические подписи
+ * для всех отсутствующих ключей.
+ */
+export type PeriodSelectLabels = Readonly<Record<PeriodSelectPresetId, string>>;
+
 export interface PeriodSelectOption extends PresetOption<PeriodSelectId> {
 	maxRangeDays?: number;
 }
@@ -29,6 +36,14 @@ export type PeriodSelectDateRangeConnectors = Readonly<{
 export type PeriodSelectThresholds = {
 	maxDayRangeDays?: number;
 	maxWeekRangeWeeks?: number;
+};
+
+/**
+ * Настройки формирования встроенных options. `labels` изменяет только
+ * отображаемый текст и не влияет на id, порядок или ограничения диапазона.
+ */
+export type PeriodSelectOptionsConfig = PeriodSelectThresholds & {
+	labels?: Partial<PeriodSelectLabels>;
 };
 
 export const DEFAULT_PERIOD_SELECT_PRESET_ID = "day" satisfies PeriodSelectPresetId;
@@ -105,26 +120,39 @@ export function resolvePeriodSelectDefaultValue(value: unknown): PeriodSelectPre
 	return isPeriodSelectPresetId(value) ? value : DEFAULT_PERIOD_SELECT_PRESET_ID;
 }
 
-export function createPeriodSelectOptions({ maxDayRangeDays, maxWeekRangeWeeks }: PeriodSelectThresholds = {}): PeriodSelectOption[] {
+/**
+ * Создает независимый список встроенных options с порогами доступности и
+ * частичными подписями потребителя поверх канонического каталога.
+ */
+export function createPeriodSelectOptions({
+	maxDayRangeDays,
+	maxWeekRangeWeeks,
+	labels
+}: PeriodSelectOptionsConfig = {}): PeriodSelectOption[] {
 	const dayLimit = toPositiveInteger(maxDayRangeDays);
 	const weekLimit = toPositiveInteger(maxWeekRangeWeeks);
 
 	return PERIOD_SELECT_OPTIONS.map((option) => {
+		const resolvedOption = {
+			...option,
+			label: labels?.[option.id] ?? option.label
+		};
+
 		if (option.id === "day" && dayLimit !== undefined) {
 			return {
-				...option,
+				...resolvedOption,
 				maxRangeDays: dayLimit
 			};
 		}
 
 		if (option.id === "week" && weekLimit !== undefined) {
 			return {
-				...option,
+				...resolvedOption,
 				maxRangeDays: weekLimit * 7
 			};
 		}
 
-		return { ...option };
+		return resolvedOption;
 	});
 }
 
