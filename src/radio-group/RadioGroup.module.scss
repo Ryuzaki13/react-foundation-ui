@@ -21,6 +21,7 @@
 
 .radioItem {
 	display: grid;
+	align-content: center;
 	gap: var(--space-sm);
 	flex: 1 0 0;
 	color: var(--content-2);
