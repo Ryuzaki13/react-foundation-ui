@@ -20,7 +20,8 @@
 }
 
 .radioItem {
-	display: block;
+	display: grid;
+	gap: var(--space-sm);
 	flex: 1 0 0;
 	color: var(--content-2);
 	border-radius: var(--radius-xs);

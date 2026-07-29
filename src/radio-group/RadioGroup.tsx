@@ -206,8 +206,8 @@ export function Option<T>({ value, label, description, className }: OptionProps<
 			data-action="select-radio-option"
 			onClick={handleChange}
 			onKeyDown={handleKeyDown}>
-			<p className="textNoWrap">{label}</p>
-			{description && <div className="fontSizeSm">{description}</div>}
+			<span className="textNoWrap">{label}</span>
+			{description && <span className="fontSizeSm">{description}</span>}
 		</button>
 	);
 }
