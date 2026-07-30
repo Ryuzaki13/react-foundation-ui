@@ -154,4 +154,81 @@ describe("buildODataTreeNodes", () => {
 			}
 		]);
 	});
+
+	it("по умолчанию рекурсивно сортирует по исходному коду при hideCode и selectText", () => {
+		const nodes = buildODataTreeNodes({
+			items: [
+				{
+					ROOT: "20",
+					ROOT_TXT: "Альфа",
+					CHILD: "20",
+					CHILD_TXT: "Альфа"
+				},
+				{
+					ROOT: "10",
+					ROOT_TXT: "Якорь",
+					CHILD: "20",
+					CHILD_TXT: "Альфа"
+				},
+				{
+					ROOT: "10",
+					ROOT_TXT: "Якорь",
+					CHILD: "10",
+					CHILD_TXT: "Якорь"
+				}
+			],
+			orderedCodeKeys: ["ROOT", "CHILD"],
+			keyPairsMap: {
+				ROOT: "ROOT_TXT",
+				CHILD: "CHILD_TXT"
+			},
+			hiddenCodeKeys: new Set(["ROOT", "CHILD"]),
+			textValueCodeKeys: new Set(["ROOT", "CHILD"])
+		});
+
+		expect(nodes.map((node) => node.label)).toEqual(["Якорь", "Альфа"]);
+		expect(nodes[0].children?.map((node) => node.label)).toEqual(["Якорь", "Альфа"]);
+		expect(nodes[0].code).toBeUndefined();
+		expect(nodes[0].value).toBe("Якорь");
+		expect(nodes[0]).not.toHaveProperty("sortCode");
+	});
+
+	it("при sortByCode=false рекурсивно сортирует по отображаемому тексту", () => {
+		const items = [
+			{
+				ROOT: "10",
+				ROOT_TXT: "Якорь",
+				CHILD: "10",
+				CHILD_TXT: "Якорь"
+			},
+			{
+				ROOT: "20",
+				ROOT_TXT: "Альфа",
+				CHILD: "20",
+				CHILD_TXT: "Альфа"
+			},
+			{
+				ROOT: "10",
+				ROOT_TXT: "Якорь",
+				CHILD: "20",
+				CHILD_TXT: "Альфа"
+			}
+		];
+		const nodes = buildODataTreeNodes({
+			items,
+			orderedCodeKeys: ["ROOT", "CHILD"],
+			keyPairsMap: {
+				ROOT: "ROOT_TXT",
+				CHILD: "CHILD_TXT"
+			},
+			hiddenCodeKeys: new Set(["ROOT", "CHILD"]),
+			textValueCodeKeys: new Set(["ROOT", "CHILD"]),
+			sortByCode: false
+		});
+
+		expect(nodes.map((node) => node.label)).toEqual(["Альфа", "Якорь"]);
+		expect(nodes[1].children?.map((node) => node.label)).toEqual(["Альфа", "Якорь"]);
+		expect(nodes[1].children?.every((node) => !("sortCode" in node))).toBe(true);
+		expect(items.map((item) => `${item.ROOT}:${item.CHILD}`)).toEqual(["10:10", "20:20", "10:20"]);
+	});
 });

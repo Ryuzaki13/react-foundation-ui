@@ -1,4 +1,5 @@
 import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { compareStrings } from "@ryuzaki13/react-foundation-lib/string-comparison";
 
 import { TreeSelectNode } from "../types";
 
@@ -8,9 +9,16 @@ type BuildODataTreeNodesArgs = {
 	keyPairsMap: Record<string, string>;
 	hiddenCodeKeys: Set<string>;
 	textValueCodeKeys?: Set<string>;
+	/** Выбирает локальный порядок узлов: по исходному коду или отображаемому тексту. */
+	sortByCode?: boolean;
 };
 
 type MutableTreeNode = TreeSelectNode & {
+	/**
+	 * Исходный код нужен только для локальной сортировки представления.
+	 * Он не зависит от hideCode/selectText и не попадает в публичный TreeSelectNode.
+	 */
+	sortCode: string;
 	children: MutableTreeNode[];
 	childByBranchKey: Map<string, MutableTreeNode>;
 };
@@ -28,7 +36,14 @@ function createSearchText(parts: Array<string | undefined>) {
 	return [...new Set(parts.filter(Boolean))].join(" ");
 }
 
-function createMutableNode(args: { parentId?: string; codeKey: string; value: string; label: string; code?: string }): MutableTreeNode {
+function createMutableNode(args: {
+	parentId?: string;
+	codeKey: string;
+	value: string;
+	label: string;
+	code?: string;
+	sortCode: string;
+}): MutableTreeNode {
 	return {
 		id: createNodeId(args.parentId, args.codeKey, args.value),
 		codeKey: args.codeKey,
@@ -36,9 +51,28 @@ function createMutableNode(args: { parentId?: string; codeKey: string; value: st
 		label: args.label,
 		code: args.code,
 		searchText: createSearchText([args.value, args.label, args.code]),
+		sortCode: args.sortCode,
 		children: [],
 		childByBranchKey: new Map()
 	};
+}
+
+/**
+ * Сортирует только массивы вновь построенного дерева, не меняя исходную OData-коллекцию
+ * и не создавая отдельный Query cache для каждого способа отображения.
+ */
+function sortMutableTree(nodes: MutableTreeNode[], sortByCode: boolean) {
+	nodes.sort((left, right) => {
+		const leftValue = sortByCode ? left.sortCode : left.label;
+		const rightValue = sortByCode ? right.sortCode : right.label;
+		const valueOrder = compareStrings(leftValue, rightValue);
+
+		return valueOrder || compareStrings(left.sortCode, right.sortCode);
+	});
+
+	for (const node of nodes) {
+		sortMutableTree(node.children, sortByCode);
+	}
 }
 
 function toPublicNode(node: MutableTreeNode): TreeSelectNode {
@@ -58,7 +92,8 @@ export function buildODataTreeNodes({
 	orderedCodeKeys,
 	keyPairsMap,
 	hiddenCodeKeys,
-	textValueCodeKeys
+	textValueCodeKeys,
+	sortByCode = true
 }: BuildODataTreeNodesArgs): TreeSelectNode[] {
 	if (orderedCodeKeys.length === 0 || items.length === 0) {
 		return [];
@@ -89,7 +124,8 @@ export function buildODataTreeNodes({
 					codeKey,
 					value,
 					label,
-					code: hiddenCodeKeys.has(codeKey) ? undefined : codeValue
+					code: hiddenCodeKeys.has(codeKey) ? undefined : codeValue,
+					sortCode: codeValue
 				});
 				container.set(branchKey, currentNode);
 
@@ -103,6 +139,8 @@ export function buildODataTreeNodes({
 			parentNode = currentNode;
 		}
 	}
+
+	sortMutableTree(roots, sortByCode);
 
 	return roots.map(toPublicNode);
 }

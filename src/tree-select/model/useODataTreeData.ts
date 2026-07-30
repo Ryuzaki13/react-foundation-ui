@@ -71,9 +71,10 @@ export function useODataTreeData({ odata, segments, model }: Pick<ODataDependent
 				orderedCodeKeys,
 				keyPairsMap: collection.data?.keyPairsMap ?? {},
 				hiddenCodeKeys,
-				textValueCodeKeys
+				textValueCodeKeys,
+				sortByCode: odata.sortByCode
 			}),
-		[collection.data?.items, collection.data?.keyPairsMap, hiddenCodeKeys, orderedCodeKeys, textValueCodeKeys]
+		[collection.data?.items, collection.data?.keyPairsMap, hiddenCodeKeys, odata.sortByCode, orderedCodeKeys, textValueCodeKeys]
 	);
 	const placeholder = orderedSegmentItems[0]?.segment.placeholder ?? "Выберите значение";
 	const hasResolvedChain = Boolean(chains[serviceKey]?.length);
