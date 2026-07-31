@@ -209,7 +209,7 @@ export function AtomicStoryCanvas({ children, layout, viewMode }: { children: Re
 			<div style={frameStyle}>
 				<div style={toolbarStyle}>
 					<div style={toolbarMetaStyle}>
-						<span style={toolbarCaptionStyle}>СПК - UI Storybook</span>
+						<span style={toolbarCaptionStyle}>UI Storybook</span>
 						<span style={toolbarTitleStyle}>Тема интерфейса</span>
 					</div>
 
