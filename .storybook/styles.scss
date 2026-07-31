@@ -1,0 +1,15 @@
+@use "../styles/foundation";
+@use "../styles/themes" as foundationThemes;
+
+/*
+ * Локальный Storybook не имеет host-приложения, которое обычно подключает
+ * foundation tokens и конкретную тему. Точные default-селекторы не подменяют
+ * пользовательскую тему при встраивании опубликованного Storybook в host.
+ */
+:root[data-theme="light:default"] {
+	@include foundationThemes.light-theme;
+}
+
+:root[data-theme="dark:default"] {
+	@include foundationThemes.dark-theme;
+}

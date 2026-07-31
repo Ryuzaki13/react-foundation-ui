@@ -1,3 +1,5 @@
+import "./styles.scss";
+
 import { RootDecorator } from "./root.decorator";
 
 import type { Preview } from "@storybook/react-vite";
