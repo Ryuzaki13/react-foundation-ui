@@ -2,7 +2,15 @@ import { useState } from "react";
 
 import { ODataSelect } from "../ODataSelect";
 
-import { baseModel, baseOData, baseSegment, storyValues, withMockedOData } from "./odataStoryFixtures";
+import {
+	baseModel,
+	baseOData,
+	baseSegment,
+	installODataStoryFetchMock,
+	odataStoryOData,
+	storyValues,
+	withODataStoryQueryClient
+} from "./odataStoryFixtures";
 
 import type { ODataCollectionConfig, ODataCollectionModel, ODataCollectionSegment } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -119,7 +127,8 @@ function LinkedFiltersDemo() {
 const meta = {
 	title: "Shared/UI/ODataSelect",
 	component: ODataSelect,
-	decorators: [withMockedOData],
+	decorators: [withODataStoryQueryClient],
+	beforeEach: installODataStoryFetchMock,
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded",
@@ -210,6 +219,7 @@ export const LoadingState: Story = {
 	},
 	render: () => (
 		<StatefulODataSelect
+			odata={odataStoryOData.loading}
 			label="Команда"
 			description="Mock с задержкой ответа, чтобы проверить loading-state."
 			model={{ ...baseModel, codeKey: "TEAM" }}
@@ -225,6 +235,7 @@ export const MetadataError: Story = {
 	},
 	render: () => (
 		<StatefulODataSelect
+			odata={odataStoryOData.metadataError}
 			label="Регион"
 			description="Сервис возвращает ошибку metadata."
 			model={{ ...baseModel, codeKey: "REGION" }}
@@ -234,14 +245,15 @@ export const MetadataError: Story = {
 };
 
 export const CollectionError: Story = {
-	name: "Ошибка коллекции",
+	name: "Деградация при ошибке коллекции",
 	parameters: {
 		odataMockMode: "collectionError"
 	},
 	render: () => (
 		<StatefulODataSelect
+			odata={odataStoryOData.collectionError}
 			label="Ответственный"
-			description="Metadata доступна, но загрузка коллекции завершается ошибкой."
+			description="Transport возвращает 500, а текущий API-контракт безопасно показывает пустой список."
 			model={{ ...baseModel, codeKey: "OWNER" }}
 			segment={{ placeholder: "Ответственный" }}
 		/>

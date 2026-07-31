@@ -78,10 +78,14 @@ const config: StorybookConfig = {
 			...config.define,
 			__APP_BUILD_ID__: JSON.stringify("storybook"),
 			__APP_ID__: JSON.stringify("react-foundation-ui-storybook"),
+			// Foundation API читает базовый URL при загрузке модуля, поэтому Storybook
+			// подставляет безопасный локальный путь до импорта OData-компонентов.
+			__BASE_APP_CONFIG_URL__: JSON.stringify("/"),
 			__DEV__: "true",
 			__IMAGE_UPLOAD_MAX_BYTES__: JSON.stringify(10 * 1024 * 1024),
 			__PREVIEW__: "false",
-			__REACT_QUERY_PERSISTENCE_BUSTER__: JSON.stringify("react-foundation-ui-storybook")
+			__REACT_QUERY_PERSISTENCE_BUSTER__: JSON.stringify("react-foundation-ui-storybook"),
+			__SAP_CLIENT__: JSON.stringify("100")
 		}
 	})
 };

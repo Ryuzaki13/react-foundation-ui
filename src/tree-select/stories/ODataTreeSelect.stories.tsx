@@ -1,6 +1,13 @@
 import { useState } from "react";
 
-import { baseOData, storyValues, treeSegments, withMockedOData } from "../../select/stories/odataStoryFixtures";
+import {
+	baseOData,
+	installODataStoryFetchMock,
+	odataStoryOData,
+	storyValues,
+	treeSegments,
+	withODataStoryQueryClient
+} from "../../select/stories/odataStoryFixtures";
 import { ODataTreeSelect } from "../ODataTreeSelect";
 import { TreeSelectValue } from "../types";
 
@@ -45,7 +52,8 @@ function StatefulODataTreeSelect({
 const meta = {
 	title: "Shared/UI/ODataTreeSelect",
 	component: ODataTreeSelect,
-	decorators: [withMockedOData],
+	decorators: [withODataStoryQueryClient],
+	beforeEach: installODataStoryFetchMock,
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded",
@@ -97,12 +105,12 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: () => <StatefulODataTreeSelect description="Сценарий загрузки дерева." />
+	render: () => <StatefulODataTreeSelect odata={odataStoryOData.loading} description="Сценарий загрузки дерева." />
 };
 
 export const ErrorState: Story = {
 	parameters: {
-		odataMockMode: "collectionError"
+		odataMockMode: "metadataError"
 	},
-	render: () => <StatefulODataTreeSelect description="Сценарий ошибки загрузки дерева." />
+	render: () => <StatefulODataTreeSelect odata={odataStoryOData.metadataError} description="Сценарий ошибки metadata дерева." />
 };

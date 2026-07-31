@@ -1,8 +1,7 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useLayoutEffect, useMemo } from "react";
+import { useEffect, useMemo } from "react";
 
-import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
-import { QueryClientProvider } from "@tanstack/react-query";
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
 import { mockCollectionItems } from "./odataStoryCollection";
 
@@ -63,6 +62,13 @@ export const treeSegments = {
 
 export type ODataMockMode = "success" | "loading" | "metadataError" | "collectionError";
 
+const odataStoryServices = {
+	success: MOCK_SERVICE,
+	loading: "DEMO_REFERENCE_LOADING_SRV",
+	metadataError: "DEMO_REFERENCE_METADATA_ERROR_SRV",
+	collectionError: "DEMO_REFERENCE_COLLECTION_ERROR_SRV"
+} satisfies Record<ODataMockMode, string>;
+
 function createMockResponse(body: BodyInit, contentType: string, status = 200) {
 	return new Response(body, {
 		status,
@@ -72,57 +78,160 @@ function createMockResponse(body: BodyInit, contentType: string, status = 200) {
 	});
 }
 
-function wait(ms: number) {
-	return new Promise((resolve) => {
-		setTimeout(resolve, ms);
+function wait(ms: number, signal?: AbortSignal) {
+	return new Promise<void>((resolve, reject) => {
+		const handleAbort = () => {
+			window.clearTimeout(timeoutId);
+			reject(signal?.reason ?? new DOMException("Ожидание OData mock отменено", "AbortError"));
+		};
+		const timeoutId = window.setTimeout(() => {
+			signal?.removeEventListener("abort", handleAbort);
+			resolve();
+		}, ms);
+
+		if (signal?.aborted) {
+			handleAbort();
+			return;
+		}
+
+		signal?.addEventListener("abort", handleAbort, { once: true });
 	});
 }
 
-export const withMockedOData: Decorator = (storyRenderer, context) => {
-	const queryClient = useMemo(() => createQueryClient({}), []);
+type ODataStoryContext = {
+	readonly canvasElement?: object;
+	readonly parameters: Record<string, unknown>;
+};
+
+type ODataStoryFetchRegistration = {
+	readonly mode: ODataMockMode;
+	readonly service: string;
+	readonly version: symbol;
+};
+
+type ODataStoryFetchMockState = {
+	readonly originalFetch: typeof window.fetch;
+	readonly registrations: Map<symbol, ODataStoryFetchRegistration>;
+	readonly registrationIdsByCanvas: WeakMap<object, symbol>;
+	readonly mockedFetch: typeof window.fetch;
+};
+
+let activeFetchMockState: ODataStoryFetchMockState | undefined;
+
+function resolveRequestRegistration(path: string, registrations: ReadonlyMap<symbol, ODataStoryFetchRegistration>) {
+	for (const registration of registrations.values()) {
+		if (path.includes(`/${registration.service}/`)) return registration;
+	}
+}
+
+function createODataStoryFetchMockState(): ODataStoryFetchMockState {
+	const originalFetch = window.fetch;
+	const registrations = new Map<symbol, ODataStoryFetchRegistration>();
+	const registrationIdsByCanvas = new WeakMap<object, symbol>();
+	const mockedFetch: typeof window.fetch = async (input, init) => {
+		const requestUrl = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+		const url = new URL(requestUrl, window.location.origin);
+		const path = url.pathname;
+		const registration = resolveRequestRegistration(path, registrations);
+
+		if (!registration) {
+			return originalFetch(input, init);
+		}
+
+		if (registration.mode === "loading") {
+			const signal = init?.signal ?? (typeof Request !== "undefined" && input instanceof Request ? input.signal : undefined);
+			await wait(1200, signal);
+		}
+
+		if (path.endsWith(`/${registration.service}/$metadata`)) {
+			if (registration.mode === "metadataError") {
+				return createMockResponse("Ошибка чтения metadata", "text/plain", 500);
+			}
+
+			return createMockResponse(mockMetadataXml, "application/xml");
+		}
+
+		if (path.endsWith(`/${registration.service}/${MOCK_ENTITY}`)) {
+			if (registration.mode === "collectionError") {
+				return createMockResponse(JSON.stringify({ error: "Ошибка загрузки справочника" }), "application/json", 500);
+			}
+
+			return createMockResponse(JSON.stringify({ d: { results: mockCollectionItems } }), "application/json");
+		}
+
+		return originalFetch(input, init);
+	};
+
+	return { originalFetch, registrations, registrationIdsByCanvas, mockedFetch };
+}
+
+/**
+ * Устанавливает mock OData-запросов на Storybook boundary до React render.
+ *
+ * TanStack Query может начать metadata query при подписке дочернего компонента,
+ * поэтому установка `fetch` из React effect создаёт race и иногда пропускает
+ * первый запрос в static Storybook. Storybook `beforeEach` выполняет этот hook
+ * заранее и вызывает возвращённый cleanup при переключении story.
+ *
+ * В docs несколько Canvas могут жить одновременно. Они делят один dispatcher,
+ * но используют разные service path для success/loading/error-сценариев, поэтому
+ * запрос однозначно связывается со своим mock. Регистрация привязана к canvas:
+ * повторный Storybook render обновляет её без накопления записей, а cleanup-ы
+ * разных render-циклов и Canvas можно вызывать в любом порядке.
+ */
+export function installODataStoryFetchMock(context: ODataStoryContext): () => void {
+	const mode = (context.parameters.odataMockMode as ODataMockMode | undefined) ?? "success";
+	const state = activeFetchMockState ?? createODataStoryFetchMockState();
+	const registrationId =
+		(context.canvasElement && state.registrationIdsByCanvas.get(context.canvasElement)) ?? Symbol("odata-story-fetch-mock");
+	const registrationVersion = Symbol("odata-story-fetch-mock-version");
+
+	activeFetchMockState = state;
+	if (context.canvasElement) {
+		state.registrationIdsByCanvas.set(context.canvasElement, registrationId);
+	}
+	state.registrations.delete(registrationId);
+	state.registrations.set(registrationId, { mode, service: odataStoryServices[mode], version: registrationVersion });
+	window.fetch = state.mockedFetch;
+
+	return () => {
+		if (state.registrations.get(registrationId)?.version !== registrationVersion) return;
+
+		state.registrations.delete(registrationId);
+		if (context.canvasElement) {
+			state.registrationIdsByCanvas.delete(context.canvasElement);
+		}
+
+		if (state.registrations.size > 0 || activeFetchMockState !== state) return;
+
+		if (window.fetch === state.mockedFetch) {
+			window.fetch = state.originalFetch;
+		}
+
+		activeFetchMockState = undefined;
+	};
+}
+
+/** Создаёт изолированный QueryClient без IndexedDB persistence для каждой OData story. */
+export const withODataStoryQueryClient: Decorator = (storyRenderer) => {
+	const queryClient = useMemo(
+		() =>
+			new QueryClient({
+				defaultOptions: {
+					queries: { retry: false, throwOnError: false },
+					mutations: { retry: false, throwOnError: false }
+				}
+			}),
+		[]
+	);
 	const StoryComponent = storyRenderer;
 
-	useLayoutEffect(() => {
-		const originalFetch = window.fetch.bind(window);
-		const mode = (context.parameters.odataMockMode as ODataMockMode | undefined) ?? "success";
-
-		window.fetch = async (input, init) => {
-			const requestUrl = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
-			const url = new URL(requestUrl, window.location.origin);
-			const path = url.pathname;
-
-			if (!path.includes(`/${MOCK_SERVICE}/`)) {
-				return originalFetch(input, init);
-			}
-
-			if (mode === "loading") {
-				await wait(1200);
-			}
-
-			if (path.endsWith(`/${MOCK_SERVICE}/$metadata`)) {
-				if (mode === "metadataError") {
-					return createMockResponse("Ошибка чтения metadata", "text/plain", 500);
-				}
-
-				return createMockResponse(mockMetadataXml, "application/xml");
-			}
-
-			if (path.endsWith(`/${MOCK_SERVICE}/${MOCK_ENTITY}`)) {
-				if (mode === "collectionError") {
-					return createMockResponse(JSON.stringify({ error: "Ошибка загрузки справочника" }), "application/json", 500);
-				}
-
-				return createMockResponse(JSON.stringify({ d: { results: mockCollectionItems } }), "application/json");
-			}
-
-			return originalFetch(input, init);
-		};
-
-		return () => {
-			window.fetch = originalFetch;
+	useEffect(
+		() => () => {
 			queryClient.clear();
-		};
-	}, [context.id, context.parameters.odataMockMode, queryClient]);
+		},
+		[queryClient]
+	);
 
 	return (
 		<QueryClientProvider client={queryClient}>
@@ -135,6 +244,13 @@ export const baseOData: ODataCollectionConfig = {
 	service: MOCK_SERVICE,
 	target: MOCK_ENTITY
 };
+
+export const odataStoryOData = {
+	success: baseOData,
+	loading: { ...baseOData, service: odataStoryServices.loading },
+	metadataError: { ...baseOData, service: odataStoryServices.metadataError },
+	collectionError: { ...baseOData, service: odataStoryServices.collectionError }
+} satisfies Record<ODataMockMode, ODataCollectionConfig>;
 
 export const baseModel: ODataCollectionModel = {
 	codeKey: "REGION",

@@ -1,6 +1,13 @@
 import { useState } from "react";
 
-import { baseOData, storyValues, treeSegments, withMockedOData } from "../../select/stories/odataStoryFixtures";
+import {
+	baseOData,
+	installODataStoryFetchMock,
+	odataStoryOData,
+	storyValues,
+	treeSegments,
+	withODataStoryQueryClient
+} from "../../select/stories/odataStoryFixtures";
 import { ODataTreeMultiSelect } from "../ODataTreeMultiSelect";
 import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "../types";
 
@@ -51,7 +58,8 @@ function StatefulODataTreeMultiSelect({
 const meta = {
 	title: "Shared/UI/ODataTreeMultiSelect",
 	component: ODataTreeMultiSelect,
-	decorators: [withMockedOData],
+	decorators: [withODataStoryQueryClient],
+	beforeEach: installODataStoryFetchMock,
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded",
@@ -126,12 +134,12 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: () => <StatefulODataTreeMultiSelect description="Сценарий загрузки дерева." />
+	render: () => <StatefulODataTreeMultiSelect odata={odataStoryOData.loading} description="Сценарий загрузки дерева." />
 };
 
 export const ErrorState: Story = {
 	parameters: {
-		odataMockMode: "collectionError"
+		odataMockMode: "metadataError"
 	},
-	render: () => <StatefulODataTreeMultiSelect description="Сценарий ошибки загрузки дерева." />
+	render: () => <StatefulODataTreeMultiSelect odata={odataStoryOData.metadataError} description="Сценарий ошибки metadata дерева." />
 };
