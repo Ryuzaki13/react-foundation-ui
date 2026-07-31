@@ -132,3 +132,39 @@ export const demoTreeNodes: TreeSelectNode[] = [
 		]
 	}
 ];
+
+function createOrphanFixtureRoot(rootIndex: number, childCount: number): TreeSelectNode {
+	const rootCode = `OR${rootIndex}`;
+
+	return {
+		id: `ORPHAN_ROOT:${rootCode}`,
+		codeKey: "ORPHAN_ROOT",
+		value: rootCode,
+		label: `Группа ${rootIndex}`,
+		code: rootCode,
+		searchText: `${rootCode} Группа ${rootIndex}`,
+		children: Array.from({ length: childCount }, (_, childIndex) => {
+			const childCode = `${rootCode}-${childIndex + 1}`;
+
+			return {
+				id: `ORPHAN_ROOT:${rootCode}/ORPHAN_CHILD:${childCode}`,
+				codeKey: "ORPHAN_CHILD",
+				value: childCode,
+				label: `Элемент ${rootIndex}.${childIndex + 1}`,
+				code: childCode,
+				searchText: `${childCode} Элемент ${rootIndex}.${childIndex + 1}`
+			};
+		})
+	};
+}
+
+/**
+ * Точный fixture защиты от orphan-start: при типичной логической высоте шесть
+ * строк после первой большой группы остаются две ячейки, куда раньше попадали
+ * root и один child следующей большой группы.
+ */
+export const orphanProtectionTreeNodes: TreeSelectNode[] = [
+	createOrphanFixtureRoot(1, 3),
+	createOrphanFixtureRoot(2, 3),
+	createOrphanFixtureRoot(3, 1)
+];

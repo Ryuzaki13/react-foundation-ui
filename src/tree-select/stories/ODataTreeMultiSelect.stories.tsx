@@ -7,6 +7,11 @@ import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "../types";
 import type { ODataCollectionConfig, ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+const largeRootGroupSegments = {
+	REGION: treeSegments.REGION,
+	OWNER: treeSegments.OWNER
+} satisfies ODataDependentBaseProps["segments"];
+
 function StatefulODataTreeMultiSelect({
 	initialValue = {},
 	odata = baseOData,
@@ -102,6 +107,17 @@ export const BalancedColumns: Story = {
 			optionsLayout="columns"
 			defaultExpandedCodeKeys={[]}
 			initialValue={{ BRANCH: [storyValues.branch] }}
+		/>
+	)
+};
+
+export const LargeRootGroupsColumns: Story = {
+	render: () => (
+		<StatefulODataTreeMultiSelect
+			label="Крупные OData-группы"
+			description="Сокращённая цепочка REGION → OWNER создаёт несколько root-групп с тремя и более direct children для проверки group-aware packing."
+			optionsLayout="columns"
+			segments={largeRootGroupSegments}
 		/>
 	)
 };

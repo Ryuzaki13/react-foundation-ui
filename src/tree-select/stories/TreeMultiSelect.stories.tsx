@@ -3,7 +3,7 @@ import { useState } from "react";
 import { TreeMultiSelect } from "../TreeMultiSelect";
 import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "../types";
 
-import { demoTreeNodes } from "./treeStoryFixtures";
+import { demoTreeNodes, orphanProtectionTreeNodes } from "./treeStoryFixtures";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -123,6 +123,17 @@ export const BalancedColumns: Story = {
 			description="Popover подбирает число столбцов по количеству опций и доступному viewport."
 			optionsLayout="columns"
 			initialValue={{ BRANCH: ["B0101"] }}
+		/>
+	)
+};
+
+export const OrphanProtectionColumns: Story = {
+	render: () => (
+		<StatefulTreeMultiSelect
+			label="Защита начала большой группы"
+			description="При низком viewport группа 2 не оставляет root и один child в хвосте предыдущего столбца, а начинается целиком с нового."
+			optionsLayout="columns"
+			nodes={orphanProtectionTreeNodes}
 		/>
 	)
 };

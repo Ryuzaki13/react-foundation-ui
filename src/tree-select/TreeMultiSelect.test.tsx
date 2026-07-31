@@ -5,7 +5,9 @@ import { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import * as treeColumnsLayoutModel from "./model/resolveBalancedTreeColumnsLayout";
 import { TreeMultiSelect } from "./TreeMultiSelect";
+import styles from "./TreeSelect.module.scss";
 
 import type { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "./types";
 
@@ -28,6 +30,7 @@ const NODES: TreeSelectNode[] = [
 		codeKey: "DIV",
 		value: "01",
 		label: "Дивизион 1",
+		code: "01",
 		searchText: "01 Дивизион 1",
 		children: [
 			{
@@ -63,6 +66,28 @@ const ASYNC_NODES: TreeSelectNode[] = Array.from({ length: 12 }, (_, index) => (
 	label: `Дивизион ${index}`,
 	searchText: `${index} Дивизион ${index}`
 }));
+
+function createStructureRoot(rootIndex: number, childCount: number): TreeSelectNode {
+	const rootCode = `R${rootIndex}`;
+
+	return {
+		id: `ROOT:${rootCode}`,
+		codeKey: "ROOT",
+		value: rootCode,
+		label: `Корень ${rootIndex}`,
+		searchText: `${rootCode} Корень ${rootIndex}`,
+		children: Array.from({ length: childCount }, (_, childIndex) => ({
+			id: `ROOT:${rootCode}/CHILD:${childIndex}`,
+			codeKey: "CHILD",
+			value: `${rootCode}-${childIndex}`,
+			label: `Элемент ${rootIndex}.${childIndex}`,
+			searchText: `${rootCode}-${childIndex} Элемент ${rootIndex}.${childIndex}`
+		}))
+	};
+}
+
+const FIRST_SAME_COUNT_STRUCTURE = [createStructureRoot(1, 3), createStructureRoot(2, 3)];
+const SECOND_SAME_COUNT_STRUCTURE = [createStructureRoot(1, 1), createStructureRoot(2, 5)];
 
 function Harness({
 	initialValue,
@@ -182,12 +207,36 @@ async function clickElement(element: HTMLElement) {
 	await act(async () => element.click());
 }
 
+async function setInputValue(input: HTMLInputElement, value: string) {
+	await act(async () => {
+		const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+		valueSetter?.call(input, value);
+		input.dispatchEvent(new Event("input", { bubbles: true }));
+	});
+}
+
 function getCommittedValueText() {
 	return container?.querySelector('[data-testid="value"]')?.textContent;
 }
 
 function getOptionOrder() {
 	return Array.from(document.querySelectorAll<HTMLElement>('[data-ui="tree-select-option"]')).map((option) => option.textContent?.trim());
+}
+
+function getOptionByText(text: string) {
+	const option = Array.from(document.querySelectorAll<HTMLElement>('[data-ui="tree-select-option"]')).find((item) =>
+		item.textContent?.includes(text)
+	);
+
+	if (!option) {
+		throw new Error(`Не найдена option-строка «${text}»`);
+	}
+
+	return option;
+}
+
+function findElementWithClass(rootElement: HTMLElement, className: string) {
+	return Array.from(rootElement.querySelectorAll<HTMLElement>("*")).find((element) => element.classList.contains(className));
 }
 
 function findInnermostElementWithText(text: string) {
@@ -206,6 +255,7 @@ afterEach(async () => {
 	container = null;
 	root = null;
 	document.body.innerHTML = "";
+	vi.restoreAllMocks();
 });
 
 describe("TreeMultiSelect columns layout", () => {
@@ -225,8 +275,48 @@ describe("TreeMultiSelect columns layout", () => {
 		expect(checkBoxes.every((checkBox) => checkBox.tabIndex === 0 && checkBox.getAttribute("aria-hidden") === null)).toBe(true);
 
 		await vi.waitFor(() => {
-			expect((document.querySelector('[role="dialog"]') as HTMLElement).style.getPropertyValue("--tree-column-count")).not.toBe("");
+			const dialog = document.querySelector('[role="dialog"]') as HTMLElement;
+			const columnCount = Number(dialog.style.getPropertyValue("--tree-column-count"));
+			const rowCount = Number(dialog.style.getPropertyValue("--tree-row-count"));
+			const occupiedCells = new Set<string>();
+
+			expect(dialog.firstElementChild?.classList.contains(styles.treeColumnsPopupLayout)).toBe(true);
+			expect(dialog.firstElementChild?.lastElementChild?.classList.contains("scrollable")).toBe(true);
+			expect(dialog.style.maxHeight).toMatch(/px$/);
+			expect(columnCount).toBeGreaterThanOrEqual(1);
+			expect(rowCount).toBeGreaterThanOrEqual(1);
+
+			options.forEach((option, index) => {
+				const column = Number(dialog.style.getPropertyValue(`--tree-option-${index}-column`));
+				const row = Number(dialog.style.getPropertyValue(`--tree-option-${index}-row`));
+
+				expect(column).toBeGreaterThanOrEqual(1);
+				expect(column).toBeLessThanOrEqual(columnCount);
+				expect(row).toBeGreaterThanOrEqual(1);
+				expect(row).toBeLessThanOrEqual(rowCount);
+				expect(option.style.getPropertyValue("--tree-option-column")).toBe(`var(--tree-option-${index}-column, auto)`);
+				expect(option.style.getPropertyValue("--tree-option-row")).toBe(`var(--tree-option-${index}-row, auto)`);
+				expect(option.id).toContain(`-option-${index}`);
+				occupiedCells.add(`${column}:${row}`);
+			});
+
+			expect(occupiedCells.size).toBe(options.length);
 		});
+	});
+
+	it("выделяет в columns отдельно label и видимый code только у root", async () => {
+		await renderHarness({ initialValue: {} });
+
+		const rootOption = getOptionByText("Дивизион 1");
+		const childOption = getOptionByText("Филиал 1");
+		const rootLabel = findElementWithClass(rootOption, styles.treeColumnRootLabel);
+		const rootCode = findElementWithClass(rootOption, styles.treeColumnRootCode);
+
+		expect(rootLabel?.textContent).toBe("Дивизион 1");
+		expect(rootCode?.textContent).toBe("01");
+		expect(findElementWithClass(childOption, styles.treeColumnRootLabel)).toBeUndefined();
+		expect(findElementWithClass(childOption, styles.treeColumnRootCode)).toBeUndefined();
+		expect(rootOption.querySelector('input[type="checkbox"]')?.classList.contains(styles.treeColumnRootLabel)).toBe(false);
 	});
 
 	it("показывает mixed-состояние parent при выборе одного descendant", async () => {
@@ -441,6 +531,42 @@ describe("TreeMultiSelect columns layout", () => {
 		});
 	});
 
+	it("пересчитывает Floating UI при изменении структуры с прежним числом options", async () => {
+		const resolverSpy = vi.spyOn(treeColumnsLayoutModel, "resolveBalancedTreeColumnsLayout");
+		await renderHarness({ initialValue: {}, nodes: FIRST_SAME_COUNT_STRUCTURE });
+
+		await vi.waitFor(() => {
+			expect(resolverSpy).toHaveBeenCalled();
+		});
+		const initialCallCount = resolverSpy.mock.calls.length;
+		const initialSignature = resolverSpy.mock.calls.at(-1)?.[0].descriptor.signature;
+
+		await act(async () => root?.render(<Harness initialValue={{}} nodes={SECOND_SAME_COUNT_STRUCTURE} />));
+
+		await vi.waitFor(() => {
+			expect(resolverSpy.mock.calls.length).toBeGreaterThan(initialCallCount);
+		});
+		expect(resolverSpy.mock.calls.at(-1)?.[0].descriptor.signature).not.toBe(initialSignature);
+		expect(document.querySelectorAll('[data-ui="tree-select-option"]')).toHaveLength(8);
+	});
+
+	it("сохраняет поиск и DOM preorder при explicit columns placement", async () => {
+		await renderHarness({ initialValue: {} });
+		const initialOrder = getOptionOrder();
+		const searchInput = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+
+		await setInputValue(searchInput, "Филиал 1");
+
+		expect(getOptionOrder()).toEqual(
+			initialOrder.filter((optionText) => optionText?.includes("Дивизион 1") || optionText?.includes("Филиал 1"))
+		);
+		expect(getCheckBox("Филиал 1")).toBeInstanceOf(HTMLInputElement);
+
+		await setInputValue(searchInput, "");
+
+		expect(getOptionOrder()).toEqual(initialOrder);
+	});
+
 	it("не включает disabled-опции в массовый черновик и публикует его только после закрытия", async () => {
 		const nodesWithDisabled: TreeSelectNode[] = [
 			{
@@ -482,5 +608,10 @@ describe("TreeMultiSelect tree expansion", () => {
 		expect(getOptionOrder()).toHaveLength(4);
 		expect(getOptionOrder().some((optionText) => optionText?.includes("Филиал 1"))).toBe(true);
 		expect(document.querySelector('[data-ui="tree-select-expander"]')).toBeTruthy();
+		const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
+		const rootOption = getOptionByText("Дивизион 1");
+		expect(listbox.firstElementChild?.classList.contains(styles.treeColumnsPopupLayout)).toBe(false);
+		expect(findElementWithClass(rootOption, styles.treeColumnRootLabel)).toBeUndefined();
+		expect(findElementWithClass(rootOption, styles.treeColumnRootCode)).toBeUndefined();
 	});
 });

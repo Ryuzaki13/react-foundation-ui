@@ -37,6 +37,7 @@ export function TreeNodeContent({
 	onToggleSelection
 }: TreeNodeContentProps) {
 	const showExpansionControl = optionsLayout === "tree";
+	const emphasizeRootContent = optionsLayout === "columns" && level === 0;
 
 	return (
 		<>
@@ -84,7 +85,13 @@ export function TreeNodeContent({
 			) : null}
 
 			<div className={styles.treeNodeOptionContent}>
-				<SelectOptionContent label={node.label} code={node.code} highlight={highlight} />
+				<SelectOptionContent
+					label={node.label}
+					code={node.code}
+					highlight={highlight}
+					labelClassName={emphasizeRootContent ? styles.treeColumnRootLabel : undefined}
+					codeClassName={emphasizeRootContent ? styles.treeColumnRootCode : undefined}
+				/>
 			</div>
 		</>
 	);

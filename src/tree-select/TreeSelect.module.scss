@@ -62,7 +62,6 @@
 
 .treeColumns {
 	display: grid;
-	grid-auto-flow: column;
 	grid-template-columns: repeat(var(--tree-column-count, 1), minmax(0, 1fr));
 	grid-template-rows: repeat(var(--tree-row-count, 1), minmax(var(--control-height), auto));
 	column-gap: var(--space-sm);
@@ -73,7 +72,24 @@
 
 .treeColumnRow {
 	min-width: 0;
-	break-inside: avoid;
+	grid-column-start: var(--tree-option-column);
+	grid-row-start: var(--tree-option-row);
+}
+
+// В columns внешний floating maxHeight уже учитывает доступную сторону и safe area.
+.treeColumnsPopupLayout {
+	max-height: none;
+}
+
+// Label и code усиливаются отдельно: code имеет собственный variable-font weight.
+.treeColumnRootLabel {
+	font-weight: 600;
+	font-variation-settings: "wght" 600;
+}
+
+.treeColumnRootCode {
+	font-weight: 600;
+	font-variation-settings: "wght" 600;
 }
 
 .treeColumnCheckBox {

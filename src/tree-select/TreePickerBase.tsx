@@ -1,4 +1,4 @@
-import { ReactNode, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { type FloatingListboxSizeResolver } from "@ryuzaki13/react-foundation-lib/hooks";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -19,6 +19,7 @@ import {
 import { UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
+import { buildTreeColumnsLayoutDescriptor } from "./model/buildTreeColumnsLayoutDescriptor";
 import { resolveBalancedTreeColumnsLayout } from "./model/resolveBalancedTreeColumnsLayout";
 import {
 	createTreeNodeIndex,
@@ -122,11 +123,17 @@ export function TreePickerBase({
 	);
 	const visibleEntries = useMemo(() => flattenVisibleTreeNodes(filteredNodes, resolvedExpandedIds), [filteredNodes, resolvedExpandedIds]);
 	const selectedIndex = useMemo(() => visibleEntries.findIndex((entry) => selectedIds.has(entry.node.id)), [selectedIds, visibleEntries]);
+	const columnsLayoutDescriptor = useMemo(() => buildTreeColumnsLayoutDescriptor(visibleEntries), [visibleEntries]);
 	const resolveColumnsFloatingSize = useCallback<FloatingListboxSizeResolver>(
 		(context) => {
 			const layout = resolveBalancedTreeColumnsLayout({
 				...context,
-				itemCount: visibleEntries.length
+				descriptor: columnsLayoutDescriptor
+			});
+			const placementProperties: { [customProperty: `--${string}`]: string | undefined } = {};
+			layout.placements.forEach((placement, index) => {
+				placementProperties[`--tree-option-${index}-column`] = String(placement.column);
+				placementProperties[`--tree-option-${index}-row`] = String(placement.row);
 			});
 
 			return {
@@ -135,10 +142,11 @@ export function TreePickerBase({
 				maxWidth: `${layout.width}px`,
 				maxHeight: `${layout.maxHeight}px`,
 				"--tree-column-count": String(layout.columnCount),
-				"--tree-row-count": String(Math.max(layout.rowCount, 1))
+				"--tree-row-count": String(layout.rowCount),
+				...placementProperties
 			};
 		},
-		[visibleEntries.length]
+		[columnsLayoutDescriptor]
 	);
 	const {
 		open,
@@ -171,6 +179,7 @@ export function TreePickerBase({
 		placementStrategy: optionsLayout === "columns" ? "auto" : "flip",
 		resolveFloatingSize: optionsLayout === "columns" ? resolveColumnsFloatingSize : undefined
 	});
+	const updateFloatingLayout = context.update;
 	const hasSelection = selectedIds.size > 0;
 	const showTriggerQuery = triggerMode === "search" && (open || currentQuery.length > 0);
 	const triggerValue = showTriggerQuery ? currentQuery : (selectedSummaryText ?? "");
@@ -229,6 +238,12 @@ export function TreePickerBase({
 
 		previousOpenRef.current = open;
 	}, [open, setQuery, triggerController.policy.resetQueryOnClose]);
+
+	useLayoutEffect(() => {
+		if (open && optionsLayout === "columns") {
+			updateFloatingLayout();
+		}
+	}, [columnsLayoutDescriptor.signature, open, optionsLayout, updateFloatingLayout]);
 
 	const setInputNode = (node: HTMLInputElement | null) => {
 		inputRef.current = node;
@@ -375,6 +390,7 @@ export function TreePickerBase({
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handleFloatingKeyDown}
 							className={uiStyles.uiPopupOptions}
+							layoutClassName={optionsLayout === "columns" ? styles.treeColumnsPopupLayout : undefined}
 							bodyClassName="scrollable"
 							header={popupHeader}>
 							<div className={cn(optionsLayout === "columns" && styles.treeColumns)}>
@@ -410,6 +426,14 @@ export function TreePickerBase({
 													active && styles.treeRowActive,
 													selected && styles.treeRowSelected
 												)}
+												style={
+													optionsLayout === "columns"
+														? ({
+																"--tree-option-column": `var(--tree-option-${index}-column, auto)`,
+																"--tree-option-row": `var(--tree-option-${index}-row, auto)`
+															} as CSSProperties)
+														: undefined
+												}
 												onMouseDown={(event) => {
 													event.preventDefault();
 												}}
