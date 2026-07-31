@@ -25,6 +25,11 @@ export interface TreeMultiSelectProps extends Omit<UiBaseProps<TreeMultiSelectVa
 	error?: string;
 	/** Определяет обычное раскрываемое дерево или полностью открытый адаптивный набор колонок. */
 	optionsLayout?: TreeMultiSelectOptionsLayout;
+	/**
+	 * Ключи уровней, узлы которых раскрываются до ручного действия пользователя.
+	 * В режиме `columns` дерево по-прежнему отображается полностью раскрытым.
+	 */
+	defaultExpandedCodeKeys?: readonly string[];
 }
 
 function formatTreeMultiSummary(selectedIds: Set<string>, treeIndex: ReturnType<typeof createTreeNodeIndex>) {
@@ -74,7 +79,8 @@ export function TreeMultiSelect({
 	onQuery,
 	isLoading,
 	error,
-	optionsLayout = "tree"
+	optionsLayout = "tree",
+	defaultExpandedCodeKeys
 }: TreeMultiSelectProps) {
 	const [open, setOpen] = useState(false);
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
@@ -118,6 +124,7 @@ export function TreeMultiSelect({
 			partialIds={selectionState.partialIds}
 			selectionMode="multi"
 			optionsLayout={optionsLayout}
+			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			open={open}
 			onOpenChange={handleOpenChange}
 			bulkActions={{

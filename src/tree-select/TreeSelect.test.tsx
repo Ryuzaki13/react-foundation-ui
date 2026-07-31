@@ -40,6 +40,43 @@ const NODES: TreeSelectNode[] = [
 	}
 ];
 
+const EXPANSION_NODES: TreeSelectNode[] = [
+	{
+		id: "DIV:01",
+		codeKey: "DIV",
+		value: "01",
+		label: "Дивизион 1",
+		searchText: "01 Дивизион 1",
+		children: [
+			{
+				id: "DIV:01/BR:001",
+				codeKey: "BR",
+				value: "001",
+				label: "Филиал 1",
+				searchText: "001 Филиал 1",
+				children: [
+					{
+						id: "DIV:01/BR:001/TEAM:0001",
+						codeKey: "TEAM",
+						value: "0001",
+						label: "Команда 1",
+						searchText: "0001 Команда 1"
+					}
+				]
+			}
+		]
+	},
+	{
+		id: "DIV:02",
+		codeKey: "DIV",
+		value: "02",
+		label: "Дивизион 2",
+		searchText: "02 Дивизион 2"
+	}
+];
+
+const EXPANSION_LABELS = ["Дивизион 1", "Филиал 1", "Команда 1", "Дивизион 2"];
+
 function TreeSelectHarness() {
 	const [value, setValue] = useState<TreeSelectValue | undefined>({ codeKey: "BR", value: "001" });
 
@@ -65,6 +102,51 @@ async function renderNode(node: React.ReactNode) {
 	});
 }
 
+async function openPopup() {
+	const toggleButton = container?.querySelector('button[aria-label="Открыть список"]');
+	if (!(toggleButton instanceof HTMLButtonElement)) {
+		throw new Error("Не найдена кнопка открытия списка");
+	}
+
+	await act(async () => toggleButton.click());
+}
+
+function getVisibleExpansionLabels() {
+	const options = Array.from(document.querySelectorAll<HTMLElement>('[data-ui="tree-select-option"]'));
+
+	return EXPANSION_LABELS.filter((label) => options.some((option) => option.textContent?.includes(label)));
+}
+
+function getExpansionOption(label: string) {
+	const option = Array.from(document.querySelectorAll<HTMLElement>('[data-ui="tree-select-option"]')).find((item) =>
+		item.textContent?.includes(label)
+	);
+
+	if (!option) {
+		throw new Error(`Не найдена опция «${label}»`);
+	}
+
+	return option;
+}
+
+function getExpansionButton(label: string) {
+	const button = getExpansionOption(label).querySelector('[data-ui="tree-select-expander"]');
+
+	if (!(button instanceof HTMLButtonElement)) {
+		throw new Error(`Не найден expander опции «${label}»`);
+	}
+
+	return button;
+}
+
+async function setInputValue(input: HTMLInputElement, value: string) {
+	await act(async () => {
+		const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+		valueSetter?.call(input, value);
+		input.dispatchEvent(new Event("input", { bubbles: true }));
+	});
+}
+
 afterEach(async () => {
 	if (root) {
 		await act(async () => {
@@ -79,6 +161,120 @@ afterEach(async () => {
 });
 
 describe("TreeSelect", () => {
+	it.each([
+		{ defaultExpandedCodeKeys: [] as const, expectedLabels: ["Дивизион 1", "Дивизион 2"] },
+		{ defaultExpandedCodeKeys: ["DIV"] as const, expectedLabels: ["Дивизион 1", "Филиал 1", "Дивизион 2"] },
+		{
+			defaultExpandedCodeKeys: ["DIV", "BR"] as const,
+			expectedLabels: ["Дивизион 1", "Филиал 1", "Команда 1", "Дивизион 2"]
+		}
+	])("раскрывает настроенные уровни $defaultExpandedCodeKeys", async ({ defaultExpandedCodeKeys, expectedLabels }) => {
+		await renderNode(
+			<TreeSelect
+				label="Дерево"
+				nodes={EXPANSION_NODES}
+				value={undefined}
+				onChange={() => undefined}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+			/>
+		);
+		await openPopup();
+
+		expect(getVisibleExpansionLabels()).toEqual(expectedLabels);
+	});
+
+	it("применяет default второго уровня после ручного открытия первого", async () => {
+		await renderNode(
+			<TreeSelect
+				label="Дерево"
+				nodes={EXPANSION_NODES}
+				value={undefined}
+				onChange={() => undefined}
+				defaultExpandedCodeKeys={["BR"]}
+			/>
+		);
+		await openPopup();
+
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
+
+		await act(async () => getExpansionButton("Дивизион 1").click());
+
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Команда 1", "Дивизион 2"]);
+	});
+
+	it("сохраняет ручное закрытие поверх default уровня", async () => {
+		await renderNode(
+			<TreeSelect
+				label="Дерево"
+				nodes={EXPANSION_NODES}
+				value={undefined}
+				onChange={() => undefined}
+				defaultExpandedCodeKeys={["DIV"]}
+			/>
+		);
+		await openPopup();
+
+		expect(getVisibleExpansionLabels()).toContain("Филиал 1");
+		await act(async () => getExpansionButton("Дивизион 1").click());
+
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
+		expect(getExpansionButton("Дивизион 1").dataset.action).toBe("expand-tree-select-node");
+	});
+
+	it("временно раскрывает вручную закрытую ветку для поиска", async () => {
+		await renderNode(
+			<TreeSelect
+				label="Дерево"
+				nodes={EXPANSION_NODES}
+				value={undefined}
+				onChange={() => undefined}
+				defaultExpandedCodeKeys={["DIV"]}
+			/>
+		);
+		await openPopup();
+		await act(async () => getExpansionButton("Дивизион 1").click());
+
+		const input = container?.querySelector('input[role="combobox"]');
+		if (!(input instanceof HTMLInputElement)) {
+			throw new Error("Не найден trigger-input");
+		}
+
+		await setInputValue(input, "Команда 1");
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Команда 1"]);
+
+		await setInputValue(input, "");
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
+	});
+
+	it("временно раскрывает вручную закрытую ветку для выбранного узла", async () => {
+		const renderTree = (value: TreeSelectValue | undefined) => (
+			<TreeSelect label="Дерево" nodes={EXPANSION_NODES} value={value} onChange={() => undefined} defaultExpandedCodeKeys={["DIV"]} />
+		);
+
+		await renderNode(renderTree(undefined));
+		await openPopup();
+		await act(async () => getExpansionButton("Дивизион 1").click());
+
+		await act(async () => root?.render(renderTree({ codeKey: "TEAM", value: "0001" })));
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Команда 1", "Дивизион 2"]);
+
+		await act(async () => root?.render(renderTree(undefined)));
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
+	});
+
+	it("применяет default к узлам, появившимся после асинхронной загрузки", async () => {
+		const renderTree = (nodes: readonly TreeSelectNode[]) => (
+			<TreeSelect label="Дерево" nodes={nodes} value={undefined} onChange={() => undefined} defaultExpandedCodeKeys={["DIV"]} />
+		);
+
+		await renderNode(renderTree([]));
+		await openPopup();
+		expect(getVisibleExpansionLabels()).toEqual([]);
+
+		await act(async () => root?.render(renderTree(EXPANSION_NODES)));
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Дивизион 2"]);
+	});
+
 	it("использует trigger-input для поиска и сбрасывает query после закрытия", async () => {
 		await renderNode(<TreeSelectHarness />);
 

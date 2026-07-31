@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
 	createTreeNodeIndex,
+	getConfiguredTreeExpandedIds,
 	getSelectableTreeNodeIds,
 	getTreeNodeSelectionState,
 	toggleTreeMultiSelection,
@@ -56,6 +57,40 @@ const nodes: TreeSelectNode[] = [
 		]
 	}
 ];
+
+describe("tree expansion utils", () => {
+	const index = createTreeNodeIndex(nodes);
+	const rootId = "ZDIV:04";
+	const branchId = "ZDIV:04/ZCFO1:0202";
+
+	it.each([
+		{ codeKeys: [], expectedIds: [] },
+		{ codeKeys: ["ZDIV"], expectedIds: [rootId] },
+		{ codeKeys: ["ZDIV", "ZCFO1"], expectedIds: [rootId, branchId] },
+		{ codeKeys: ["ZCFO1"], expectedIds: [branchId] }
+	])("раскрывает настроенные уровни $codeKeys", ({ codeKeys, expectedIds }) => {
+		expect(getConfiguredTreeExpandedIds(index, new Set(codeKeys), new Map())).toEqual(new Set(expectedIds));
+	});
+
+	it("применяет ручные true и false поверх настройки уровня", () => {
+		expect(
+			getConfiguredTreeExpandedIds(
+				index,
+				new Set(["ZDIV"]),
+				new Map([
+					[rootId, false],
+					[branchId, true]
+				])
+			)
+		).toEqual(new Set([branchId]));
+	});
+
+	it("не добавляет leaf в набор раскрытых узлов", () => {
+		const leafId = "ZDIV:04/ZCFO1:0202/VSTEL:0601";
+
+		expect(getConfiguredTreeExpandedIds(index, new Set(["VSTEL"]), new Map([[leafId, true]]))).toEqual(new Set());
+	});
+});
 
 describe("tree selection utils", () => {
 	it("выбирает leaf как самое глубокое значение", () => {

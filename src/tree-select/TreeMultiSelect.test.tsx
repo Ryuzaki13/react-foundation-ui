@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TreeMultiSelect } from "./TreeMultiSelect";
 
-import type { TreeMultiSelectValue, TreeSelectNode } from "./types";
+import type { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "./types";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 window.HTMLElement.prototype.scrollIntoView = () => undefined;
@@ -69,13 +69,17 @@ function Harness({
 	nodes = NODES,
 	label = "Оргструктура",
 	placeholder,
-	onChange
+	onChange,
+	optionsLayout = "columns",
+	defaultExpandedCodeKeys
 }: {
 	initialValue: TreeMultiSelectValue;
 	nodes?: TreeSelectNode[];
 	label?: string | null;
 	placeholder?: string;
 	onChange?: (value: TreeMultiSelectValue) => void;
+	optionsLayout?: TreeMultiSelectOptionsLayout;
+	defaultExpandedCodeKeys?: readonly string[];
 }) {
 	const [value, setValue] = useState(initialValue);
 	const handleChange = (nextValue: TreeMultiSelectValue) => {
@@ -91,7 +95,8 @@ function Harness({
 				nodes={nodes}
 				value={value}
 				onChange={handleChange}
-				optionsLayout="columns"
+				optionsLayout={optionsLayout}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			/>
 			<output data-testid="value">{JSON.stringify(value)}</output>
 		</>
@@ -107,6 +112,8 @@ type RenderHarnessOptions = {
 	label?: string | null;
 	placeholder?: string;
 	onChange?: (value: TreeMultiSelectValue) => void;
+	optionsLayout?: TreeMultiSelectOptionsLayout;
+	defaultExpandedCodeKeys?: readonly string[];
 	open?: boolean;
 };
 
@@ -116,6 +123,8 @@ async function renderHarness({
 	label = "Оргструктура",
 	placeholder,
 	onChange,
+	optionsLayout = "columns",
+	defaultExpandedCodeKeys,
 	open = true
 }: RenderHarnessOptions) {
 	container = document.createElement("div");
@@ -123,7 +132,17 @@ async function renderHarness({
 	root = createRoot(container);
 
 	await act(async () =>
-		root?.render(<Harness initialValue={initialValue} nodes={nodes} label={label} placeholder={placeholder} onChange={onChange} />)
+		root?.render(
+			<Harness
+				initialValue={initialValue}
+				nodes={nodes}
+				label={label}
+				placeholder={placeholder}
+				onChange={onChange}
+				optionsLayout={optionsLayout}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+			/>
+		)
 	);
 
 	if (open) {
@@ -191,7 +210,7 @@ afterEach(async () => {
 
 describe("TreeMultiSelect columns layout", () => {
 	it("сразу показывает все уровни чекбоксами без экспандеров", async () => {
-		await renderHarness({ initialValue: { DIV: ["01"] } });
+		await renderHarness({ initialValue: { DIV: ["01"] }, defaultExpandedCodeKeys: [] });
 
 		const options = Array.from(document.querySelectorAll<HTMLElement>('[data-ui="tree-select-option"]'));
 		const checkBoxes = Array.from(document.querySelectorAll<HTMLInputElement>('input[type="checkbox"]'));
@@ -449,5 +468,19 @@ describe("TreeMultiSelect columns layout", () => {
 		expect(getCommittedValueText()).toBe('{"BR":["001"]}');
 		expect(onChange).toHaveBeenCalledTimes(1);
 		expect(onChange).toHaveBeenLastCalledWith({ BR: ["001"] });
+	});
+});
+
+describe("TreeMultiSelect tree expansion", () => {
+	it("пробрасывает настройку раскрытия уровней в общий tree picker", async () => {
+		await renderHarness({
+			initialValue: {},
+			optionsLayout: "tree",
+			defaultExpandedCodeKeys: ["DIV"]
+		});
+
+		expect(getOptionOrder()).toHaveLength(4);
+		expect(getOptionOrder().some((optionText) => optionText?.includes("Филиал 1"))).toBe(true);
+		expect(document.querySelector('[data-ui="tree-select-expander"]')).toBeTruthy();
 	});
 });

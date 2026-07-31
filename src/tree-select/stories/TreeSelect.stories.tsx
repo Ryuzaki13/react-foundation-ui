@@ -10,17 +10,26 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 function StatefulTreeSelect({
 	initialValue,
 	label = "TreeSelect",
-	description
+	description,
+	defaultExpandedCodeKeys
 }: {
 	initialValue?: TreeSelectValue;
 	label?: string;
 	description?: string;
+	defaultExpandedCodeKeys?: readonly string[];
 }) {
 	const [value, setValue] = useState<TreeSelectValue | undefined>(initialValue);
 
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-			<TreeSelect label={label} description={description} nodes={demoTreeNodes} value={value} onChange={setValue} />
+			<TreeSelect
+				label={label}
+				description={description}
+				nodes={demoTreeNodes}
+				value={value}
+				onChange={setValue}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
 				Текущее значение: {value ? `${value.codeKey}=${value.value}` : "пусто"}
 			</div>
@@ -62,6 +71,16 @@ export const SelectParent: Story = {
 			label="Выбор родителя"
 			description="Проверка single-select сценария, когда выбирается не leaf, а промежуточный узел."
 			initialValue={{ codeKey: "REGION", value: "R01" }}
+		/>
+	)
+};
+
+export const FirstLevelExpanded: Story = {
+	render: () => (
+		<StatefulTreeSelect
+			label="Раскрыт первый уровень"
+			description="Все узлы уровня REGION раскрыты до первого ручного действия пользователя."
+			defaultExpandedCodeKeys={["REGION"]}
 		/>
 	)
 };

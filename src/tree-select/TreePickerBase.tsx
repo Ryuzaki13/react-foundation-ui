@@ -24,6 +24,7 @@ import {
 	createTreeNodeIndex,
 	filterTreeNodes,
 	flattenVisibleTreeNodes,
+	getConfiguredTreeExpandedIds,
 	getSelectionExpandedIds,
 	isTreeNodeSelected,
 	TreeVisibleEntry
@@ -43,6 +44,7 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	partialIds: Set<string>;
 	selectionMode: "single" | "multi";
 	optionsLayout?: TreeMultiSelectOptionsLayout;
+	defaultExpandedCodeKeys?: readonly string[];
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 	bulkActions?: TreePickerBulkActions;
@@ -69,6 +71,7 @@ export function TreePickerBase({
 	partialIds,
 	selectionMode,
 	optionsLayout = "tree",
+	defaultExpandedCodeKeys,
 	open: controlledOpen,
 	onOpenChange,
 	bulkActions,
@@ -86,9 +89,10 @@ export function TreePickerBase({
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const selectAllButtonRef = useRef<HTMLButtonElement | null>(null);
 	const previousOpenRef = useRef(false);
-	const [expandedIds, setExpandedIds] = useState<Set<string>>(() => new Set());
+	const [manualExpansionById, setManualExpansionById] = useState<ReadonlyMap<string, boolean>>(() => new Map());
 	const resolvedTriggerMode = triggerMode === "search" ? (selectionMode === "multi" ? "search-multi" : "search-single") : "display";
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
+	const defaultExpandedCodeKeySet = useMemo(() => new Set(defaultExpandedCodeKeys), [defaultExpandedCodeKeys]);
 	const { query: currentQuery, setQuery } = usePickerQuery({
 		open: true,
 		query,
@@ -101,13 +105,20 @@ export function TreePickerBase({
 		[nodes, currentQuery]
 	);
 	const selectedExpandedIds = useMemo(() => getSelectionExpandedIds(selectedIds, treeIndex), [selectedIds, treeIndex]);
+	const configuredExpandedIds = useMemo(
+		() => getConfiguredTreeExpandedIds(treeIndex, defaultExpandedCodeKeySet, manualExpansionById),
+		[defaultExpandedCodeKeySet, manualExpansionById, treeIndex]
+	);
 	const allExpandedIds = useMemo(
 		() => new Set([...treeIndex.childrenById].filter(([, childIds]) => childIds.length > 0).map(([nodeId]) => nodeId)),
 		[treeIndex]
 	);
 	const resolvedExpandedIds = useMemo(
-		() => (optionsLayout === "columns" ? allExpandedIds : new Set([...expandedIds, ...searchExpandedIds, ...selectedExpandedIds])),
-		[allExpandedIds, expandedIds, optionsLayout, searchExpandedIds, selectedExpandedIds]
+		() =>
+			optionsLayout === "columns"
+				? allExpandedIds
+				: new Set([...configuredExpandedIds, ...searchExpandedIds, ...selectedExpandedIds]),
+		[allExpandedIds, configuredExpandedIds, optionsLayout, searchExpandedIds, selectedExpandedIds]
 	);
 	const visibleEntries = useMemo(() => flattenVisibleTreeNodes(filteredNodes, resolvedExpandedIds), [filteredNodes, resolvedExpandedIds]);
 	const selectedIndex = useMemo(() => visibleEntries.findIndex((entry) => selectedIds.has(entry.node.id)), [selectedIds, visibleEntries]);
@@ -236,16 +247,13 @@ export function TreePickerBase({
 			return;
 		}
 
-		setExpandedIds((currentExpandedIds) => {
-			const nextExpandedIds = new Set(currentExpandedIds);
+		setManualExpansionById((currentExpansionById) => {
+			const nextExpansionById = new Map(currentExpansionById);
+			const isConfiguredExpanded = currentExpansionById.get(entry.node.id) ?? defaultExpandedCodeKeySet.has(entry.node.codeKey);
 
-			if (nextExpandedIds.has(entry.node.id)) {
-				nextExpandedIds.delete(entry.node.id);
-			} else {
-				nextExpandedIds.add(entry.node.id);
-			}
+			nextExpansionById.set(entry.node.id, !isConfiguredExpanded);
 
-			return nextExpandedIds;
+			return nextExpansionById;
 		});
 	};
 

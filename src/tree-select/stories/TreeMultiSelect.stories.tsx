@@ -30,13 +30,15 @@ function StatefulTreeMultiSelect({
 	label = "TreeMultiSelect",
 	description,
 	optionsLayout = "tree",
-	nodes = demoTreeNodes
+	nodes = demoTreeNodes,
+	defaultExpandedCodeKeys
 }: {
 	initialValue?: TreeMultiSelectValue;
 	label?: string;
 	description?: string;
 	optionsLayout?: TreeMultiSelectOptionsLayout;
 	nodes?: readonly TreeSelectNode[];
+	defaultExpandedCodeKeys?: readonly string[];
 }) {
 	const [value, setValue] = useState<TreeMultiSelectValue>(initialValue);
 
@@ -49,6 +51,7 @@ function StatefulTreeMultiSelect({
 				value={value}
 				onChange={setValue}
 				optionsLayout={optionsLayout}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(value)}</div>
 		</div>
@@ -99,6 +102,16 @@ export const MixedSelection: Story = {
 			label="Смешанный выбор"
 			description="Пример mixed frontier по соседним уровням."
 			initialValue={{ BRANCH: ["B0101"], OWNER: ["P0004"] }}
+		/>
+	)
+};
+
+export const FirstTwoLevelsExpanded: Story = {
+	render: () => (
+		<StatefulTreeMultiSelect
+			label="Раскрыты два уровня"
+			description="Уровни REGION и BRANCH раскрыты по умолчанию, остальные уровни остаются закрытыми."
+			defaultExpandedCodeKeys={["REGION", "BRANCH"]}
 		/>
 	)
 };

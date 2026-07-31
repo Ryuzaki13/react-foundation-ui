@@ -16,6 +16,11 @@ export interface ODataTreeSelectProps
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
 	clearable?: boolean;
+	/**
+	 * Ключи OData-уровней, раскрываемых после появления загруженных узлов.
+	 * Настройка влияет только на представление и не изменяет OData-запросы.
+	 */
+	defaultExpandedCodeKeys?: readonly string[];
 }
 
 export function ODataTreeSelect({
@@ -32,7 +37,8 @@ export function ODataTreeSelect({
 	odata,
 	segments,
 	model,
-	clearable
+	clearable,
+	defaultExpandedCodeKeys
 }: ODataTreeSelectProps) {
 	const treeData = useODataTreeData({
 		odata,
@@ -53,6 +59,7 @@ export function ODataTreeSelect({
 			query={query}
 			defaultQuery={defaultQuery}
 			onQuery={onQuery}
+			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			isLoading={treeData.isLoading}
 			error={treeData.isError ? "Ошибка загрузки" : undefined}
 			clearable={clearable}

@@ -15,6 +15,11 @@ export interface ODataTreeMultiSelectProps
 	onQuery?: (value: string) => void;
 	/** Переключает способ показа загруженного OData-дерева, не меняя формат value и запросов. */
 	optionsLayout?: TreeMultiSelectOptionsLayout;
+	/**
+	 * Ключи OData-уровней, раскрываемых после появления загруженных узлов.
+	 * В режиме `columns` дерево по-прежнему отображается полностью раскрытым.
+	 */
+	defaultExpandedCodeKeys?: readonly string[];
 }
 
 export function ODataTreeMultiSelect({
@@ -31,7 +36,8 @@ export function ODataTreeMultiSelect({
 	onChange,
 	odata,
 	segments,
-	model
+	model,
+	defaultExpandedCodeKeys
 }: ODataTreeMultiSelectProps) {
 	const treeData = useODataTreeData({
 		odata,
@@ -53,6 +59,7 @@ export function ODataTreeMultiSelect({
 			defaultQuery={defaultQuery}
 			onQuery={onQuery}
 			optionsLayout={optionsLayout}
+			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			isLoading={treeData.isLoading}
 			error={treeData.isError ? "Ошибка загрузки" : undefined}
 		/>

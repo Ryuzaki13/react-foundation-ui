@@ -13,7 +13,8 @@ function StatefulODataTreeMultiSelect({
 	segments = treeSegments,
 	label = "ODataTreeMultiSelect",
 	description,
-	optionsLayout = "tree"
+	optionsLayout = "tree",
+	defaultExpandedCodeKeys
 }: {
 	initialValue?: TreeMultiSelectValue;
 	odata?: ODataCollectionConfig;
@@ -21,6 +22,7 @@ function StatefulODataTreeMultiSelect({
 	label?: string;
 	description?: string;
 	optionsLayout?: TreeMultiSelectOptionsLayout;
+	defaultExpandedCodeKeys?: readonly string[];
 }) {
 	const [value, setValue] = useState<TreeMultiSelectValue>(initialValue);
 
@@ -34,6 +36,7 @@ function StatefulODataTreeMultiSelect({
 				value={value}
 				onChange={setValue}
 				optionsLayout={optionsLayout}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(value)}</div>
 		</div>
@@ -95,8 +98,9 @@ export const BalancedColumns: Story = {
 	render: () => (
 		<StatefulODataTreeMultiSelect
 			label="OData tree в столбцах"
-			description="Все уровни открыты, а popup балансирует ширину и высоту по доступному viewport."
+			description="Режим columns открывает все уровни независимо от пустой настройки defaultExpandedCodeKeys."
 			optionsLayout="columns"
+			defaultExpandedCodeKeys={[]}
 			initialValue={{ BRANCH: [storyValues.branch] }}
 		/>
 	)

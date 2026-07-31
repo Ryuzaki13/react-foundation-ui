@@ -12,19 +12,29 @@ function StatefulODataTreeSelect({
 	odata = baseOData,
 	segments = treeSegments,
 	label = "ODataTreeSelect",
-	description
+	description,
+	defaultExpandedCodeKeys
 }: {
 	initialValue?: TreeSelectValue;
 	odata?: ODataCollectionConfig;
 	segments?: ODataDependentBaseProps["segments"];
 	label?: string;
 	description?: string;
+	defaultExpandedCodeKeys?: readonly string[];
 }) {
 	const [value, setValue] = useState<TreeSelectValue | undefined>(initialValue);
 
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
-			<ODataTreeSelect label={label} description={description} odata={odata} segments={segments} value={value} onChange={setValue} />
+			<ODataTreeSelect
+				label={label}
+				description={description}
+				odata={odata}
+				segments={segments}
+				value={value}
+				onChange={setValue}
+				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
 				Текущее значение: {value ? `${value.codeKey}=${value.value}` : "пусто"}
 			</div>
@@ -69,6 +79,16 @@ export const SelectParent: Story = {
 			label="Выбор родителя"
 			description="Проверка выбора узла верхнего уровня из OData-дерева."
 			initialValue={{ codeKey: "REGION", value: storyValues.region }}
+		/>
+	)
+};
+
+export const OnlySecondLevelExpanded: Story = {
+	render: () => (
+		<StatefulODataTreeSelect
+			label="Раскрывается только второй уровень"
+			description="REGION остаётся закрытым. После его ручного открытия узлы BRANCH уже раскрыты по умолчанию."
+			defaultExpandedCodeKeys={["BRANCH"]}
 		/>
 	)
 };

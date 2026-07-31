@@ -15,6 +15,11 @@ export interface TreeSelectProps extends Omit<UiBaseProps<TreeSelectValue | unde
 	isLoading?: boolean;
 	error?: string;
 	clearable?: boolean;
+	/**
+	 * Ключи уровней, узлы которых раскрываются до ручного действия пользователя.
+	 * Значения сопоставляются с `TreeSelectNode.codeKey`.
+	 */
+	defaultExpandedCodeKeys?: readonly string[];
 }
 
 function formatTreeNodeSummary(node: TreeSelectNode | undefined) {
@@ -43,7 +48,8 @@ export function TreeSelect({
 	onQuery,
 	isLoading,
 	error,
-	clearable = false
+	clearable = false,
+	defaultExpandedCodeKeys
 }: TreeSelectProps) {
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
 	const selectedId = treeSelectValueToId(value, treeIndex);
@@ -60,6 +66,7 @@ export function TreeSelect({
 			selectedIds={selectedId ? new Set([selectedId]) : new Set()}
 			partialIds={new Set()}
 			selectionMode="single"
+			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			triggerMode="search"
 			selectedSummaryText={formatTreeNodeSummary(selectedNode)}
 			query={query}

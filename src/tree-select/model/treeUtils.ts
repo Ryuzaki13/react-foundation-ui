@@ -348,6 +348,38 @@ export function getSelectionExpandedIds(selectedIds: Set<string>, index: TreeNod
 	return expandedIds;
 }
 
+/**
+ * Вычисляет базовое раскрытие дерева из политики уровней и ручных действий.
+ *
+ * Ручное значение хранится отдельно для каждого node id и имеет приоритет над
+ * default уровня. Благодаря вычислению по актуальному индексу узлы, загруженные
+ * асинхронно, получают настройку без синхронизации props в React state.
+ */
+export function getConfiguredTreeExpandedIds(
+	index: TreeNodeIndex,
+	defaultExpandedCodeKeys: ReadonlySet<string>,
+	manualExpansionById: ReadonlyMap<string, boolean>
+) {
+	const expandedIds = new Set<string>();
+
+	for (const [nodeId, childIds] of index.childrenById) {
+		if (childIds.length === 0) {
+			continue;
+		}
+
+		const node = index.nodeById.get(nodeId);
+		if (!node) {
+			continue;
+		}
+
+		if (manualExpansionById.get(nodeId) ?? defaultExpandedCodeKeys.has(node.codeKey)) {
+			expandedIds.add(nodeId);
+		}
+	}
+
+	return expandedIds;
+}
+
 function filterTreeNode(node: TreeSelectNode, normalizedQuery: string, expandedIds: Set<string>): TreeSelectNode | null {
 	const filteredChildren = (node.children ?? [])
 		.map((childNode) => filterTreeNode(childNode, normalizedQuery, expandedIds))

@@ -84,6 +84,7 @@ describe("ODataTree wrappers", () => {
 				segments={{ A: { placeholder: "Корень" } }}
 				value={{ codeKey: "A", value: "1" }}
 				onChange={vi.fn()}
+				defaultExpandedCodeKeys={["A"]}
 			/>
 		);
 
@@ -92,7 +93,8 @@ describe("ODataTree wrappers", () => {
 			disabled: true,
 			isLoading: true,
 			error: "Ошибка загрузки",
-			value: { codeKey: "A", value: "1" }
+			value: { codeKey: "A", value: "1" },
+			defaultExpandedCodeKeys: ["A"]
 		});
 	});
 
@@ -114,6 +116,7 @@ describe("ODataTree wrappers", () => {
 				segments={{ A: { placeholder: "Корень", selectText: true } }}
 				value={{ A: ["1"] }}
 				onChange={vi.fn()}
+				defaultExpandedCodeKeys={["A", "B"]}
 			/>
 		);
 
@@ -122,7 +125,8 @@ describe("ODataTree wrappers", () => {
 			disabled: false,
 			isLoading: false,
 			error: undefined,
-			value: { A: ["1"] }
+			value: { A: ["1"] },
+			defaultExpandedCodeKeys: ["A", "B"]
 		});
 	});
 });
