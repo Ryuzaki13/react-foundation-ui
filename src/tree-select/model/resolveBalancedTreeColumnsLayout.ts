@@ -31,6 +31,7 @@ const COLUMN_WIDTH = 224;
 const COLUMN_GAP = 10;
 const OPTION_HEIGHT = 32;
 const MAX_COLUMN_COUNT = 6;
+const MINIMUM_GROUP_START_ITEM_COUNT = 3;
 
 function normalizePositiveDimension(value: number, fallback: number) {
 	return Number.isFinite(value) && value > 0 ? value : fallback;
@@ -44,20 +45,16 @@ export type ResolvedTreeColumnsPlacements = {
 };
 
 /**
- * Выбирает начало root-группы, которое нельзя оставлять в хвосте колонки.
+ * Возвращает минимальное число первых строк root-группы, которое должно
+ * поместиться в остатке текущего столбца.
  *
- * Целая группа имеет приоритет, затем используется prefix до второго прямого
- * child. Если глубокий subtree делает prefix выше колонки, защищаются первые
- * три визуальные строки — минимальная гарантия от одинокого root.
+ * Для группы из трёх и более элементов порог всегда равен трём: root и две
+ * следующие видимые строки остаются вместе. Короткая группа защищается целиком,
+ * а одиночный root использует последнюю свободную строку без лишнего переноса.
  */
-function resolveProtectedItemCount(group: TreeColumnsRootGroupDescriptor, rowCount: number) {
+function resolveMinimumGroupStartItemCount(group: TreeColumnsRootGroupDescriptor) {
 	const groupSize = group.endIndexExclusive - group.startIndex;
-	if (groupSize <= rowCount) return groupSize;
-
-	if (group.protectedPrefixEndIndexExclusive === undefined) return 0;
-
-	const protectedPrefixSize = group.protectedPrefixEndIndexExclusive - group.startIndex;
-	return protectedPrefixSize <= rowCount ? protectedPrefixSize : Math.min(3, groupSize);
+	return Math.min(MINIMUM_GROUP_START_ITEM_COUNT, groupSize);
 }
 
 /**
@@ -75,10 +72,10 @@ export function resolveTreeColumnsPlacements(descriptor: TreeColumnsLayoutDescri
 	let intentionalGapCount = 0;
 
 	for (const group of descriptor.groups) {
-		const protectedItemCount = resolveProtectedItemCount(group, normalizedRowCount);
+		const minimumGroupStartItemCount = resolveMinimumGroupStartItemCount(group);
 		const remainingRows = normalizedRowCount - row + 1;
 
-		if (row > 1 && protectedItemCount > remainingRows) {
+		if (row > 1 && minimumGroupStartItemCount > remainingRows) {
 			intentionalGapCount += remainingRows;
 			column += 1;
 			row = 1;
@@ -104,8 +101,8 @@ export function resolveTreeColumnsPlacements(descriptor: TreeColumnsLayoutDescri
 
 /**
  * Выбирает количество колонок по фактически доступной Floating UI геометрии.
- * Для каждого candidate сначала выполняется group-aware packing. Если защитные
- * переносы создали лишнюю колонку, высота логической колонки увеличивается до
+ * Для каждого candidate сначала выполняется group-aware packing. Если переносы
+ * по трёхстрочному порогу создали лишнюю колонку, её высота увеличивается до
  * тех пор, пока placements не попадут в объявленный template grid.
  */
 export function resolveBalancedTreeColumnsLayout({
@@ -127,7 +124,10 @@ export function resolveBalancedTreeColumnsLayout({
 	const minWidth = Math.min(widthLimit, normalizedReferenceWidth);
 	const maxColumnsByWidth = Math.max(1, Math.floor((widthLimit - POPUP_HORIZONTAL_PADDING + COLUMN_GAP) / (COLUMN_WIDTH + COLUMN_GAP)));
 	const maxColumnCount = Math.max(1, Math.min(MAX_COLUMN_COUNT, maxColumnsByWidth, normalizedItemCount || 1));
-	const minProtectedRows = descriptor.groups.some((group) => group.protectedPrefixEndIndexExclusive !== undefined) ? 3 : 1;
+	const minimumGroupStartRows = descriptor.groups.reduce(
+		(maximum, group) => Math.max(maximum, resolveMinimumGroupStartItemCount(group)),
+		1
+	);
 
 	if (normalizedItemCount === 0) {
 		return {
@@ -144,7 +144,7 @@ export function resolveBalancedTreeColumnsLayout({
 	let bestScore = Number.POSITIVE_INFINITY;
 
 	for (let candidateColumnCount = 1; candidateColumnCount <= maxColumnCount; candidateColumnCount += 1) {
-		let rowCount = Math.max(minProtectedRows, Math.ceil(normalizedItemCount / candidateColumnCount));
+		let rowCount = Math.max(minimumGroupStartRows, Math.ceil(normalizedItemCount / candidateColumnCount));
 		let packed = resolveTreeColumnsPlacements(descriptor, rowCount);
 
 		while (packed.usedColumnCount > candidateColumnCount && rowCount < normalizedItemCount) {

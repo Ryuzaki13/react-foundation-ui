@@ -131,7 +131,7 @@ export const OrphanProtectionColumns: Story = {
 	render: () => (
 		<StatefulTreeMultiSelect
 			label="Защита начала большой группы"
-			description="При низком viewport группа 2 не оставляет root и один child в хвосте предыдущего столбца, а начинается целиком с нового."
+			description="Начало группы остаётся в текущем столбце при трёх свободных строках; при одной или двух переносится в новый."
 			optionsLayout="columns"
 			nodes={orphanProtectionTreeNodes}
 		/>

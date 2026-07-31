@@ -6,7 +6,6 @@ export type TreeColumnsLayoutEntryDescriptor = {
 export type TreeColumnsRootGroupDescriptor = {
 	startIndex: number;
 	endIndexExclusive: number;
-	protectedPrefixEndIndexExclusive?: number;
 };
 
 /** Структурный вход columns-resolver и стабильная сигнатура для Floating UI. */
@@ -19,9 +18,9 @@ export type TreeColumnsLayoutDescriptor = {
 /**
  * Описывает root-группы видимой части дерева, не меняя исходный preorder.
  *
- * Защищённый prefix создаётся только для root с более чем двумя прямыми
- * видимыми children. Его граница включает строку второго direct child, поэтому
- * вложенные descendants первого child не ошибочно считаются вторым child.
+ * Descriptor хранит только границы root-групп. Минимальное число строк,
+ * необходимое для начала группы в текущем столбце, является invariant packing
+ * и вычисляется resolver-ом без привязки к глубине отдельных descendants.
  */
 export function buildTreeColumnsLayoutDescriptor(entries: readonly TreeColumnsLayoutEntryDescriptor[]): TreeColumnsLayoutDescriptor {
 	const groups: TreeColumnsRootGroupDescriptor[] = [];
@@ -33,27 +32,14 @@ export function buildTreeColumnsLayoutDescriptor(entries: readonly TreeColumnsLa
 			groupEndIndexExclusive += 1;
 		}
 
-		const directChildIndexes: number[] = [];
-		for (let index = groupStartIndex + 1; index < groupEndIndexExclusive; index += 1) {
-			if (entries[index]?.level === 1) {
-				directChildIndexes.push(index);
-			}
-		}
-
 		groups.push({
 			startIndex: groupStartIndex,
-			endIndexExclusive: groupEndIndexExclusive,
-			...(directChildIndexes.length > 2 ? { protectedPrefixEndIndexExclusive: (directChildIndexes[1] ?? groupStartIndex) + 1 } : {})
+			endIndexExclusive: groupEndIndexExclusive
 		});
 		groupStartIndex = groupEndIndexExclusive;
 	}
 
-	const signature = groups
-		.map(
-			({ startIndex, endIndexExclusive, protectedPrefixEndIndexExclusive }) =>
-				`${startIndex}:${endIndexExclusive}:${protectedPrefixEndIndexExclusive ?? "-"}`
-		)
-		.join("|");
+	const signature = groups.map(({ startIndex, endIndexExclusive }) => `${startIndex}:${endIndexExclusive}`).join("|");
 
 	return {
 		itemCount: entries.length,

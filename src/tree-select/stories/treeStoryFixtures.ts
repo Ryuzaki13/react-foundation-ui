@@ -159,9 +159,9 @@ function createOrphanFixtureRoot(rootIndex: number, childCount: number): TreeSel
 }
 
 /**
- * Точный fixture защиты от orphan-start: при типичной логической высоте шесть
- * строк после первой большой группы остаются две ячейки, куда раньше попадали
- * root и один child следующей большой группы.
+ * Точный fixture порога начала группы: при типичной логической высоте шесть
+ * строк после первой большой группы остаются две ячейки. Этого недостаточно
+ * для root и двух следующих строк, поэтому следующая группа переносится.
  */
 export const orphanProtectionTreeNodes: TreeSelectNode[] = [
 	createOrphanFixtureRoot(1, 3),

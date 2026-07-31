@@ -123,7 +123,7 @@ export const LargeRootGroupsColumns: Story = {
 	render: () => (
 		<StatefulODataTreeMultiSelect
 			label="Крупные OData-группы"
-			description="Сокращённая цепочка REGION → OWNER создаёт несколько root-групп с тремя и более direct children для проверки group-aware packing."
+			description="Сокращённая цепочка REGION → OWNER создаёт несколько root-групп для проверки порога из трёх строк."
 			optionsLayout="columns"
 			segments={largeRootGroupSegments}
 		/>

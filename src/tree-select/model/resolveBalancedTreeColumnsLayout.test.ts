@@ -20,7 +20,7 @@ function buildFlatDescriptor(itemCount: number) {
 }
 
 describe("resolveTreeColumnsPlacements", () => {
-	it("переносит целую большую группу при двух оставшихся строках", () => {
+	it("переносит начало большой группы при двух оставшихся строках", () => {
 		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 1, 0, 1, 1, 1]), 6);
 
 		expect(resolved.placements[4]).toEqual({ column: 2, row: 1 });
@@ -28,51 +28,41 @@ describe("resolveTreeColumnsPlacements", () => {
 		expect(resolved.usedColumnCount).toBe(2);
 	});
 
-	it("удерживает целую группу, даже когда protected prefix поместился бы в текущем остатке", () => {
+	it("оставляет начало большой группы при четырёх свободных строках, даже если вся группа не помещается", () => {
 		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 0, 1, 1, 1, 1]), 6);
 
-		expect(resolved.placements[2]).toEqual({ column: 2, row: 1 });
-		expect(resolved.intentionalGapCount).toBe(4);
-	});
-
-	it("оставляет protected group в текущей колонке при достаточном остатке", () => {
-		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 0, 1, 1, 1]), 6);
-
 		expect(resolved.placements[2]).toEqual({ column: 1, row: 3 });
+		expect(resolved.placements[5]).toEqual({ column: 1, row: 6 });
+		expect(resolved.placements[6]).toEqual({ column: 2, row: 1 });
 		expect(resolved.intentionalGapCount).toBe(0);
 	});
 
-	it("считает второй direct child после grandchildren первого child", () => {
-		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 0, 1, 2, 2, 1, 1, 2, 2]), 7);
-
-		expect(resolved.placements[3]).toEqual({ column: 2, row: 1 });
-		expect(resolved.placements[7]).toEqual({ column: 2, row: 5 });
-	});
-
-	it("не переносит prefix до второго direct child, если он заполняет доступный остаток", () => {
-		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 0, 1, 2, 2, 1, 1, 2, 2]), 7);
-
-		expect(resolved.placements[2]).toEqual({ column: 1, row: 3 });
-		expect(resolved.placements[6]).toEqual({ column: 1, row: 7 });
-		expect(resolved.intentionalGapCount).toBe(0);
-	});
-
-	it("использует three-row fallback для слишком длинного direct-child prefix", () => {
-		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 0, 1, 2, 2, 2, 2, 1, 1]), 5);
+	it("оставляет первые три элемента группы в текущей колонке при трёх свободных строках", () => {
+		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 0, 1, 1, 1, 1]), 6);
 
 		expect(resolved.placements.slice(3, 6)).toEqual([
-			{ column: 2, row: 1 },
-			{ column: 2, row: 2 },
-			{ column: 2, row: 3 }
+			{ column: 1, row: 4 },
+			{ column: 1, row: 5 },
+			{ column: 1, row: 6 }
 		]);
-		expect(resolved.intentionalGapCount).toBe(2);
+		expect(resolved.placements[6]).toEqual({ column: 2, row: 1 });
+		expect(resolved.intentionalGapCount).toBe(0);
 	});
 
-	it("не включает специальную защиту для root ровно с двумя direct children", () => {
-		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 0, 1, 2, 1, 2]), 4);
+	it("переносит короткую группу целиком, если для неё осталась одна строка", () => {
+		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 0, 1]), 4);
+
+		expect(resolved.placements.slice(3, 5)).toEqual([
+			{ column: 2, row: 1 },
+			{ column: 2, row: 2 }
+		]);
+		expect(resolved.intentionalGapCount).toBe(1);
+	});
+
+	it("использует последнюю строку для одиночного root без лишнего переноса", () => {
+		const resolved = resolveTreeColumnsPlacements(buildDescriptor([0, 1, 1, 0]), 4);
 
 		expect(resolved.placements[3]).toEqual({ column: 1, row: 4 });
-		expect(resolved.placements[4]).toEqual({ column: 2, row: 1 });
 		expect(resolved.intentionalGapCount).toBe(0);
 	});
 });

@@ -28,20 +28,15 @@ describe("buildTreeColumnsLayoutDescriptor", () => {
 		]);
 	});
 
-	it("защищает prefix до второго direct child, пропуская grandchildren первого child", () => {
+	it("сохраняет единые границы root-группы независимо от глубины descendants", () => {
 		const descriptor = buildDescriptor([0, 1, 2, 2, 1, 1, 2]);
 
 		expect(descriptor.groups).toEqual([
 			{
 				startIndex: 0,
-				endIndexExclusive: 7,
-				protectedPrefixEndIndexExclusive: 5
+				endIndexExclusive: 7
 			}
 		]);
-	});
-
-	it("не создаёт специальный prefix для root ровно с двумя direct children", () => {
-		expect(buildDescriptor([0, 1, 2, 1, 2]).groups[0]).not.toHaveProperty("protectedPrefixEndIndexExclusive");
 	});
 
 	it("меняет structural signature при другом составе групп с прежним числом строк", () => {
