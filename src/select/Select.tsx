@@ -248,13 +248,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 	};
 
 	return (
-		<PickerField
-			label={label}
-			description={description}
-			disabled={disabled}
-			placeholder={placeholder}
-			size={size}
-			className={className}>
+		<PickerField label={label} description={description} disabled={disabled} size={size} className={className}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-listbox`;
 
@@ -270,7 +264,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							autoComplete="off"
 							role="combobox"
 							value={inputValue}
-							placeholder={selectedOption === undefined || showSearchValue ? placeholder : undefined}
+							placeholder={selectedOption === undefined || showSearchValue ? `${placeholder} <${options.length}>` : undefined}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
 							aria-haspopup="listbox"

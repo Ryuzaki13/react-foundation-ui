@@ -339,6 +339,7 @@
 	"scripts": {
 		"build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"typecheck": "tsc -p tsconfig.build.json --noEmit",
+		"test:run": "npx vitest",
 		"test": "vitest run",
 		"lint": "eslint --config eslint.config.ts .",
 		"lint:fix": "eslint --config eslint.config.ts . --fix",

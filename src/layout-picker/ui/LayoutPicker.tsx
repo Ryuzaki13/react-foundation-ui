@@ -120,14 +120,7 @@ export function LayoutPicker({
 	};
 
 	return (
-		<PickerField
-			id={id}
-			label={label}
-			description={description}
-			disabled={disabled}
-			placeholder={placeholder}
-			size={size}
-			className={className}>
+		<PickerField id={id} label={label} description={description} disabled={disabled} size={size} className={className}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-listbox`;
 

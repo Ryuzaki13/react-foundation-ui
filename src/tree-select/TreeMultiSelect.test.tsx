@@ -450,7 +450,7 @@ describe("TreeMultiSelect columns layout", () => {
 		await renderHarness({ initialValue: {}, label: null, placeholder: "Оргструктура", open: false });
 
 		const emptyInput = container?.querySelector('input[role="combobox"]');
-		expect(emptyInput?.getAttribute("placeholder")).toBe("Оргструктура");
+		expect(emptyInput?.getAttribute("placeholder")).toBe("Оргструктура <4>");
 		expect(emptyInput?.getAttribute("aria-label")).toBe("Оргструктура");
 
 		await act(async () =>

@@ -11,8 +11,9 @@
 	justify-content: flex-end;
 
 	height: calc(100% - var(--space-sm));
-	max-width: calc(100% - var(--control-height) * 2);
+	width: calc(var(--base-width, 100%) - (var(--control-height) * 2) - var(--space-md));
 
+	pointer-events: none;
 	// overflow: hidden;
 
 	&:empty {
@@ -25,7 +26,7 @@
 
 	// flex: 1 1 0%;
 	// min-width: 0;
-	max-width: 70%;
+	max-width: 100%;
 
 	overflow: hidden;
 	white-space: nowrap;

@@ -4,7 +4,10 @@ import { InputType } from "@ryuzaki13/react-foundation-lib/types";
 
 import { UiBaseProps } from "../types";
 
-export interface PickerFieldProps<TValue extends InputType = InputType> extends Omit<UiBaseProps<TValue>, "value" | "onChange"> {
+export interface PickerFieldProps<TValue extends InputType = InputType> extends Omit<
+	UiBaseProps<TValue>,
+	"value" | "onChange" | "placeholder"
+> {
 	id?: string;
 	className?: string;
 	error?: string;

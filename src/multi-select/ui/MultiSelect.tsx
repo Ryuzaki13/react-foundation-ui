@@ -458,13 +458,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 		});
 
 		return (
-			<PickerField
-				label={label}
-				description={description}
-				disabled={disabled}
-				placeholder={placeholder}
-				size={size}
-				className={styles.multiSelect}>
+			<PickerField label={label} description={description} disabled={disabled} size={size} className={styles.multiSelect}>
 				{({ controlId, labelId, describedBy }) => {
 					const listId = `${controlId}-listbox`;
 
@@ -479,7 +473,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								autoComplete="off"
 								disabled={disabled}
 								value={currentQuery}
-								placeholder={hasSelectedItems ? undefined : placeholder}
+								placeholder={hasSelectedItems ? undefined : `${placeholder} <${items.length}>`}
 								aria-labelledby={labelId}
 								aria-describedby={describedBy}
 								aria-haspopup="listbox"

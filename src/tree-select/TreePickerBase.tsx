@@ -93,6 +93,7 @@ export function TreePickerBase({
 	const [manualExpansionById, setManualExpansionById] = useState<ReadonlyMap<string, boolean>>(() => new Map());
 	const resolvedTriggerMode = triggerMode === "search" ? (selectionMode === "multi" ? "search-multi" : "search-single") : "display";
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
+	const placeholderText = useMemo(() => `${placeholder} <${treeIndex.nodeById.size}>`, [placeholder, treeIndex]);
 	const defaultExpandedCodeKeySet = useMemo(() => new Set(defaultExpandedCodeKeys), [defaultExpandedCodeKeys]);
 	const { query: currentQuery, setQuery } = usePickerQuery({
 		open: true,
@@ -273,7 +274,7 @@ export function TreePickerBase({
 	};
 
 	return (
-		<PickerField label={label} description={description} disabled={disabled} placeholder={placeholder} size={size}>
+		<PickerField label={label} description={description} disabled={disabled} size={size}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-listbox`;
 				const popupAriaLabel = typeof label === "string" ? label : placeholder;
@@ -290,7 +291,7 @@ export function TreePickerBase({
 							disabled={disabled || isLoading}
 							readOnly={triggerMode !== "search"}
 							value={triggerMode === "display" && showSummaryOverlay ? "" : triggerValue}
-							placeholder={showTriggerPlaceholder ? placeholder : undefined}
+							placeholder={showTriggerPlaceholder ? placeholderText : undefined}
 							aria-labelledby={labelId}
 							aria-label={labelId ? undefined : placeholder}
 							aria-describedby={describedBy}

@@ -217,7 +217,7 @@ describe("Select", () => {
 		});
 
 		expect(input.value).toBe("");
-		expect(input.placeholder).toBe("Выберите значение");
+		expect(input.placeholder).toBe("Выберите значение <3>");
 		expect(input.getAttribute("aria-expanded")).toBe("false");
 		expect(document.querySelectorAll('[role="option"]')).toHaveLength(0);
 		expect(container?.querySelector('button[aria-label="Очистить выбор"]')).toBeNull();
@@ -291,7 +291,7 @@ describe("Select", () => {
 		});
 
 		expect(input.value).toBe("");
-		expect(input.placeholder).toBe("Поиск");
+		expect(input.placeholder).toBe("Поиск <3>");
 		expect(input.getAttribute("aria-expanded")).toBe("false");
 	});
 
