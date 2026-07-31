@@ -99,9 +99,9 @@ describe("dateInputValue", () => {
 		vi.setSystemTime(new Date(2026, 0, 15, 12, 0, 0));
 
 		expect(formatSingleDateValue(new Date(2026, 4, 25), { datePreset: "month-long" })).toBe("25 мая");
-		expect(formatSingleDateValue(new Date(2026, 5, 25), { datePreset: "month-short" })).toBe("25 июн.");
+		expect(formatSingleDateValue(new Date(2026, 5, 25), { datePreset: "month-short" })).toBe("25.06");
 		expect(parseSingleDateValue("25 июня", { datePreset: "month-long" })).toEqual(new Date(2026, 5, 25, 0, 0, 0));
-		expect(parseRangeDateValue("25 мая - 25 июн.", { datePreset: "month-short" })).toEqual([
+		expect(parseRangeDateValue("25 мая - 25.06", { datePreset: "month-short" })).toEqual([
 			new Date(2026, 4, 25, 0, 0, 0),
 			new Date(2026, 5, 25, 23, 59, 59)
 		]);

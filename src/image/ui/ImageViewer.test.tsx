@@ -51,6 +51,18 @@ const IMAGES: readonly ImageViewerImage[] = [
 	{ src: "/second.webp", alt: "Второе", intrinsicWidth: 1600, intrinsicHeight: 900 }
 ];
 
+/**
+ * Дожидается загрузки ленивого runtime галереи перед проверкой диалога.
+ *
+ * `ImageViewer` намеренно выносит lightbox в отдельный chunk, поэтому на холодном
+ * параллельном прогоне стандартного таймаута Testing Library может не хватить.
+ */
+async function findViewerDialog() {
+	await vi.dynamicImportSettled();
+
+	return screen.findByRole("dialog");
+}
+
 describe("ImageViewer", () => {
 	beforeEach(() => {
 		lightboxMock.props = undefined;
@@ -74,7 +86,7 @@ describe("ImageViewer", () => {
 				style={style}
 			/>
 		);
-		await screen.findByRole("dialog");
+		await findViewerDialog();
 
 		expect(lightboxMock.props?.plugins).toEqual([Captions, Counter, Download, Fullscreen, Thumbnails, Zoom]);
 		expect(lightboxMock.props?.labels?.Close).toBe("Закрыть галерею");
@@ -99,7 +111,7 @@ describe("ImageViewer", () => {
 
 		rerender(<ImageViewer open images={IMAGES} index={10} onClose={() => undefined} />);
 
-		await screen.findByRole("dialog");
+		await findViewerDialog();
 		expect(lightboxMock.props?.open).toBe(true);
 		expect(lightboxMock.props?.index).toBe(1);
 	});
@@ -116,7 +128,7 @@ describe("ImageViewer", () => {
 				onClose={() => undefined}
 			/>
 		);
-		await screen.findByRole("dialog");
+		await findViewerDialog();
 
 		const saveAs = vi.fn();
 		const download = lightboxMock.props?.download?.download;
