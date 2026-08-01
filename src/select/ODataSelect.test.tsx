@@ -409,6 +409,6 @@ describe("ODataMultiSelect", () => {
 		});
 
 		expect(onChange).toHaveBeenCalledWith(["Склад ТМН"]);
-		expect((lastMultiSelectProps as { placeholder?: string } | null)?.placeholder).toBe("Склад <2+>");
+		expect((lastMultiSelectProps as { placeholder?: string } | null)?.placeholder).toBe("Склад");
 	});
 });
