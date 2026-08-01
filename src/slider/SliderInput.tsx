@@ -1,4 +1,4 @@
-import { KeyboardEvent, useCallback, useEffect, useEffectEvent, useMemo, useState } from "react";
+import { KeyboardEvent, useCallback, useMemo, useState } from "react";
 
 import { toFiniteNumber } from "@ryuzaki13/react-foundation-lib/formatters";
 import { resolveNumberScaleBounds } from "@ryuzaki13/react-foundation-lib/number-scale";
@@ -208,25 +208,25 @@ export function SliderInput({
 	const normalizedValue = normalizeSingleSliderValue(value, sliderOptions);
 
 	const [open, setOpen] = useState(false);
-	const [draftValue, setDraftValue] = useState(String(normalizedValue));
-
-	const syncDraftValue = useEffectEvent((nextValue: string) => {
-		setDraftValue(nextValue);
-	});
-
-	useEffect(() => {
-		syncDraftValue(String(normalizedValue));
-	}, [normalizedValue]);
+	/** Draft привязан к controlled value, на основе которого начался ручной ввод. */
+	const [draftState, setDraftState] = useState(() => ({
+		sourceValue: normalizedValue,
+		value: String(normalizedValue)
+	}));
+	const draftValue = draftState.sourceValue === normalizedValue ? draftState.value : String(normalizedValue);
+	const setDraftValue = (nextValue: string) => {
+		setDraftState({ sourceValue: normalizedValue, value: nextValue });
+	};
 
 	const commitDraftValue = useCallback(() => {
 		if (disabled) {
-			setDraftValue(String(normalizedValue));
+			setDraftState({ sourceValue: normalizedValue, value: String(normalizedValue) });
 			return;
 		}
 
 		const parsedValue = toFiniteNumber(draftValue);
 		if (parsedValue === undefined) {
-			setDraftValue(String(normalizedValue));
+			setDraftState({ sourceValue: normalizedValue, value: String(normalizedValue) });
 			return;
 		}
 
@@ -236,7 +236,7 @@ export function SliderInput({
 			onClearError?.();
 		}
 
-		setDraftValue(String(nextValue));
+		setDraftState({ sourceValue: nextValue, value: String(nextValue) });
 	}, [disabled, draftValue, normalizedValue, onChange, onClearError, sliderOptions, value]);
 
 	const handleDraftKeyDown = (event: KeyboardEvent<HTMLInputElement>) => {
@@ -250,7 +250,7 @@ export function SliderInput({
 
 	const handleSliderChange = (nextValue: number) => {
 		onChange(nextValue);
-		setDraftValue(String(nextValue));
+		setDraftState({ sourceValue: nextValue, value: String(nextValue) });
 		onClearError?.();
 	};
 
@@ -326,22 +326,22 @@ export function SliderRangeInput({
 	const formattedValue = useMemo(() => formatRangeDraft(normalizedValue, sliderOptions), [normalizedValue, sliderOptions]);
 
 	const [open, setOpen] = useState(false);
-	const [draftStart, setDraftStart] = useState(formattedValue.start);
-	const [draftEnd, setDraftEnd] = useState(formattedValue.end);
+	/** Закрытое поле выводит новый внешний диапазон напрямую, а открытый popup сохраняет свою session-копию. */
+	const [draftState, setDraftState] = useState(() => ({
+		sourceValue: normalizedValue,
+		start: formattedValue.start,
+		end: formattedValue.end
+	}));
 	const [popoverValue, setPopoverValue] = useState<SliderRangeValue>(normalizedValue);
-
-	const syncDraftValue = useEffectEvent((start: string, end: string) => {
-		setDraftStart(start);
-		setDraftEnd(end);
-	});
-
-	useEffect(() => {
-		if (open) {
-			return;
-		}
-
-		syncDraftValue(formattedValue.start, formattedValue.end);
-	}, [formattedValue.start, formattedValue.end, normalizedValue, open]);
+	const hasCurrentDraft = open || areRangeDraftValuesEqual(draftState.sourceValue, normalizedValue);
+	const draftStart = hasCurrentDraft ? draftState.start : formattedValue.start;
+	const draftEnd = hasCurrentDraft ? draftState.end : formattedValue.end;
+	const setDraftStart = (nextStart: string) => {
+		setDraftState({ sourceValue: normalizedValue, start: nextStart, end: draftEnd });
+	};
+	const setDraftEnd = (nextEnd: string) => {
+		setDraftState({ sourceValue: normalizedValue, start: draftStart, end: nextEnd });
+	};
 
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
 		hasLabel: label !== undefined && label !== null,
@@ -350,9 +350,12 @@ export function SliderRangeInput({
 	});
 
 	const rollbackDraftValue = useCallback(() => {
-		setDraftStart(formattedValue.start);
-		setDraftEnd(formattedValue.end);
-	}, [formattedValue.end, formattedValue.start]);
+		setDraftState({
+			sourceValue: normalizedValue,
+			start: formattedValue.start,
+			end: formattedValue.end
+		});
+	}, [formattedValue.end, formattedValue.start, normalizedValue]);
 
 	const commitDraftValue = useCallback(() => {
 		if (disabled) {
@@ -375,8 +378,7 @@ export function SliderRangeInput({
 		}
 
 		const nextDraft = formatRangeDraft(nextValue, sliderOptions);
-		setDraftStart(nextDraft.start);
-		setDraftEnd(nextDraft.end);
+		setDraftState({ sourceValue: nextValue, start: nextDraft.start, end: nextDraft.end });
 		setPopoverValue(nextValue);
 	}, [disabled, draftEnd, draftStart, normalizedValue, onChange, onClearError, rollbackDraftValue, sliderOptions]);
 
@@ -389,8 +391,7 @@ export function SliderRangeInput({
 			}
 
 			const nextDraft = formatRangeDraft(normalizedNextValue, sliderOptions);
-			setDraftStart(nextDraft.start);
-			setDraftEnd(nextDraft.end);
+			setDraftState({ sourceValue: normalizedNextValue, start: nextDraft.start, end: nextDraft.end });
 			setPopoverValue(normalizedNextValue);
 		},
 		[normalizedValue, onChange, onClearError, sliderOptions]
@@ -399,8 +400,11 @@ export function SliderRangeInput({
 	const handleOpenChange = (nextOpen: boolean) => {
 		if (!open && nextOpen) {
 			setPopoverValue(normalizedValue);
-			setDraftStart(formattedValue.start);
-			setDraftEnd(formattedValue.end);
+			setDraftState({
+				sourceValue: normalizedValue,
+				start: formattedValue.start,
+				end: formattedValue.end
+			});
 		}
 
 		if (open && !nextOpen && !disabled) {
@@ -423,8 +427,7 @@ export function SliderRangeInput({
 		const normalizedNextValue = normalizeRangeSliderValue(nextValue, sliderOptions);
 		setPopoverValue(normalizedNextValue);
 		const nextDraft = formatRangeDraft(normalizedNextValue, sliderOptions);
-		setDraftStart(nextDraft.start);
-		setDraftEnd(nextDraft.end);
+		setDraftState({ sourceValue: normalizedValue, start: nextDraft.start, end: nextDraft.end });
 	};
 	const displayValue = open ? popoverValue : normalizedValue;
 	const readonlyTextValue = readonlyValueText ? getRangeReadonlyText(displayValue, normalizedMarks, placeholder) : undefined;

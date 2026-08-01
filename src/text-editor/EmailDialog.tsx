@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useState } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { isSafe } from "@ryuzaki13/react-foundation-lib/validators";
@@ -10,7 +10,6 @@ import { Modal, ModalContent, ModalFooter } from "../modal";
 import { LinkType } from "./linkTypes";
 
 interface EmailDialogProps {
-	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: (url: string, text: string, add: string, ariaLabel: string, showQrCode: boolean) => void;
 	initialState?: LinkType;
@@ -19,26 +18,17 @@ interface EmailDialogProps {
 /**
  * Диалог вставки или редактирования email-ссылки в текстовом редакторе.
  */
-export function EmailDialog({ isOpen, onClose, onConfirm, initialState }: EmailDialogProps) {
-	const [email, setEmail] = useState("");
-	const [ariaLabel, setAriaLabel] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const [state] = useState(() => {
+export function EmailDialog({ onClose, onConfirm, initialState }: EmailDialogProps) {
+	const state = (() => {
 		if (isSafe(initialState) && typeof initialState === "string") {
 			return { text: "", add: "", ariaLabel: "", url: initialState };
 		}
 
 		return initialState;
-	});
-
-	useEffect(() => {
-		if (isOpen) {
-			if (isSafe(state)) {
-				setEmail(state.url ?? "");
-				setAriaLabel(state.ariaLabel ?? "");
-			}
-		}
-	}, [isOpen, state]);
+	})();
+	const [email, setEmail] = useState(() => (isSafe(state) ? (state.url ?? "") : ""));
+	const [ariaLabel, setAriaLabel] = useState(() => (isSafe(state) ? (state.ariaLabel ?? "") : ""));
+	const [error, setError] = useState<string | null>(null);
 
 	const validateEmail = (email: string): boolean => {
 		const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -70,7 +60,7 @@ export function EmailDialog({ isOpen, onClose, onConfirm, initialState }: EmailD
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={handleClose} title="Ссылка на email" size="md">
+		<Modal isOpen={true} onClose={handleClose} title="Ссылка на email" size="md">
 			<ModalContent>
 				<div className={cn("flexColumn", "gapMd")}>
 					<Input label="Email адрес" value={email} onChange={setEmail} placeholder="some_email@mail.ru" />

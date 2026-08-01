@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useState } from "react";
 
 import { isSafe, validateUrl } from "@ryuzaki13/react-foundation-lib/validators";
 
@@ -11,7 +11,6 @@ import { Modal, ModalContent, ModalFooter } from "../modal";
 import { LinkType } from "./linkTypes";
 
 interface LinkDialogProps {
-	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: (url: string, text: string, add: string, ariaLabel: string, showQrCode: boolean) => void;
 	initialState?: LinkType;
@@ -20,28 +19,19 @@ interface LinkDialogProps {
 /**
  * Диалог вставки или редактирования ссылки в текстовом редакторе.
  */
-export function LinkDialog({ isOpen, onClose, onConfirm, initialState }: LinkDialogProps) {
-	const [url, setUrl] = useState("");
-	const [ariaLabel, setAriaLabel] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const [showQrCode, setShowQrCode] = useState(false);
-	const [state] = useState(() => {
+export function LinkDialog({ onClose, onConfirm, initialState }: LinkDialogProps) {
+	const state = (() => {
 		if (isSafe(initialState)) {
 			if (typeof initialState === "string") {
 				return { text: "", add: "", ariaLabel: "", url: initialState };
 			}
 		}
 		return initialState;
-	});
-
-	useEffect(() => {
-		if (isOpen) {
-			if (isSafe(state)) {
-				setUrl(state.url ?? "");
-				setAriaLabel(state.ariaLabel ?? "");
-			}
-		}
-	}, [isOpen, state]);
+	})();
+	const [url, setUrl] = useState(() => (isSafe(state) ? (state.url ?? "") : ""));
+	const [ariaLabel, setAriaLabel] = useState(() => (isSafe(state) ? (state.ariaLabel ?? "") : ""));
+	const [error, setError] = useState<string | null>(null);
+	const [showQrCode, setShowQrCode] = useState(false);
 
 	const handleUrlChange = (value: string) => {
 		setUrl(value);
@@ -80,7 +70,7 @@ export function LinkDialog({ isOpen, onClose, onConfirm, initialState }: LinkDia
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={handleClose} title="Ссылка на внешний url" size="md">
+		<Modal isOpen={true} onClose={handleClose} title="Ссылка на внешний url" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<Input label="Полный URL адрес" value={url} onChange={handleUrlChange} placeholder="https://somesite.ru" />

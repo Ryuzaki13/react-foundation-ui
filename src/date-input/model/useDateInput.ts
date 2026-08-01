@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 
 import { isDateRangeTuple, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 
@@ -25,7 +25,7 @@ function resolveReferenceDate(value: Date | NullableDateRange | null): Date | un
  * Хук управляет текстовым представлением и выбранным значением поля даты.
  */
 export const useDateInput = (options: DateInputOptions) => {
-	const initialSelectedDate = useMemo(() => {
+	const externalSelectedDate = useMemo(() => {
 		const selectionOptions: DateInputValueOptions = {
 			selectionMode: options.selectionMode,
 			weekEndDay: options.weekEndDay
@@ -37,75 +37,72 @@ export const useDateInput = (options: DateInputOptions) => {
 
 		return normalizeSingleDateValue(options.value as Date | null, selectionOptions);
 	}, [options.selectsRange, options.selectionMode, options.value, options.weekEndDay]);
-
-	const [selectedDate, setSelectedDate] = useState(initialSelectedDate);
 	const formatOptions = useMemo<DateInputValueOptions>(
 		() => ({
 			datePreset: options.datePreset,
-			dateFormat: options.dateFormat,
 			datePickerLevel: options.datePickerLevel,
 			selectionMode: options.selectionMode,
 			weekEndDay: options.weekEndDay
 		}),
-		[options.dateFormat, options.datePickerLevel, options.datePreset, options.selectionMode, options.weekEndDay]
+		[options.datePickerLevel, options.datePreset, options.selectionMode, options.weekEndDay]
 	);
-	const [inputValue, setInputValue] = useState<string>(() => formatDateInputValue(initialSelectedDate, formatOptions));
-	const valueSignature = useMemo(() => {
-		if (options.selectsRange) {
-			const normalizedRange = normalizeRangeDateValue(options.value as NullableDateRange | null, formatOptions);
-			return `${normalizedRange?.[0]?.getTime() ?? "null"}:${normalizedRange?.[1]?.getTime() ?? "null"}`;
-		}
-
-		const normalizedDate = normalizeSingleDateValue(options.value as Date | null, formatOptions);
-		return String(normalizedDate?.getTime() ?? "null");
-	}, [formatOptions, options.selectsRange, options.value]);
+	const externalInputValue = formatDateInputValue(externalSelectedDate, formatOptions);
+	const externalStateSignature = JSON.stringify([
+		options.selectsRange,
+		options.datePreset ?? null,
+		options.datePickerLevel ?? null,
+		options.selectionMode ?? null,
+		options.weekEndDay ?? null,
+		isDateRangeTuple(externalSelectedDate)
+			? [externalSelectedDate[0]?.getTime() ?? null, externalSelectedDate[1]?.getTime() ?? null]
+			: (externalSelectedDate?.getTime() ?? null)
+	]);
+	const [draftState, setDraftState] = useState(() => ({
+		sourceSignature: externalStateSignature,
+		selectedDate: externalSelectedDate,
+		inputValue: externalInputValue
+	}));
+	const hasCurrentDraft = draftState.sourceSignature === externalStateSignature;
+	const selectedDate = hasCurrentDraft ? draftState.selectedDate : externalSelectedDate;
+	const inputValue = hasCurrentDraft ? draftState.inputValue : externalInputValue;
 
 	/**
-	 * Форматирует значение поля даты согласно текущему шаблону.
+	 * Сохраняет пользовательский текст только относительно текущего controlled-снимка.
+	 * При внешней смене value или формата отображение сразу выводится из новых props.
+	 */
+	const setInputValue = (nextInputValue: string) => {
+		setDraftState((currentState) => {
+			const currentSelectedDate =
+				currentState.sourceSignature === externalStateSignature ? currentState.selectedDate : externalSelectedDate;
+
+			return {
+				sourceSignature: externalStateSignature,
+				selectedDate: currentSelectedDate,
+				inputValue: nextInputValue
+			};
+		});
+	};
+
+	/**
+	 * Обновляет локальный незавершённый выбор, не зеркаля controlled value через effect.
+	 */
+	const setSelectedDate = (nextSelectedDate: Date | NullableDateRange | null) => {
+		setDraftState((currentState) => {
+			const currentInputValue =
+				currentState.sourceSignature === externalStateSignature ? currentState.inputValue : externalInputValue;
+
+			return {
+				sourceSignature: externalStateSignature,
+				selectedDate: nextSelectedDate,
+				inputValue: currentInputValue
+			};
+		});
+	};
+
+	/**
+	 * Форматирует значение поля даты согласно текущему пресету.
 	 */
 	const formatValue = (value: Date | NullableDateRange | null): string => formatDateInputValue(value, formatOptions);
-
-	/**
-	 * Синхронизирует внутреннее состояние с внешними пропсами.
-	 */
-	const syncStateFromProps = useEffectEvent((nextValue: DateInputOptions["value"]) => {
-		if (options.selectsRange) {
-			const normalizedRange = normalizeRangeDateValue(nextValue as NullableDateRange | null, formatOptions);
-			const nextInputValue = formatValue(normalizedRange);
-
-			setSelectedDate((prevValue) => {
-				const previousRangeValue = prevValue as NullableDateRange | null;
-				const hasSameRange =
-					(previousRangeValue?.[0]?.getTime() ?? null) === (normalizedRange?.[0]?.getTime() ?? null) &&
-					(previousRangeValue?.[1]?.getTime() ?? null) === (normalizedRange?.[1]?.getTime() ?? null);
-
-				return hasSameRange ? prevValue : normalizedRange;
-			});
-			setInputValue((prevValue) => (prevValue === nextInputValue ? prevValue : nextInputValue));
-			return;
-		}
-
-		const normalizedDate = normalizeSingleDateValue(nextValue as Date | null, formatOptions);
-		const nextInputValue = formatValue(normalizedDate);
-
-		setSelectedDate((prevValue) =>
-			((prevValue as Date | null)?.getTime() ?? null) === (normalizedDate?.getTime() ?? null) ? prevValue : normalizedDate
-		);
-		setInputValue((prevValue) => (prevValue === nextInputValue ? prevValue : nextInputValue));
-	});
-
-	useEffect(() => {
-		syncStateFromProps(options.value);
-	}, [
-		options.dateFormat,
-		options.datePickerLevel,
-		options.datePreset,
-		options.selectsRange,
-		options.selectionMode,
-		options.value,
-		options.weekEndDay,
-		valueSignature
-	]);
 
 	/**
 	 * Парсит строковое значение поля в дату или диапазон дат.
@@ -139,13 +136,19 @@ export const useDateInput = (options: DateInputOptions) => {
 						normalizeSingleDateValue(selectedEndDate, formatOptions),
 						normalizeRangeEndDateValue(selectedStartDate, formatOptions)
 					];
-					setSelectedDate(swappedRange);
-					setInputValue(formatValue(swappedRange));
+					setDraftState({
+						sourceSignature: externalStateSignature,
+						selectedDate: swappedRange,
+						inputValue: formatValue(swappedRange)
+					});
 					options.onChange(swappedRange);
 				} else {
 					const nextRange: NullableDateRange = [normalizedStartDate, normalizedEndDate];
-					setSelectedDate(nextRange);
-					setInputValue(formatValue(nextRange));
+					setDraftState({
+						sourceSignature: externalStateSignature,
+						selectedDate: nextRange,
+						inputValue: formatValue(nextRange)
+					});
 					options.onChange(nextRange);
 				}
 
@@ -153,14 +156,20 @@ export const useDateInput = (options: DateInputOptions) => {
 			}
 
 			const nextRange: NullableDateRange = [normalizedStartDate, null];
-			setSelectedDate(nextRange);
-			setInputValue(formatValue(nextRange));
+			setDraftState({
+				sourceSignature: externalStateSignature,
+				selectedDate: nextRange,
+				inputValue: formatValue(nextRange)
+			});
 			return false;
 		}
 
 		const normalizedDate = normalizeSingleDateValue(selectedStartDate, formatOptions);
-		setSelectedDate(normalizedDate);
-		setInputValue(formatValue(normalizedDate));
+		setDraftState({
+			sourceSignature: externalStateSignature,
+			selectedDate: normalizedDate,
+			inputValue: formatValue(normalizedDate)
+		});
 		options.onChange(normalizedDate);
 
 		return true;

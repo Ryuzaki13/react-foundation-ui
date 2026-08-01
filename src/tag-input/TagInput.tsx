@@ -124,19 +124,15 @@ export function TagInput({
 	const ariaDescribedBy = joinTagInputAriaIds(describedBy, externalAriaDescribedBy);
 	const ariaLabelledBy = joinTagInputAriaIds(labelId, externalAriaLabelledBy);
 
-	useImperativeHandle(
-		ref,
-		() => {
-			const input = inputRef.current;
+	useImperativeHandle(ref, () => {
+		const input = inputRef.current;
 
-			if (!input) {
-				throw new Error("TagInput: внутренний input недоступен при создании imperative handle.");
-			}
+		if (!input) {
+			throw new Error("TagInput: внутренний input недоступен при создании imperative handle.");
+		}
 
-			return input;
-		},
-		[]
-	);
+		return input;
+	}, []);
 
 	/** Добавляет сразу несколько кандидатов одним controlled-обновлением и сообщает результат screen reader. */
 	const appendTags = (rawTags: readonly string[]) => {

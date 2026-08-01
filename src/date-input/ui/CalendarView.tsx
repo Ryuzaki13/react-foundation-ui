@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useState } from "react";
 
 import {
 	addCalendarMonths,
@@ -38,6 +38,19 @@ interface CalendarViewProps extends BaseCalendarViewProps {
 	onCurrentDateChange?: (date: Date) => void;
 }
 
+/** Возвращает дату, к периоду которой должен перейти uncontrolled-календарь после внешней смены value. */
+function resolveValueCurrentDate(value: Date | NullableDateRange | null, selectsRange?: boolean): Date | undefined {
+	if (selectsRange && isDateRangeTuple(value) && value[0] instanceof Date) {
+		return value[0];
+	}
+
+	if (!selectsRange && value instanceof Date) {
+		return value;
+	}
+
+	return undefined;
+}
+
 /**
  * Отображает календарь выбора даты в календарной семантике без timezone-сдвига.
  */
@@ -50,17 +63,14 @@ export function CalendarView({
 	...props
 }: CalendarViewProps) {
 	const [dateNow] = useState(() => getStartOfDay(new Date()));
-	const [uncontrolledCurrentDate, setUncontrolledCurrentDate] = useState<Date>(() => {
-		if (props.selectsRange && isDateRangeTuple(props.value) && props.value[0] instanceof Date) {
-			return props.value[0];
-		}
-
-		if (!props.selectsRange && props.value instanceof Date) {
-			return props.value;
-		}
-
-		return getStartOfDay(new Date());
-	});
+	const valueCurrentDate = resolveValueCurrentDate(props.value, props.selectsRange);
+	const valueCurrentDateTime = valueCurrentDate?.getTime() ?? null;
+	const [uncontrolledState, setUncontrolledState] = useState(() => ({
+		sourceValueTime: valueCurrentDateTime,
+		currentDate: valueCurrentDate ?? getStartOfDay(new Date())
+	}));
+	const uncontrolledCurrentDate =
+		valueCurrentDate && uncontrolledState.sourceValueTime !== valueCurrentDateTime ? valueCurrentDate : uncontrolledState.currentDate;
 	const currentDate = props.currentDate ?? uncontrolledCurrentDate;
 	const selectionOptions: CalendarPeriodOptions = {
 		selectionMode,
@@ -74,29 +84,14 @@ export function CalendarView({
 		const nextValue = typeof value === "function" ? value(currentDate) : value;
 
 		if (props.currentDate === undefined) {
-			setUncontrolledCurrentDate(nextValue);
+			setUncontrolledState({
+				sourceValueTime: valueCurrentDateTime,
+				currentDate: nextValue
+			});
 		}
 
 		props.onCurrentDateChange?.(nextValue);
 	};
-
-	/**
-	 * Синхронизирует видимый месяц/год с внешним значением поля.
-	 */
-	const syncCurrentDate = useEffectEvent((nextValue: Date | NullableDateRange | null) => {
-		if (props.selectsRange && Array.isArray(nextValue) && nextValue[0] instanceof Date) {
-			setCurrentDate(nextValue[0]);
-			return;
-		}
-
-		if (!props.selectsRange && nextValue instanceof Date) {
-			setCurrentDate(nextValue);
-		}
-	});
-
-	useEffect(() => {
-		syncCurrentDate(props.value);
-	}, [props.value]);
 
 	/**
 	 * Переключает видимую область календаря назад.

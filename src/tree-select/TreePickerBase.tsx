@@ -1,4 +1,4 @@
-import { type CSSProperties, ReactNode, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { type FloatingListboxSizeResolver } from "@ryuzaki13/react-foundation-lib/hooks";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -89,19 +89,36 @@ export function TreePickerBase({
 }: TreePickerBaseProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const selectAllButtonRef = useRef<HTMLButtonElement | null>(null);
-	const previousOpenRef = useRef(false);
+	/** Явный owner open-state позволяет сбрасывать query непосредственно в close-событии. */
+	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+	const isOpenControlled = controlledOpen !== undefined;
+	const open = isOpenControlled ? controlledOpen : uncontrolledOpen;
 	const [manualExpansionById, setManualExpansionById] = useState<ReadonlyMap<string, boolean>>(() => new Map());
 	const resolvedTriggerMode = triggerMode === "search" ? (selectionMode === "multi" ? "search-multi" : "search-single") : "display";
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
 	const placeholderText = useMemo(() => `${placeholder} <${treeIndex.nodeById.size}>`, [placeholder, treeIndex]);
 	const defaultExpandedCodeKeySet = useMemo(() => new Set(defaultExpandedCodeKeys), [defaultExpandedCodeKeys]);
-	const { query: currentQuery, setQuery } = usePickerQuery({
-		open: true,
+	const {
+		query: currentQuery,
+		setQuery,
+		resetQueryOnClose
+	} = usePickerQuery({
 		query,
 		defaultQuery,
 		onQuery,
-		triggerMode: "display"
+		triggerMode: resolvedTriggerMode
 	});
+	const handleOpenChange = (nextOpen: boolean) => {
+		if (open && !nextOpen && resetQueryOnClose) {
+			setQuery("");
+		}
+
+		if (!isOpenControlled) {
+			setUncontrolledOpen(nextOpen);
+		}
+
+		onOpenChange?.(nextOpen);
+	};
 	const { nodes: filteredNodes, expandedIds: searchExpandedIds } = useMemo(
 		() => filterTreeNodes(nodes, currentQuery),
 		[nodes, currentQuery]
@@ -150,7 +167,6 @@ export function TreePickerBase({
 		[columnsLayoutDescriptor]
 	);
 	const {
-		open,
 		activeIndex,
 		context,
 		floatingStyles,
@@ -169,8 +185,8 @@ export function TreePickerBase({
 	} = usePickerFloatingListbox({
 		options: visibleEntries,
 		selectedIndex,
-		open: controlledOpen,
-		onOpenChange,
+		open,
+		onOpenChange: handleOpenChange,
 		onSelect: (entry) => onNodeActivate(entry.node),
 		getOptionDisabled: (entry) => entry.node.disabled === true,
 		disabled: disabled || isLoading,
@@ -231,14 +247,6 @@ export function TreePickerBase({
 				) : null}
 			</div>
 		) : undefined;
-
-	useEffect(() => {
-		if (previousOpenRef.current && !open && triggerController.policy.resetQueryOnClose) {
-			setQuery("");
-		}
-
-		previousOpenRef.current = open;
-	}, [open, setQuery, triggerController.policy.resetQueryOnClose]);
 
 	useLayoutEffect(() => {
 		if (open && optionsLayout === "columns") {

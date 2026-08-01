@@ -2,7 +2,7 @@
 	--tabs-border: none;
 	--tabs-panel-border: none;
 	--tabs-panel-padding: var(--space-md);
-	--tabs-panel-bg: var(--surface-1);
+	--tabs-panel-bg: var(--surface-0);
 
 	display: grid;
 	// gap: var(--space-sm);
@@ -29,7 +29,7 @@
 	min-width: 0;
 
 	border: var(--tabs-border);
-	background-color: var(--surface-1);
+	// background-color: var(--surface-0);
 	padding: var(--space-sm);
 }
 

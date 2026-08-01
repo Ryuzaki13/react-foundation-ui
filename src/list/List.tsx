@@ -1,11 +1,12 @@
-import React, { Children, PropsWithChildren, useMemo, useRef } from "react";
+import React, { Children, PropsWithChildren, useRef } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { useFetchNextPageEffect } from "@ryuzaki13/react-foundation-lib/virtualizer";
-import { useVirtualizer } from "@tanstack/react-virtual";
 
 import { Grid } from "../grid";
 import { LoadingMessage, Scrollable } from "../misc";
+
+import { useListVirtualizer } from "./useListVirtualizer";
 
 interface ListToolbarProps {
 	children: React.ReactNode;
@@ -100,23 +101,16 @@ function ListVirtualizedContent<T>({
 	hasNextPage,
 	fetchNextPage
 }: ListVirtualizedContentProps<T>) {
+	"use no memo";
+
 	const parentRef = useRef<HTMLDivElement | null>(null);
-
-	const useVirtualizerConfig = (itemsCount: number, hasNextPage: boolean | undefined, parentRef: React.RefObject<HTMLElement | null>) => {
-		return useMemo(
-			() => ({
-				count: hasNextPage ? itemsCount + 1 : itemsCount,
-				getScrollElement: () => parentRef.current,
-				measureElement: (el: Element) => Math.ceil(el.getBoundingClientRect().height),
-				estimateSize: () => 120,
-				overscan: 5
-			}),
-			[itemsCount, hasNextPage, parentRef]
-		);
-	};
-
-	const config = useVirtualizerConfig(items.length, hasNextPage, parentRef);
-	const rowVirtualizer = useVirtualizer(config);
+	const rowVirtualizer = useListVirtualizer({
+		count: hasNextPage ? items.length + 1 : items.length,
+		getScrollElement: () => parentRef.current,
+		measureElement: (element) => Math.ceil(element.getBoundingClientRect().height),
+		estimateSize: () => 120,
+		overscan: 5
+	});
 
 	const virtualItems = rowVirtualizer.getVirtualItems();
 

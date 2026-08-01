@@ -18,10 +18,6 @@ interface BaseUiProps<T = unknown> {
 // Опции для хука useDateInput
 export interface BaseDateInputOptions<T = unknown> extends BaseUiProps<T> {
 	datePreset?: string;
-	/**
-	 * @deprecated Используйте `datePreset`.
-	 */
-	dateFormat?: string;
 	datePickerLevel?: DatePickerLevel;
 	selectionMode?: DateInputSelectionMode;
 	weekEndDay?: DateInputWeekEndDay;

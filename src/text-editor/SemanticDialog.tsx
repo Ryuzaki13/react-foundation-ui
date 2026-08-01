@@ -1,4 +1,4 @@
-import { type ReactNode, useEffect, useState } from "react";
+import { type ReactNode, useState } from "react";
 
 import { Button } from "../button";
 import { GridContainer } from "../grid";
@@ -23,7 +23,6 @@ export interface SemanticTagConfig {
 }
 
 interface SemanticDialogProps {
-	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: (tagName: string, text: string, attributes: Record<string, string>) => void;
 	config: SemanticTagConfig;
@@ -34,28 +33,15 @@ interface SemanticDialogProps {
 /**
  * Диалог настройки семантического тега и его атрибутов в текстовом редакторе.
  */
-export function SemanticDialog({ isOpen, onClose, onConfirm, config, initialText = "", initialState = {} }: SemanticDialogProps) {
+export function SemanticDialog({ onClose, onConfirm, config, initialText = "", initialState = {} }: SemanticDialogProps) {
 	const [text, setText] = useState(initialText);
-	const [values, setValues] = useState<Record<string, string>>({});
+	const [values, setValues] = useState<Record<string, string>>(() =>
+		config.fields.reduce<Record<string, string>>((result, field) => {
+			result[field.name] = initialState[field.name] ?? "";
+			return result;
+		}, {})
+	);
 	const [errors, setErrors] = useState<Record<string, string | null>>({});
-	const [initialized, setInitialized] = useState(false);
-
-	useEffect(() => {
-		if (isOpen && !initialized) {
-			const initial = config.fields.reduce(
-				(acc, field) => {
-					acc[field.name] = initialState[field.name] ?? "";
-					return acc;
-				},
-				{} as Record<string, string>
-			);
-			setValues(initial);
-			setErrors({});
-			setInitialized(true);
-		} else if (!isOpen && initialized) {
-			setInitialized(false); // сбрасываем при закрытии
-		}
-	}, [isOpen, config.fields, initialState, initialized]);
 
 	const handleChange = (name: string, value: string) => {
 		setValues((prev) => ({ ...prev, [name]: value }));
@@ -96,7 +82,7 @@ export function SemanticDialog({ isOpen, onClose, onConfirm, config, initialText
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={`Вставка <${config.tagName}>`} size="md">
+		<Modal isOpen={true} onClose={onClose} title={`Вставка <${config.tagName}>`} size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<div>

@@ -28,15 +28,7 @@ function setNativeInputValue(input: HTMLInputElement, value: string) {
 	input.dispatchEvent(new Event("input", { bubbles: true }));
 }
 
-function ControlledSingleDateInput({
-	datePreset,
-	dateFormat,
-	onCommit
-}: {
-	datePreset?: string;
-	dateFormat?: string;
-	onCommit: (value: Date | null) => void;
-}) {
+function ControlledSingleDateInput({ datePreset, onCommit }: { datePreset?: string; onCommit: (value: Date | null) => void }) {
 	const [value, setValue] = useState<Date | null>(new Date(2026, 2, 3, 12, 30, 0));
 
 	const handleChange = (nextValue: Date | null) => {
@@ -44,7 +36,20 @@ function ControlledSingleDateInput({
 		setValue(nextValue);
 	};
 
-	return <SingleDateInput label="Дата" datePreset={datePreset} dateFormat={dateFormat} value={value} onChange={handleChange} />;
+	return <SingleDateInput label="Дата" datePreset={datePreset} value={value} onChange={handleChange} />;
+}
+
+function ExternallyControlledSingleDateInput() {
+	const [value, setValue] = useState<Date | null>(new Date(2026, 2, 3));
+
+	return (
+		<>
+			<SingleDateInput label="Дата" value={value} onChange={setValue} />
+			<button type="button" onClick={() => setValue(new Date(2027, 3, 4))}>
+				Внешнее значение
+			</button>
+		</>
+	);
 }
 
 afterEach(async () => {
@@ -63,6 +68,27 @@ afterEach(async () => {
 });
 
 describe("SingleDateInput", () => {
+	it("выводит новое controlled value без синхронизирующего effect", async () => {
+		await renderNode(<ExternallyControlledSingleDateInput />);
+
+		const input = container?.querySelector("input[type='text']") as HTMLInputElement;
+		expect(input.value).toBe("03.03.2026");
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть календарь"]') as HTMLButtonElement).click();
+		});
+		expect(document.querySelector('[data-action="calendar-switch-view"]')?.textContent).toContain("март");
+
+		await act(async () => {
+			Array.from(container?.querySelectorAll<HTMLButtonElement>("button") ?? [])
+				.find((button) => button.textContent === "Внешнее значение")
+				?.click();
+		});
+
+		expect(input.value).toBe("04.04.2027");
+		expect(document.querySelector('[data-action="calendar-switch-view"]')?.textContent).toContain("апрель");
+	});
+
 	it("не вызывает onChange при первом blur без изменения значения", async () => {
 		const handleCommit = vi.fn();
 		await renderNode(<ControlledSingleDateInput onCommit={handleCommit} />);
@@ -110,21 +136,5 @@ describe("SingleDateInput", () => {
 
 		expect(handleCommit).toHaveBeenCalledTimes(1);
 		expect(handleCommit).toHaveBeenCalledWith(new Date(2026, 5, 25, 0, 0, 0));
-	});
-
-	it("сохраняет deprecated-парсинг через dateFormat", async () => {
-		const handleCommit = vi.fn();
-		await renderNode(<ControlledSingleDateInput dateFormat="yyyy/MM/dd" onCommit={handleCommit} />);
-
-		const input = container?.querySelector("input[type='text']") as HTMLInputElement;
-
-		await act(async () => {
-			input.focus();
-			setNativeInputValue(input, "2026/03/04");
-			input.blur();
-		});
-
-		expect(handleCommit).toHaveBeenCalledTimes(1);
-		expect(handleCommit).toHaveBeenCalledWith(new Date(2026, 2, 4, 0, 0, 0));
 	});
 });

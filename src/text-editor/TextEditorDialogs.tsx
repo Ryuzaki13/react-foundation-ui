@@ -25,7 +25,8 @@ interface TextEditorDialogsProps {
 }
 
 /**
- * Контейнер набора диалогов, которые используются редактором для вставки ссылок и семантических сущностей.
+ * Монтирует только активную dialog-session редактора. Граница монтирования создаёт
+ * свежий draft из текущего selection state без синхронизирующих setState-effects.
  */
 export function TextEditorDialogs({
 	linkTypeDialog,
@@ -43,50 +44,32 @@ export function TextEditorDialogs({
 
 	return (
 		<>
-			{linkTypeDialog && (
-				<>
-					{LocalLinkDialogComponent && (
-						<LocalLinkDialogComponent
-							isOpen={linkTypeDialog === LinkTypes.LOCAL_LINK}
-							onClose={onCloseLinkDialog}
-							onConfirm={onAddLocalLink}
-						/>
-					)}
+			{linkTypeDialog === LinkTypes.LOCAL_LINK && LocalLinkDialogComponent ? (
+				<LocalLinkDialogComponent isOpen={true} onClose={onCloseLinkDialog} onConfirm={onAddLocalLink} />
+			) : null}
 
-					<LinkDialog
-						isOpen={linkTypeDialog === LinkTypes.LINK}
-						initialState={getSelectedLinkState()}
-						onClose={onCloseLinkDialog}
-						onConfirm={onAddLink}
-					/>
+			{linkTypeDialog === LinkTypes.LINK ? (
+				<LinkDialog initialState={getSelectedLinkState()} onClose={onCloseLinkDialog} onConfirm={onAddLink} />
+			) : null}
 
-					<PhoneDialog
-						isOpen={linkTypeDialog === LinkTypes.PHONE}
-						initialState={getSelectedLinkState()}
-						onClose={onCloseLinkDialog}
-						onConfirm={onAddLink}
-					/>
+			{linkTypeDialog === LinkTypes.PHONE ? (
+				<PhoneDialog initialState={getSelectedLinkState()} onClose={onCloseLinkDialog} onConfirm={onAddLink} />
+			) : null}
 
-					<EmailDialog
-						isOpen={linkTypeDialog === LinkTypes.EMAIL}
-						initialState={getSelectedLinkState()}
-						onClose={onCloseLinkDialog}
-						onConfirm={onAddLink}
-					/>
-				</>
-			)}
+			{linkTypeDialog === LinkTypes.EMAIL ? (
+				<EmailDialog initialState={getSelectedLinkState()} onClose={onCloseLinkDialog} onConfirm={onAddLink} />
+			) : null}
 
 			{tagTypeDialog &&
 				(tagTypeDialog !== TagTypes.time ? (
 					<SemanticDialog
-						isOpen={true}
 						onClose={onCloseTagDialog}
 						onConfirm={onInsertSemanticTag}
 						config={SemanticTagConfigs[tagTypeDialog]}
 						initialText={getCurrentSelectionText()}
 					/>
 				) : (
-					<TimeDialog isOpen={true} onClose={onCloseTagDialog} onConfirm={onInsertSemanticTag} />
+					<TimeDialog onClose={onCloseTagDialog} onConfirm={onInsertSemanticTag} />
 				))}
 		</>
 	);

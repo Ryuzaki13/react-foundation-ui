@@ -31,10 +31,6 @@ interface BaseDateInputProps {
 	maxDate?: Date;
 
 	datePreset?: string;
-	/**
-	 * @deprecated Используйте `datePreset`.
-	 */
-	dateFormat?: string;
 
 	/**
 	 * Минимальный уровень календарной навигации. Размер выбранного периода задаёт `selectionMode`.

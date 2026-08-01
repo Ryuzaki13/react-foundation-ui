@@ -1,4 +1,4 @@
-import React, { CSSProperties, InputHTMLAttributes, ReactNode, useEffect, useEffectEvent, useState } from "react";
+import React, { CSSProperties, InputHTMLAttributes, ReactNode, useLayoutEffect, useRef, useState } from "react";
 
 import { toFiniteNumber } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -310,29 +310,41 @@ export function InputNumber({
 		hasError: !!error
 	});
 
-	const [rawValue, setRawValue] = useState<string>(() => String(value));
+	const inputRef = useRef<HTMLInputElement | null>(null);
+	const numberDraftRef = useRef<{ readonly value: number | undefined; readonly raw: string } | null>(null);
+	const externalRawValue = value !== undefined && typeof value === "number" && !isNaN(value) ? String(value) : "";
 
-	const syncRawValue = useEffectEvent((nextRaw: string) => {
-		setRawValue(nextRaw);
-	});
+	/**
+	 * Числовой input хранит промежуточную строку в DOM, а controlled number остаётся
+	 * источником истины. Layout-effect синхронизирует именно внешнюю DOM-систему,
+	 * поэтому не создаёт каскадного React render и не ломает ввод неполных чисел.
+	 */
+	useLayoutEffect(() => {
+		const numberDraft = numberDraftRef.current;
+		if (numberDraft && Object.is(numberDraft.value, value)) {
+			if (inputRef.current && inputRef.current.value !== numberDraft.raw) {
+				inputRef.current.value = numberDraft.raw;
+			}
+			return;
+		}
 
-	useEffect(() => {
-		const nextRaw = value !== undefined && typeof value === "number" && !isNaN(value) ? String(value) : "";
-		syncRawValue(nextRaw);
-	}, [value]);
+		numberDraftRef.current = null;
+		if (inputRef.current && inputRef.current.value !== externalRawValue) {
+			inputRef.current.value = externalRawValue;
+		}
+	}, [externalRawValue, value]);
 
 	const handleClear = onClear
 		? () => {
-				setRawValue("");
 				onClear();
 			}
 		: undefined;
 
 	const handleInput = (e: React.ChangeEvent<HTMLInputElement>) => {
 		const raw = e.target.value;
-		setRawValue(raw);
 
 		const parsed = toFiniteNumber(raw); // ?? value ?? 0;
+		numberDraftRef.current = { value: parsed, raw };
 
 		onChange(parsed);
 		if (error && onClearError) onClearError();
@@ -362,11 +374,12 @@ export function InputNumber({
 				{({ controlClassName }) => (
 					<input
 						{...inputProps}
+						ref={inputRef}
 						id={controlId}
 						type="number"
 						inputMode="decimal"
 						disabled={disabled}
-						value={rawValue}
+						defaultValue={externalRawValue}
 						aria-labelledby={labelId}
 						aria-describedby={describedBy}
 						className={cn(uiStyles.uiInputControl, styles.input, styles.inputNumber, controlClassName)}

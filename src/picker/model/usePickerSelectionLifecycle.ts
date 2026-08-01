@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 
 interface UsePickerSelectionLifecycleOptions<TValue> {
 	value: TValue;
@@ -23,13 +23,6 @@ export function usePickerSelectionLifecycle<TValue>({
 }: UsePickerSelectionLifecycleOptions<TValue>) {
 	const previousOpenRef = useRef(false);
 	const [draftValue, setDraftValue] = useState(value);
-	const syncDraftValue = useEffectEvent((value: TValue) => setDraftValue(value));
-
-	useEffect(() => {
-		if (!open) {
-			syncDraftValue(value);
-		}
-	}, [open, value]);
 
 	useEffect(() => {
 		if (previousOpenRef.current && !open) {

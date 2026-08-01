@@ -59,7 +59,14 @@ function setTrackRect(trackElement: Element, left: number, width: number) {
 function SliderInputHarness() {
 	const [value, setValue] = useState<number | undefined>(12);
 
-	return <SliderInput label="Порог" min={0} max={100} step={0.5} value={value} onChange={setValue} />;
+	return (
+		<>
+			<SliderInput label="Порог" min={0} max={100} step={0.5} value={value} onChange={setValue} />
+			<button type="button" onClick={() => setValue(42.5)}>
+				external-single
+			</button>
+		</>
+	);
 }
 
 function SliderRangeInputHarness() {
@@ -160,6 +167,16 @@ afterEach(async () => {
 });
 
 describe("SliderInput", () => {
+	it("выводит новое controlled value без каскадного effect", async () => {
+		await renderNode(<SliderInputHarness />);
+
+		const input = container?.querySelector("input[type='text']") as HTMLInputElement;
+		expect(input.value).toBe("12");
+
+		await act(async () => findButtonByText("external-single")?.click());
+		expect(input.value).toBe("42.5");
+	});
+
 	it("коммитит ручной ввод на blur и на Enter", async () => {
 		await renderNode(<SliderInputHarness />);
 

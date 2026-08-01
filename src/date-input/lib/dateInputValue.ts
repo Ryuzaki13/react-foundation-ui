@@ -7,10 +7,8 @@ import {
 	isDateRangeTuple,
 	parseDateByFormat,
 	resolveDateFormatName,
-	resolveDateFormatPreset,
 	type CalendarPeriodOptions,
 	type DateFormatPrecision,
-	type DateFormatPreset,
 	type DateRangeInput,
 	type NullableDateRange
 } from "@ryuzaki13/react-foundation-lib/formatters";
@@ -26,20 +24,12 @@ export const DEFAULT_DATE_INPUT_PRESET = DEFAULT_DATE_PRESET_NAMES.date;
 export const DEFAULT_DATE_INPUT_FORMAT = "dd.MM.yyyy";
 
 const RANGE_SEPARATOR = " - ";
-const DATE_INPUT_FORMAT_OPTIONS = Object.freeze({
-	defaultFormat: DEFAULT_DATE_INPUT_PRESET,
-	patternPresetName: "__date_input__"
-});
 
 export type DateInputValueOptions = {
 	/**
 	 * Имя пресета форматирования даты.
 	 */
 	datePreset?: string;
-	/**
-	 * @deprecated Используйте `datePreset`.
-	 */
-	dateFormat?: string;
 	/**
 	 * Точность календарного значения.
 	 */
@@ -115,33 +105,11 @@ function resolveDateInputPresetName(datePreset?: string): string {
 }
 
 /**
- * Возвращает имя пресета или deprecated-формат для парсинга.
- */
-function resolveDateInputFormatName(options: DateInputValueOptions): string | undefined {
-	if (options.datePreset !== undefined) {
-		return resolveDateInputPresetName(options.datePreset);
-	}
-
-	return options.dateFormat;
-}
-
-/**
- * Возвращает зарегистрированный пресет или deprecated-объектный шаблон.
- */
-function resolveDateInputFormatPreset(options: DateInputValueOptions): string | DateFormatPreset {
-	if (options.datePreset !== undefined) {
-		return resolveDateInputPresetName(options.datePreset);
-	}
-
-	return resolveDateFormatPreset(options.dateFormat, DATE_INPUT_FORMAT_OPTIONS);
-}
-
-/**
  * Приводит результат универсального парсинга к календарной дате.
  */
 function parseDateTimeValue(value: string, options: DateInputValueOptions): Date | null {
 	return (
-		parseDateByFormat(value, resolveDateInputFormatName(options), {
+		parseDateByFormat(value, resolveDateInputPresetName(options.datePreset), {
 			defaultFormat: DEFAULT_DATE_INPUT_PRESET,
 			precision: resolveDateInputPrecision(options),
 			referenceDate: options.referenceDate
@@ -216,12 +184,12 @@ export function formatSingleDateValue(
 
 	// Single-поле хранит начало недели, но показывает обе включительные границы выбранного периода.
 	if (options.selectionMode === "week" && period) {
-		return formatDateRange(period.start, period.end, resolveDateInputFormatPreset(options), {
+		return formatDateRange(period.start, period.end, resolveDateInputPresetName(options.datePreset), {
 			precision: resolveDateInputPrecision(options)
 		});
 	}
 
-	return formatDate(date, resolveDateInputFormatPreset(options), {
+	return formatDate(date, resolveDateInputPresetName(options.datePreset), {
 		precision: resolveDateInputPrecision(options)
 	});
 }
@@ -239,13 +207,13 @@ export function formatRangeDateValue(
 	const options = normalizeDateInputValueOptions(optionsOrPreset, datePickerLevel);
 	const [startDate, endDate] = range;
 	if (startDate && endDate) {
-		return formatDateRange(startDate, endDate, resolveDateInputFormatPreset(options), {
+		return formatDateRange(startDate, endDate, resolveDateInputPresetName(options.datePreset), {
 			precision: resolveDateInputPrecision(options)
 		});
 	}
 
 	if (startDate) {
-		return `${formatDate(startDate, resolveDateInputFormatPreset(options), {
+		return `${formatDate(startDate, resolveDateInputPresetName(options.datePreset), {
 			precision: resolveDateInputPrecision(options)
 		})}${RANGE_SEPARATOR}`;
 	}
@@ -269,7 +237,7 @@ export function formatDateInputValue(
 }
 
 /**
- * Парсит строку одиночной даты по заданному шаблону или пресету.
+ * Парсит строку одиночной даты по заданному пресету.
  */
 export function parseSingleDateValue(
 	value: string,
@@ -284,7 +252,7 @@ export function parseSingleDateValue(
 }
 
 /**
- * Парсит строку диапазона дат по заданному шаблону или пресету.
+ * Парсит строку диапазона дат по заданному пресету.
  */
 export function parseRangeDateValue(
 	value: string,

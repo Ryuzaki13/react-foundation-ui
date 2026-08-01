@@ -1,4 +1,4 @@
-import { type MouseEvent, useEffect, useState } from "react";
+import { type MouseEvent, useState } from "react";
 
 import { formatPhone } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -12,7 +12,6 @@ import { Modal, ModalContent, ModalFooter } from "../modal";
 import { LinkType } from "./linkTypes";
 
 interface PhoneDialogProps {
-	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: (url: string, text: string, add: string, ariaLabel: string, showQrCode: boolean) => void;
 	initialState?: LinkType;
@@ -21,34 +20,24 @@ interface PhoneDialogProps {
 /**
  * Диалог вставки или редактирования телефонной ссылки в текстовом редакторе.
  */
-export function PhoneDialog({ isOpen, onClose, onConfirm, initialState }: PhoneDialogProps) {
-	const [phone, setPhone] = useState("");
-	const [phoneAdd, setPhoneAdd] = useState("");
-	const [ariaLabel, setAriaLabel] = useState("");
-	const [error, setError] = useState<string | null>(null);
-	const [state] = useState(() => {
+export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogProps) {
+	const state = (() => {
 		if (isSafe(initialState) && typeof initialState === "string") {
 			return { text: "", add: "", ariaLabel: "", url: initialState };
 		}
 
 		return initialState;
-	});
-
-	useEffect(() => {
-		if (isOpen) {
-			if (isSafe(state)) {
-				setPhone((state.url ?? "").replace(/\D/g, "").slice(0, 11).replace(/^7/, ""));
-
-				if (!state.add) {
-					setPhoneAdd((state.url ?? "").replace(/\D/g, "").slice(11));
-				} else {
-					setPhoneAdd((state.add ?? "").replace(/\D/g, ""));
-				}
-
-				setAriaLabel(state.ariaLabel ?? "");
-			}
-		}
-	}, [isOpen, state]);
+	})();
+	const initialPhone = isSafe(state) ? (state.url ?? "").replace(/\D/g, "").slice(0, 11).replace(/^7/, "") : "";
+	const initialPhoneAdd = isSafe(state)
+		? state.add
+			? (state.add ?? "").replace(/\D/g, "")
+			: (state.url ?? "").replace(/\D/g, "").slice(11)
+		: "";
+	const [phone, setPhone] = useState(initialPhone);
+	const [phoneAdd, setPhoneAdd] = useState(initialPhoneAdd);
+	const [ariaLabel, setAriaLabel] = useState(() => (isSafe(state) ? (state.ariaLabel ?? "") : ""));
+	const [error, setError] = useState<string | null>(null);
 
 	const handlePhoneChange = (value: string) => {
 		value = value.replace(/\D/g, "");
@@ -91,7 +80,7 @@ export function PhoneDialog({ isOpen, onClose, onConfirm, initialState }: PhoneD
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={handleClose} title="Ссылка на телефон" size="md">
+		<Modal isOpen={true} onClose={handleClose} title="Ссылка на телефон" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<div className={cn("flex", "alignItemsEnd", "gapSm")}>

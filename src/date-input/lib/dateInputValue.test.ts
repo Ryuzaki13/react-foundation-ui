@@ -44,7 +44,6 @@ describe("dateInputValue", () => {
 
 	it("учитывает уровень выбора месяца при форматировании", () => {
 		expect(formatSingleDateValue(baseDate, { datePreset: "date-long", datePickerLevel: "month" })).toBe("март 2026 г.");
-		expect(formatSingleDateValue(baseDate, { dateFormat: "dd.MM.yyyy", datePickerLevel: "month" })).toBe("03.2026");
 		expect(
 			formatRangeDateValue([baseDate, new Date(2026, 4, 5, 12, 30, 0)], { datePreset: "date-long", datePickerLevel: "month" })
 		).toBe("март 2026 г. - май 2026 г.");
@@ -52,7 +51,6 @@ describe("dateInputValue", () => {
 
 	it("учитывает уровень выбора года при форматировании", () => {
 		expect(formatSingleDateValue(baseDate, { datePreset: "date-long", datePickerLevel: "year" })).toBe("2026");
-		expect(formatSingleDateValue(baseDate, { dateFormat: "dd.MM.yyyy", datePickerLevel: "year" })).toBe("2026");
 	});
 
 	it("нормализует одиночное значение к началу выбранного периода", () => {
@@ -74,10 +72,8 @@ describe("dateInputValue", () => {
 		]);
 	});
 
-	it("сохраняет deprecated-поддержку пользовательских шаблонов через dateFormat", () => {
+	it("не принимает ручной шаблон вместо имени пресета", () => {
 		expect(formatSingleDateValue(baseDate, { datePreset: "yyyy/MM/dd" })).toBe("03.03.2026");
-		expect(formatSingleDateValue(baseDate, { dateFormat: "yyyy/MM/dd" })).toBe("2026/03/03");
-		expect(parseSingleDateValue("2026/03/03", { dateFormat: "yyyy/MM/dd" })).toEqual(new Date(2026, 2, 3, 0, 0, 0));
 	});
 
 	it("парсит человекочитаемые ru-RU даты из пресетов", () => {

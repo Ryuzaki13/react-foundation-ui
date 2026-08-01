@@ -259,13 +259,23 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 			() => resolveMultiSelectTextKey([...committedSelectedItems, ...items], codeKey, textKey),
 			[codeKey, committedSelectedItems, items, textKey]
 		);
-		const { query: currentQuery, setQuery } = usePickerQuery({
-			open,
+		const {
+			query: currentQuery,
+			setQuery,
+			resetQueryOnClose
+		} = usePickerQuery({
 			query,
 			defaultQuery,
 			onQuery,
 			triggerMode
 		});
+		const handleOpenChange = (nextOpen: boolean) => {
+			if (open && !nextOpen && resetQueryOnClose) {
+				setQuery("");
+			}
+
+			setOpen(nextOpen);
+		};
 		const filteredCommittedSelectedItems = usePickerDefaultFilter({
 			options: committedSelectedItems,
 			query: currentQuery,
@@ -332,7 +342,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 			options: visibleOptions,
 			selectedIndex,
 			open,
-			onOpenChange: setOpen,
+			onOpenChange: handleOpenChange,
 			onSelect: undefined,
 			disabled,
 			getOptionDisabled: isOptionDisabled,

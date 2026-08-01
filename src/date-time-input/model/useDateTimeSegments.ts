@@ -1,5 +1,5 @@
 import type { ChangeEvent, FocusEvent, KeyboardEvent } from "react";
-import { useCallback, useEffect, useEffectEvent, useMemo, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 
 import {
 	areAllDateSegmentsEmpty,
@@ -51,18 +51,35 @@ export function useDateTimeSegments({
 	const segments = useMemo(() => parseDateSegmentMask(inputFormat), [inputFormat]);
 	const editableIndices = useMemo(() => resolveEditableIndices(segments), [segments]);
 	const committedValues = useMemo(() => dateToIndexedSegmentValues(value ?? null, segments), [segments, value]);
-	const [dirtyValues, setDirtyValues] = useState<Map<number, string> | null>(null);
 	const currentValueTime = value?.getTime() ?? null;
-
-	const syncDirtyValues = useEffectEvent((values: Map<number, string> | null) => setDirtyValues(values));
-
-	useEffect(() => {
-		syncDirtyValues(null);
-	}, [currentValueTime, mode]);
-
+	const [dirtyState, setDirtyState] = useState<{
+		readonly sourceValueTime: number | null;
+		readonly sourceMode: DateTimeInputMode;
+		readonly values: Map<number, string>;
+	} | null>(null);
+	const dirtyValues = dirtyState?.sourceValueTime === currentValueTime && dirtyState.sourceMode === mode ? dirtyState.values : null;
 	const segmentValues = dirtyValues ?? committedValues;
 	const refsMap = useRef<Map<number, HTMLInputElement>>(new Map());
 	const blurTimeout = useRef<number>(0);
+
+	/**
+	 * Привязывает незавершённые сегменты к controlled-снимку, на основе которого
+	 * пользователь начал ввод. Новое внешнее value автоматически делает draft неактуальным.
+	 */
+	const setDirtyValues = useCallback(
+		(values: Map<number, string> | null) => {
+			setDirtyState(
+				values === null
+					? null
+					: {
+							sourceValueTime: currentValueTime,
+							sourceMode: mode,
+							values
+						}
+			);
+		},
+		[currentValueTime, mode]
+	);
 
 	/**
 	 * Пытается собрать и отдать наружу новое значение поля.
@@ -167,7 +184,7 @@ export function useDateTimeSegments({
 
 			tryCommit(updatedValues);
 		},
-		[disabled, focusSegment, getNextEditable, onClearError, segmentValues, segments, tryCommit]
+		[disabled, focusSegment, getNextEditable, onClearError, segmentValues, segments, setDirtyValues, tryCommit]
 	);
 
 	/**
@@ -242,7 +259,7 @@ export function useDateTimeSegments({
 				}
 			}
 		},
-		[disabled, focusSegment, getNextEditable, getPreviousEditable, padValue, segmentValues, segments, tryCommit]
+		[disabled, focusSegment, getNextEditable, getPreviousEditable, padValue, segmentValues, segments, setDirtyValues, tryCommit]
 	);
 
 	/**
@@ -285,7 +302,7 @@ export function useDateTimeSegments({
 
 			setDirtyValues(currentValues);
 		}, 0);
-	}, [maxDate, minDate, mode, onChange, segmentValues, segments, value]);
+	}, [maxDate, minDate, mode, onChange, segmentValues, segments, setDirtyValues, value]);
 
 	/**
 	 * Фокусирует первый пустой сегмент либо последний редактируемый.

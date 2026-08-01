@@ -1,4 +1,4 @@
-import { JSX, useEffect, useEffectEvent, useMemo, useState } from "react";
+import { JSX, useMemo, useState } from "react";
 
 import { getStartOfDay, isDateRangeTuple, NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -54,7 +54,6 @@ export function SingleDateTimeInput({
 	mode = "date-time"
 }: SingleDateTimeInputProps): JSX.Element {
 	const normalizedValue = useMemo(() => normalizeDateTimeValue(value, mode), [mode, value]);
-	const normalizedValueTime = normalizedValue?.getTime() ?? null;
 
 	const fallbackPickerDate = useMemo(() => getStartOfDay(new Date()), []);
 
@@ -68,24 +67,6 @@ export function SingleDateTimeInput({
 		hasDescription: !!description,
 		hasError: !!error
 	});
-
-	const syncDraftDate = useEffectEvent((date: Date | null) => setDraftValue(date));
-	const syncPickerDate = useEffectEvent((date: Date) => setPickerDate(date));
-
-	useEffect(() => {
-		if (!open) {
-			syncDraftDate(normalizedValue ?? null);
-		}
-
-		if (normalizedValue) {
-			syncPickerDate(normalizedValue);
-		}
-	}, [normalizedValue, normalizedValueTime, open]);
-
-	useEffect(() => {
-		if (!normalizedValue) return;
-		syncPickerDate(normalizedValue);
-	}, [normalizedValue, normalizedValueTime]);
 
 	const {
 		segments,

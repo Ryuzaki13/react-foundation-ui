@@ -117,13 +117,23 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 	const selectedKey = value === undefined ? undefined : getOptionKey(value);
 	const selectedOption =
 		selectedKey === undefined ? undefined : (options.find((option) => getOptionKey(option) === selectedKey) ?? value);
-	const { query: currentQuery, setQuery } = usePickerQuery({
-		open,
+	const {
+		query: currentQuery,
+		setQuery,
+		resetQueryOnClose
+	} = usePickerQuery({
 		query,
 		defaultQuery,
 		onQuery,
 		triggerMode
 	});
+	const handleOpenChange = (nextOpen: boolean) => {
+		if (open && !nextOpen && resetQueryOnClose) {
+			setQuery("");
+		}
+
+		setOpen(nextOpen);
+	};
 	const getSearchText = useCallback(
 		(option: TOption) =>
 			getOptionSearchText({
@@ -166,7 +176,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		options: visibleOptions,
 		selectedIndex,
 		open,
-		onOpenChange: setOpen,
+		onOpenChange: handleOpenChange,
 		getOptionDisabled,
 		onSelect: emitChange,
 		disabled,

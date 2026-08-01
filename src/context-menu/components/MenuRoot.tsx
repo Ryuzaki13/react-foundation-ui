@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import React, { useCallback, useMemo, useRef, useState } from "react";
 
 import { autoUpdate, flip, offset, Placement, shift, useFloating } from "@floating-ui/react";
 import {
@@ -59,12 +59,6 @@ export const MenuRoot: React.FC<MenuRootProps> = ({
 	const closeMenuHandler = useCallback(() => {
 		setOpen(false);
 	}, [setOpen]);
-
-	useEffect(() => {
-		if (!open) {
-			setMenuState((state) => closeMenu(state));
-		}
-	}, [open]);
 
 	const openAtElement = useCallback(
 		(element: HTMLElement, source: "click" | "keyboard") => {

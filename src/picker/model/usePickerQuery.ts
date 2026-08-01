@@ -1,9 +1,8 @@
-import { useEffect, useEffectEvent, useRef, useState } from "react";
+import { useState } from "react";
 
 import { PickerTriggerMode, createPickerTriggerPolicy } from "./createPickerTriggerPolicy";
 
 interface UsePickerQueryOptions {
-	open: boolean;
 	query?: string;
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
@@ -11,25 +10,15 @@ interface UsePickerQueryOptions {
 	triggerMode?: PickerTriggerMode;
 }
 
-export function usePickerQuery({ open, query, defaultQuery, onQuery, resetOnClose, triggerMode }: UsePickerQueryOptions) {
-	const previousOpenRef = useRef(false);
+/**
+ * Управляет controlled/uncontrolled query и возвращает policy закрытия владельцу open-state.
+ * Сброс выполняется самим владельцем в событии close, поэтому hook не зеркалит lifecycle через effect.
+ */
+export function usePickerQuery({ query, defaultQuery, onQuery, resetOnClose, triggerMode }: UsePickerQueryOptions) {
 	const isControlled = query !== undefined;
 	const [internalQuery, setInternalQuery] = useState(defaultQuery ?? "");
 	const currentQuery = isControlled ? (query ?? "") : internalQuery;
-	const syncResetInternalQuery = useEffectEvent(() => setInternalQuery(""));
 	const resolvedResetOnClose = resetOnClose ?? (triggerMode ? createPickerTriggerPolicy(triggerMode).resetQueryOnClose : true);
-
-	useEffect(() => {
-		if (previousOpenRef.current && !open && resolvedResetOnClose) {
-			if (!isControlled) {
-				syncResetInternalQuery();
-			}
-
-			onQuery?.("");
-		}
-
-		previousOpenRef.current = open;
-	}, [isControlled, onQuery, open, resolvedResetOnClose]);
 
 	const setQuery = (nextValue: string) => {
 		if (!isControlled) {
@@ -42,6 +31,7 @@ export function usePickerQuery({ open, query, defaultQuery, onQuery, resetOnClos
 	return {
 		query: currentQuery,
 		setQuery,
-		clearQuery: () => setQuery("")
+		clearQuery: () => setQuery(""),
+		resetQueryOnClose: resolvedResetOnClose
 	};
 }

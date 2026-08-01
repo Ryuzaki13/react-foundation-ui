@@ -1,4 +1,4 @@
-import { useEffect, useEffectEvent, useState } from "react";
+import { useState } from "react";
 
 import { Button } from "../button";
 import { GridContainer } from "../grid";
@@ -13,7 +13,6 @@ type TimeDialogInitialState = {
 };
 
 interface TimeDialogProps {
-	isOpen: boolean;
 	onClose: () => void;
 	onConfirm: (tagName: string, text: string, attributes: Record<string, string>) => void;
 	initialState?: TimeDialogInitialState;
@@ -24,24 +23,11 @@ type TimeMode = "date" | "datetime" | "time" | "range-time" | "range-date" | "ra
 /**
  * Диалог настройки временного атрибута или значения в текстовом редакторе.
  */
-export function TimeDialog({ isOpen, onClose, onConfirm, initialState }: TimeDialogProps) {
-	const [mode, setMode] = useState<TimeMode | undefined>("date");
-	const [from, setFrom] = useState("");
-	const [to, setTo] = useState("");
+export function TimeDialog({ onClose, onConfirm, initialState }: TimeDialogProps) {
+	const [mode, setMode] = useState<TimeMode | undefined>(() => initialState?.mode ?? "date");
+	const [from, setFrom] = useState(() => initialState?.from ?? "");
+	const [to, setTo] = useState(() => initialState?.to ?? "");
 	const [errors, setErrors] = useState<{ from?: string; to?: string }>({});
-
-	const syncInitialState = useEffectEvent((initialState?: TimeDialogInitialState) => {
-		setMode(initialState?.mode ?? "date");
-		setFrom(initialState?.from ?? "");
-		setTo(initialState?.to ?? "");
-		setErrors({});
-	});
-
-	useEffect(() => {
-		if (isOpen) {
-			syncInitialState(initialState);
-		}
-	}, [isOpen, initialState]);
 
 	const validate = () => {
 		const newErrors: typeof errors = {};
@@ -125,7 +111,7 @@ export function TimeDialog({ isOpen, onClose, onConfirm, initialState }: TimeDia
 							label="По"
 							placeholder={mode.includes("time") ? "17:00" : mode.includes("date") ? "2025-05-22" : "2025-05-22T17:00"}
 							value={to}
-							onChange={setFrom}
+							onChange={setTo}
 							error={errors.to}
 						/>
 					</>
@@ -134,7 +120,7 @@ export function TimeDialog({ isOpen, onClose, onConfirm, initialState }: TimeDia
 	};
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title="Вставка <time>" size="md">
+		<Modal isOpen={true} onClose={onClose} title="Вставка <time>" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<RadioGroup label="Тип значения" value={mode} onChange={setMode}>

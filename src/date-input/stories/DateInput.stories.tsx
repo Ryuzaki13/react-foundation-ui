@@ -49,10 +49,6 @@ const meta = {
 			description: "Имя пресета форматирования выбранной даты, например date-long, month-long или month-short.",
 			control: "text"
 		},
-		dateFormat: {
-			description: "Deprecated: ручной шаблон форматирования. Используйте datePreset.",
-			control: "text"
-		},
 		datePickerLevel: {
 			description: "Минимальный уровень календарной навигации. Не определяет размер выбранного периода.",
 			control: "select",
