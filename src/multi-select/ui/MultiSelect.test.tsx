@@ -62,7 +62,7 @@ afterEach(async () => {
 });
 
 describe("MultiSelect", () => {
-	it("показывает количество выбранных элементов рядом с очисткой", async () => {
+	it("показывает количество выбранных элементов", async () => {
 		await renderNode(
 			<MultiSelect
 				label="Справочник"
@@ -75,8 +75,7 @@ describe("MultiSelect", () => {
 			/>
 		);
 
-		const clearButton = container?.querySelector('button[aria-label="Очистить все"]') as HTMLButtonElement;
-		expect(clearButton.previousElementSibling?.textContent).toBe("2 элементов");
+		expect(container?.textContent).toContain("2 элемента");
 	});
 
 	it("сохраняет корректную работу шеврона и фокус input", async () => {

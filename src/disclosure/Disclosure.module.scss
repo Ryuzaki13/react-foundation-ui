@@ -1,12 +1,21 @@
 .disclosure {
 	--ui-panel-background: transparent;
 
-	box-shadow: none;
+	border: var(--border);
+	border-radius: var(--radius-sm);
+
+	overflow: hidden;
 }
 
 .disclosureHeader {
 	display: flex;
 	align-items: center;
+
+	background-color: var(--surface-1);
+
+	&.open {
+		background-color: var(--surface-0);
+	}
 }
 
 .disclosureButton {

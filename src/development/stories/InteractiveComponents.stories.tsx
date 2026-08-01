@@ -367,6 +367,7 @@ export function InteractiveComponents() {
 			<ComponentCard title="TabsBox">
 				<TabsBox
 					defaultValue="first"
+					bordered
 					items={[
 						{ id: "first", title: "Первый", content: "Содержимое" },
 						{ id: "second", title: "Второй", content: "Другая панель" },
@@ -380,6 +381,7 @@ export function InteractiveComponents() {
 				<TabsBox
 					defaultValue="first"
 					orientation="vertical"
+					bordered
 					items={[
 						{ id: "first", title: "Первый", content: "Содержимое" },
 						{ id: "second", title: "Второй", content: "Другая панель" },
@@ -396,6 +398,8 @@ export function InteractiveComponents() {
 					<Disclosure label="Раскрыть 3">Содержимое панели 3</Disclosure>
 					<Disclosure label="Раскрыть 4">Содержимое панели 4</Disclosure>
 				</DisclosureGroup>
+
+				<Disclosure label="Раскрыть 1">Содержимое панели 1</Disclosure>
 			</ComponentCard>
 
 			<ComponentCard title="ExpandableActionPanel">

@@ -49,6 +49,8 @@
 	}
 
 	.panels {
+		border-top: none;
+
 		border-bottom-left-radius: var(--radius-sm);
 		border-bottom-right-radius: var(--radius-sm);
 	}
@@ -70,6 +72,8 @@
 	}
 
 	.panels {
+		border-left: none;
+
 		border-top-right-radius: var(--radius-sm);
 		border-bottom-right-radius: var(--radius-sm);
 	}

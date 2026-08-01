@@ -38,9 +38,11 @@ function getRequiredElement<TElement extends Element>(element: TElement | null |
 }
 
 function findOptionButton(label: string): HTMLButtonElement {
-	const button = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="option"]')).find((option) =>
-		option.textContent?.includes(label)
-	);
+	const button = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="option"]')).find((option) => {
+		const accessibleName = option.getAttribute("aria-label");
+
+		return accessibleName === label || accessibleName?.startsWith(`${label}.`);
+	});
 
 	return getRequiredElement(button, `Не найдена опция layout: ${label}`);
 }

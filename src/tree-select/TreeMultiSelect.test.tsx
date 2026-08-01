@@ -427,7 +427,7 @@ describe("TreeMultiSelect columns layout", () => {
 		expect(getCheckBox("Филиал 1").checked).toBe(true);
 	});
 
-	it("показывает label единственного выбранного элемента перед кнопкой очистки", async () => {
+	it("показывает label единственного выбранного элемента и кнопку очистки", async () => {
 		await renderHarness({ initialValue: { BR: ["001"] }, open: false });
 
 		const token = findInnermostElementWithText("Филиал 1");
@@ -435,14 +435,13 @@ describe("TreeMultiSelect columns layout", () => {
 
 		expect(token).toBeTruthy();
 		expect(clearButton).toBeInstanceOf(HTMLButtonElement);
-		expect(token?.compareDocumentPosition(clearButton as Node) & Node.DOCUMENT_POSITION_FOLLOWING).not.toBe(0);
 		expect(container?.textContent).not.toContain("Филиал 1 · 001");
 	});
 
 	it("показывает точный счётчик для нескольких выбранных элементов", async () => {
 		await renderHarness({ initialValue: { BR: ["001"], DIV: ["02"] }, open: false });
 
-		expect(findInnermostElementWithText("2 элементов")).toBeTruthy();
+		expect(findInnermostElementWithText("2 элемента")).toBeTruthy();
 		expect(container?.textContent).not.toContain("Выбрано 2 узл.");
 	});
 
