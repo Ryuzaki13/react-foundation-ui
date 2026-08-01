@@ -53,8 +53,11 @@ const convertSemanticTagElement = (domNode: Node): DOMConversionOutput => {
 };
 
 export class SemanticTagNode extends ElementNode {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__tag: string;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__attributes: SemanticTagAttributes;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__text: null | string;
 
 	static getType(): string {

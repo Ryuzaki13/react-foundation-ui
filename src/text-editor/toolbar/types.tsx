@@ -113,16 +113,23 @@ export const TextEditorStyleClasses = {
 
 export enum LinkTypes {
 	LINK = "link",
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	LOCAL_LINK = "localLink",
 	PHONE = "phone",
 	EMAIL = "email"
 }
 
 export enum TagTypes {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	abbr = "abbr",
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	lang = "lang",
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	time = "time",
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	cite = "cite",
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	ins = "ins",
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	del = "del"
 }

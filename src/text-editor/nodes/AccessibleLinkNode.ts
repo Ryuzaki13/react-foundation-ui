@@ -53,9 +53,13 @@ const convertAccessibleLinkElement = (domNode: Node): DOMConversionOutput => {
 };
 
 export class AccessibleLinkNode extends LinkNode {
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__ariaLabel: null | string;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__qrCode: boolean;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__add: null | string;
+	// eslint-disable-next-line @typescript-eslint/naming-convention
 	__text: null | string;
 
 	static getType(): string {

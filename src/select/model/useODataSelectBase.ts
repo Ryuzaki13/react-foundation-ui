@@ -160,19 +160,19 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 		}, selectedItems);
 	}, [debouncedQuery, getItems, minSearchCodeLength, minSearchLength, rawData, segment.hideCode, selectedItems]);
 
-	const placeholder = useMemo(() => {
-		const filteredItemsLength = filteredItems.length;
+	// const placeholder = useMemo(() => {
+	// 	const filteredItemsLength = filteredItems.length;
 
-		if (!itemsCount) {
-			return `${segment.placeholder} <пусто>`;
-		}
+	// 	if (!itemsCount) {
+	// 		return `${segment.placeholder} <пусто>`;
+	// 	}
 
-		if (filteredItemsLength < itemsCount) {
-			return `${segment.placeholder} <${filteredItemsLength}+>`;
-		}
+	// 	if (filteredItemsLength < itemsCount) {
+	// 		return `${segment.placeholder} <${filteredItemsLength}+>`;
+	// 	}
 
-		return `${segment.placeholder} <${itemsCount > model.maxVisibleItems ? `${model.maxVisibleItems}+` : itemsCount}>`;
-	}, [filteredItems.length, itemsCount, model.maxVisibleItems, segment.placeholder]);
+	// 	return `${segment.placeholder} <${itemsCount > model.maxVisibleItems ? `${model.maxVisibleItems}+` : itemsCount}>`;
+	// }, [filteredItems.length, itemsCount, model.maxVisibleItems, segment.placeholder]);
 
 	return {
 		query,
@@ -186,7 +186,7 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 		codeKey,
 		textKey,
 		selectionKey,
-		placeholder
+		placeholder: segment.placeholder
 	};
 }
 
