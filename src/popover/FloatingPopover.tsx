@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/refs */
-import React, { useRef, useState } from "react";
+import React, { useLayoutEffect, useRef, useState } from "react";
 
 import {
 	arrow,
@@ -31,6 +31,11 @@ interface FloatingPopoverProps {
 	maxWidth?: number;
 	state?: "information" | "error" | "warning" | "success" | "negative";
 	tooltip?: true;
+	/**
+	 * Изменяется вместе с CSS-координатой trigger, когда её изменение не отслеживается `autoUpdate`.
+	 * После commit React выполняется повторный расчёт позиции открытой floating-панели.
+	 */
+	positionUpdateKey?: unknown;
 }
 
 export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
@@ -42,7 +47,8 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 	closeDelay = 100,
 	maxWidth,
 	state,
-	tooltip
+	tooltip,
+	positionUpdateKey
 }) => {
 	const [open, setOpen] = useState(false);
 	const arrowRef = useRef<HTMLDivElement>(null);
@@ -52,7 +58,8 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 		floatingStyles,
 		middlewareData,
 		context,
-		placement: computedPlacement
+		placement: computedPlacement,
+		update
 	} = useFloating({
 		open,
 		onOpenChange: setOpen,
@@ -65,6 +72,12 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 		],
 		whileElementsMounted: autoUpdate
 	});
+
+	useLayoutEffect(() => {
+		if (open) {
+			void update();
+		}
+	}, [open, positionUpdateKey, update]);
 
 	const hover = useHover(context, {
 		enabled: openOnHover,

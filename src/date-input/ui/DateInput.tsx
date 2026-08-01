@@ -3,11 +3,11 @@ import { JSX, useCallback, useEffect, useRef, useState } from "react";
 import { isDateRangeTuple, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 import { CalendarDaysIcon } from "lucide-react";
 
-import { Button } from "../../button";
 import { InputText } from "../../input";
 import { Popover } from "../../popover";
 import { RadioGroup } from "../../radio-group";
 import { UiBaseProps } from "../../types";
+import uiStyles from "../../ui.module.scss";
 import {
 	areRangeDateValuesEqual,
 	areSingleDateValuesEqual,
@@ -272,13 +272,11 @@ function DateInput({
 				endAdornmentWidth="var(--control-height)"
 				endAdornment={
 					<Popover.Trigger>
-						<Button
-							variant="transparent"
-							disabled={disabled}
-							className={styles.calendarButton}
-							icon={<CalendarDaysIcon />}
-							aria-label="Открыть календарь"
-						/>
+						<div className={uiStyles.uiToggleButtonContainer}>
+							<button type="button" disabled={disabled} aria-label="Открыть календарь" className={uiStyles.uiToggleButton}>
+								<CalendarDaysIcon />
+							</button>
+						</div>
 					</Popover.Trigger>
 				}
 			/>

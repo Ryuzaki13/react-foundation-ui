@@ -15,6 +15,7 @@ function StringListbox(props: {
 	multiple?: boolean;
 	value?: string | string[];
 	defaultValue?: string | string[];
+	disabled?: boolean;
 	focusOnMount?: boolean;
 	onChange?: (value: string | string[], option: StringOption) => void;
 	renderItem?: (option: StringOption, selected: boolean, active: boolean) => React.ReactNode;
@@ -67,6 +68,10 @@ const meta = {
 		defaultValue: {
 			description: "Начальное значение для uncontrolled-режима.",
 			control: false
+		},
+		disabled: {
+			description: "Блокирует фокусировку, навигацию и изменение выбора.",
+			control: "boolean"
 		},
 		onChange: {
 			description: "Вызывается при выборе опции.",
@@ -157,4 +162,12 @@ export const CustomRender: Story = {
 			/>
 		);
 	}
+};
+
+export const Disabled: Story = {
+	args: {
+		disabled: true,
+		value: "medium"
+	},
+	render: (args) => <StringListbox {...args} />
 };

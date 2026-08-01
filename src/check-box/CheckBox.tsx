@@ -1,7 +1,7 @@
 import React, { useId } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { MinusIcon, SquareIcon } from "lucide-react";
+import { CheckIcon, MinusIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 import { getUiToneClassName } from "../uiClasses";
@@ -67,7 +67,7 @@ export function CheckBox({
 						onChange={() => onChange?.(!checked)}
 					/>
 					<div className={cn(uiStyles.uiSelectionIcon, styles.icon)} aria-hidden="true">
-						{indeterminate ? <MinusIcon /> : <SquareIcon />}
+						{indeterminate ? <MinusIcon /> : <CheckIcon />}
 					</div>
 				</div>
 				{text && (

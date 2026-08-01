@@ -150,6 +150,18 @@ function renderTooltipContent(content: React.ReactNode) {
 	return typeof content === "string" || typeof content === "number" ? <span className="textNoWrap">{content}</span> : content;
 }
 
+/**
+ * Размещает reference FloatingPopover над текущей точкой шкалы. Бегунок остаётся абсолютно
+ * позиционированным относительно этого anchor, а tooltip измеряет его координату вместо начала track.
+ */
+function SliderTooltipReference({ position, children }: { position: number; children: React.ReactNode }) {
+	return (
+		<span data-slot="slider-tooltip-reference" className={styles.tooltipReference} style={{ left: `${position}%` }}>
+			{children}
+		</span>
+	);
+}
+
 export function SliderBase(props: SliderBaseProps) {
 	const {
 		min: rawMin,
@@ -425,19 +437,20 @@ export function SliderBase(props: SliderBaseProps) {
 									: mark.value <= currentSingleValue!;
 
 								return (
-									<FloatingPopover key={mark.value} tooltip placement="top" content={renderTooltipContent(mark.label)}>
-										<button
-											type="button"
-											data-slot="mark"
-											data-active={isActive ? "" : undefined}
-											className={styles.compactMark}
-											style={{ left: `${markPercent}%` }}
-											aria-label={mark.ariaLabel}
-											disabled={disabled}
-											onClick={() => handleMarkSelect(mark.value)}>
-											<span className={styles.markDot} aria-hidden="true" />
-										</button>
-									</FloatingPopover>
+									<SliderTooltipReference key={mark.value} position={markPercent}>
+										<FloatingPopover tooltip placement="top" content={renderTooltipContent(mark.label)}>
+											<button
+												type="button"
+												data-slot="mark"
+												data-active={isActive ? "" : undefined}
+												className={styles.compactMark}
+												aria-label={mark.ariaLabel}
+												disabled={disabled}
+												onClick={() => handleMarkSelect(mark.value)}>
+												<span className={styles.markDot} aria-hidden="true" />
+											</button>
+										</FloatingPopover>
+									</SliderTooltipReference>
 								);
 							})}
 
@@ -445,50 +458,51 @@ export function SliderBase(props: SliderBaseProps) {
 							const thumbLabel = getThumbValueText(thumbValue, thumbIndex);
 
 							return (
-								<FloatingPopover
-									key={thumbIndex}
-									tooltip
-									placement="top"
-									content={renderTooltipContent(thumbLabel)}
-									openDelay={0}
-									closeDelay={100}>
-									<button
-										ref={(node) => {
-											thumbRefs.current[thumbIndex] = node;
-										}}
-										type="button"
-										role="slider"
-										data-slot="thumb"
-										data-thumb-index={thumbIndex}
-										data-dragging={dragThumbIndex === thumbIndex ? "" : undefined}
-										className={styles.thumb}
-										disabled={disabled}
-										style={{ left: `${valueToSliderVisualPercent(thumbValue, sliderOptions)}%` }}
-										aria-disabled={disabled || undefined}
-										aria-orientation="horizontal"
-										aria-valuemin={isRange && thumbIndex === 1 ? visualRangeValue![0] : min}
-										aria-valuemax={isRange && thumbIndex === 0 ? visualRangeValue![1] : max}
-										aria-valuenow={thumbValue}
-										aria-valuetext={
-											typeof thumbLabel === "string" || typeof thumbLabel === "number"
-												? String(thumbLabel)
-												: undefined
-										}
-										aria-labelledby={labelId}
-										aria-describedby={describedBy}
-										aria-label={
-											labelId
-												? undefined
-												: isRange
-													? thumbIndex === 0
-														? "Минимальное значение"
-														: "Максимальное значение"
-													: "Значение"
-										}
-										onPointerDown={handleThumbPointerDown(thumbIndex)}
-										onKeyDown={handleThumbKeyDown(thumbIndex)}
-									/>
-								</FloatingPopover>
+								<SliderTooltipReference key={thumbIndex} position={valueToSliderVisualPercent(thumbValue, sliderOptions)}>
+									<FloatingPopover
+										tooltip
+										placement="top"
+										content={renderTooltipContent(thumbLabel)}
+										openDelay={0}
+										closeDelay={100}
+										positionUpdateKey={thumbValue}>
+										<button
+											ref={(node) => {
+												thumbRefs.current[thumbIndex] = node;
+											}}
+											type="button"
+											role="slider"
+											data-slot="thumb"
+											data-thumb-index={thumbIndex}
+											data-dragging={dragThumbIndex === thumbIndex ? "" : undefined}
+											className={styles.thumb}
+											disabled={disabled}
+											aria-disabled={disabled || undefined}
+											aria-orientation="horizontal"
+											aria-valuemin={isRange && thumbIndex === 1 ? visualRangeValue![0] : min}
+											aria-valuemax={isRange && thumbIndex === 0 ? visualRangeValue![1] : max}
+											aria-valuenow={thumbValue}
+											aria-valuetext={
+												typeof thumbLabel === "string" || typeof thumbLabel === "number"
+													? String(thumbLabel)
+													: undefined
+											}
+											aria-labelledby={labelId}
+											aria-describedby={describedBy}
+											aria-label={
+												labelId
+													? undefined
+													: isRange
+														? thumbIndex === 0
+															? "Минимальное значение"
+															: "Максимальное значение"
+														: "Значение"
+											}
+											onPointerDown={handleThumbPointerDown(thumbIndex)}
+											onKeyDown={handleThumbKeyDown(thumbIndex)}
+										/>
+									</FloatingPopover>
+								</SliderTooltipReference>
 							);
 						})}
 					</div>

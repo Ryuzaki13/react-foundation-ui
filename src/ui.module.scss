@@ -77,13 +77,6 @@
 	display: inline-block;
 	font-weight: 400;
 	font-variation-settings: "wght" 400;
-
-	&:has(~ :required) {
-		&::after {
-			content: " *";
-			color: var(--status-error-text);
-		}
-	}
 }
 
 .uiLabel {
@@ -96,7 +89,7 @@
 	--paragraph-margin: 0;
 
 	padding-bottom: var(--space-xs);
-	color: var(--content-2);
+	color: var(--content-1);
 	font-weight: 300;
 	font-variation-settings: "wght" 300;
 }
@@ -104,15 +97,24 @@
 .uiLabel,
 .uiDescription {
 	margin-inline: var(--space-xs);
-	// user-select: none;
 }
 
 .uiPlaceholder {
 	color: var(--content-2);
+	font-weight: 100;
+	font-variation-settings: "wght" 100;
+	font-size: var(--font-size-sm);
 
 	overflow: hidden;
 	text-overflow: ellipsis;
 	white-space: nowrap;
+}
+
+.required {
+	.uiLabelBase::after {
+		content: " *";
+		color: var(--status-error-text);
+	}
 }
 
 .uiControl {
@@ -190,13 +192,12 @@
 }
 
 .uiSelectionControl {
-	// @extend .uiControl;
 	@include ui-control-base;
 
 	--ui-color: var(--content-0);
 	--ui-color-hover: var(--content-0);
 	--ui-color-active: var(--content-0);
-	--ui-background: var(--surface-0);
+	--ui-background: var(--surface-1);
 	--ui-background-hover: var(--ui-tone-soft);
 	--ui-background-active: var(--ui-tone-soft);
 	--ui-border-color: var(--ui-tone-border);
@@ -264,12 +265,17 @@
 	}
 }
 
-.uiPanel {
-	background-color: var(--ui-panel-background, var(--surface-0));
-	color: var(--content-0);
+.uiFramedPanel {
 	border: var(--border);
 	border-radius: var(--radius-sm);
 	padding: var(--space-sm);
+}
+
+.uiPanel {
+	@extend .uiFramedPanel;
+
+	background-color: var(--ui-panel-background, var(--surface-0));
+	color: var(--content-0);
 }
 
 .uiPopupOptions {
@@ -352,6 +358,11 @@
 		background-color: var(--surface-1);
 	}
 
+	&.disabled {
+		background-color: transparent;
+		color: var(--content-2);
+	}
+
 	&:focus {
 		@extend .uiStateFocus;
 	}
@@ -389,15 +400,15 @@
 }
 
 .uiOptionText {
-	// font-size: var(--font-size-sm);
+	font-size: var(--font-size-sm);
 	flex: 1;
-	// .flexEllipsis
 }
 
 .uiOptionCode {
 	font-family: var(--font-family-mono);
-	// font-size: var(--font-size-sm);
+	font-size: var(--font-size-sm);
 	color: var(--content-1);
+	font-weight: 300;
 	font-variation-settings: "wght" 300;
 }
 
@@ -434,6 +445,10 @@
 
 .uiToggleButton {
 	color: var(--content-0);
+
+	&:hover {
+		color: var(--content-accent);
+	}
 }
 
 .uiToggleIcon {

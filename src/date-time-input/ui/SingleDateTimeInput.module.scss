@@ -38,12 +38,6 @@
 	}
 }
 
-.calendarButton {
-	&:hover {
-		color: var(--focus-ring);
-	}
-}
-
 .popoverContent {
 	display: grid;
 	gap: var(--space-md);

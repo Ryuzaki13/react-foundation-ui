@@ -23,12 +23,20 @@
 	user-select: none;
 }
 
+.tooltipReference {
+	position: absolute;
+	top: calc(50% - ((var(--control-height) - var(--space-xs)) / 2));
+	left: 0;
+	width: 0;
+	height: 0;
+}
+
 .rail,
 .fill {
 	position: absolute;
 	top: 50%;
 	transform: translateY(-50%);
-	height: var(--space-xs);
+	height: var(--space-sm);
 	border-radius: 999px;
 }
 
@@ -40,12 +48,13 @@
 }
 
 .fill {
-	background-color: var(--content-0);
+	background-color: var(--status-info-fill);
 }
 
 .thumb {
 	position: absolute;
-	top: 50%;
+	top: calc((var(--control-height) - var(--space-xs)) / 2);
+	left: 0;
 	transform: translate(-50%, -50%);
 	width: calc(var(--control-height) - var(--space-xs));
 	height: calc(var(--control-height) - var(--space-xs));
@@ -111,7 +120,8 @@
 
 .compactMark {
 	position: absolute;
-	top: 50%;
+	top: calc((var(--control-height) - var(--space-xs)) / 2);
+	left: 0;
 	transform: translate(-50%, -50%);
 	display: inline-flex;
 	align-items: center;

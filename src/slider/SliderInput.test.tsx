@@ -226,6 +226,18 @@ describe("SliderInput", () => {
 		expect(input.value).toBe("89");
 	});
 
+	it("размещает reference тултипа popover-слайдера на текущем значении", async () => {
+		await renderNode(<SliderInputHarness />);
+
+		const openButton = container?.querySelector('button[aria-label="Открыть слайдер"]') as HTMLButtonElement;
+		await act(async () => {
+			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+		});
+
+		const tooltipReference = document.querySelector<HTMLElement>('[data-slot="slider-tooltip-reference"]');
+		expect(tooltipReference?.style.left).toBe("12%");
+	});
+
 	it("коммитит range-сегменты, сортирует finite значения и поддерживает пустоту как null", async () => {
 		await renderNode(<SliderRangeInputHarness />);
 

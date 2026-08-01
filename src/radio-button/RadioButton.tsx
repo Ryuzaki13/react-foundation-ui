@@ -64,7 +64,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
 						onChange={() => onChange?.(!checked)}
 					/>
 					<div className={cn(uiStyles.uiSelectionIcon, baseStyles.icon)} aria-hidden="true">
-						<CircleIcon />
+						<CircleIcon fill="currentColor" />
 					</div>
 				</div>
 				{text && (

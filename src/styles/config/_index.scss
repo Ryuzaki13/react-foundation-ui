@@ -2,7 +2,10 @@
 @use "sass:meta";
 
 $root-token-defaults: (
-	"--font-family": (sans-serif),
+	"--font-family": (
+		"72",
+		sans-serif
+	),
 	"--font-family-base": var(--font-family),
 	"--font-family-mono": (monospace),
 
@@ -44,6 +47,8 @@ $root-token-defaults: (
 	"--ui-width-md": 224px,
 	"--ui-width-lg": 272px,
 	"--ui-width-xl": 320px,
+
+	"--icon-size": 1.25em,
 
 	"--control-height-base": 16px,
 	"--control-height": calc(var(--control-height-base) + var(--line-height-offset)),
@@ -187,83 +192,83 @@ $paragraph-spacing-preset-defaults: (
 $light-theme-defaults: (
 	tokens: (
 		"--surface-0": #ffffff,
-		"--surface-1": #f5f5f5,
-		"--surface-2": #e5e5e5,
-		"--content-0": #111111,
-		"--content-1": #444444,
-		"--content-2": #777777,
-		"--focus-ring": #000000,
-		"--overlay-backdrop": rgba(0, 0, 0, 0.12),
-		"--overlay-glass": rgba(255, 255, 255, 0.86),
-		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.12),
-		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.2),
-		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.24),
-		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.28)
+		"--surface-1": #f8f8f9,
+		"--surface-2": #f1f1f3,
+		"--content-0": oklch(0.26 0.01 244),
+		"--content-1": oklch(0.52 0.02 268),
+		"--content-2": oklch(0.66 0.01 258),
+		"--focus-ring": oklch(0.5 0.3 270),
+		"--overlay-backdrop": rgba(0, 0, 0, 0.1),
+		"--overlay-glass": rgba(255, 255, 255, 0.8),
+		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
+		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
+		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
+		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25)
 	),
 	accent: (
-		l: 0.2,
-		c: 0,
-		h: 0
+		l: 0.55,
+		c: 0.22,
+		h: 245
 	),
 	status: (
 		neutral: (
 			fill: (
-				l: 0.2,
-				c: 0,
-				h: 0
+				l: 0.26,
+				c: 0.01,
+				h: 244
 			),
 			border: (
-				l: 0.82,
-				c: 0,
-				h: 0
+				l: 0.86,
+				c: 0.016,
+				h: 245
 			)
 		),
 		error: (
 			fill: (
 				l: 0.52,
-				c: 0.2,
-				h: 25
+				c: 0.19,
+				h: 22
 			),
 			border: (
 				l: 0.52,
-				c: 0.2,
-				h: 25
+				c: 0.19,
+				h: 22
 			)
 		),
 		warning: (
 			fill: (
-				l: 0.65,
+				l: 0.55,
 				c: 0.16,
-				h: 90
+				h: 75
 			),
 			border: (
-				l: 0.65,
+				l: 0.55,
 				c: 0.16,
-				h: 90
+				h: 75
 			)
 		),
 		success: (
 			fill: (
 				l: 0.5,
-				c: 0.16,
-				h: 145
+				c: 0.14,
+				h: 160
 			),
 			border: (
 				l: 0.5,
-				c: 0.16,
-				h: 145
+				c: 0.14,
+				h: 160
 			)
 		),
 		info: (
 			fill: (
 				l: 0.52,
-				c: 0.16,
-				h: 250
+				c: 0.15,
+				h: 255
 			),
 			border: (
 				l: 0.52,
-				c: 0.16,
-				h: 250
+				c: 0.15,
+				h: 255
 			)
 		)
 	)

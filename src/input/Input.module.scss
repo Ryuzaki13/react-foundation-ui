@@ -14,6 +14,8 @@
 	--ui-color: var(--content-0);
 	--ui-color-hover: var(--content-0);
 	--ui-color-active: var(--content-0);
+
+	--button-size: cacl(var(--control-height) - var(--border-width) * 2);
 }
 
 .inputNumber {
@@ -35,11 +37,10 @@
 	position: absolute;
 	height: 100%;
 	top: 0;
-	right: 0;
+	right: calc(var(--border-width) * 2);
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;
-	// max-width: calc(100% - (var(--space-md) * 2));
 	max-width: calc(100% - var(--space-md));
 }
 
@@ -50,18 +51,23 @@
 }
 
 .clearButton {
-	width: 1.75em;
-	height: 1.75em;
+	width: var(--button-size);
+	height: var(--button-size);
+	display: flex;
+	align-items: center;
+	justify-content: center;
 	border: none;
+	border-radius: var(--radius-sm);
+
 	background: transparent;
-	color: var(--content-1);
+	color: var(--content-2);
+
 	transition:
 		color var(--transition-fast) ease,
 		background-color var(--transition-fast) ease;
 
 	&:hover {
 		color: var(--content-accent);
-		background-color: var(--status-info-soft);
 	}
 
 	&:focus-visible {
@@ -70,7 +76,7 @@
 
 	&:disabled {
 		pointer-events: none;
-		opacity: 0.25;
+		opacity: var(--disabled-opacity);
 	}
 }
 

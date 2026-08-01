@@ -4,7 +4,6 @@ import { getStartOfDay, isDateRangeTuple, NullableDateRange } from "@ryuzaki13/r
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CalendarDaysIcon, Clock3Icon } from "lucide-react";
 
-import { Button } from "../../button";
 import { CalendarView } from "../../date-input/ui";
 import { InputControl, InputUI, useInputFieldIds } from "../../input";
 import { Popover } from "../../popover";
@@ -54,7 +53,7 @@ export function SingleDateTimeInput({
 	timePanelPlacement = "right",
 	mode = "date-time"
 }: SingleDateTimeInputProps): JSX.Element {
-	const normalizedValue = normalizeDateTimeValue(value, mode);
+	const normalizedValue = useMemo(() => normalizeDateTimeValue(value, mode), [mode, value]);
 	const normalizedValueTime = normalizedValue?.getTime() ?? null;
 
 	const fallbackPickerDate = useMemo(() => getStartOfDay(new Date()), []);
@@ -182,13 +181,11 @@ export function SingleDateTimeInput({
 					endAdornmentWidth="var(--control-height)"
 					endAdornment={
 						<Popover.Trigger>
-							<Button
-								variant="transparent"
-								disabled={disabled}
-								className={styles.calendarButton}
-								icon={mode === "time" ? <Clock3Icon /> : <CalendarDaysIcon />}
-								aria-label={buttonAriaLabel}
-							/>
+							<div className={uiStyles.uiToggleButtonContainer}>
+								<button type="button" disabled={disabled} aria-label={buttonAriaLabel} className={uiStyles.uiToggleButton}>
+									{mode === "time" ? <Clock3Icon /> : <CalendarDaysIcon />}
+								</button>
+							</div>
 						</Popover.Trigger>
 					}>
 					{({ controlClassName }) => (

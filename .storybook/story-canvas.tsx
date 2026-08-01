@@ -166,6 +166,7 @@ const resolveDocumentThemeMode = (): string => {
 export const applyDocumentTheme = (theme: DemoTheme, themeMode = resolveDocumentThemeMode()): void => {
 	const html = document.documentElement;
 
+	html.lang = "ru";
 	html.setAttribute("data-theme", `${theme}:${themeMode}`);
 	html.setAttribute("data-scheme", theme);
 	html.setAttribute("data-theme-mode", themeMode);

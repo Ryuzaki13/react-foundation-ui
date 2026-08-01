@@ -105,7 +105,7 @@ export function PresetRangeDateInput({
 	return (
 		<FlexContainer gap="sm" align="end">
 			<DateRangePresetSelect
-				size="md"
+				size={rangeDateInputProps.size}
 				label={presetLabel}
 				description={presetDescription}
 				placeholder={presetPlaceholder}
@@ -116,7 +116,7 @@ export function PresetRangeDateInput({
 				referenceDate={resolvedReferenceDate}
 			/>
 
-			<RangeDateInput {...rangeDateInputProps} size="md" value={controlledValue} onChange={handleRangeChange} />
+			<RangeDateInput {...rangeDateInputProps} value={controlledValue} onChange={handleRangeChange} />
 		</FlexContainer>
 	);
 }

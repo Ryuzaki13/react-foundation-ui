@@ -17,13 +17,13 @@ body {
 
 /* Для WebKit браузеров (Chrome, Safari, Edge) */
 input:-webkit-autofill {
-	-webkit-text-fill-color: var(--content-0) !important;
-	-webkit-box-shadow: 0 0 0 1000px var(--surface-0) inset !important;
+	-webkit-text-fill-color: var(--content-1) !important;
+	-webkit-box-shadow: 0 0 0 1000px var(--surface-1) inset !important;
 }
 
 /* Для Firefox */
 input:autofill {
-	background: var(--surface-0) !important;
+	background: var(--surface-1) !important;
 }
 
 #modal-root {

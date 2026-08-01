@@ -2,7 +2,6 @@ import { useRef, useState } from "react";
 
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { CheckIcon } from "lucide-react";
 
 import {
 	PickerField,
@@ -232,13 +231,6 @@ export function LayoutPicker({
 											onClick={() => selectOption(preset)}>
 											<span className={styles.optionPreviewWrap}>
 												<LayoutPresetPreview preset={preset} />
-											</span>
-											<span className="fontSizeSm">
-												<span>{preset.label}</span>
-												{preset.description ? <span>{preset.description}</span> : null}
-											</span>
-											<span className={styles.optionCheck} aria-hidden="true">
-												{selected ? <CheckIcon /> : null}
 											</span>
 										</button>
 									);

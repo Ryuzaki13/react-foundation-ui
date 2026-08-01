@@ -264,7 +264,11 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							autoComplete="off"
 							role="combobox"
 							value={inputValue}
-							placeholder={selectedOption === undefined || showSearchValue ? `${placeholder} <${options.length}>` : undefined}
+							placeholder={
+								selectedOption === undefined || showSearchValue
+									? `${placeholder ?? label ?? ""} <${options.length}>`
+									: undefined
+							}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
 							aria-haspopup="listbox"

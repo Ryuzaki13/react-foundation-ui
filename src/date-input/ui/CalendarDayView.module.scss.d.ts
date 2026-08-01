@@ -9,8 +9,8 @@ declare const styles: {
   readonly outsideMonth: "outsideMonth";
   readonly periodSelection: "periodSelection";
   readonly periodPreview: "periodPreview";
-  readonly range: "range";
   readonly selected: "selected";
+  readonly range: "range";
   readonly rangeStart: "rangeStart";
   readonly rangeEnd: "rangeEnd";
   readonly weekend: "weekend";

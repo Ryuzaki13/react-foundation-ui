@@ -42,6 +42,7 @@ export function Textarea({
 			label={label}
 			description={description}
 			disabled={disabled}
+			required={props.required}
 			size={size}
 			error={error}
 			controlId={controlId}

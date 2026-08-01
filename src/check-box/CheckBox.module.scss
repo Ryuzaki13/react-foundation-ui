@@ -5,6 +5,9 @@
 }
 
 .wrapper {
+	--check-box-size: var(--text-height);
+	--check-icon-size: calc(var(--text-height) - var(--space-sm));
+
 	width: var(--control-height);
 	height: var(--control-height);
 	flex-shrink: 0;
@@ -16,8 +19,8 @@
 }
 
 .input {
-	width: 1.5em;
-	height: 1.5em;
+	width: var(--check-box-size);
+	height: var(--check-box-size);
 	border-radius: var(--radius-xs);
 }
 
@@ -26,14 +29,13 @@
 }
 
 .icon {
-	width: 1.5em;
-	height: 1.5em;
+	width: var(--check-box-size);
+	height: var(--check-box-size);
 
 	svg {
 		display: block;
-		width: 1em;
-		height: 1em;
-		fill: currentColor;
-		stroke: none;
+		width: var(--check-icon-size);
+		height: var(--check-icon-size);
+		stroke: currentColor;
 	}
 }

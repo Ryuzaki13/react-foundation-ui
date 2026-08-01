@@ -52,6 +52,16 @@ function setTrackRect(trackElement: Element, left: number, width: number) {
 	});
 }
 
+function getTooltipReference(element: Element): HTMLElement {
+	const reference = element.closest<HTMLElement>('[data-slot="slider-tooltip-reference"]');
+
+	if (!reference) {
+		throw new Error("Не найден reference тултипа Slider");
+	}
+
+	return reference;
+}
+
 function SingleSliderHarness() {
 	const [value, setValue] = useState<number | undefined>(50);
 
@@ -136,7 +146,7 @@ afterEach(async () => {
 });
 
 describe("Slider", () => {
-	it("поддерживает drag и клавиатурную навигацию для single-value режима", async () => {
+	it("перемещает anchor тултипа вместе с бегунком при drag и клавиатурной навигации", async () => {
 		await renderNode(<SingleSliderHarness />);
 
 		const track = container?.querySelector('[data-slot="track"]') as HTMLDivElement;
@@ -150,21 +160,25 @@ describe("Slider", () => {
 		});
 
 		expect(thumb.getAttribute("aria-valuenow")).toBe("80");
+		expect(getTooltipReference(thumb).style.left).toBe("80%");
 
 		await act(async () => {
 			thumb.dispatchEvent(new KeyboardEvent("keydown", { key: "PageDown", bubbles: true }));
 		});
 		expect(thumb.getAttribute("aria-valuenow")).toBe("0");
+		expect(getTooltipReference(thumb).style.left).toBe("0%");
 
 		await act(async () => {
 			thumb.dispatchEvent(new KeyboardEvent("keydown", { key: "End", bubbles: true }));
 		});
 		expect(thumb.getAttribute("aria-valuenow")).toBe("100");
+		expect(getTooltipReference(thumb).style.left).toBe("100%");
 
 		await act(async () => {
 			thumb.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowLeft", bubbles: true }));
 		});
 		expect(thumb.getAttribute("aria-valuenow")).toBe("90");
+		expect(getTooltipReference(thumb).style.left).toBe("90%");
 	});
 
 	it("клик по track двигает ближайший thumb в range-режиме и не даёт пересечь значения", async () => {
@@ -190,7 +204,7 @@ describe("Slider", () => {
 		expect(thumbs[1]?.getAttribute("aria-valuenow")).toBe("70");
 	});
 
-	it("поддерживает равномерное расположение marks через marksPosition=index", async () => {
+	it("поддерживает равномерное расположение marks через marksPosition=index и привязывает тултип к бегунку", async () => {
 		await renderNode(<MonthSliderHarness />);
 
 		const track = container?.querySelector('[data-slot="track"]') as HTMLDivElement;
@@ -203,7 +217,7 @@ describe("Slider", () => {
 		});
 
 		expect(thumb.getAttribute("aria-valuenow")).toBe("9");
-		expect(thumb.style.left).toBe("50%");
+		expect(getTooltipReference(thumb).style.left).toBe("50%");
 		expect((container?.querySelector('[data-slot="fill"]') as HTMLDivElement).style.width).toBe("50%");
 	});
 
@@ -228,8 +242,8 @@ describe("Slider", () => {
 
 		const thumbs = Array.from(container?.querySelectorAll<HTMLButtonElement>('[role="slider"]') ?? []);
 		expect(thumbs[0]?.getAttribute("aria-valuenow")).toBe("1");
-		expect(thumbs[0]?.style.left).toBe("16.666666666666664%");
+		expect(thumbs[0] && getTooltipReference(thumbs[0]).style.left).toBe("16.666666666666664%");
 		expect(thumbs[1]?.getAttribute("aria-valuenow")).toBe("24");
-		expect(thumbs[1]?.style.left).toBe("83.33333333333334%");
+		expect(thumbs[1] && getTooltipReference(thumbs[1]).style.left).toBe("83.33333333333334%");
 	});
 });

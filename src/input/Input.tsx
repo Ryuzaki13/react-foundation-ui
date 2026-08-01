@@ -17,6 +17,7 @@ export interface InputUIProps extends Omit<UiBaseProps<never>, "value" | "onChan
 	labelId?: string;
 	descriptionId?: string;
 	errorId?: string;
+	required?: boolean;
 	children: React.ReactNode;
 }
 
@@ -88,6 +89,7 @@ export function InputUI({
 	labelId,
 	descriptionId,
 	errorId,
+	required,
 	children
 }: InputUIProps) {
 	return (
@@ -97,6 +99,7 @@ export function InputUI({
 				uiStyles.uiSizable,
 				size && uiStyles[size as UiSize],
 				disabled && uiStyles.disabled,
+				required && uiStyles.required,
 				className
 			)}
 			aria-disabled={disabled || undefined}>
@@ -137,7 +140,7 @@ export function InputClearButton({ onClick, disabled, className, ariaLabel = "О
 		<button
 			type="button"
 			disabled={disabled || !onClick}
-			className={cn(styles.clearButton, "flexCenter radiusSm", className)}
+			className={cn(styles.clearButton, className)}
 			onClick={onClick}
 			aria-label={ariaLabel}>
 			<XIcon />
@@ -239,7 +242,7 @@ export function InputText({
 		hasError: !!visibleError
 	});
 	const isInvalid = hasValue && (!!error || internalInvalid);
-	const resolvedEndAdornment = createEndAdornment({ endAdornment, onClear, disabled });
+	const resolvedEndAdornment = createEndAdornment({ endAdornment, onClear, disabled: disabled || !hasValue });
 	const hasCustomAdornment = endAdornment !== undefined && endAdornment !== null;
 	const resolvedEndAdornmentWidth = resolveEndAdornmentWidth(hasCustomAdornment, !!onClear, endAdornmentWidth);
 
@@ -248,6 +251,7 @@ export function InputText({
 			label={label}
 			description={description}
 			disabled={disabled}
+			required={props.required}
 			className={className}
 			size={size}
 			error={visibleError}
@@ -307,11 +311,9 @@ export function InputNumber({
 	});
 
 	const [rawValue, setRawValue] = useState<string>(() => String(value));
-	// const [internalInvalid, setInternalInvalid] = useState(false);
 
 	const syncRawValue = useEffectEvent((nextRaw: string) => {
 		setRawValue(nextRaw);
-		// setInternalInvalid(false);
 	});
 
 	useEffect(() => {
@@ -322,7 +324,6 @@ export function InputNumber({
 	const handleClear = onClear
 		? () => {
 				setRawValue("");
-				// setInternalInvalid(false);
 				onClear();
 			}
 		: undefined;
@@ -337,7 +338,6 @@ export function InputNumber({
 		if (error && onClearError) onClearError();
 	};
 
-	// const isInvalid = !!error || internalInvalid;
 	const resolvedEndAdornment = createEndAdornment({ endAdornment, onClear: handleClear, disabled });
 	const hasCustomAdornment = endAdornment !== undefined && endAdornment !== null;
 	const resolvedEndAdornmentWidth = resolveEndAdornmentWidth(hasCustomAdornment, !!handleClear, endAdornmentWidth);
@@ -347,6 +347,7 @@ export function InputNumber({
 			label={label}
 			description={description}
 			disabled={disabled}
+			required={props.required}
 			className={className}
 			size={size}
 			error={error}
@@ -366,7 +367,6 @@ export function InputNumber({
 						inputMode="decimal"
 						disabled={disabled}
 						value={rawValue}
-						// aria-invalid={isInvalid || undefined}
 						aria-labelledby={labelId}
 						aria-describedby={describedBy}
 						className={cn(uiStyles.uiInputControl, styles.input, styles.inputNumber, controlClassName)}

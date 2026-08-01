@@ -3,6 +3,7 @@ import { createRequire } from "node:module";
 import { resolve } from "node:path";
 
 import react from "@vitejs/plugin-react";
+import sassDts from "vite-plugin-sass-dts";
 import { defineConfig } from "vitest/config";
 
 const require = createRequire(import.meta.url);
@@ -70,7 +71,15 @@ function createDefine(configEnv: { mode: string }): Record<string, string> {
 
 export default defineConfig((configEnv) => ({
 	define: createDefine(configEnv),
-	plugins: [react()],
+	plugins: [
+		react(),
+		sassDts({
+			enabledMode: ["development"],
+			esmExport: true,
+			legacyFileFormat: true,
+			exportName: { replacement: "styles" }
+		})
+	],
 	resolve: {
 		alias: {
 			"@/styles": resolve("src/styles")

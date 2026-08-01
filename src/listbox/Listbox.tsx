@@ -19,6 +19,7 @@ type ListboxOption<T> = {
 
 interface ListboxBaseProps<T> extends Omit<HTMLAttributes<HTMLUListElement>, "onChange" | "defaultValue" | "value"> {
 	options: ListboxOption<T>[];
+	disabled?: boolean;
 	focusOnMount?: boolean;
 	renderItem?: (option: ListboxOption<T>, selected: boolean, active: boolean) => ReactNode;
 	getKey?: (option: ListboxOption<T>, index: number) => string;
@@ -73,7 +74,7 @@ export function Listbox<T>(props: ListboxSingleProps<T>): JSX.Element;
 export function Listbox<T>(props: ListboxMultiProps<T>): JSX.Element;
 export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { value, defaultValue, multiple, focusOnMount, renderItem, getKey, options, onChange, id: externalId, ...rest } = props;
+	const { value, defaultValue, multiple, disabled, focusOnMount, renderItem, getKey, options, onChange, id: externalId, ...rest } = props;
 
 	const isControlled = value !== undefined;
 	const autoId = useId();
@@ -81,16 +82,20 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	const [internalValue, setInternalValue] = useState<T | T[] | undefined>(defaultValue);
 	const listRef = useRef<HTMLUListElement>(null);
 	const [focusedIndex, setFocusedIndex] = useState(() => getInitialFocusIndex(options, value ?? defaultValue, multiple));
-	// const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
+	/**
+	 * Прокрутка нужна только после клавиатурной навигации. Это не даёт монтированию и Fast Refresh
+	 * вызывать scrollIntoView, который иначе прокручивает внешнюю страницу до Listbox.
+	 */
+	const shouldScrollActiveOptionRef = useRef(false);
 
 	const selectedValues = useMemo(
 		() => (isControlled ? value : internalValue) ?? (multiple ? [] : null),
 		[internalValue, isControlled, multiple, value]
 	);
-	const activeIndex = /*hoveredIndex ??*/ focusedIndex;
+	const activeIndex = focusedIndex;
 
 	const handleSelect = (option: ListboxOption<T>) => {
-		if (option.disabled) return;
+		if (disabled || option.disabled) return;
 
 		let newValue: T | T[];
 		if (props.multiple) {
@@ -108,20 +113,26 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLUListElement>) => {
+		if (disabled) return;
+
 		if (e.key === "ArrowDown") {
 			e.preventDefault();
+			shouldScrollActiveOptionRef.current = true;
 			// setHoveredIndex(null);
 			setFocusedIndex((index) => findNextEnabledIndex(options, index, 1, isOptionDisabled));
 		} else if (e.key === "ArrowUp") {
 			e.preventDefault();
+			shouldScrollActiveOptionRef.current = true;
 			// setHoveredIndex(null);
 			setFocusedIndex((index) => findNextEnabledIndex(options, index, -1, isOptionDisabled));
 		} else if (e.key === "Home") {
 			e.preventDefault();
+			shouldScrollActiveOptionRef.current = true;
 			// setHoveredIndex(null);
 			setFocusedIndex(findFirstEnabledIndex(options, isOptionDisabled));
 		} else if (e.key === "End") {
 			e.preventDefault();
+			shouldScrollActiveOptionRef.current = true;
 			// setHoveredIndex(null);
 			setFocusedIndex(findLastEnabledIndex(options, isOptionDisabled));
 		} else if (
@@ -137,6 +148,9 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	};
 
 	useEffect(() => {
+		if (!shouldScrollActiveOptionRef.current) return;
+
+		shouldScrollActiveOptionRef.current = false;
 		const el = listRef.current?.querySelectorAll<HTMLElement>('[role="option"]')[activeIndex];
 		if (el) el.scrollIntoView({ block: "nearest" });
 	}, [activeIndex]);
@@ -154,11 +168,11 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 			role="listbox"
 			aria-multiselectable={multiple || undefined}
 			aria-activedescendant={activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined}
-			tabIndex={0}
-			// onMouseLeave={() => setHoveredIndex(null)}
 			onKeyDown={handleKeyDown}
 			{...rest}
-			className={cn(uiStyles.uiPanel, "scrollable")}>
+			aria-disabled={disabled || undefined}
+			tabIndex={disabled ? -1 : 0}
+			className={cn(uiStyles.uiPanel, "scrollable surface1", disabled && uiStyles.disabled)}>
 			{options.map((option, index) => {
 				const selected = multiple
 					? Array.isArray(selectedValues) && selectedValues.includes(option.value)
@@ -171,21 +185,19 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 						id={`${listId}-option-${index}`}
 						role="option"
 						aria-selected={selected}
-						aria-disabled={option.disabled || undefined}
+						aria-disabled={disabled || option.disabled || undefined}
 						onMouseDown={(e) => {
 							e.preventDefault(); // чтобы не сбрасывался фокус listbox
-							if (option.disabled) {
+							if (disabled || option.disabled) {
 								return;
 							}
 							setFocusedIndex(index);
-							// setHoveredIndex(index);
 							handleSelect(option);
 						}}
-						// onMouseEnter={() => setHoveredIndex(index)}
 						tabIndex={-1}
 						className={cn(
 							uiStyles.uiPopupOption,
-							option.disabled && uiStyles.disabled,
+							(disabled || option.disabled) && uiStyles.disabled,
 							active && uiStyles.uiPopupOptionActive,
 							selected && uiStyles.selected
 						)}>

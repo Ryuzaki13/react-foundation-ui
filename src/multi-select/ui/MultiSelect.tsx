@@ -473,7 +473,9 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								autoComplete="off"
 								disabled={disabled}
 								value={currentQuery}
-								placeholder={hasSelectedItems ? undefined : `${placeholder} <${items.length}>`}
+								placeholder={
+									hasSelectedItems ? undefined : `${placeholder ?? label ?? "Выберите значения"} <${items.length}>`
+								}
 								aria-labelledby={labelId}
 								aria-describedby={describedBy}
 								aria-haspopup="listbox"
@@ -488,8 +490,6 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 										disabled={disabled}
 										onToggleMouseDown={triggerController.handleToggleMouseDown}
 										onToggleClick={triggerController.handleToggleClick}>
-										{tokenNode}
-
 										<button
 											type="button"
 											disabled={!hasSelectedItems}
@@ -502,6 +502,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 										</button>
 									</PickerTriggerActions>
 								}
+								overlay={tokenNode}
 								onChange={(event) => {
 									triggerController.handleTriggerInputChange(event.target.value);
 								}}

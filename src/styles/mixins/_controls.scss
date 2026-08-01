@@ -34,9 +34,9 @@
 	--ui-color: var(--ui-tone-text);
 	--ui-color-hover: var(--ui-tone-text-hover);
 	--ui-color-active: var(--ui-tone-text-active);
-	--ui-background: var(--surface-0);
-	--ui-background-hover: var(--surface-0);
-	--ui-background-active: var(--surface-0);
+	--ui-background: var(--surface-1);
+	--ui-background-hover: var(--surface-1);
+	--ui-background-active: var(--surface-1);
 	--ui-border-color: var(--ui-tone-border);
 	--ui-border-hover: var(--ui-tone-border-hover);
 	--ui-border-active: var(--ui-tone-border-active);
@@ -70,9 +70,9 @@
 }
 
 @mixin ui-control-base {
-	color: var(--ui-color, var(--content-0));
-	background-color: var(--ui-background, var(--surface-0));
-	border: var(--border-width) solid var(--ui-border-color, transparent);
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border: var(--border-width) solid var(--ui-border-color);
 	border-radius: var(--ui-radius, var(--radius-sm));
 	outline: none;
 
@@ -81,20 +81,21 @@
 	transition-timing-function: ease;
 
 	&:hover {
-		color: var(--ui-color-hover, var(--ui-color, var(--content-0)));
-		background-color: var(--ui-background-hover, var(--ui-background, transparent));
-		border-color: var(--ui-border-hover, var(--ui-border-color, transparent));
+		color: var(--ui-color-hover);
+		background-color: var(--ui-background-hover);
+		border-color: var(--ui-border-hover);
 	}
 
 	&:active {
-		color: var(--ui-color-active, var(--ui-color-hover, var(--ui-color, var(--content-0))));
-		background-color: var(--ui-background-active, var(--ui-background-hover, var(--ui-background, transparent)));
-		border-color: var(--ui-border-active, var(--ui-border-hover, var(--ui-border-color, transparent)));
+		color: var(--ui-color-active);
+		border-color: var(--ui-border-active);
+		background-color: var(--ui-background-active);
 	}
 
 	&:focus,
 	&:focus-within {
-		border-color: var(--ui-border-focus, var(--ui-border-active, var(--ui-border-color, transparent)));
+		background-color: var(--ui-background-active);
+		border-color: var(--ui-border-focus);
 	}
 
 	&:focus-visible {
@@ -115,9 +116,9 @@
 }
 
 @mixin ui-static-surface {
-	color: var(--ui-color, var(--content-0));
-	background-color: var(--ui-background, transparent);
-	border: var(--border-width) solid var(--ui-border-color, transparent);
+	color: var(--ui-color);
+	background-color: var(--ui-background);
+	border: var(--border-width) solid var(--ui-border-color);
 	border-radius: var(--ui-radius, var(--radius-sm));
 	transition-property: border-color, color, background-color, opacity;
 	transition-duration: var(--transition-fast);

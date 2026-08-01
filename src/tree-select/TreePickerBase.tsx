@@ -303,14 +303,20 @@ export function TreePickerBase({
 								optionsLayout !== "columns" && open && visibleEntries.length > 0 ? getActiveOptionId(listId) : undefined
 							}
 							inputClassName={cn(hasSelection && styles.treeSummary, showSummaryOverlay && styles.inputWithOverlay)}
-							overlay={showSummaryOverlay ? <div className={styles.valueOverlay}>{selectedSummary}</div> : undefined}
+							overlay={
+								showSummaryOverlay ? (
+									<div className={styles.valueOverlay}>{selectedSummary}</div>
+								) : showSummaryToken ? (
+									selectedSummary
+								) : undefined
+							}
 							endAdornment={
 								<PickerTriggerActions
 									open={open}
 									disabled={disabled || isLoading}
 									onToggleMouseDown={triggerController.handleToggleMouseDown}
 									onToggleClick={triggerController.handleToggleClick}>
-									{showSummaryToken ? selectedSummary : null}
+									{/* {showSummaryToken ? selectedSummary : null} */}
 
 									{hasSelection && onClearSelection ? (
 										<button

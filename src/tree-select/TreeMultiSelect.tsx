@@ -1,6 +1,7 @@
 import { useMemo, useState } from "react";
 
 import { MultiSelectToken } from "../multi-select";
+import { formatOptionCount } from "../multi-select/ui/defaultRenderers";
 import { usePickerSelectionLifecycle } from "../picker";
 import { UiBaseProps } from "../types";
 
@@ -47,7 +48,7 @@ function formatTreeMultiSummary(selectedIds: Set<string>, treeIndex: ReturnType<
 		return selectedNode.label;
 	}
 
-	return `${selectedIds.size} элементов`;
+	return formatOptionCount(selectedIds.size);
 }
 
 /**

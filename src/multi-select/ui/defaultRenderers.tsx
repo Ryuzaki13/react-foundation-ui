@@ -1,16 +1,26 @@
+import { formatRussianPlural, type RussianPluralForms } from "@ryuzaki13/react-foundation-lib/formatters";
 import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
 import { PickerSelectionToolbar } from "../../picker";
 
+import { type MultiSelectItemState, type MultiSelectRenderContext } from "./MultiSelect";
 import { MultiSelectOption } from "./MultiSelectOption";
 import { MultiSelectToken } from "./MultiSelectToken";
-
-import type { MultiSelectItemState, MultiSelectRenderContext } from "./MultiSelect";
 
 interface MultiSelectRendererConfig {
 	codeKey: string;
 	textKey?: string;
 	hideCode?: boolean;
+}
+
+const ELEMENT_FORMS: RussianPluralForms = {
+	one: "элемент",
+	few: "элемента",
+	many: "элементов"
+};
+
+export function formatOptionCount(count: number) {
+	return formatRussianPlural(count, ELEMENT_FORMS);
 }
 
 export function resolveMultiSelectTextKey(items: CollectionItem[], codeKey: string, textKey?: string) {
@@ -33,7 +43,7 @@ export function getDefaultMultiSelectTokenValue(items: CollectionItem[], codeKey
 	}
 
 	if (items.length > 1) {
-		return `${items.length} элементов`;
+		return formatOptionCount(items.length);
 	}
 
 	const resolvedTextKey = resolveMultiSelectTextKey(items, codeKey, textKey);

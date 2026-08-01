@@ -10,11 +10,11 @@
 	align-items: center;
 	justify-content: flex-end;
 
-	height: calc(100% - var(--space-sm));
-	width: calc(var(--base-width, 100%) - (var(--control-height) * 2) - var(--space-md));
+	position: absolute;
+	inset: 0 calc(var(--control-height) * 2) 0 var(--space-md);
 
 	pointer-events: none;
-	// overflow: hidden;
+	overflow: hidden;
 
 	&:empty {
 		display: none;
@@ -22,7 +22,9 @@
 }
 
 .multiSelectToken {
-	// font-size: var(--font-size-sm);
+	font-size: var(--font-size-sm);
+	font-weight: 300;
+	font-variation-settings: "wght" 300;
 
 	// flex: 1 1 0%;
 	// min-width: 0;
