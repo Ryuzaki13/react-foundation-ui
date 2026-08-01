@@ -400,13 +400,13 @@
 }
 
 .uiOptionText {
-	font-size: var(--font-size-sm);
+	// font-size: var(--font-size-sm);
 	flex: 1;
 }
 
 .uiOptionCode {
 	font-family: var(--font-family-mono);
-	font-size: var(--font-size-sm);
+	// font-size: var(--font-size-sm);
 	color: var(--content-1);
 	font-weight: 300;
 	font-variation-settings: "wght" 300;
