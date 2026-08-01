@@ -305,7 +305,7 @@ export function InteractiveComponents() {
 			</ComponentCard>
 
 			<ComponentCard title="SingleDateInput">
-				<SingleDateInput label="Дата" value={date} onChange={setDate} />
+				<SingleDateInput label="Дата" value={date} onChange={setDate} selectionMode="week" />
 			</ComponentCard>
 
 			<ComponentCard title="SingleDateTimeInput">

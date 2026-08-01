@@ -24,8 +24,8 @@ export function Disclosure({ label, defaultOpen, headerActions, children }: Disc
 	const buttonId = useId();
 
 	return (
-		<div className={cn(uiStyles.uiElement, styles.disclosure)}>
-			<div className={cn(styles.disclosureHeader, open && styles.open)}>
+		<div className={cn(uiStyles.uiElement, uiStyles.uiPanel, styles.disclosure)}>
+			<div className={styles.disclosureHeader}>
 				<button
 					id={buttonId}
 					type="button"

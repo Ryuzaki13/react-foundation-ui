@@ -1,22 +1,10 @@
 .disclosure {
-	background-color: var(--surface-0);
-
-	border: var(--border);
-	border-radius: var(--radius-sm);
-
-	overflow: hidden;
+	--ui-panel-background: var(--surface-1);
 }
 
 .disclosureHeader {
 	display: flex;
 	align-items: center;
-
-	padding: var(--space-sm);
-	background-color: var(--surface-1);
-
-	&.open {
-		background-color: var(--surface-0);
-	}
 }
 
 .disclosureButton {
