@@ -2,7 +2,7 @@ import { useState, type CSSProperties } from "react";
 
 import { fn } from "storybook/test";
 
-import { Tabs, TabsBox, TabsLayout, type TabsBoxItem, type TabsBoxProps, type TabsLayoutProps, type TabsProps } from "..";
+import { TabsBox, TabsLayout, type TabsBoxItem, type TabsBoxProps, type TabsLayoutProps } from "..";
 import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Scrollable } from "../../misc";
 
@@ -93,8 +93,7 @@ const meta = {
 		mountStrategy: "unmount",
 		isLoading: false,
 		loadingText: "Загрузка вкладок...",
-		cleanPanel: false,
-		bordered: false,
+		clean: false,
 		loop: true
 	},
 	parameters: {
@@ -133,12 +132,8 @@ const meta = {
 			control: "inline-radio",
 			options: ["unmount", "lazy", "keep-mounted"]
 		},
-		cleanPanel: {
+		clean: {
 			description: "Убирает базовые padding и surface-оформление panel-области.",
-			control: "boolean"
-		},
-		bordered: {
-			description: "Добавляет рамку вокруг области панелей.",
 			control: "boolean"
 		},
 		loop: {
@@ -168,7 +163,6 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 type LayoutStory = StoryObj<TabsLayoutProps>;
-type LegacyStory = StoryObj<TabsProps>;
 
 function createTabsBoxStoryRender(height?: number) {
 	return createControlledStoryRender<TabsBoxProps>((args, updateArgs) => {
@@ -206,8 +200,7 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 				activationMode={args.activationMode}
 				mountStrategy={args.mountStrategy}
 				loop={args.loop}
-				cleanPanel={args.cleanPanel}
-				bordered={args.bordered}
+				clean={args.clean}
 				className={args.className}
 				aria-label={args["aria-label"]}
 				aria-labelledby={args["aria-labelledby"]}>
@@ -254,21 +247,6 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 	);
 });
 
-const renderLegacyTabsStory = createControlledStoryRender<TabsProps>((args, updateArgs) => {
-	const value = args.value ?? args.defaultValue;
-
-	return (
-		<Tabs
-			{...args}
-			value={value}
-			onValueChange={(nextValue) => {
-				args.onValueChange?.(nextValue);
-				updateArgs({ value: nextValue });
-			}}
-		/>
-	);
-});
-
 export const BoxBasic: Story = {
 	args: {
 		"aria-label": "Основные разделы профиля"
@@ -287,7 +265,6 @@ export const BoxControlled: Story = {
 export const BoxVertical: Story = {
 	args: {
 		orientation: "vertical",
-		bordered: true,
 		"aria-label": "Вертикальные вкладки"
 	},
 	render: createTabsBoxStoryRender(320)
@@ -318,42 +295,11 @@ export const LayoutPanels: LayoutStory = {
 		orientation: "horizontal",
 		activationMode: "manual",
 		mountStrategy: "lazy",
-		cleanPanel: false,
-		bordered: true,
+		clean: false,
 		loop: true,
 		"aria-label": "Составные панели документа"
 	},
 	render: renderTabsLayoutStory
-};
-
-export const LegacyTabs: LegacyStory = {
-	args: {
-		items: demoItems,
-		value: "profile",
-		onValueChange: fn<(value: string) => void>(),
-		onChange: fn<(value: string) => void>(),
-		orientation: "horizontal",
-		activationMode: "automatic",
-		mountStrategy: "unmount",
-		cleanPanel: false,
-		bordered: false,
-		loop: true,
-		"aria-label": "Устаревший совместимый API"
-	},
-	render: renderLegacyTabsStory,
-	argTypes: {
-		onChange: {
-			description: "Deprecated callback совместимого компонента `Tabs`.",
-			control: false
-		}
-	},
-	parameters: {
-		docs: {
-			description: {
-				story: "Совместимый фасад поверх `TabsBox`. Новый функционал добавляется только в `TabsBox` и `TabsLayout`."
-			}
-		}
-	}
 };
 
 export const Loading: Story = {

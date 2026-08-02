@@ -88,15 +88,6 @@ export function Example() {
 - `Content` не получает встроенный `overflow` и не оборачивается во внутренний padding от tabs-компонента.
 - `loading` и `empty` состояния рендерятся снаружи вызывающим кодом.
 
-## Deprecated Tabs
-
-<Canvas of={TabsStories.LegacyTabs} />
-
-`Tabs` сохранён только для обратной совместимости. Семантика до/после:
-
-- До: один публичный компонент пытался одновременно управлять и tabs-state, и layout панели, и scroll-сценариями.
-- После: `Tabs` остаётся тонким фасадом над `TabsBox`, а новые сценарии идут через отдельные `TabsBox` и `TabsLayout`.
-
 ## API
 
 <ArgTypes of={TabsStories} />
