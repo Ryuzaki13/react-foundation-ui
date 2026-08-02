@@ -3,10 +3,28 @@ import { useCallback, useState } from "react";
 import { SearchConfig } from "./types";
 
 /**
+ * Создаёт независимый набор выбора и сохраняет последнюю строку для каждого ведущего ключа.
+ * Это единая структурная граница как для initial snapshot модалки, так и для дальнейших
+ * обновлений выбора из таблицы.
+ */
+function buildAdvancedSearchSelection<T extends Record<string, string>>(items: readonly T[], leadingKey: keyof T): T[] {
+	const selectionById = new Map<string, T>();
+
+	for (const item of items) {
+		selectionById.set(String(item[leadingKey]), item);
+	}
+
+	return Array.from(selectionById.values());
+}
+
+/**
  * Хук для управления выбором клиентов
  */
-export function useAdvancedSearchSelection<T extends Record<string, string>>(config: SearchConfig<T>) {
-	const [selectedItems, setSelectedItems] = useState<T[]>([]);
+export function useAdvancedSearchSelection<T extends Record<string, string>>(
+	config: SearchConfig<T>,
+	initialSelectedItems: readonly T[] = []
+) {
+	const [selectedItems, setSelectedItems] = useState<T[]>(() => buildAdvancedSearchSelection(initialSelectedItems, config.leadingKey));
 
 	/**
 	 * Сравнивает наборы выбранных элементов по ведущему ключу без учёта порядка.
@@ -30,13 +48,7 @@ export function useAdvancedSearchSelection<T extends Record<string, string>>(con
 	const replaceSelection = useCallback(
 		(nextItems: readonly T[]) => {
 			setSelectedItems((prev) => {
-				const nextSelectionMap = new Map<string, T>();
-
-				for (const item of nextItems) {
-					nextSelectionMap.set(String(item[config.leadingKey]), item);
-				}
-
-				const normalizedItems = Array.from(nextSelectionMap.values());
+				const normalizedItems = buildAdvancedSearchSelection(nextItems, config.leadingKey);
 
 				return areSelectionsEqual(prev, normalizedItems) ? prev : normalizedItems;
 			});

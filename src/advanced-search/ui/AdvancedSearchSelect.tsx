@@ -3,12 +3,14 @@ import { useCallback, useState } from "react";
 import { UiBaseProps } from "../../types";
 import { SearchConfig, useAdvancedSearchInitialSelected } from "../model";
 
-import { AdvancedSearchModal } from "./AdvancedSearchModal";
+import { AdvancedSearchModal, type AdvancedSearchInitialSelection } from "./AdvancedSearchModal";
 import { AdvancedSearchSelectUI } from "./AdvancedSearchSelectUI";
 
 type AdvancedSearchSelectProps<T extends Record<string, string>> = UiBaseProps<string[]> & {
 	config: SearchConfig<T>;
 };
+
+const EMPTY_INITIAL_SELECTION: readonly never[] = [];
 
 export function AdvancedSearchSelect<T extends Record<string, string>>({
 	value = [],
@@ -18,7 +20,16 @@ export function AdvancedSearchSelect<T extends Record<string, string>>({
 }: AdvancedSearchSelectProps<T>) {
 	const [isModalOpen, setIsModalOpen] = useState(false);
 
-	const { data: selectedItems } = useAdvancedSearchInitialSelected(config, value);
+	const initialSelectionQuery = useAdvancedSearchInitialSelected(config, value);
+	const selectedItems = initialSelectionQuery.data;
+	const initialSelection: AdvancedSearchInitialSelection<T> =
+		value.length === 0
+			? { status: "ready", items: EMPTY_INITIAL_SELECTION }
+			: selectedItems !== undefined
+				? { status: "ready", items: selectedItems }
+				: initialSelectionQuery.isError
+					? { status: "error" }
+					: { status: "loading" };
 
 	const handleOpen = useCallback(() => setIsModalOpen(true), []);
 	const handleClose = useCallback(() => setIsModalOpen(false), []);
@@ -45,7 +56,7 @@ export function AdvancedSearchSelect<T extends Record<string, string>>({
 					config={config}
 					onClose={handleClose}
 					onItemsSelect={handleSelect}
-					initialSelectedItems={selectedItems}
+					initialSelection={initialSelection}
 				/>
 			)}
 		</>
