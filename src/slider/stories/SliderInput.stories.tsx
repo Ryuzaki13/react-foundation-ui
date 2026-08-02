@@ -1,10 +1,10 @@
 import type { ReactNode } from "react";
 
 import { createFilterBetween } from "@ryuzaki13/react-foundation-lib/odata-service";
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { SliderInput, SliderRangeInput, type SliderInputProps, type SliderRangeInputProps, type SliderRangeValue } from "..";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -131,28 +131,22 @@ export default meta;
 type SingleStory = StoryObj<SliderInputProps>;
 type RangeStory = StoryObj<SliderRangeInputProps>;
 
-function SliderInputStoryCanvas({ args }: { args: SliderInputProps }) {
-	const [, updateArgs] = useArgs<SliderInputProps>();
+const renderSliderInputStory = createControlledStoryRender<SliderInputProps>((args, updateArgs) => (
+	<SliderInput
+		{...args}
+		onChange={(value) => {
+			args.onChange(value);
+			updateArgs({ value });
+		}}
+		onClearError={() => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}}
+	/>
+));
 
-	return (
-		<SliderInput
-			{...args}
-			onChange={(value) => {
-				args.onChange(value);
-				updateArgs({ value });
-			}}
-			onClearError={() => {
-				args.onClearError?.();
-				updateArgs({ error: undefined });
-			}}
-		/>
-	);
-}
-
-function RangeSliderInputStoryCanvas({ args, field }: { args: SliderRangeInputProps; field: string }) {
-	const [, updateArgs] = useArgs<SliderRangeInputProps>();
-
-	return (
+function createRangeSliderInputStoryRender(field: string) {
+	return createControlledStoryRender<SliderRangeInputProps>((args, updateArgs) => (
 		<>
 			<SliderRangeInput
 				{...args}
@@ -167,7 +161,7 @@ function RangeSliderInputStoryCanvas({ args, field }: { args: SliderRangeInputPr
 			/>
 			<RangePreview value={args.value} field={field} />
 		</>
-	);
+	));
 }
 
 function RangePreview({
@@ -201,9 +195,7 @@ function RangePreview({
 }
 
 export const Basic: SingleStory = {
-	render: function Render(args) {
-		return <SliderInputStoryCanvas args={args} />;
-	},
+	render: renderSliderInputStory,
 	args: {
 		label: "Порог",
 		description: "Ручной ввод и popover slider работают с одним значением."
@@ -211,9 +203,7 @@ export const Basic: SingleStory = {
 };
 
 export const MarksSnap: SingleStory = {
-	render: function Render(args) {
-		return <SliderInputStoryCanvas args={args} />;
-	},
+	render: renderSliderInputStory,
 	args: {
 		label: "Готовый пресет",
 		value: 40,
@@ -222,9 +212,7 @@ export const MarksSnap: SingleStory = {
 };
 
 export const DecimalManualInput: SingleStory = {
-	render: function Render(args) {
-		return <SliderInputStoryCanvas args={args} />;
-	},
+	render: renderSliderInputStory,
 	args: {
 		label: "Десятичное значение",
 		value: 17.5,
@@ -233,9 +221,7 @@ export const DecimalManualInput: SingleStory = {
 };
 
 export const RangeInputPlain: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderInputStoryCanvas args={args} field="progress" />;
-	},
+	render: createRangeSliderInputStoryRender("progress"),
 	args: {
 		label: "Процент выполнения",
 		description: "RangeInput без outputValue: наружу отдаётся координата `value`.",
@@ -247,9 +233,7 @@ export const RangeInputPlain: RangeStory = {
 };
 
 export const RangeInputOpenWithoutExplicitMiddleOutput: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderInputStoryCanvas args={args} field="months" />;
-	},
+	render: createRangeSliderInputStoryRender("months"),
 	args: {
 		label: "Срок в месяцах",
 		description: "У крайних marks `outputValue:null`; у обычных marks outputValue не указан и берётся `value`.",
@@ -262,9 +246,7 @@ export const RangeInputOpenWithoutExplicitMiddleOutput: RangeStory = {
 };
 
 export const RangeInputMonthToDaysOutput: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderInputStoryCanvas args={args} field="days" />;
-	},
+	render: createRangeSliderInputStoryRender("days"),
 	args: {
 		label: "Срок: месяцы на шкале, дни в фильтре",
 		description: "В поле и фильтре видны дни, а popover показывает месячные marks.",
@@ -277,9 +259,7 @@ export const RangeInputMonthToDaysOutput: RangeStory = {
 };
 
 export const RangeInputOpenMonthToDaysOutput: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderInputStoryCanvas args={args} field="days" />;
-	},
+	render: createRangeSliderInputStoryRender("days"),
 	args: {
 		label: "Срок: открытые границы и дни в фильтре",
 		description: "Крайние marks отдают null, обычные marks отдают дни через `outputValue`.",
@@ -292,9 +272,7 @@ export const RangeInputOpenMonthToDaysOutput: RangeStory = {
 };
 
 export const RangeInputReadonlyText: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderInputStoryCanvas args={args} field="days" />;
-	},
+	render: createRangeSliderInputStoryRender("days"),
 	args: {
 		label: "Срок текстом",
 		description: "В поле выводится готовый текст по marks, а изменение через popover коммитится при закрытии.",
@@ -315,9 +293,7 @@ export const RangeInputReadonlyText: RangeStory = {
 };
 
 export const Disabled: SingleStory = {
-	render: function Render(args) {
-		return <SliderInputStoryCanvas args={args} />;
-	},
+	render: renderSliderInputStory,
 	args: {
 		label: "Недоступно",
 		description: "Поле и popover отключены.",

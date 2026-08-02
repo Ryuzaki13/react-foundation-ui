@@ -4,6 +4,7 @@ import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Button } from "../../button/Button";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Input } from "../../input/Input";
 import { Popover, type PopoverProps } from "../components/Popover";
 
@@ -104,12 +105,13 @@ export default meta;
 type Story = StoryObj<PopoverStoryArgs>;
 
 interface PopoverStoryCanvasProps {
+	args: PopoverStoryArgs;
+	updateArgs: (newArgs: Partial<PopoverStoryArgs>) => void;
 	trigger: (open: boolean) => PopoverTriggerProps["children"];
 	children: PopoverContentProps["children"];
 }
 
-function PopoverStoryCanvas({ trigger, children }: PopoverStoryCanvasProps) {
-	const [args, updateArgs] = useArgs<PopoverStoryArgs>();
+function PopoverStoryCanvas({ args, updateArgs, trigger, children }: PopoverStoryCanvasProps) {
 	const onOpenChange = (open: boolean) => {
 		args.onOpenChange?.(open);
 		updateArgs({ open });
@@ -130,28 +132,53 @@ function PopoverStoryCanvas({ trigger, children }: PopoverStoryCanvasProps) {
 	);
 }
 
-export const Default: Story = {
-	render: () => (
+function createPopoverStoryRender(trigger: PopoverStoryCanvasProps["trigger"], children: PopoverStoryCanvasProps["children"]) {
+	return createControlledStoryRender<PopoverStoryArgs>((args, updateArgs) => (
+		<PopoverStoryCanvas args={args} updateArgs={updateArgs} trigger={trigger} children={children} />
+	));
+}
+
+function InteractivePopoverStoryCanvas({ args, updateArgs }: Pick<PopoverStoryCanvasProps, "args" | "updateArgs">) {
+	const [name, setName] = useState("");
+
+	return (
 		<PopoverStoryCanvas
-			trigger={() => <button type="button">Открыть</button>}
+			args={args}
+			updateArgs={updateArgs}
+			trigger={() => <button type="button">Форма</button>}
 			children={(ctx) => (
-				<div style={{ padding: 12, maxWidth: 160 }}>
-					<p>Пример простого поповера</p>
-					<button type="button" onClick={ctx.setClose}>
-						Закрыть
-					</button>
-				</div>
+				<form
+					onSubmit={(event) => {
+						event.preventDefault();
+						ctx.setClose();
+					}}
+					style={{ display: "flex", flexDirection: "column", gap: 8, padding: 12, width: 180 }}>
+					<Input label="Имя" placeholder="Введите имя" value={name} onChange={setName} />
+					<Button>Отправить</Button>
+				</form>
 			)}
 		/>
+	);
+}
+
+export const Default: Story = {
+	render: createPopoverStoryRender(
+		() => <button type="button">Открыть</button>,
+		(ctx) => (
+			<div style={{ padding: 12, maxWidth: 160 }}>
+				<p>Пример простого поповера</p>
+				<button type="button" onClick={ctx.setClose}>
+					Закрыть
+				</button>
+			</div>
+		)
 	)
 };
 
 export const Controlled: Story = {
-	render: () => (
-		<PopoverStoryCanvas
-			trigger={(open) => <button type="button">{open ? "Закрыть" : "Открыть"}</button>}
-			children={<div style={{ padding: 12 }}>Контролируемый режим</div>}
-		/>
+	render: createPopoverStoryRender(
+		(open) => <button type="button">{open ? "Закрыть" : "Открыть"}</button>,
+		<div style={{ padding: 12 }}>Контролируемый режим</div>
 	)
 };
 
@@ -191,24 +218,7 @@ export const AnchorPlacement: Story = {
 };
 
 export const WithInteractiveContent: Story = {
-	render: function Render() {
-		const [name, setName] = useState("");
-
-		return (
-			<PopoverStoryCanvas
-				trigger={() => <button type="button">Форма</button>}
-				children={(ctx) => (
-					<form
-						onSubmit={(event) => {
-							event.preventDefault();
-							ctx.setClose();
-						}}
-						style={{ display: "flex", flexDirection: "column", gap: 8, padding: 12, width: 180 }}>
-						<Input label="Имя" placeholder="Введите имя" value={name} onChange={setName} />
-						<Button>Отправить</Button>
-					</form>
-				)}
-			/>
-		);
-	}
+	render: createControlledStoryRender<PopoverStoryArgs>((args, updateArgs) => (
+		<InteractivePopoverStoryCanvas args={args} updateArgs={updateArgs} />
+	))
 };

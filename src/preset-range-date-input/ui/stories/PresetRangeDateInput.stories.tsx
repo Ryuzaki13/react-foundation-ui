@@ -1,8 +1,8 @@
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { DATE_INPUT_SELECTION_MODES, DATE_INPUT_WEEK_END_DAYS } from "../../../date-input/lib";
 import { DEFAULT_DATE_RANGE_PRESET_IDS } from "../../../date-range-preset-select/lib/dateRangePresets";
+import { createControlledStoryRender } from "../../../development/storybook/createControlledStoryRender";
 import { FlexContainer } from "../../../flex";
 import { Text } from "../../../text";
 import { PresetRangeDateInput, type PresetRangeDateInputProps } from "../PresetRangeDateInput";
@@ -149,46 +149,40 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function PresetRangeDateInputStoryCanvas(args: PresetRangeDateInputProps) {
-	const [, updateArgs] = useArgs<PresetRangeDateInputProps>();
+const renderPresetRangeDateInputStory = createControlledStoryRender<PresetRangeDateInputProps>((args, updateArgs) => (
+	<>
+		<FlexContainer gap="sm" align="end">
+			<PresetRangeDateInput
+				{...args}
+				value={args.value ?? null}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+				onPresetIdChange={(presetId) => {
+					args.onPresetIdChange?.(presetId);
+					updateArgs({ presetId });
+				}}
+				onSelectionModeChange={(selectionMode) => {
+					args.onSelectionModeChange?.(selectionMode);
+					updateArgs({ selectionMode });
+				}}
+				onClearError={() => {
+					args.onClearError?.();
+					updateArgs({ error: undefined });
+				}}
+			/>
+		</FlexContainer>
 
-	return (
-		<>
-			<FlexContainer gap="sm" align="end">
-				<PresetRangeDateInput
-					{...args}
-					value={args.value ?? null}
-					onChange={(value) => {
-						args.onChange(value);
-						updateArgs({ value });
-					}}
-					onPresetIdChange={(presetId) => {
-						args.onPresetIdChange?.(presetId);
-						updateArgs({ presetId });
-					}}
-					onSelectionModeChange={(selectionMode) => {
-						args.onSelectionModeChange?.(selectionMode);
-						updateArgs({ selectionMode });
-					}}
-					onClearError={() => {
-						args.onClearError?.();
-						updateArgs({ error: undefined });
-					}}
-				/>
-			</FlexContainer>
-
-			<Text as="p" className="marginBlockSm">
-				Активный presetId: <Text as="code">{args.presetId ?? "null"}</Text>
-			</Text>
-		</>
-	);
-}
+		<Text as="p" className="marginBlockSm">
+			Активный presetId: <Text as="code">{args.presetId ?? "null"}</Text>
+		</Text>
+	</>
+));
 
 /**
  * Демонстрирует совместную работу пресета и ручного диапазона.
  */
 export const Default: Story = {
-	render: function Render(args) {
-		return <PresetRangeDateInputStoryCanvas {...args} />;
-	}
+	render: renderPresetRangeDateInputStory
 };

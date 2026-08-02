@@ -1,6 +1,6 @@
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { InputFiles, type InputFilesProps } from "../InputFiles";
 
 import type { ReadFileAsDataUrlResult } from "@ryuzaki13/react-foundation-lib/file";
@@ -105,28 +105,22 @@ const meta = {
 export default meta;
 type Story = StoryObj<DataUrlInputFilesProps>;
 
-function InputFilesStoryCanvas(args: DataUrlInputFilesProps) {
-	const [, updateArgs] = useArgs<DataUrlInputFilesProps>();
-
-	return (
-		<InputFiles
-			{...args}
-			onChange={(value) => {
-				args.onChange(value);
-				updateArgs({ value });
-			}}
-			onClearError={() => {
-				args.onClearError?.();
-				updateArgs({ error: undefined });
-			}}
-		/>
-	);
-}
+const renderInputFilesStory = createControlledStoryRender<DataUrlInputFilesProps>((args, updateArgs) => (
+	<InputFiles
+		{...args}
+		onChange={(value) => {
+			args.onChange(value);
+			updateArgs({ value });
+		}}
+		onClearError={() => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}}
+	/>
+));
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <InputFilesStoryCanvas {...args} />;
-	},
+	render: renderInputFilesStory,
 	args: {
 		label: "Вложения",
 		description: "Можно выбрать несколько файлов.",
@@ -138,9 +132,7 @@ export const Controlled: Story = {
 };
 
 export const WithInitialFiles: Story = {
-	render: function Render(args) {
-		return <InputFilesStoryCanvas {...args} />;
-	},
+	render: renderInputFilesStory,
 	args: {
 		label: "Предзаполненный список",
 		description: "Иллюстрация удаления файлов из уже заполненного значения.",
@@ -149,9 +141,7 @@ export const WithInitialFiles: Story = {
 };
 
 export const LimitReached: Story = {
-	render: function Render(args) {
-		return <InputFilesStoryCanvas {...args} />;
-	},
+	render: renderInputFilesStory,
 	args: {
 		label: "Лимит файлов",
 		description: "После достижения лимита поле выбора блокируется.",

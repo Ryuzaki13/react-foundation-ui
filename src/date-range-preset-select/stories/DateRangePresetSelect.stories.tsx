@@ -79,36 +79,32 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function DateRangePresetSelectStoryCanvas(args: DateRangePresetSelectProps) {
-	const [, updateArgs] = useArgs<DateRangePresetSelectProps>();
-	const [range, setRange] = useStorybookState<DateRangePresetChangePayload["range"] | null>(
-		() => resolveDateRangePresetPayload(args.value, args.referenceDate, args.options)?.range ?? null
-	);
-
-	return (
-		<GridContainer gap="md">
-			<DateRangePresetSelect
-				{...args}
-				onChange={(value) => {
-					args.onChange(value);
-					updateArgs({ value });
-				}}
-				onRangeChange={(payload) => {
-					args.onRangeChange?.(payload);
-					setRange(payload?.range ?? null);
-				}}
-			/>
-
-			<RangeDateInput label="Диапазон дат" placeholder="дд.мм.гггг - дд.мм.гггг" value={range} onChange={setRange} />
-		</GridContainer>
-	);
-}
-
 /**
  * Демонстрирует связку выбора пресета и ручного диапазона дат.
  */
 export const Default: Story = {
 	render: function Render(args) {
-		return <DateRangePresetSelectStoryCanvas {...args} />;
+		const [, updateArgs] = useArgs<DateRangePresetSelectProps>();
+		const [range, setRange] = useStorybookState<DateRangePresetChangePayload["range"] | null>(
+			() => resolveDateRangePresetPayload(args.value, args.referenceDate, args.options)?.range ?? null
+		);
+
+		return (
+			<GridContainer gap="md">
+				<DateRangePresetSelect
+					{...args}
+					onChange={(value) => {
+						args.onChange(value);
+						updateArgs({ value });
+					}}
+					onRangeChange={(payload) => {
+						args.onRangeChange?.(payload);
+						setRange(payload?.range ?? null);
+					}}
+				/>
+
+				<RangeDateInput label="Диапазон дат" placeholder="дд.мм.гггг - дд.мм.гггг" value={range} onChange={setRange} />
+			</GridContainer>
+		);
 	}
 };

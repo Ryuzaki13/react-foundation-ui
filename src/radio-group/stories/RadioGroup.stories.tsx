@@ -1,7 +1,6 @@
 import type { ReactNode } from "react";
 
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { RadioGroup } from "../RadioGroup";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -30,15 +29,15 @@ function StringRadioGroup(props: StringRadioGroupProps) {
 
 function RadioGroupStoryCanvas({
 	args,
+	updateArgs,
 	options,
 	showValue = false
 }: {
 	args: StringRadioGroupProps;
+	updateArgs: (newArgs: Partial<StringRadioGroupProps>) => void;
 	options: readonly RadioGroupOption[];
 	showValue?: boolean;
 }) {
-	const [, updateArgs] = useArgs<StringRadioGroupProps>();
-
 	return (
 		<div style={{ display: "grid", gap: 10 }}>
 			<StringRadioGroup
@@ -72,6 +71,12 @@ const confirmationOptions = [
 	{ value: "yes", label: "Да" },
 	{ value: "no", label: "Нет" }
 ] as const satisfies readonly RadioGroupOption[];
+
+function createRadioGroupStoryRender(options: readonly RadioGroupOption[], showValue = false) {
+	return createControlledStoryRender<StringRadioGroupProps>((args, updateArgs) => (
+		<RadioGroupStoryCanvas args={args} updateArgs={updateArgs} options={options} showValue={showValue} />
+	));
+}
 
 const meta = {
 	title: "Shared/UI/RadioGroup",
@@ -129,16 +134,12 @@ export default meta;
 type Story = StoryObj<StringRadioGroupProps>;
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <RadioGroupStoryCanvas args={args} options={notificationOptions} showValue />;
-	},
+	render: createRadioGroupStoryRender(notificationOptions, true),
 	args: {}
 };
 
 export const Vertical: Story = {
-	render: function Render(args) {
-		return <RadioGroupStoryCanvas args={args} options={documentStatusOptions} />;
-	},
+	render: createRadioGroupStoryRender(documentStatusOptions),
 	args: {
 		orientation: "vertical",
 		label: "Статус документа",
@@ -147,9 +148,7 @@ export const Vertical: Story = {
 };
 
 export const Disabled: Story = {
-	render: function Render(args) {
-		return <RadioGroupStoryCanvas args={args} options={confirmationOptions} />;
-	},
+	render: createRadioGroupStoryRender(confirmationOptions),
 	args: {
 		disabled: true,
 		value: "yes"

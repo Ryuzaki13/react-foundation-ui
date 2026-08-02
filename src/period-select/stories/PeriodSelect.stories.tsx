@@ -1,8 +1,8 @@
 import { countCalendarDaysInDateRange, isDateRangeTuple, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { RangeDateInput } from "../../date-input";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { GridContainer } from "../../grid";
 import { Text } from "../../text";
 import { DEFAULT_PERIOD_SELECT_PRESET_IDS, PeriodSelect, type PeriodSelectProps } from "../index";
@@ -113,8 +113,7 @@ function getRangeInputValue(dateRange: PeriodSelectProps["dateRange"]): Nullable
 	return dateRange !== undefined && isDateRangeTuple(dateRange) ? dateRange : null;
 }
 
-function PeriodSelectStoryCanvas(args: PeriodSelectProps) {
-	const [, updateArgs] = useArgs<PeriodSelectProps>();
+const renderPeriodSelectStory = createControlledStoryRender<PeriodSelectProps>((args, updateArgs) => {
 	const rangeValue = getRangeInputValue(args.dateRange);
 	const rangeDays = countCalendarDaysInDateRange(args.dateRange ?? null);
 
@@ -141,16 +140,14 @@ function PeriodSelectStoryCanvas(args: PeriodSelectProps) {
 			</Text>
 		</GridContainer>
 	);
-}
+});
 
 /**
  * Контролируемый сценарий синхронизирует `value` и `dateRange` через Storybook args.
  */
 export const Controlled: Story = {
 	name: "Контролируемый выбор",
-	render: function Render(args) {
-		return <PeriodSelectStoryCanvas {...args} />;
-	}
+	render: renderPeriodSelectStory
 };
 
 /**
@@ -164,9 +161,7 @@ export const AutoSwitchByRange: Story = {
 		maxDayRangeDays: 31,
 		maxWeekRangeWeeks: 8
 	},
-	render: function Render(args) {
-		return <PeriodSelectStoryCanvas {...args} />;
-	}
+	render: renderPeriodSelectStory
 };
 
 /**
@@ -178,9 +173,7 @@ export const MonthAndYear: Story = {
 		value: "month",
 		presetIds: ["month", "year"]
 	},
-	render: function Render(args) {
-		return <PeriodSelectStoryCanvas {...args} />;
-	}
+	render: renderPeriodSelectStory
 };
 
 /**
@@ -198,9 +191,7 @@ export const AlternativeLabels: Story = {
 			year: "за год"
 		}
 	},
-	render: function Render(args) {
-		return <PeriodSelectStoryCanvas {...args} />;
-	}
+	render: renderPeriodSelectStory
 };
 
 /**
@@ -216,9 +207,7 @@ export const AllAllowedOptionsDisabled: Story = {
 		maxDayRangeDays: 31,
 		maxWeekRangeWeeks: 8
 	},
-	render: function Render(args) {
-		return <PeriodSelectStoryCanvas {...args} />;
-	}
+	render: renderPeriodSelectStory
 };
 
 export const Disabled: Story = {

@@ -1,7 +1,6 @@
 import type { ComponentProps } from "react";
 
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Switch } from "../Switch";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -10,40 +9,32 @@ type SwitchStoryArgs = ComponentProps<typeof Switch>;
 type BiStateSwitchStoryArgs = Extract<SwitchStoryArgs, { triState?: false }>;
 type TriStateSwitchStoryArgs = Extract<SwitchStoryArgs, { triState: true }>;
 
-function BiStateSwitchStoryCanvas({ args }: { args: BiStateSwitchStoryArgs }) {
-	const [, updateArgs] = useArgs<BiStateSwitchStoryArgs>();
+const renderBiStateSwitchStory = createControlledStoryRender<BiStateSwitchStoryArgs>((args, updateArgs) => (
+	<Switch
+		{...args}
+		triState={false}
+		value={args.value ?? false}
+		onChange={(value) => {
+			args.onChange(value);
+			updateArgs({ value });
+		}}
+	/>
+));
 
-	return (
+const renderTriStateSwitchStory = createControlledStoryRender<TriStateSwitchStoryArgs>((args, updateArgs) => (
+	<div style={{ display: "grid", gap: 8 }}>
 		<Switch
 			{...args}
-			triState={false}
-			value={args.value ?? false}
+			triState
+			value={args.value}
 			onChange={(value) => {
 				args.onChange(value);
 				updateArgs({ value });
 			}}
 		/>
-	);
-}
-
-function TriStateSwitchStoryCanvas({ args }: { args: TriStateSwitchStoryArgs }) {
-	const [, updateArgs] = useArgs<TriStateSwitchStoryArgs>();
-
-	return (
-		<div style={{ display: "grid", gap: 8 }}>
-			<Switch
-				{...args}
-				triState
-				value={args.value}
-				onChange={(value) => {
-					args.onChange(value);
-					updateArgs({ value });
-				}}
-			/>
-			<div>Текущее значение: {String(args.value)}</div>
-		</div>
-	);
-}
+		<div>Текущее значение: {String(args.value)}</div>
+	</div>
+));
 
 const meta = {
 	title: "Shared/UI/Switch",
@@ -101,15 +92,11 @@ type BiStateStory = StoryObj<BiStateSwitchStoryArgs>;
 type TriStateStory = StoryObj<TriStateSwitchStoryArgs>;
 
 export const BiState: BiStateStory = {
-	render: function Render(args) {
-		return <BiStateSwitchStoryCanvas args={args} />;
-	}
+	render: renderBiStateSwitchStory
 };
 
 export const TriState: TriStateStory = {
-	render: function Render(args) {
-		return <TriStateSwitchStoryCanvas args={args} />;
-	},
+	render: renderTriStateSwitchStory,
 	args: {
 		triState: true,
 		value: undefined
@@ -117,9 +104,7 @@ export const TriState: TriStateStory = {
 };
 
 export const Disabled: BiStateStory = {
-	render: function Render(args) {
-		return <BiStateSwitchStoryCanvas args={args} />;
-	},
+	render: renderBiStateSwitchStory,
 	args: {
 		disabled: true,
 		value: true

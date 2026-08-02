@@ -1,27 +1,22 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Textarea, type TextareaProps } from "../Textarea";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function TextareaStoryCanvas({ args }: { args: TextareaProps }) {
-	const [, updateArgs] = useArgs<TextareaProps>();
-
-	return (
-		<Textarea
-			{...args}
-			value={args.value ?? ""}
-			onChange={(value) => {
-				args.onChange?.(value);
-				updateArgs({ value });
-			}}
-			onClearError={() => {
-				args.onClearError?.();
-				updateArgs({ error: undefined });
-			}}
-		/>
-	);
-}
+const renderTextareaStory = createControlledStoryRender<TextareaProps>((args, updateArgs) => (
+	<Textarea
+		{...args}
+		value={args.value ?? ""}
+		onChange={(value) => {
+			args.onChange?.(value);
+			updateArgs({ value });
+		}}
+		onClearError={() => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}}
+	/>
+));
 
 const meta = {
 	title: "Shared/UI/Textarea",
@@ -86,18 +81,14 @@ export const Controlled: Story = {
 	args: {
 		value: "Первичный комментарий"
 	},
-	render: function Render(args) {
-		return <TextareaStoryCanvas args={args} />;
-	}
+	render: renderTextareaStory
 };
 
 export const WithValue: Story = {
 	args: {
 		value: "Шаблонный текст для редактирования."
 	},
-	render: function Render(args) {
-		return <TextareaStoryCanvas args={args} />;
-	}
+	render: renderTextareaStory
 };
 
 export const Disabled: Story = {
@@ -105,7 +96,5 @@ export const Disabled: Story = {
 		disabled: true,
 		value: "Редактирование недоступно."
 	},
-	render: function Render(args) {
-		return <TextareaStoryCanvas args={args} />;
-	}
+	render: renderTextareaStory
 };

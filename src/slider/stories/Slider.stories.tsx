@@ -1,9 +1,9 @@
 import type { ReactNode } from "react";
 
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Slider, SliderRange, type SliderProps, type SliderRangeProps, type SliderRangeValue } from "..";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -134,28 +134,22 @@ export default meta;
 type SingleStory = StoryObj<SliderProps>;
 type RangeStory = StoryObj<SliderRangeProps>;
 
-function SliderStoryCanvas({ args }: { args: SliderProps }) {
-	const [, updateArgs] = useArgs<SliderProps>();
+const renderSliderStory = createControlledStoryRender<SliderProps>((args, updateArgs) => (
+	<Slider
+		{...args}
+		onChange={(value) => {
+			args.onChange(value);
+			updateArgs({ value });
+		}}
+		onClearError={() => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}}
+	/>
+));
 
-	return (
-		<Slider
-			{...args}
-			onChange={(value) => {
-				args.onChange(value);
-				updateArgs({ value });
-			}}
-			onClearError={() => {
-				args.onClearError?.();
-				updateArgs({ error: undefined });
-			}}
-		/>
-	);
-}
-
-function RangeSliderStoryCanvas({ args, field, unit }: { args: SliderRangeProps; field: string; unit?: string }) {
-	const [, updateArgs] = useArgs<SliderRangeProps>();
-
-	return (
+function createRangeSliderStoryRender(field: string, unit?: string) {
+	return createControlledStoryRender<SliderRangeProps>((args, updateArgs) => (
 		<>
 			<SliderRange
 				{...args}
@@ -170,7 +164,7 @@ function RangeSliderStoryCanvas({ args, field, unit }: { args: SliderRangeProps;
 			/>
 			<RangePreview value={args.value} field={field} unit={unit} />
 		</>
-	);
+	));
 }
 
 function formatEndpoint(value: number | null, unit: string) {
@@ -225,9 +219,7 @@ function RangePreview({
 }
 
 export const SingleStep: SingleStory = {
-	render: function Render(args) {
-		return <SliderStoryCanvas args={args} />;
-	},
+	render: renderSliderStory,
 	args: {
 		label: "Громкость",
 		description: "Компактный single-value слайдер со step=5.",
@@ -237,9 +229,7 @@ export const SingleStep: SingleStory = {
 };
 
 export const SingleWithMarks: SingleStory = {
-	render: function Render(args) {
-		return <SliderStoryCanvas args={args} />;
-	},
+	render: renderSliderStory,
 	args: {
 		label: "Процент выполнения",
 		description: "Marks активны, кликабельны и показывают подписи через tooltip.",
@@ -249,9 +239,7 @@ export const SingleWithMarks: SingleStory = {
 };
 
 export const MonthsIndexMarks: SingleStory = {
-	render: function Render(args) {
-		return <SliderStoryCanvas args={args} />;
-	},
+	render: renderSliderStory,
 	args: {
 		label: "Срок",
 		min: 1,
@@ -264,9 +252,7 @@ export const MonthsIndexMarks: SingleStory = {
 };
 
 export const RangePlain: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderStoryCanvas args={args} field="progress" unit="%" />;
-	},
+	render: createRangeSliderStoryRender("progress", "%"),
 	args: {
 		label: "Процент выполнения",
 		description: "Обычный range: `value` mark является и координатой шкалы, и значением фильтра.",
@@ -278,9 +264,7 @@ export const RangePlain: RangeStory = {
 };
 
 export const RangeOpenWithoutExplicitMiddleOutput: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderStoryCanvas args={args} field="months" unit=" мес." />;
-	},
+	render: createRangeSliderStoryRender("months", " мес."),
 	args: {
 		label: "Срок в месяцах",
 		description:
@@ -294,9 +278,7 @@ export const RangeOpenWithoutExplicitMiddleOutput: RangeStory = {
 };
 
 export const RangeMonthToDaysOutput: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderStoryCanvas args={args} field="days" unit=" дн." />;
-	},
+	render: createRangeSliderStoryRender("days", " дн."),
 	args: {
 		label: "Срок: месяцы на шкале, дни в фильтре",
 		description: "`value` хранит координату/месяцы, `outputValue` отдаёт наружу дни.",
@@ -309,9 +291,7 @@ export const RangeMonthToDaysOutput: RangeStory = {
 };
 
 export const RangeOpenMonthToDaysOutput: RangeStory = {
-	render: function Render(args) {
-		return <RangeSliderStoryCanvas args={args} field="days" unit=" дн." />;
-	},
+	render: createRangeSliderStoryRender("days", " дн."),
 	args: {
 		label: "Срок: открытые границы и дни в фильтре",
 		description: "Крайние marks отдают null, обычные marks отдают дни через `outputValue`.",
@@ -324,9 +304,7 @@ export const RangeOpenMonthToDaysOutput: RangeStory = {
 };
 
 export const Disabled: SingleStory = {
-	render: function Render(args) {
-		return <SliderStoryCanvas args={args} />;
-	},
+	render: renderSliderStory,
 	args: {
 		label: "Недоступно",
 		description: "Состояние без интеракций.",

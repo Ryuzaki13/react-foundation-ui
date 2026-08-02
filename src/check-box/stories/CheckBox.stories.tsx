@@ -1,27 +1,22 @@
 import { useState, type ComponentProps } from "react";
 
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { CheckBox } from "../CheckBox";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type CheckBoxStoryArgs = ComponentProps<typeof CheckBox>;
 
-function CheckBoxStoryCanvas({ args }: { args: CheckBoxStoryArgs }) {
-	const [, updateArgs] = useArgs<CheckBoxStoryArgs>();
-
-	return (
-		<CheckBox
-			{...args}
-			value={args.value ?? false}
-			onChange={(value) => {
-				args.onChange?.(value);
-				updateArgs({ value });
-			}}
-		/>
-	);
-}
+const renderCheckBoxStory = createControlledStoryRender<CheckBoxStoryArgs>((args, updateArgs) => (
+	<CheckBox
+		{...args}
+		value={args.value ?? false}
+		onChange={(value) => {
+			args.onChange?.(value);
+			updateArgs({ value });
+		}}
+	/>
+));
 
 const meta = {
 	title: "Shared/UI/CheckBox",
@@ -84,9 +79,7 @@ export default meta;
 type Story = StoryObj<CheckBoxStoryArgs>;
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <CheckBoxStoryCanvas args={args} />;
-	},
+	render: renderCheckBoxStory,
 	args: {
 		label: "Принимать условия",
 		description: "Подтверждение условий использования сервиса.",
@@ -150,9 +143,7 @@ export const Sizes: Story = {
 };
 
 export const Disabled: Story = {
-	render: function Render(args) {
-		return <CheckBoxStoryCanvas args={args} />;
-	},
+	render: renderCheckBoxStory,
 	args: {
 		label: "Недоступный чекбокс",
 		description: "Изменение недоступно из-за прав доступа.",

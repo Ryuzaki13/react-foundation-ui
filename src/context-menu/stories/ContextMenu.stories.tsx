@@ -2,6 +2,7 @@ import { Copy, Eye, PencilLine, Pin, Settings2, Trash2 } from "lucide-react";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { ContextMenu, type ContextMenuProps } from "../components/ContextMenu";
 import { DropdownMenu, type DropdownMenuProps } from "../components/DropdownMenu";
 
@@ -107,9 +108,10 @@ type ContextStory = StoryObj<ContextMenuStoryArgs>;
 type DropdownStory = StoryObj<DropdownMenuStoryArgs>;
 type RadialContextStory = StoryObj<RadialContextMenuStoryArgs>;
 
-function useMenuOpenChange<T extends { open?: boolean; onOpenChange?: (open: boolean) => void }>() {
-	const [args, updateArgs] = useArgs<T>();
-
+function createMenuOpenChange<T extends { open?: boolean; onOpenChange?: (open: boolean) => void }>(
+	args: T,
+	updateArgs: StoryArgsUpdater<T>
+) {
 	return {
 		args,
 		onOpenChange: (open: boolean) => {
@@ -119,8 +121,14 @@ function useMenuOpenChange<T extends { open?: boolean; onOpenChange?: (open: boo
 	};
 }
 
-function DropdownMenuBasicCanvas() {
-	const { args, onOpenChange } = useMenuOpenChange<DropdownMenuStoryArgs>();
+function DropdownMenuBasicCanvas({
+	args,
+	updateArgs
+}: {
+	args: DropdownMenuStoryArgs;
+	updateArgs: StoryArgsUpdater<DropdownMenuStoryArgs>;
+}) {
+	const { onOpenChange } = createMenuOpenChange(args, updateArgs);
 
 	return (
 		<DropdownMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
@@ -148,8 +156,8 @@ function DropdownMenuBasicCanvas() {
 	);
 }
 
-function ContextMenuBasicCanvas() {
-	const { args, onOpenChange } = useMenuOpenChange<ContextMenuStoryArgs>();
+function ContextMenuBasicCanvas({ args, updateArgs }: { args: ContextMenuStoryArgs; updateArgs: StoryArgsUpdater<ContextMenuStoryArgs> }) {
+	const { onOpenChange } = createMenuOpenChange(args, updateArgs);
 
 	return (
 		<ContextMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
@@ -185,8 +193,14 @@ function ContextMenuBasicCanvas() {
 	);
 }
 
-function ContextMenuRadialCanvas() {
-	const { args, onOpenChange } = useMenuOpenChange<RadialContextMenuStoryArgs>();
+function ContextMenuRadialCanvas({
+	args,
+	updateArgs
+}: {
+	args: RadialContextMenuStoryArgs;
+	updateArgs: StoryArgsUpdater<RadialContextMenuStoryArgs>;
+}) {
+	const { onOpenChange } = createMenuOpenChange(args, updateArgs);
 
 	return (
 		<ContextMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
@@ -232,12 +246,16 @@ export const DropdownMenuBasic: DropdownStory = {
 	args: {
 		placement: "bottom-start"
 	},
-	render: () => <DropdownMenuBasicCanvas />
+	render: createControlledStoryRender<DropdownMenuStoryArgs>((args, updateArgs) => (
+		<DropdownMenuBasicCanvas args={args} updateArgs={updateArgs} />
+	))
 };
 
 export const ContextMenuBasic: ContextStory = {
 	name: "ContextMenu / По правому клику",
-	render: () => <ContextMenuBasicCanvas />
+	render: createControlledStoryRender<ContextMenuStoryArgs>((args, updateArgs) => (
+		<ContextMenuBasicCanvas args={args} updateArgs={updateArgs} />
+	))
 };
 
 export const ContextMenuRadial: RadialContextStory = {
@@ -247,7 +265,9 @@ export const ContextMenuRadial: RadialContextStory = {
 		itemSize: 64,
 		closeLabel: "Закрыть"
 	},
-	render: () => <ContextMenuRadialCanvas />
+	render: createControlledStoryRender<RadialContextMenuStoryArgs>((args, updateArgs) => (
+		<ContextMenuRadialCanvas args={args} updateArgs={updateArgs} />
+	))
 };
 
 export const ControlledDropdown: DropdownStory = {
@@ -256,7 +276,8 @@ export const ControlledDropdown: DropdownStory = {
 		placement: "bottom-start"
 	},
 	render: function Render() {
-		const { args, onOpenChange } = useMenuOpenChange<DropdownMenuStoryArgs>();
+		const [args, updateArgs] = useArgs<DropdownMenuStoryArgs>();
+		const { onOpenChange } = createMenuOpenChange(args, updateArgs);
 
 		return (
 			<DropdownMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>

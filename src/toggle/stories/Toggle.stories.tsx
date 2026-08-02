@@ -1,23 +1,18 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Toggle, type ToggleProps } from "../Toggle";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function ToggleStoryCanvas({ args }: { args: ToggleProps }) {
-	const [, updateArgs] = useArgs<ToggleProps>();
-
-	return (
-		<Toggle
-			{...args}
-			value={args.value ?? false}
-			onChange={(value) => {
-				args.onChange?.(value);
-				updateArgs({ value });
-			}}
-		/>
-	);
-}
+const renderToggleStory = createControlledStoryRender<ToggleProps>((args, updateArgs) => (
+	<Toggle
+		{...args}
+		value={args.value ?? false}
+		onChange={(value) => {
+			args.onChange?.(value);
+			updateArgs({ value });
+		}}
+	/>
+));
 
 const meta = {
 	title: "Shared/UI/Toggle",
@@ -80,9 +75,7 @@ export default meta;
 type Story = StoryObj<ToggleProps>;
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <ToggleStoryCanvas args={args} />;
-	},
+	render: renderToggleStory,
 	args: {
 		label: "Режим синхронизации",
 		description: "Мгновенное переключение состояния.",
@@ -94,9 +87,7 @@ export const Controlled: Story = {
 };
 
 export const LabelAfter: Story = {
-	render: function Render(args) {
-		return <ToggleStoryCanvas args={args} />;
-	},
+	render: renderToggleStory,
 	args: {
 		label: "Уведомления",
 		value: true,
@@ -105,9 +96,7 @@ export const LabelAfter: Story = {
 };
 
 export const Disabled: Story = {
-	render: function Render(args) {
-		return <ToggleStoryCanvas args={args} />;
-	},
+	render: renderToggleStory,
 	args: {
 		label: "Недоступный переключатель",
 		value: true,

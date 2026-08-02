@@ -1,27 +1,22 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { TagInput, type TagInputProps } from "../TagInput";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function TagInputStoryCanvas({ args }: { args: TagInputProps }) {
-	const [, updateArgs] = useArgs<TagInputProps>();
-
-	return (
-		<TagInput
-			{...args}
-			value={args.value ?? []}
-			onChange={(value) => {
-				args.onChange?.(value);
-				updateArgs({ value });
-			}}
-			onClearError={() => {
-				args.onClearError?.();
-				updateArgs({ error: undefined });
-			}}
-		/>
-	);
-}
+const renderTagInputStory = createControlledStoryRender<TagInputProps>((args, updateArgs) => (
+	<TagInput
+		{...args}
+		value={args.value ?? []}
+		onChange={(value) => {
+			args.onChange?.(value);
+			updateArgs({ value });
+		}}
+		onClearError={() => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}}
+	/>
+));
 
 const meta = {
 	title: "Shared/UI/TagInput",
@@ -115,9 +110,7 @@ export default meta;
 type Story = StoryObj<TagInputProps>;
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <TagInputStoryCanvas args={args} />;
-	},
+	render: renderTagInputStory,
 	args: {
 		label: "Теги материала",
 		description: "Введите значение и нажмите Enter или запятую. Можно вставить сразу несколько строк.",
@@ -129,9 +122,7 @@ export const Controlled: Story = {
 };
 
 export const ReadOnly: Story = {
-	render: function Render(args) {
-		return <TagInputStoryCanvas args={args} />;
-	},
+	render: renderTagInputStory,
 	args: {
 		label: "Теги материала",
 		value: ["Новости", "Колледж"],

@@ -1,5 +1,4 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { TreeMultiSelect, type TreeMultiSelectProps } from "../TreeMultiSelect";
 import { TreeSelectNode } from "../types";
 
@@ -25,9 +24,13 @@ const rightEdgeTreeNodes: TreeSelectNode[] = Array.from({ length: 66 }, (_, inde
 	};
 });
 
-function TreeMultiSelectStoryCanvas(args: TreeMultiSelectProps) {
-	const [, updateArgs] = useArgs<TreeMultiSelectProps>();
-
+function TreeMultiSelectStoryCanvas({
+	args,
+	updateArgs
+}: {
+	args: TreeMultiSelectProps;
+	updateArgs: (newArgs: Partial<TreeMultiSelectProps>) => void;
+}) {
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<TreeMultiSelect
@@ -41,6 +44,18 @@ function TreeMultiSelectStoryCanvas(args: TreeMultiSelectProps) {
 		</div>
 	);
 }
+
+const renderTreeMultiSelectStory = createControlledStoryRender<TreeMultiSelectProps>((args, updateArgs) => (
+	<TreeMultiSelectStoryCanvas args={args} updateArgs={updateArgs} />
+));
+
+const renderRightEdgeTreeMultiSelectStory = createControlledStoryRender<TreeMultiSelectProps>((args, updateArgs) => (
+	<div style={{ display: "flex", minHeight: "calc(100vh - 32px)", alignItems: "center", justifyContent: "flex-end" }}>
+		<div style={{ width: 260 }}>
+			<TreeMultiSelectStoryCanvas args={args} updateArgs={updateArgs} />
+		</div>
+	</div>
+));
 
 const meta = {
 	title: "Shared/UI/TreeMultiSelect",
@@ -83,18 +98,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-	render: function Render(args) {
-		return <TreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeMultiSelectStory,
 	args: {
 		value: { OWNER: ["P0001"] }
 	}
 };
 
 export const ParentCompression: Story = {
-	render: function Render(args) {
-		return <TreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeMultiSelectStory,
 	args: {
 		label: "Компрессия parent",
 		description: "Когда выбран весь subtree, наружу может уйти только родительский узел.",
@@ -103,9 +114,7 @@ export const ParentCompression: Story = {
 };
 
 export const MixedSelection: Story = {
-	render: function Render(args) {
-		return <TreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeMultiSelectStory,
 	args: {
 		label: "Смешанный выбор",
 		description: "Пример mixed frontier по соседним уровням.",
@@ -114,9 +123,7 @@ export const MixedSelection: Story = {
 };
 
 export const FirstTwoLevelsExpanded: Story = {
-	render: function Render(args) {
-		return <TreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeMultiSelectStory,
 	args: {
 		label: "Раскрыты два уровня",
 		description: "Уровни REGION и BRANCH раскрыты по умолчанию, остальные уровни остаются закрытыми.",
@@ -125,9 +132,7 @@ export const FirstTwoLevelsExpanded: Story = {
 };
 
 export const BalancedColumns: Story = {
-	render: function Render(args) {
-		return <TreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeMultiSelectStory,
 	args: {
 		label: "Все уровни в столбцах",
 		description: "Popover подбирает число столбцов по количеству опций и доступному viewport.",
@@ -137,9 +142,7 @@ export const BalancedColumns: Story = {
 };
 
 export const OrphanProtectionColumns: Story = {
-	render: function Render(args) {
-		return <TreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeMultiSelectStory,
 	args: {
 		label: "Защита начала большой группы",
 		description: "Начало группы остаётся в текущем столбце при трёх свободных строках; при одной или двух переносится в новый.",
@@ -149,15 +152,7 @@ export const OrphanProtectionColumns: Story = {
 };
 
 export const RightEdgeColumns: Story = {
-	render: function Render(args) {
-		return (
-			<div style={{ display: "flex", minHeight: "calc(100vh - 32px)", alignItems: "center", justifyContent: "flex-end" }}>
-				<div style={{ width: 260 }}>
-					<TreeMultiSelectStoryCanvas {...args} />
-				</div>
-			</div>
-		);
-	},
+	render: renderRightEdgeTreeMultiSelectStory,
 	args: {
 		label: "Контрол у правой границы",
 		description: "Popover для 66 опций должен сравнить вертикальные и горизонтальные стороны и остаться внутри viewport.",

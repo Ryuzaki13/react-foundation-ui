@@ -1,27 +1,22 @@
 import { useState, type ComponentProps } from "react";
 
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { RadioButton } from "../RadioButton";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type RadioButtonStoryArgs = ComponentProps<typeof RadioButton>;
 
-function RadioButtonStoryCanvas({ args }: { args: RadioButtonStoryArgs }) {
-	const [, updateArgs] = useArgs<RadioButtonStoryArgs>();
-
-	return (
-		<RadioButton
-			{...args}
-			value={args.value ?? false}
-			onChange={(value) => {
-				args.onChange?.(value);
-				updateArgs({ value });
-			}}
-		/>
-	);
-}
+const renderRadioButtonStory = createControlledStoryRender<RadioButtonStoryArgs>((args, updateArgs) => (
+	<RadioButton
+		{...args}
+		value={args.value ?? false}
+		onChange={(value) => {
+			args.onChange?.(value);
+			updateArgs({ value });
+		}}
+	/>
+));
 
 const meta = {
 	title: "Shared/UI/RadioButton",
@@ -76,9 +71,7 @@ export default meta;
 type Story = StoryObj<RadioButtonStoryArgs>;
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <RadioButtonStoryCanvas args={args} />;
-	},
+	render: renderRadioButtonStory,
 	args: {
 		label: "Выбрать опцию",
 		description: "Одиночная радиокнопка в controlled-режиме.",
@@ -109,9 +102,7 @@ export const Group: Story = {
 };
 
 export const Disabled: Story = {
-	render: function Render(args) {
-		return <RadioButtonStoryCanvas args={args} />;
-	},
+	render: renderRadioButtonStory,
 	args: {
 		label: "Недоступная опция",
 		description: "Заблокировано политикой конфигурации.",

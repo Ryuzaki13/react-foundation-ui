@@ -1,7 +1,7 @@
 import { formatDateAsDateTime, formatDateAsODataDatetime, formatDateAsTime } from "@ryuzaki13/react-foundation-lib/formatters";
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { SingleDateTimeInput, type SingleDateTimeInputProps } from "../ui/SingleDateTimeInput";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -81,59 +81,58 @@ type Story = StoryObj<typeof meta>;
 
 type ValueFormat = "date-time" | "time" | "none";
 
-function SingleDateTimeInputStoryCanvas({ valueFormat, ...args }: SingleDateTimeInputProps & { valueFormat: ValueFormat }) {
-	const [, updateArgs] = useArgs<SingleDateTimeInputProps>();
-	const value = args.value ?? null;
+function createSingleDateTimeInputStoryRender(valueFormat: ValueFormat) {
+	return createControlledStoryRender<SingleDateTimeInputProps>((args, updateArgs) => {
+		const value = args.value ?? null;
 
-	return (
-		<div>
-			<SingleDateTimeInput
-				{...args}
-				value={value}
-				onChange={(nextValue) => {
-					args.onChange(nextValue);
-					updateArgs({ value: nextValue });
-				}}
-				onClearError={() => {
-					args.onClearError?.();
-					updateArgs({ error: undefined });
-				}}
-			/>
+		return (
+			<div>
+				<SingleDateTimeInput
+					{...args}
+					value={value}
+					onChange={(nextValue) => {
+						args.onChange(nextValue);
+						updateArgs({ value: nextValue });
+					}}
+					onClearError={() => {
+						args.onClearError?.();
+						updateArgs({ error: undefined });
+					}}
+				/>
 
-			{valueFormat === "date-time" && (
-				<>
-					<p>
-						Вывод значения через <code className="statusInfo">formatDateAsDateTime(value)</code>:
-					</p>
-					<pre>{formatDateAsDateTime(value)}</pre>
-					<p>
-						Вывод значения через <code className="statusInfo">formatDateAsODataDatetime(value)</code>:
-					</p>
-					<pre>{formatDateAsODataDatetime(value)}</pre>
-				</>
-			)}
+				{valueFormat === "date-time" && (
+					<>
+						<p>
+							Вывод значения через <code className="statusInfo">formatDateAsDateTime(value)</code>:
+						</p>
+						<pre>{formatDateAsDateTime(value)}</pre>
+						<p>
+							Вывод значения через <code className="statusInfo">formatDateAsODataDatetime(value)</code>:
+						</p>
+						<pre>{formatDateAsODataDatetime(value)}</pre>
+					</>
+				)}
 
-			{valueFormat === "time" && (
-				<>
-					<p>
-						Вывод значения через <code className="statusInfo">formatDateAsTime(value)</code>:
-					</p>
-					<pre>{formatDateAsTime(value)}</pre>
-					<p>Техническая дата значения всегда фиксируется как 01.01.1970.</p>
-					<pre>{value ? value.toISOString() : ""}</pre>
-				</>
-			)}
-		</div>
-	);
+				{valueFormat === "time" && (
+					<>
+						<p>
+							Вывод значения через <code className="statusInfo">formatDateAsTime(value)</code>:
+						</p>
+						<pre>{formatDateAsTime(value)}</pre>
+						<p>Техническая дата значения всегда фиксируется как 01.01.1970.</p>
+						<pre>{value ? value.toISOString() : ""}</pre>
+					</>
+				)}
+			</div>
+		);
+	});
 }
 
 /**
  * Демонстрирует основной сценарий выбора даты и времени с точностью до минуты.
  */
 export const Default: Story = {
-	render: function Render(args) {
-		return <SingleDateTimeInputStoryCanvas {...args} valueFormat="date-time" />;
-	},
+	render: createSingleDateTimeInputStoryRender("date-time"),
 	args: {
 		label: "Дата и время",
 		description: "Фиксированный формат: дд.мм.гггг чч:мм",
@@ -147,9 +146,7 @@ export const Default: Story = {
  * Демонстрирует режим выбора только времени на технической дате `1970-01-01`.
  */
 export const TimeOnly: Story = {
-	render: function Render(args) {
-		return <SingleDateTimeInputStoryCanvas {...args} valueFormat="time" />;
-	},
+	render: createSingleDateTimeInputStoryRender("time"),
 	args: {
 		label: "Время",
 		description: "Режим только времени с маской чч:мм и wheel-picker без календаря.",
@@ -165,9 +162,7 @@ export const TimeOnly: Story = {
  * Показывает пустое контролируемое значение.
  */
 export const Empty: Story = {
-	render: function Render(args) {
-		return <SingleDateTimeInputStoryCanvas {...args} valueFormat="none" />;
-	},
+	render: createSingleDateTimeInputStoryRender("none"),
 	args: {
 		label: "Пустое значение",
 		description: "Поле можно заполнить вручную или через popover picker.",
@@ -181,9 +176,7 @@ export const Empty: Story = {
  * Демонстрирует ограничение диапазона и синхронизацию календаря со временем.
  */
 export const WithLimits: Story = {
-	render: function Render(args) {
-		return <SingleDateTimeInputStoryCanvas {...args} valueFormat="none" />;
-	},
+	render: createSingleDateTimeInputStoryRender("none"),
 	args: {
 		label: "Дата отгрузки",
 		description: "Доступен только интервал с 10 по 12 марта 2026 года.",
@@ -198,9 +191,7 @@ export const WithLimits: Story = {
  * Демонстрирует размещение wheel-панели справа от календаря.
  */
 export const WithRightPanel: Story = {
-	render: function Render(args) {
-		return <SingleDateTimeInputStoryCanvas {...args} valueFormat="none" />;
-	},
+	render: createSingleDateTimeInputStoryRender("none"),
 	args: {
 		label: "Дата и время",
 		description: "Wheel-панель времени расположена справа от календаря.",

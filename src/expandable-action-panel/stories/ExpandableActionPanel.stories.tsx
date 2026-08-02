@@ -1,11 +1,11 @@
 import { useState } from "react";
 
 import { CheckIcon, RefreshCwIcon, SearchIcon, Settings2Icon } from "lucide-react";
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Button } from "../../button";
 import { CheckBox } from "../../check-box";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { InputText } from "../../input";
 import { Select } from "../../select";
 import { ExpandableActionPanel, type ExpandableActionPanelProps } from "../ExpandableActionPanel";
@@ -148,44 +148,36 @@ function DemoControls() {
 	);
 }
 
-function LabeledPanelStoryCanvas() {
-	const [args, updateArgs] = useArgs<LabeledPanelStoryArgs>();
+const renderLabeledPanelStory = createControlledStoryRender<LabeledPanelStoryArgs>((args, updateArgs) => (
+	<div style={{ width: "min(100%, 920px)" }}>
+		<LabeledExpandableActionPanel
+			{...args}
+			open={args.open}
+			onOpenChange={(open) => {
+				args.onOpenChange?.(open);
+				updateArgs({ open });
+			}}>
+			{args.children ?? <DemoControls />}
+		</LabeledExpandableActionPanel>
+	</div>
+));
 
-	return (
-		<div style={{ width: "min(100%, 920px)" }}>
-			<LabeledExpandableActionPanel
-				{...args}
-				open={args.open}
-				onOpenChange={(open) => {
-					args.onOpenChange?.(open);
-					updateArgs({ open });
-				}}>
-				{args.children ?? <DemoControls />}
-			</LabeledExpandableActionPanel>
-		</div>
-	);
-}
-
-function BasePanelStoryCanvas() {
-	const [args, updateArgs] = useArgs<BasePanelStoryArgs>();
-
-	return (
-		<div style={{ width: "min(100%, 720px)", display: "flex", justifyContent: "flex-end" }}>
-			<ExpandableActionPanel
-				{...args}
-				open={args.open}
-				onOpenChange={(open) => {
-					args.onOpenChange?.(open);
-					updateArgs({ open });
-				}}>
-				{args.children ?? <DemoControls />}
-			</ExpandableActionPanel>
-		</div>
-	);
-}
+const renderBasePanelStory = createControlledStoryRender<BasePanelStoryArgs>((args, updateArgs) => (
+	<div style={{ width: "min(100%, 720px)", display: "flex", justifyContent: "flex-end" }}>
+		<ExpandableActionPanel
+			{...args}
+			open={args.open}
+			onOpenChange={(open) => {
+				args.onOpenChange?.(open);
+				updateArgs({ open });
+			}}>
+			{args.children ?? <DemoControls />}
+		</ExpandableActionPanel>
+	</div>
+));
 
 export const Labeled: LabeledStory = {
-	render: () => <LabeledPanelStoryCanvas />
+	render: renderLabeledPanelStory
 };
 
 export const BasePanel: BaseStory = {
@@ -193,5 +185,5 @@ export const BasePanel: BaseStory = {
 		open: true,
 		panelLabel: "Действия панели"
 	},
-	render: () => <BasePanelStoryCanvas />
+	render: renderBasePanelStory
 };

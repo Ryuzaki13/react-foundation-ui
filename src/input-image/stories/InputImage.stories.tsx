@@ -1,6 +1,7 @@
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { InputImage, type InputImageProps } from "../InputImage";
 
 import type { ReadImageResult } from "@ryuzaki13/react-foundation-lib/file";
@@ -103,32 +104,26 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function InputImageStoryCanvas(args: InputImageProps) {
-	const [, updateArgs] = useArgs<InputImageProps>();
-
-	return (
-		<InputImage
-			{...args}
-			onChange={(value) => {
-				args.onChange(value);
-				updateArgs({ value });
-			}}
-			onClear={() => {
-				args.onClear?.();
-				updateArgs({ value: undefined });
-			}}
-			onClearError={() => {
-				args.onClearError?.();
-				updateArgs({ error: undefined });
-			}}
-		/>
-	);
-}
+const renderInputImageStory = createControlledStoryRender<InputImageProps>((args, updateArgs) => (
+	<InputImage
+		{...args}
+		onChange={(value) => {
+			args.onChange(value);
+			updateArgs({ value });
+		}}
+		onClear={() => {
+			args.onClear?.();
+			updateArgs({ value: undefined });
+		}}
+		onClearError={() => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}}
+	/>
+));
 
 export const Controlled: Story = {
-	render: function Render(args) {
-		return <InputImageStoryCanvas {...args} />;
-	},
+	render: renderInputImageStory,
 	args: {
 		label: "Аватар",
 		description: "Выберите одно изображение профиля.",
@@ -179,9 +174,7 @@ export const WithInitialImage: Story = {
 };
 
 export const ArrayBufferMode: Story = {
-	render: function Render(args) {
-		return <InputImageStoryCanvas {...args} />;
-	},
+	render: renderInputImageStory,
 	args: {
 		label: "Двоичный режим",
 		description: "Используется, когда изображение нужно обработать как бинарные данные.",

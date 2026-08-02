@@ -1,6 +1,5 @@
-import { useArgs } from "storybook/preview-api";
-
 import { Button } from "../../button";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Disclosure, type DisclosureProps } from "../Disclosure";
 import { DisclosureGroup } from "../DisclosureGroup";
 
@@ -41,38 +40,32 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function DisclosureStoryCanvas() {
-	const [args] = useArgs<DisclosureProps>();
-
+const renderDisclosureStory = createControlledStoryRender<DisclosureProps>((args) => {
 	// Disclosure поддерживает только initial state, поэтому при изменении defaultOpen
 	// через Controls монтируется новый экземпляр с обновлённым начальным значением.
 	return <Disclosure key={`disclosure-${String(args.defaultOpen)}`} {...args} />;
-}
+});
 
-function DisclosureGroupStoryCanvas() {
-	const [args] = useArgs<DisclosureProps>();
-
-	return (
-		<DisclosureGroup>
-			<Disclosure key={`search-${String(args.defaultOpen)}`} {...args} />
-			<Disclosure label="Сортировка">
-				<div style={{ display: "grid", gap: 8 }}>
-					<span>Поле: Дата создания</span>
-					<span>Порядок: По убыванию</span>
-				</div>
-			</Disclosure>
-			<Disclosure label="Дополнительные фильтры">
-				<div style={{ display: "grid", gap: 8 }}>
-					<span>Только активные</span>
-					<span>Без архивных записей</span>
-				</div>
-			</Disclosure>
-		</DisclosureGroup>
-	);
-}
+const renderDisclosureGroupStory = createControlledStoryRender<DisclosureProps>((args) => (
+	<DisclosureGroup>
+		<Disclosure key={`search-${String(args.defaultOpen)}`} {...args} />
+		<Disclosure label="Сортировка">
+			<div style={{ display: "grid", gap: 8 }}>
+				<span>Поле: Дата создания</span>
+				<span>Порядок: По убыванию</span>
+			</div>
+		</Disclosure>
+		<Disclosure label="Дополнительные фильтры">
+			<div style={{ display: "grid", gap: 8 }}>
+				<span>Только активные</span>
+				<span>Без архивных записей</span>
+			</div>
+		</Disclosure>
+	</DisclosureGroup>
+));
 
 export const Basic: Story = {
-	render: () => <DisclosureStoryCanvas />
+	render: renderDisclosureStory
 };
 
 export const HeaderActions: Story = {
@@ -83,7 +76,7 @@ export const HeaderActions: Story = {
 			</Button>
 		)
 	},
-	render: () => <DisclosureStoryCanvas />
+	render: renderDisclosureStory
 };
 
 export const Group: Story = {
@@ -97,5 +90,5 @@ export const Group: Story = {
 			</div>
 		)
 	},
-	render: () => <DisclosureGroupStoryCanvas />
+	render: renderDisclosureGroupStory
 };

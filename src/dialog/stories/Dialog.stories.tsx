@@ -1,7 +1,7 @@
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Button } from "../../button";
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { Dialog } from "../Dialog";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -54,8 +54,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function DialogStoryCanvas({ children }: { children: (close: () => void) => React.ReactNode }) {
-	const [args, updateArgs] = useArgs<DialogStoryArgs>();
+function DialogStoryCanvas({
+	args,
+	updateArgs,
+	children
+}: {
+	args: DialogStoryArgs;
+	updateArgs: StoryArgsUpdater<DialogStoryArgs>;
+	children: (close: () => void) => React.ReactNode;
+}) {
 	const close = () => {
 		args.onClose();
 		updateArgs({ open: false });
@@ -71,29 +78,31 @@ function DialogStoryCanvas({ children }: { children: (close: () => void) => Reac
 	);
 }
 
+function createDialogStoryRender(children: (close: () => void) => React.ReactNode) {
+	return createControlledStoryRender<DialogStoryArgs>((args, updateArgs) => (
+		<DialogStoryCanvas args={args} updateArgs={updateArgs} children={children} />
+	));
+}
+
 export const Controlled: Story = {
-	render: () => (
-		<DialogStoryCanvas
-			children={(close) => (
-				<div>
-					<p>Подтвердите выполнение действия.</p>
-					<div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-						<Button variant="transparent" onClick={close}>
-							Отмена
-						</Button>
-						<Button variant="success" onClick={close}>
-							Подтвердить
-						</Button>
-					</div>
-				</div>
-			)}
-		/>
-	)
+	render: createDialogStoryRender((close) => (
+		<div>
+			<p>Подтвердите выполнение действия.</p>
+			<div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+				<Button variant="transparent" onClick={close}>
+					Отмена
+				</Button>
+				<Button variant="success" onClick={close}>
+					Подтвердить
+				</Button>
+			</div>
+		</div>
+	))
 };
 
 export const Opened: Story = {
 	args: {
 		open: true
 	},
-	render: () => <DialogStoryCanvas children={() => <div>Диалог изначально открыт для демонстрации верстки.</div>} />
+	render: createDialogStoryRender(() => <div>Диалог изначально открыт для демонстрации верстки.</div>)
 };

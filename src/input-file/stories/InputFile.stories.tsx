@@ -1,6 +1,6 @@
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { InputFile, type InputFileProps } from "../InputFile";
 
 import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
@@ -107,8 +107,7 @@ export default meta;
 type DataUrlStory = StoryObj<DataUrlInputFileProps>;
 type ArrayBufferStory = StoryObj<ArrayBufferInputFileProps>;
 
-function InputFileDataUrlStoryCanvas(args: DataUrlInputFileProps) {
-	const [, updateArgs] = useArgs<DataUrlInputFileProps>();
+const renderInputFileDataUrlStory = createControlledStoryRender<DataUrlInputFileProps>((args, updateArgs) => {
 	const inputProps = {
 		...args,
 		onChange: (value: Extract<ReadFileResult, { mode: "data-url" }>) => {
@@ -126,10 +125,9 @@ function InputFileDataUrlStoryCanvas(args: DataUrlInputFileProps) {
 	} satisfies DataUrlInputFileProps;
 
 	return <InputFile {...inputProps} />;
-}
+});
 
-function InputFileArrayBufferStoryCanvas(args: ArrayBufferInputFileProps) {
-	const [, updateArgs] = useArgs<ArrayBufferInputFileProps>();
+const renderInputFileArrayBufferStory = createControlledStoryRender<ArrayBufferInputFileProps>((args, updateArgs) => {
 	const inputProps = {
 		...args,
 		onChange: (value: Extract<ReadFileResult, { mode: "array-buffer" }>) => {
@@ -147,12 +145,10 @@ function InputFileArrayBufferStoryCanvas(args: ArrayBufferInputFileProps) {
 	} satisfies ArrayBufferInputFileProps;
 
 	return <InputFile {...inputProps} />;
-}
+});
 
 export const Controlled: DataUrlStory = {
-	render: function Render(args) {
-		return <InputFileDataUrlStoryCanvas {...args} />;
-	},
+	render: renderInputFileDataUrlStory,
 	args: {
 		label: "Документ",
 		description: "Загрузите один файл.",
@@ -164,9 +160,7 @@ export const Controlled: DataUrlStory = {
 };
 
 export const WithInitialValue: DataUrlStory = {
-	render: function Render(args) {
-		return <InputFileDataUrlStoryCanvas {...args} />;
-	},
+	render: renderInputFileDataUrlStory,
 	args: {
 		label: "Файл с предзаполнением",
 		description: "Демонстрация состояния после успешной загрузки.",
@@ -175,9 +169,7 @@ export const WithInitialValue: DataUrlStory = {
 };
 
 export const ArrayBufferMode: ArrayBufferStory = {
-	render: function Render(args) {
-		return <InputFileArrayBufferStoryCanvas {...args} />;
-	},
+	render: renderInputFileArrayBufferStory,
 	args: {
 		label: "Двоичное чтение",
 		description: "Режим `array-buffer` для дальнейшей бинарной обработки.",

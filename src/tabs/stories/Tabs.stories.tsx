@@ -1,9 +1,9 @@
 import { useState, type CSSProperties } from "react";
 
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Tabs, TabsBox, TabsLayout, type TabsBoxItem, type TabsBoxProps, type TabsLayoutProps, type TabsProps } from "..";
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Scrollable } from "../../misc";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -170,26 +170,26 @@ type Story = StoryObj<typeof meta>;
 type LayoutStory = StoryObj<TabsLayoutProps>;
 type LegacyStory = StoryObj<TabsProps>;
 
-function TabsBoxStoryCanvas({ height }: { height?: number } = {}) {
-	const [args, updateArgs] = useArgs<TabsBoxProps>();
-	const value = args.value ?? args.defaultValue;
+function createTabsBoxStoryRender(height?: number) {
+	return createControlledStoryRender<TabsBoxProps>((args, updateArgs) => {
+		const value = args.value ?? args.defaultValue;
 
-	const tabs = (
-		<TabsBox
-			{...args}
-			value={value}
-			onValueChange={(nextValue) => {
-				args.onValueChange?.(nextValue);
-				updateArgs({ value: nextValue });
-			}}
-		/>
-	);
+		const tabs = (
+			<TabsBox
+				{...args}
+				value={value}
+				onValueChange={(nextValue) => {
+					args.onValueChange?.(nextValue);
+					updateArgs({ value: nextValue });
+				}}
+			/>
+		);
 
-	return height === undefined ? tabs : <div style={{ height }}>{tabs}</div>;
+		return height === undefined ? tabs : <div style={{ height }}>{tabs}</div>;
+	});
 }
 
-function TabsLayoutStoryCanvas() {
-	const [args, updateArgs] = useArgs<TabsLayoutProps>();
+const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args, updateArgs) => {
 	const value = args.value ?? args.defaultValue ?? "details";
 	const onValueChange = (nextValue: string) => {
 		args.onValueChange?.(nextValue);
@@ -252,10 +252,9 @@ function TabsLayoutStoryCanvas() {
 			</TabsLayout>
 		</div>
 	);
-}
+});
 
-function LegacyTabsStoryCanvas() {
-	const [args, updateArgs] = useArgs<TabsProps>();
+const renderLegacyTabsStory = createControlledStoryRender<TabsProps>((args, updateArgs) => {
 	const value = args.value ?? args.defaultValue;
 
 	return (
@@ -268,13 +267,13 @@ function LegacyTabsStoryCanvas() {
 			}}
 		/>
 	);
-}
+});
 
 export const BoxBasic: Story = {
 	args: {
 		"aria-label": "Основные разделы профиля"
 	},
-	render: () => <TabsBoxStoryCanvas />
+	render: createTabsBoxStoryRender()
 };
 
 export const BoxControlled: Story = {
@@ -282,7 +281,7 @@ export const BoxControlled: Story = {
 		value: "settings",
 		"aria-label": "Управляемые вкладки"
 	},
-	render: () => <TabsBoxStoryCanvas />
+	render: createTabsBoxStoryRender()
 };
 
 export const BoxVertical: Story = {
@@ -291,7 +290,7 @@ export const BoxVertical: Story = {
 		bordered: true,
 		"aria-label": "Вертикальные вкладки"
 	},
-	render: () => <TabsBoxStoryCanvas height={320} />
+	render: createTabsBoxStoryRender(320)
 };
 
 export const BoxMountStrategies: Story = {
@@ -300,7 +299,7 @@ export const BoxMountStrategies: Story = {
 		mountStrategy: "lazy",
 		"aria-label": "Демонстрация стратегий монтирования"
 	},
-	render: () => <TabsBoxStoryCanvas />
+	render: createTabsBoxStoryRender()
 };
 
 export const DisabledTabs: Story = {
@@ -309,7 +308,7 @@ export const DisabledTabs: Story = {
 		value: "overview",
 		"aria-label": "Вкладки с недоступным разделом"
 	},
-	render: () => <TabsBoxStoryCanvas />
+	render: createTabsBoxStoryRender()
 };
 
 export const LayoutPanels: LayoutStory = {
@@ -324,7 +323,7 @@ export const LayoutPanels: LayoutStory = {
 		loop: true,
 		"aria-label": "Составные панели документа"
 	},
-	render: () => <TabsLayoutStoryCanvas />
+	render: renderTabsLayoutStory
 };
 
 export const LegacyTabs: LegacyStory = {
@@ -341,7 +340,7 @@ export const LegacyTabs: LegacyStory = {
 		loop: true,
 		"aria-label": "Устаревший совместимый API"
 	},
-	render: () => <LegacyTabsStoryCanvas />,
+	render: renderLegacyTabsStory,
 	argTypes: {
 		onChange: {
 			description: "Deprecated callback совместимого компонента `Tabs`.",
@@ -362,7 +361,7 @@ export const Loading: Story = {
 		isLoading: true,
 		items: demoItems
 	},
-	render: () => <TabsBoxStoryCanvas />
+	render: createTabsBoxStoryRender()
 };
 
 export const Empty: Story = {
@@ -370,5 +369,5 @@ export const Empty: Story = {
 		items: [],
 		value: undefined
 	},
-	render: () => <TabsBoxStoryCanvas />
+	render: createTabsBoxStoryRender()
 };

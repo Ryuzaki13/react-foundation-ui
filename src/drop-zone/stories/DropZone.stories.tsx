@@ -1,7 +1,9 @@
+import { type ReactNode } from "react";
+
 import { UploadCloudIcon } from "lucide-react";
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { DropZone, type DropZoneProps } from "../DropZone";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -69,10 +71,8 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function DropZoneStoryCanvas({ showStatus = false, ...args }: DropZoneProps & { showStatus?: boolean }) {
-	const [, updateArgs] = useArgs<DropZoneProps>();
-
-	return (
+function createDropZoneStoryRender({ showStatus = false, children }: { showStatus?: boolean; children?: ReactNode } = {}) {
+	return createControlledStoryRender<DropZoneProps>((args, updateArgs) => (
 		<div style={{ display: "grid", gap: 12 }}>
 			<DropZone
 				{...args}
@@ -80,6 +80,7 @@ function DropZoneStoryCanvas({ showStatus = false, ...args }: DropZoneProps & { 
 					args.onChange(value);
 					updateArgs({ value });
 				}}
+				children={children ?? args.children}
 			/>
 			{showStatus && (
 				<div style={{ fontSize: 14 }}>
@@ -87,35 +88,29 @@ function DropZoneStoryCanvas({ showStatus = false, ...args }: DropZoneProps & { 
 				</div>
 			)}
 		</div>
-	);
+	));
 }
 
 export const Basic: Story = {
-	render: function Render(args) {
-		return <DropZoneStoryCanvas {...args} showStatus />;
-	}
+	render: createDropZoneStoryRender({ showStatus: true })
 };
 
 export const SingleFile: Story = {
-	render: function Render(args) {
-		return (
-			<DropZoneStoryCanvas {...args}>
-				<div style={{ display: "grid", placeItems: "center", gap: 6, minHeight: 120 }}>
-					<UploadCloudIcon />
-					<span>Перетащите один файл</span>
-				</div>
-			</DropZoneStoryCanvas>
-		);
-	},
+	render: createDropZoneStoryRender({
+		children: (
+			<div style={{ display: "grid", placeItems: "center", gap: 6, minHeight: 120 }}>
+				<UploadCloudIcon />
+				<span>Перетащите один файл</span>
+			</div>
+		)
+	}),
 	args: {
 		multiple: false
 	}
 };
 
 export const Disabled: Story = {
-	render: function Render(args) {
-		return <DropZoneStoryCanvas {...args} />;
-	},
+	render: createDropZoneStoryRender(),
 	args: {
 		disabled: true,
 		multiple: true
