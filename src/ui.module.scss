@@ -214,6 +214,8 @@
 	cursor: pointer;
 
 	&:checked {
+		border-color: var(--ui-tone-border-active);
+
 		& + .uiSelectionIcon {
 			color: var(--ui-tone-fill);
 		}
@@ -222,7 +224,7 @@
 	&:disabled {
 		cursor: default;
 
-		--ui-border-color: var(--border-0);
+		border-color: var(--border-0);
 
 		&:checked {
 			& + .uiSelectionIcon {

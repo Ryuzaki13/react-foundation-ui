@@ -18,8 +18,8 @@ $root-token-defaults: (
 	"--letter-spacing": 0em,
 	"--word-spacing": 0em,
 	"--line-height": 1.2,
-	"--text-height": calc(1em * var(--line-height)),
-	"--line-height-offset": 2px,
+	"--line-height-offset": 12px,
+	"--text-height": calc(1rem + var(--line-height-offset) / 2),
 	"--paragraph-margin": 1em,
 
 	"--border-width": 1px,
