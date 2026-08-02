@@ -18,6 +18,8 @@ export interface RadioButtonProps
 
 /**
  * Компонент радиокнопки для выбора одного варианта.
+ * Нативный `input[type="radio"]` обеспечивает взаимоисключение элементов с
+ * общим `name`, а controlled API продолжает публиковать булево состояние.
  * Поддерживает tone + appearance и использует общие selection utility-классы из ui.module.scss.
  */
 export const RadioButton: React.FC<RadioButtonProps> = ({
@@ -53,15 +55,13 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
 					<input
 						{...props}
 						id={id}
-						type="checkbox"
-						role="radio"
+						type="radio"
 						checked={checked}
 						disabled={disabled}
 						aria-disabled={disabled}
-						aria-checked={checked}
 						aria-describedby={descriptionId}
 						className={cn(uiStyles.uiSelectionControl, baseStyles.input, styles.radioInput)}
-						onChange={() => onChange?.(!checked)}
+						onChange={(event) => onChange?.(event.currentTarget.checked)}
 					/>
 					<div className={cn(uiStyles.uiSelectionIcon, baseStyles.icon)} aria-hidden="true">
 						<CircleIcon fill="currentColor" />
