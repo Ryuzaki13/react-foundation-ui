@@ -29,6 +29,7 @@ export function TabsBox({
 	mountStrategy = "unmount",
 	loop = true,
 	tone = "primary",
+	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy
 }: TabsBoxProps) {
@@ -42,7 +43,13 @@ export function TabsBox({
 		loop
 	});
 
-	const rootClassName = cn(styles.tabsContainer, styles[orientation], uiStyles.uiFilledPanel, getUiPanelToneClassName(tone), className);
+	const rootClassName = cn(
+		styles.tabsContainer,
+		clean ? styles.clean : uiStyles.uiFilledPanel,
+		styles[orientation],
+		getUiPanelToneClassName(tone),
+		className
+	);
 	const tabListClassName = styles.tabs;
 	const panelsClassName = cn(styles.panels, styles.panelScrollable, "scrollable overscroll");
 	const panelClassName = styles.panel;

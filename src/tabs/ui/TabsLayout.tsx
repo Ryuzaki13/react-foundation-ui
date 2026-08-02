@@ -3,6 +3,8 @@ import React, { Children, isValidElement, useMemo } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import uiStyles from "../../ui.module.scss";
+import { getUiPanelToneClassName } from "../../uiClasses";
 import { shouldMountTabPanel } from "../lib/tabs";
 import { useTabsState } from "../model/useTabsState";
 
@@ -177,6 +179,8 @@ const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
 	activationMode = "manual",
 	mountStrategy = "lazy",
 	loop = true,
+	tone = "primary",
+	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy
 }) => {
@@ -190,7 +194,13 @@ const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
 		activationMode,
 		loop
 	});
-	const rootClassName = cn(styles.tabsContainer, styles[orientation], className);
+	const rootClassName = cn(
+		styles.tabsContainer,
+		clean ? styles.clean : uiStyles.uiFilledPanel,
+		styles[orientation],
+		getUiPanelToneClassName(tone),
+		className
+	);
 	const panelsClassName = cn(styles.panels, styles.layoutPanels);
 
 	return (

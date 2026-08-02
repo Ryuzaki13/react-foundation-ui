@@ -622,7 +622,18 @@ export function InteractiveComponents() {
 			<ComponentCard title="TabsBox">
 				<TabsBox
 					defaultValue="first"
-					tone="tertiary"
+					items={[
+						{ id: "first", title: "Первый", content: "Содержимое" },
+						{ id: "second", title: "Второй", content: "Другая панель" },
+						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
+						{ id: "quat", title: "Четвертая", content: "Четвертая панель" },
+						{ id: "five", title: "Пятая", content: "Пятая панель" }
+					]}
+				/>
+
+				<TabsBox
+					defaultValue="first"
+					clean
 					items={[
 						{ id: "first", title: "Первый", content: "Содержимое" },
 						{ id: "second", title: "Второй", content: "Другая панель" },
@@ -637,6 +648,18 @@ export function InteractiveComponents() {
 				<TabsBox
 					defaultValue="first"
 					orientation="vertical"
+					items={[
+						{ id: "first", title: "Первый", content: "Содержимое" },
+						{ id: "second", title: "Второй", content: "Другая панель" },
+						{ id: "third", title: "Ещё одна", content: "Другая панель" },
+						{ id: "quat", title: "Четвертая", content: "Другая панель" }
+					]}
+				/>
+
+				<TabsBox
+					defaultValue="first"
+					orientation="vertical"
+					clean
 					items={[
 						{ id: "first", title: "Первый", content: "Содержимое" },
 						{ id: "second", title: "Второй", content: "Другая панель" },

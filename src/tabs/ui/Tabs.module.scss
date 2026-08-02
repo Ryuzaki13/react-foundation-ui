@@ -1,14 +1,17 @@
 .tabsContainer {
 	--tabs-border: var(--border);
-	--tabs-panel-border: var(--border);
 	--tabs-panel-padding: var(--space-md);
 
 	display: grid;
-	// gap: var(--space-sm);
 	min-width: 0;
 	min-height: 0;
 	height: 100%;
 	overflow: hidden;
+
+	&.clean {
+		--tabs-border: none;
+		--tabs-panel-padding: 0;
+	}
 }
 
 .tabs {
@@ -22,7 +25,7 @@
 .panels {
 	min-width: 0;
 	min-height: 0;
-	border: var(--tabs-panel-border);
+	border: var(--tabs-border);
 }
 
 .horizontal {
@@ -72,16 +75,16 @@
 		border-bottom-right-radius: var(--radius-sm);
 	}
 
-	.tab {
-		&::before {
-			content: "";
-			position: absolute;
-			top: 0;
-			bottom: 0;
-			right: 0;
-			border-right: var(--focus-width) solid var(--decoration-color);
-		}
-	}
+	// .tab {
+	// 	&::before {
+	// 		content: "";
+	// 		position: absolute;
+	// 		top: 0;
+	// 		bottom: 0;
+	// 		right: 0;
+	// 		border-right: var(--focus-width) solid var(--decoration-color);
+	// 	}
+	// }
 }
 
 .panelScrollable {
