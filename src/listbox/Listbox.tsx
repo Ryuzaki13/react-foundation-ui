@@ -172,7 +172,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 			{...rest}
 			aria-disabled={disabled || undefined}
 			tabIndex={disabled ? -1 : 0}
-			className={cn(uiStyles.uiPanel, "scrollable surface1", disabled && uiStyles.disabled)}>
+			className={cn(uiStyles.uiPanel, "scrollable", disabled && uiStyles.disabled)}>
 			{options.map((option, index) => {
 				const selected = multiple
 					? Array.isArray(selectedValues) && selectedValues.includes(option.value)
