@@ -24,8 +24,6 @@ export function TabsBox({
 	className,
 	isLoading,
 	loadingText,
-	cleanPanel,
-	bordered = false,
 	orientation = "horizontal",
 	activationMode = "automatic",
 	mountStrategy = "unmount",
@@ -44,15 +42,7 @@ export function TabsBox({
 		loop
 	});
 
-	const rootClassName = cn(
-		styles.tabsContainer,
-		styles[orientation],
-		bordered && styles.bordered,
-		cleanPanel && styles.cleanPanel,
-		uiStyles.uiFilledPanel,
-		getUiPanelToneClassName(tone),
-		className
-	);
+	const rootClassName = cn(styles.tabsContainer, styles[orientation], uiStyles.uiFilledPanel, getUiPanelToneClassName(tone), className);
 	const tabListClassName = styles.tabs;
 	const panelsClassName = cn(styles.panels, styles.panelScrollable, "scrollable overscroll");
 	const panelClassName = styles.panel;

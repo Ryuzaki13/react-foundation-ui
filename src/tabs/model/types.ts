@@ -37,8 +37,6 @@ export interface TabsCommonProps {
 	activationMode?: TabsActivationMode;
 	mountStrategy?: TabsMountStrategy;
 	loop?: boolean;
-	cleanPanel?: boolean;
-	bordered?: boolean;
 	tone?: UiPanelTone;
 	className?: string;
 	"aria-label"?: string;

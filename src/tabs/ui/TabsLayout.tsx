@@ -173,8 +173,6 @@ const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
 	defaultValue,
 	onValueChange,
 	className,
-	bordered,
-	cleanPanel,
 	orientation = "horizontal",
 	activationMode = "manual",
 	mountStrategy = "lazy",
@@ -192,13 +190,7 @@ const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
 		activationMode,
 		loop
 	});
-	const rootClassName = cn(
-		styles.tabsContainer,
-		styles[orientation],
-		bordered && styles.bordered,
-		cleanPanel && styles.cleanPanel,
-		className
-	);
+	const rootClassName = cn(styles.tabsContainer, styles[orientation], className);
 	const panelsClassName = cn(styles.panels, styles.layoutPanels);
 
 	return (

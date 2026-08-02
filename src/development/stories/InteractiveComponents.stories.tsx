@@ -631,47 +631,12 @@ export function InteractiveComponents() {
 						{ id: "five", title: "Пятая", content: "Пятая панель" }
 					]}
 				/>
-
-				<TabsBox
-					defaultValue="first"
-					bordered
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
-						{ id: "quat", title: "Четвертая", content: "Четвертая панель" }
-					]}
-				/>
-
-				<TabsBox
-					defaultValue="first"
-					bordered
-					cleanPanel
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
-						{ id: "quat", title: "Четвертая", content: "Четвертая панель" }
-					]}
-				/>
-
-				<TabsBox
-					defaultValue="first"
-					cleanPanel
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
-						{ id: "quat", title: "Четвертая", content: "Четвертая панель" }
-					]}
-				/>
 			</ComponentCard>
 
 			<ComponentCard title="TabsBox">
 				<TabsBox
 					defaultValue="first"
 					orientation="vertical"
-					bordered
 					items={[
 						{ id: "first", title: "Первый", content: "Содержимое" },
 						{ id: "second", title: "Второй", content: "Другая панель" },
