@@ -3,6 +3,8 @@ import { createRequire } from "node:module";
 import { dirname, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
 
+import remarkGfm from "remark-gfm";
+
 import type { StorybookConfig } from "@storybook/react-vite";
 
 const configDirectory = fileURLToPath(new URL(".", import.meta.url));
@@ -46,7 +48,22 @@ const foundationDocumentationStories = foundationDocumentationDirectories.map((p
 
 const config: StorybookConfig = {
 	stories: ["../src/**/*.stories.@(ts|tsx)", "../src/**/*.mdx", ...foundationDocumentationStories],
-	addons: ["@chromatic-com/storybook", "@storybook/addon-docs", "@storybook/addon-a11y", "@storybook/addon-vitest"],
+	addons: [
+		"@chromatic-com/storybook",
+		{
+			name: "@storybook/addon-docs",
+			options: {
+				mdxPluginOptions: {
+					mdxCompileOptions: {
+						// Документация foundation-пакетов использует GFM-таблицы, которые не входят в стандартный CommonMark MDX.
+						remarkPlugins: [remarkGfm]
+					}
+				}
+			}
+		},
+		"@storybook/addon-a11y",
+		"@storybook/addon-vitest"
+	],
 	framework: {
 		name: "@storybook/react-vite",
 		options: {}

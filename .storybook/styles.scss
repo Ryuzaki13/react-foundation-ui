@@ -13,3 +13,31 @@
 :root[data-theme="dark:default"] {
 	@include foundationThemes.dark-theme;
 }
+
+:root {
+	font-feature-settings: "locl" 0;
+}
+
+.lucide {
+	stroke-width: var(--stroke-width);
+	width: 1.25em;
+	height: 1.25em;
+	line-height: var(--line-height);
+}
+
+.debug {
+	outline: 1px dashed oklch(65.6% 0.241 354.308);
+	outline-offset: -1px;
+}
+.debug1 {
+	outline: 1px dashed oklch(79.5% 0.184 86.047);
+	outline-offset: -1px;
+}
+.debug2 {
+	outline: 1px dashed oklch(71.5% 0.143 215.221);
+	outline-offset: -1px;
+}
+.debug3 {
+	outline: 1px dashed oklch(76.8% 0.233 130.85);
+	outline-offset: -1px;
+}
