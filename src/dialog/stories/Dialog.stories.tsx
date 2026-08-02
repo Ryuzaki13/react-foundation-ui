@@ -1,9 +1,12 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
 import { Button } from "../../button";
 import { Dialog } from "../Dialog";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+type DialogStoryArgs = React.ComponentProps<typeof Dialog>;
 
 const meta = {
 	title: "Shared/UI/Dialog",
@@ -12,9 +15,9 @@ const meta = {
 		title: "Подтверждение операции",
 		description: "Проверьте параметры перед выполнением действия.",
 		open: false,
-		onClose: () => {},
+		onClose: fn(),
 		minWidth: 360,
-		children: <div>Содержимое диалога</div>
+		children: null
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -38,7 +41,7 @@ const meta = {
 			control: false
 		},
 		minWidth: {
-			description: "Минимальная ширина контейнера окна.",
+			description: "Минимальная ширина контейнера окна в CSS-единицах или пикселях.",
 			control: "text"
 		},
 		children: {
@@ -51,49 +54,46 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Controlled: Story = {
-	render: (args) => {
-		const [open, setOpen] = useState(false);
+function DialogStoryCanvas({ children }: { children: (close: () => void) => React.ReactNode }) {
+	const [args, updateArgs] = useArgs<DialogStoryArgs>();
+	const close = () => {
+		args.onClose();
+		updateArgs({ open: false });
+	};
 
-		return (
-			<>
-				<Button onClick={() => setOpen(true)}>Открыть диалог</Button>
-				<Dialog
-					{...args}
-					open={open}
-					onClose={() => setOpen(false)}
-					children={
-						<div>
-							<p>Подтвердите выполнение действия.</p>
-							<div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-								<Button variant="transparent" onClick={() => setOpen(false)}>
-									Отмена
-								</Button>
-								<Button variant="success" onClick={() => setOpen(false)}>
-									Подтвердить
-								</Button>
-							</div>
-						</div>
-					}
-				/>
-			</>
-		);
-	}
+	return (
+		<>
+			<Button onClick={() => updateArgs({ open: true })}>Открыть диалог</Button>
+			<Dialog {...args} open={args.open} onClose={close}>
+				{args.children ?? children(close)}
+			</Dialog>
+		</>
+	);
+}
+
+export const Controlled: Story = {
+	render: () => (
+		<DialogStoryCanvas
+			children={(close) => (
+				<div>
+					<p>Подтвердите выполнение действия.</p>
+					<div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
+						<Button variant="transparent" onClick={close}>
+							Отмена
+						</Button>
+						<Button variant="success" onClick={close}>
+							Подтвердить
+						</Button>
+					</div>
+				</div>
+			)}
+		/>
+	)
 };
 
 export const Opened: Story = {
-	render: (args) => {
-		const [open, setOpen] = useState(true);
-		return (
-			<Dialog
-				{...args}
-				open={open}
-				onClose={() => setOpen(false)}
-				children={<div>Диалог изначально открыт для демонстрации верстки.</div>}
-			/>
-		);
-	},
 	args: {
 		open: true
-	}
+	},
+	render: () => <DialogStoryCanvas children={() => <div>Диалог изначально открыт для демонстрации верстки.</div>} />
 };

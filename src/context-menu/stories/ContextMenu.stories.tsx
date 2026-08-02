@@ -1,32 +1,137 @@
-import { useState } from "react";
-
 import { Copy, Eye, PencilLine, Pin, Settings2, Trash2 } from "lucide-react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
-import { ContextMenu } from "../components/ContextMenu";
-import { DropdownMenu } from "../components/DropdownMenu";
+import { ContextMenu, type ContextMenuProps } from "../components/ContextMenu";
+import { DropdownMenu, type DropdownMenuProps } from "../components/DropdownMenu";
 
+import type { MenuContentProps } from "../components/MenuContent";
+import type { RadialMenuContentProps } from "../components/RadialMenuContent";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+const placements = [
+	"top",
+	"top-start",
+	"top-end",
+	"right",
+	"right-start",
+	"right-end",
+	"bottom",
+	"bottom-start",
+	"bottom-end",
+	"left",
+	"left-start",
+	"left-end"
+] as const;
+
+type MenuContentStoryProps = Pick<MenuContentProps, "closeOnOutside" | "closeOnEscape" | "disableOutsideClick" | "restoreFocus">;
+type RadialMenuContentStoryProps = Pick<RadialMenuContentProps, "radius" | "itemSize" | "closeLabel">;
+type ContextMenuStoryArgs = ContextMenuProps & MenuContentStoryProps & RadialMenuContentStoryProps;
+type DropdownMenuStoryArgs = DropdownMenuProps & MenuContentStoryProps;
+type RadialContextMenuStoryArgs = ContextMenuStoryArgs;
 
 const meta = {
 	title: "Shared/UI/ContextMenu",
+	component: ContextMenu,
+	args: {
+		children: null,
+		placement: "right-start",
+		open: false,
+		defaultOpen: false,
+		onOpenChange: fn<(open: boolean) => void>(),
+		closeOnOutside: true,
+		closeOnEscape: true,
+		disableOutsideClick: false,
+		restoreFocus: true
+	},
 	parameters: {
 		atomicCanvas: true,
 		layout: "centered"
+	},
+	argTypes: {
+		children: {
+			description: "Композиция из Trigger, Content и пунктов меню.",
+			control: false
+		},
+		placement: {
+			description: "Предпочтительное положение меню относительно trigger или точки вызова.",
+			control: "select",
+			options: placements
+		},
+		open: {
+			description: "Контролируемая видимость меню.",
+			control: "boolean"
+		},
+		defaultOpen: {
+			description: "Начальная видимость в uncontrolled-режиме.",
+			control: "boolean"
+		},
+		onOpenChange: {
+			description: "Вызывается при открытии и закрытии меню.",
+			control: false
+		},
+		closeOnOutside: {
+			description: "Закрывает обычную панель по клику снаружи.",
+			control: "boolean"
+		},
+		closeOnEscape: {
+			description: "Закрывает обычную панель по клавише Escape.",
+			control: "boolean"
+		},
+		disableOutsideClick: {
+			description: "Игнорирует клики снаружи панели.",
+			control: "boolean"
+		},
+		restoreFocus: {
+			description: "Возвращает фокус на trigger после закрытия.",
+			control: "boolean"
+		},
+		radius: {
+			description: "Радиус кольца для радиального меню.",
+			control: { type: "number", min: 0, step: 1 }
+		},
+		itemSize: {
+			description: "Размер пункта радиального меню в пикселях.",
+			control: { type: "number", min: 1, step: 1 }
+		},
+		closeLabel: {
+			description: "Доступное имя и подпись центральной кнопки закрытия радиального меню.",
+			control: "text"
+		}
 	}
-} satisfies Meta;
+} satisfies Meta<ContextMenuStoryArgs>;
 
 export default meta;
 
-type Story = StoryObj<typeof meta>;
+type ContextStory = StoryObj<ContextMenuStoryArgs>;
+type DropdownStory = StoryObj<DropdownMenuStoryArgs>;
+type RadialContextStory = StoryObj<RadialContextMenuStoryArgs>;
 
-export const DropdownMenuBasic: Story = {
-	name: "DropdownMenu / Базовый",
-	render: () => (
-		<DropdownMenu>
+function useMenuOpenChange<T extends { open?: boolean; onOpenChange?: (open: boolean) => void }>() {
+	const [args, updateArgs] = useArgs<T>();
+
+	return {
+		args,
+		onOpenChange: (open: boolean) => {
+			args.onOpenChange?.(open);
+			updateArgs({ open } as unknown as Partial<T>);
+		}
+	};
+}
+
+function DropdownMenuBasicCanvas() {
+	const { args, onOpenChange } = useMenuOpenChange<DropdownMenuStoryArgs>();
+
+	return (
+		<DropdownMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
 			<DropdownMenu.Trigger>
 				<button type="button">Действия</button>
 			</DropdownMenu.Trigger>
-			<DropdownMenu.Content>
+			<DropdownMenu.Content
+				closeOnOutside={args.closeOnOutside}
+				closeOnEscape={args.closeOnEscape}
+				disableOutsideClick={args.disableOutsideClick}
+				restoreFocus={args.restoreFocus}>
 				<DropdownMenu.GroupLabel>Файл</DropdownMenu.GroupLabel>
 				<DropdownMenu.Item icon={<PencilLine size={14} />} hotKey="Ctrl+E">
 					Редактировать
@@ -40,13 +145,14 @@ export const DropdownMenuBasic: Story = {
 				</DropdownMenu.Item>
 			</DropdownMenu.Content>
 		</DropdownMenu>
-	)
-};
+	);
+}
 
-export const ContextMenuBasic: Story = {
-	name: "ContextMenu / По правому клику",
-	render: () => (
-		<ContextMenu>
+function ContextMenuBasicCanvas() {
+	const { args, onOpenChange } = useMenuOpenChange<ContextMenuStoryArgs>();
+
+	return (
+		<ContextMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
 			<ContextMenu.Trigger>
 				<div
 					style={{
@@ -65,20 +171,25 @@ export const ContextMenuBasic: Story = {
 					или Shift+F10
 				</div>
 			</ContextMenu.Trigger>
-			<ContextMenu.Content>
+			<ContextMenu.Content
+				closeOnOutside={args.closeOnOutside}
+				closeOnEscape={args.closeOnEscape}
+				disableOutsideClick={args.disableOutsideClick}
+				restoreFocus={args.restoreFocus}>
 				<ContextMenu.Item icon={<PencilLine size={14} />}>Переименовать</ContextMenu.Item>
 				<ContextMenu.Item icon={<Copy size={14} />}>Дублировать</ContextMenu.Item>
 				<ContextMenu.Separator />
 				<ContextMenu.Item icon={<Trash2 size={14} />}>Переместить в корзину</ContextMenu.Item>
 			</ContextMenu.Content>
 		</ContextMenu>
-	)
-};
+	);
+}
 
-export const ContextMenuRadial: Story = {
-	name: "ContextMenu / Радиальное меню",
-	render: () => (
-		<ContextMenu>
+function ContextMenuRadialCanvas() {
+	const { args, onOpenChange } = useMenuOpenChange<RadialContextMenuStoryArgs>();
+
+	return (
+		<ContextMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
 			<ContextMenu.Trigger>
 				<div
 					style={{
@@ -97,7 +208,14 @@ export const ContextMenuRadial: Story = {
 					или Shift+F10
 				</div>
 			</ContextMenu.Trigger>
-			<ContextMenu.RadialContent>
+			<ContextMenu.RadialContent
+				closeOnOutside={args.closeOnOutside}
+				closeOnEscape={args.closeOnEscape}
+				disableOutsideClick={args.disableOutsideClick}
+				restoreFocus={args.restoreFocus}
+				radius={args.radius}
+				itemSize={args.itemSize}
+				closeLabel={args.closeLabel}>
 				<ContextMenu.RadialItem icon={<PencilLine />}>Править</ContextMenu.RadialItem>
 				<ContextMenu.RadialItem icon={<Copy />}>Копия</ContextMenu.RadialItem>
 				<ContextMenu.RadialItem icon={<Pin />}>Закрепить</ContextMenu.RadialItem>
@@ -106,21 +224,51 @@ export const ContextMenuRadial: Story = {
 				<ContextMenu.RadialItem icon={<Trash2 />}>Удалить</ContextMenu.RadialItem>
 			</ContextMenu.RadialContent>
 		</ContextMenu>
-	)
+	);
+}
+
+export const DropdownMenuBasic: DropdownStory = {
+	name: "DropdownMenu / Базовый",
+	args: {
+		placement: "bottom-start"
+	},
+	render: () => <DropdownMenuBasicCanvas />
 };
 
-export const ControlledDropdown: Story = {
+export const ContextMenuBasic: ContextStory = {
+	name: "ContextMenu / По правому клику",
+	render: () => <ContextMenuBasicCanvas />
+};
+
+export const ContextMenuRadial: RadialContextStory = {
+	name: "ContextMenu / Радиальное меню",
+	args: {
+		radius: 76,
+		itemSize: 64,
+		closeLabel: "Закрыть"
+	},
+	render: () => <ContextMenuRadialCanvas />
+};
+
+export const ControlledDropdown: DropdownStory = {
 	name: "DropdownMenu / Контролируемый",
-	render: () => {
-		const [open, setOpen] = useState(false);
+	args: {
+		placement: "bottom-start"
+	},
+	render: function Render() {
+		const { args, onOpenChange } = useMenuOpenChange<DropdownMenuStoryArgs>();
 
 		return (
-			<DropdownMenu open={open} onOpenChange={setOpen}>
+			<DropdownMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
 				<DropdownMenu.Trigger>
-					<button type="button">{open ? "Скрыть меню" : "Показать меню"}</button>
+					<button type="button">{args.open ? "Скрыть меню" : "Показать меню"}</button>
 				</DropdownMenu.Trigger>
-				<DropdownMenu.Content>
-					<DropdownMenu.Item onSelect={() => setOpen(false)}>Закрыть</DropdownMenu.Item>
+				<DropdownMenu.Content
+					closeOnOutside={args.closeOnOutside}
+					closeOnEscape={args.closeOnEscape}
+					disableOutsideClick={args.disableOutsideClick}
+					restoreFocus={args.restoreFocus}>
+					<DropdownMenu.Item onSelect={() => onOpenChange(false)}>Закрыть</DropdownMenu.Item>
 				</DropdownMenu.Content>
 			</DropdownMenu>
 		);

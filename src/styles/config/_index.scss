@@ -211,6 +211,19 @@ $light-theme-defaults: (
 		h: 245
 	),
 	status: (
+		// Brand использует общий генератор состояний, но остаётся не статусом, а фирменным тоном UI.
+		brand: (
+				fill: (
+					l: 0.4,
+					c: 0.2,
+					h: 262
+				),
+				border: (
+					l: 0.5,
+					c: 0.2,
+					h: 262
+				)
+			),
 		neutral: (
 			fill: (
 				l: 0.26,
@@ -227,48 +240,48 @@ $light-theme-defaults: (
 			fill: (
 				l: 0.52,
 				c: 0.19,
-				h: 22
+				h: 15
 			),
 			border: (
 				l: 0.52,
 				c: 0.19,
-				h: 22
+				h: 15
 			)
 		),
 		warning: (
 			fill: (
 				l: 0.55,
 				c: 0.16,
-				h: 75
+				h: 80
 			),
 			border: (
 				l: 0.55,
 				c: 0.16,
-				h: 75
+				h: 80
 			)
 		),
 		success: (
 			fill: (
 				l: 0.5,
 				c: 0.14,
-				h: 160
+				h: 170
 			),
 			border: (
 				l: 0.5,
 				c: 0.14,
-				h: 160
+				h: 170
 			)
 		),
 		info: (
 			fill: (
 				l: 0.52,
 				c: 0.15,
-				h: 255
+				h: 245
 			),
 			border: (
 				l: 0.52,
 				c: 0.15,
-				h: 255
+				h: 245
 			)
 		)
 	)
@@ -276,84 +289,96 @@ $light-theme-defaults: (
 
 $dark-theme-defaults: (
 	tokens: (
-		"--surface-0": #000000,
-		"--surface-1": #111111,
-		"--surface-2": #222222,
-		"--content-0": #ffffff,
-		"--content-1": #cccccc,
-		"--content-2": #999999,
-		"--focus-ring": #ffffff,
-		"--overlay-backdrop": rgba(255, 255, 255, 0.12),
-		"--overlay-glass": rgba(0, 0, 0, 0.86),
+		"--surface-0": #222a35,
+		"--surface-1": #27313f,
+		"--surface-2": #2d3646,
+		"--content-0": oklch(0.9 0.01 256),
+		"--content-1": oklch(0.8 0.02 256),
+		"--content-2": oklch(0.7 0.02 256),
+		"--focus-ring": oklch(0.88 0.2 94),
+		"--overlay-backdrop": rgba(30, 37, 47, 0.18),
+		"--overlay-glass": rgba(30, 37, 47, 0.8),
 		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
 		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
 		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
 		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25)
 	),
 	accent: (
-		l: 0.92,
-		c: 0,
-		h: 0
+		l: 0.7,
+		c: 0.2,
+		h: 245
 	),
 	status: (
-		neutral: (
+		brand: (
 			fill: (
-				l: 0.88,
-				c: 0,
-				h: 0
+				l: 0.75,
+				c: 0.2,
+				h: 272
 			),
 			border: (
-				l: 0.35,
-				c: 0,
-				h: 0
+				l: 0.7,
+				c: 0.18,
+				h: 266
+			)
+		),
+		neutral: (
+			fill: (
+				l: 0.75,
+				c: 0.02,
+				h: 256
+			),
+			border: (
+				l: 0.45,
+				c: 0.02,
+				h: 256
 			)
 		),
 		error: (
 			fill: (
-				l: 0.72,
-				c: 0.2,
-				h: 25
+				l: 0.75,
+				c: 0.18,
+				h: 22
 			),
 			border: (
-				l: 0.72,
-				c: 0.2,
-				h: 25
+				l: 0.75,
+				c: 0.18,
+				h: 22
 			)
 		),
 		warning: (
 			fill: (
-				l: 0.8,
-				c: 0.16,
-				h: 90
+				l: 0.77,
+				c: 0.14,
+				h: 75
 			),
 			border: (
-				l: 0.8,
-				c: 0.16,
-				h: 90
+				l: 0.77,
+				c: 0.14,
+				h: 75
 			)
 		),
 		success: (
 			fill: (
 				l: 0.75,
-				c: 0.16,
-				h: 145
+				c: 0.14,
+				h: 165
 			),
 			border: (
 				l: 0.75,
-				c: 0.16,
-				h: 145
+				c: 0.14,
+				h: 165
 			)
 		),
 		info: (
 			fill: (
-				l: 0.76,
+				l: 0.75,
 				c: 0.16,
-				h: 250
+				h: 258
 			),
 			border: (
-				l: 0.76,
+				l: 0.75,
 				c: 0.16,
-				h: 250
+				h: 258
 			)
 		)
 	)

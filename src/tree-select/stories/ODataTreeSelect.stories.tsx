@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
 
 import {
 	baseOData,
@@ -8,42 +8,24 @@ import {
 	treeSegments,
 	withODataStoryQueryClient
 } from "../../select/stories/odataStoryFixtures";
-import { ODataTreeSelect } from "../ODataTreeSelect";
-import { TreeSelectValue } from "../types";
+import { ODataTreeSelect, type ODataTreeSelectProps } from "../ODataTreeSelect";
 
-import type { ODataCollectionConfig, ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function StatefulODataTreeSelect({
-	initialValue,
-	odata = baseOData,
-	segments = treeSegments,
-	label = "ODataTreeSelect",
-	description,
-	defaultExpandedCodeKeys
-}: {
-	initialValue?: TreeSelectValue;
-	odata?: ODataCollectionConfig;
-	segments?: ODataDependentBaseProps["segments"];
-	label?: string;
-	description?: string;
-	defaultExpandedCodeKeys?: readonly string[];
-}) {
-	const [value, setValue] = useState<TreeSelectValue | undefined>(initialValue);
+function ODataTreeSelectStoryCanvas(args: ODataTreeSelectProps) {
+	const [, updateArgs] = useArgs<ODataTreeSelectProps>();
 
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<ODataTreeSelect
-				label={label}
-				description={description}
-				odata={odata}
-				segments={segments}
-				value={value}
-				onChange={setValue}
-				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
-				Текущее значение: {value ? `${value.codeKey}=${value.value}` : "пусто"}
+				Текущее значение: {args.value ? `${args.value.codeKey}=${args.value.value}` : "пусто"}
 			</div>
 		</div>
 	);
@@ -68,9 +50,21 @@ const meta = {
 		onChange: () => {}
 	},
 	argTypes: {
-		segments: { control: false },
-		value: { control: false },
-		onChange: { control: false }
+		label: { description: "Заголовок поля.", control: "text" },
+		description: { description: "Описание под полем.", control: "text" },
+		placeholder: { description: "Текст без выбранного узла.", control: "text" },
+		odata: { description: "Конфигурация OData-источника.", control: false },
+		segments: { description: "Конфигурация уровней OData-дерева.", control: false },
+		model: { description: "Опциональная модель OData-коллекции.", control: false },
+		value: { description: "Выбранный узел в формате codeKey/value.", control: false },
+		onChange: { description: "Вызывается при выборе узла.", control: false },
+		query: { description: "Контролируемый текст поиска.", control: "text" },
+		defaultQuery: { description: "Начальный текст поиска в uncontrolled-режиме.", control: "text" },
+		onQuery: { description: "Вызывается при вводе поисковой строки.", control: false },
+		clearable: { description: "Показывает действие очистки выбора.", control: "boolean" },
+		defaultExpandedCodeKeys: { description: "Ключи уровней, раскрываемых после загрузки.", control: false },
+		disabled: { description: "Блокирует взаимодействие с полем.", control: "boolean" },
+		size: { description: "Размер поля и подписей.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] }
 	}
 } satisfies Meta<typeof ODataTreeSelect>;
 
@@ -78,39 +72,58 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-	render: () => <StatefulODataTreeSelect initialValue={{ codeKey: "OWNER", value: storyValues.owner }} />
+	render: function Render(args) {
+		return <ODataTreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		value: { codeKey: "OWNER", value: storyValues.owner }
+	}
 };
 
 export const SelectParent: Story = {
-	render: () => (
-		<StatefulODataTreeSelect
-			label="Выбор родителя"
-			description="Проверка выбора узла верхнего уровня из OData-дерева."
-			initialValue={{ codeKey: "REGION", value: storyValues.region }}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataTreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Выбор родителя",
+		description: "Проверка выбора узла верхнего уровня из OData-дерева.",
+		value: { codeKey: "REGION", value: storyValues.region }
+	}
 };
 
 export const OnlySecondLevelExpanded: Story = {
-	render: () => (
-		<StatefulODataTreeSelect
-			label="Раскрывается только второй уровень"
-			description="REGION остаётся закрытым. После его ручного открытия узлы BRANCH уже раскрыты по умолчанию."
-			defaultExpandedCodeKeys={["BRANCH"]}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataTreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Раскрывается только второй уровень",
+		description: "REGION остаётся закрытым. После его ручного открытия узлы BRANCH уже раскрыты по умолчанию.",
+		defaultExpandedCodeKeys: ["BRANCH"]
+	}
 };
 
 export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: () => <StatefulODataTreeSelect odata={odataStoryOData.loading} description="Сценарий загрузки дерева." />
+	render: function Render(args) {
+		return <ODataTreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		odata: odataStoryOData.loading,
+		description: "Сценарий загрузки дерева."
+	}
 };
 
 export const ErrorState: Story = {
 	parameters: {
 		odataMockMode: "metadataError"
 	},
-	render: () => <StatefulODataTreeSelect odata={odataStoryOData.metadataError} description="Сценарий ошибки metadata дерева." />
+	render: function Render(args) {
+		return <ODataTreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		odata: odataStoryOData.metadataError,
+		description: "Сценарий ошибки metadata дерева."
+	}
 };

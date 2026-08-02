@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
-import { InputFiles } from "../InputFiles";
+import { InputFiles, type InputFilesProps } from "../InputFiles";
 
 import type { ReadFileAsDataUrlResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -21,12 +22,15 @@ const createMockReadFileResult = (name: string, mime: string = "application/pdf"
 	};
 };
 
+type DataUrlInputFilesProps = Extract<InputFilesProps, { readMode?: "data-url" }>;
+
 const meta = {
 	title: "Shared/UI/InputFiles",
 	component: InputFiles,
 	args: {
 		value: [] as ReadFileAsDataUrlResult[],
-		onChange: () => {}
+		onChange: fn<DataUrlInputFilesProps["onChange"]>(),
+		readMode: "data-url"
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -59,7 +63,7 @@ const meta = {
 		},
 		accept: {
 			description: "HTML `accept` для диалога выбора файлов.",
-			control: "text"
+			control: "object"
 		},
 		allowedMime: {
 			description: "Список допустимых MIME-типов при валидации.",
@@ -99,12 +103,29 @@ const meta = {
 } satisfies Meta<typeof InputFiles>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<DataUrlInputFilesProps>;
+
+function InputFilesStoryCanvas(args: DataUrlInputFilesProps) {
+	const [, updateArgs] = useArgs<DataUrlInputFilesProps>();
+
+	return (
+		<InputFiles
+			{...args}
+			onChange={(value) => {
+				args.onChange(value);
+				updateArgs({ value });
+			}}
+			onClearError={() => {
+				args.onClearError?.();
+				updateArgs({ error: undefined });
+			}}
+		/>
+	);
+}
 
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadFileAsDataUrlResult[]>([]);
-		return <InputFiles {...args} readMode="data-url" value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <InputFilesStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Вложения",
@@ -117,32 +138,24 @@ export const Controlled: Story = {
 };
 
 export const WithInitialFiles: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadFileAsDataUrlResult[]>([
-			createMockReadFileResult("contract.pdf"),
-			createMockReadFileResult("diagram.png", "image/png")
-		]);
-
-		return <InputFiles {...args} readMode="data-url" value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <InputFilesStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Предзаполненный список",
-		description: "Иллюстрация удаления файлов из уже заполненного значения."
+		description: "Иллюстрация удаления файлов из уже заполненного значения.",
+		value: [createMockReadFileResult("contract.pdf"), createMockReadFileResult("diagram.png", "image/png")]
 	}
 };
 
 export const LimitReached: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadFileAsDataUrlResult[]>([
-			createMockReadFileResult("first.pdf"),
-			createMockReadFileResult("second.pdf")
-		]);
-
-		return <InputFiles {...args} readMode="data-url" value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <InputFilesStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Лимит файлов",
 		description: "После достижения лимита поле выбора блокируется.",
-		maxFiles: 2
+		maxFiles: 2,
+		value: [createMockReadFileResult("first.pdf"), createMockReadFileResult("second.pdf")]
 	}
 };

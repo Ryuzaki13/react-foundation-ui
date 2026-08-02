@@ -2,6 +2,7 @@ import type { CSSProperties, PropsWithChildren } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { BellRingIcon, CheckIcon, InfoIcon, RefreshCwIcon, TimerResetIcon, Trash2Icon, TriangleAlertIcon, XCircleIcon } from "lucide-react";
+import { useArgs } from "storybook/preview-api";
 
 import { Button } from "../../../button";
 import { NotificationsProvider, useNotify } from "../../model";
@@ -9,9 +10,13 @@ import { NotificationsHost } from "../NotificationsHost";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
+type NotificationsHostStoryArgs = Record<string, never>;
+
 const meta = {
 	title: "Shared/UI/Notifications",
 	component: NotificationsHost,
+	args: {},
+	argTypes: {},
 	parameters: {
 		atomicCanvas: true,
 		layout: "fullscreen",
@@ -86,7 +91,7 @@ function NotificationsStateReset() {
 	return null;
 }
 
-function NotificationsStoryShell({ children }: PropsWithChildren) {
+function NotificationsStoryShell({ children, hostProps }: PropsWithChildren<{ hostProps: NotificationsHostStoryArgs }>) {
 	return (
 		<NotificationsProvider>
 			<NotificationsStateReset />
@@ -106,9 +111,15 @@ function NotificationsStoryShell({ children }: PropsWithChildren) {
 				</div>
 			</div>
 
-			<NotificationsHost />
+			<NotificationsHost {...hostProps} />
 		</NotificationsProvider>
 	);
+}
+
+function NotificationsStoryCanvas({ children }: PropsWithChildren) {
+	const [args] = useArgs<NotificationsHostStoryArgs>();
+
+	return <NotificationsStoryShell hostProps={args}>{children}</NotificationsStoryShell>;
 }
 
 function ShowcaseSeed() {
@@ -358,11 +369,13 @@ function PlaygroundPanel() {
 }
 
 export const Showcase: Story = {
-	render: () => (
-		<NotificationsStoryShell>
-			<ShowcaseSeed />
-		</NotificationsStoryShell>
-	),
+	render: function Render() {
+		return (
+			<NotificationsStoryCanvas>
+				<ShowcaseSeed />
+			</NotificationsStoryCanvas>
+		);
+	},
 	parameters: {
 		docs: {
 			description: {
@@ -373,11 +386,13 @@ export const Showcase: Story = {
 };
 
 export const InteractivePlayground: Story = {
-	render: () => (
-		<NotificationsStoryShell>
-			<PlaygroundPanel />
-		</NotificationsStoryShell>
-	),
+	render: function Render() {
+		return (
+			<NotificationsStoryCanvas>
+				<PlaygroundPanel />
+			</NotificationsStoryCanvas>
+		);
+	},
 	parameters: {
 		docs: {
 			description: {

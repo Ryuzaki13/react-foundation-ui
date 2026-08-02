@@ -1,5 +1,7 @@
 import { useState, type CSSProperties } from "react";
 
+import { useArgs } from "storybook/preview-api";
+
 import { Sortable } from "..";
 import { getSortableReorderResult, type SortableLayout } from "../sortableUtils";
 
@@ -49,7 +51,8 @@ function getContainerStyle(layout: SortableLayout): CSSProperties {
 }
 
 export function SortablePreview(props: SortablePreviewProps) {
-	const [items, setItems] = useState(props.initialItems);
+	const [, updateArgs] = useArgs<SortablePreviewProps>();
+	const items = props.initialItems;
 	const disabledIdSet = new Set(props.disabledIds ?? []);
 
 	return (
@@ -64,7 +67,7 @@ export function SortablePreview(props: SortablePreviewProps) {
 					});
 					if (!reorder) return;
 
-					setItems((prev) => reorderItems(prev, reorder.fromIndex, reorder.toIndex) as string[]);
+					updateArgs({ initialItems: reorderItems(items, reorder.fromIndex, reorder.toIndex) as string[] });
 				}}>
 				<Sortable.Container containerId={props.containerId} items={items} layout={props.layout}>
 					<div style={getContainerStyle(props.layout)}>
@@ -115,7 +118,7 @@ const meta = {
 			options: ["vertical", "horizontal", "grid"]
 		},
 		initialItems: {
-			description: "Начальный набор элементов. Внутри story состояние управляется локально.",
+			description: "Текущий порядок элементов. После drag-and-drop обновляется в Storybook args.",
 			control: false
 		},
 		itemWidth: {
@@ -168,84 +171,90 @@ export const HandleOnly: Story = {
 	}
 };
 
+function NestedContainersCanvas({ args, onTopItemsChange }: { args: SortablePreviewProps; onTopItemsChange: (items: string[]) => void }) {
+	const topItems = args.initialItems;
+	const [childItemsByGroup, setChildItemsByGroup] = useState<Record<string, string[]>>({
+		"Группа A": ["A.1", "A.2", "A.3"],
+		"Группа B": ["B.1", "B.2"]
+	});
+
+	return (
+		<div style={{ display: "grid", gap: 12 }}>
+			<Sortable.Root
+				onDragEnd={(event) => {
+					const reorder = getSortableReorderResult({
+						event,
+						items: {
+							[args.containerId]: topItems,
+							...Object.fromEntries(topItems.map((item) => [`parent:${item}`, childItemsByGroup[item] ?? []]))
+						}
+					});
+					if (!reorder) return;
+
+					if (reorder.containerId === args.containerId) {
+						onTopItemsChange(reorderItems(topItems, reorder.fromIndex, reorder.toIndex) as string[]);
+						return;
+					}
+
+					const parentId = String(reorder.containerId).slice("parent:".length);
+					setChildItemsByGroup((prev) => ({
+						...prev,
+						[parentId]: reorderItems(prev[parentId] ?? [], reorder.fromIndex, reorder.toIndex) as string[]
+					}));
+				}}>
+				<Sortable.Container containerId={args.containerId} items={topItems} layout={args.layout}>
+					<div style={{ display: "grid", gap: "var(--space-md)" }}>
+						{topItems.map((groupId) => (
+							<Sortable.Item
+								key={groupId}
+								id={groupId}
+								style={{
+									...itemStyle,
+									gridTemplateColumns: "var(--control-height) 1fr",
+									alignItems: "start"
+								}}>
+								<Sortable.DragHandle title={`Перетащить ${groupId}`} />
+								<div style={{ display: "grid", gap: "var(--space-sm)" }}>
+									<strong>{groupId}</strong>
+									<Sortable.Container containerId={`parent:${groupId}`} items={childItemsByGroup[groupId] ?? []}>
+										<div style={{ display: "grid", gap: "var(--space-xs)" }}>
+											{(childItemsByGroup[groupId] ?? []).map((item) => (
+												<Sortable.Item
+													key={item}
+													id={item}
+													style={{
+														...itemStyle,
+														background: "var(--surface-1)"
+													}}>
+													<Sortable.DragHandle title={`Перетащить ${item}`} />
+													<div>{item}</div>
+												</Sortable.Item>
+											))}
+										</div>
+									</Sortable.Container>
+								</div>
+							</Sortable.Item>
+						))}
+					</div>
+				</Sortable.Container>
+			</Sortable.Root>
+
+			<div style={{ fontSize: 14, opacity: 0.8 }}>
+				Вложенные контейнеры сортируются независимо и используют общий `Sortable.Root`.
+			</div>
+		</div>
+	);
+}
+
 export const NestedContainers: Story = {
 	args: {
 		containerId: "top",
 		layout: "vertical",
 		initialItems: ["Группа A", "Группа B"]
 	},
-	render: () => {
-		const [topItems, setTopItems] = useState(["Группа A", "Группа B"]);
-		const [childItemsByGroup, setChildItemsByGroup] = useState<Record<string, string[]>>({
-			"Группа A": ["A.1", "A.2", "A.3"],
-			"Группа B": ["B.1", "B.2"]
-		});
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SortablePreviewProps>();
 
-		return (
-			<div style={{ display: "grid", gap: 12 }}>
-				<Sortable.Root
-					onDragEnd={(event) => {
-						const reorder = getSortableReorderResult({
-							event,
-							items: {
-								top: topItems,
-								...Object.fromEntries(topItems.map((item) => [`parent:${item}`, childItemsByGroup[item] ?? []]))
-							}
-						});
-						if (!reorder) return;
-
-						if (reorder.containerId === "top") {
-							setTopItems((prev) => reorderItems(prev, reorder.fromIndex, reorder.toIndex) as string[]);
-							return;
-						}
-
-						const parentId = String(reorder.containerId).slice("parent:".length);
-						setChildItemsByGroup((prev) => ({
-							...prev,
-							[parentId]: reorderItems(prev[parentId] ?? [], reorder.fromIndex, reorder.toIndex) as string[]
-						}));
-					}}>
-					<Sortable.Container containerId="top" items={topItems}>
-						<div style={{ display: "grid", gap: "var(--space-md)" }}>
-							{topItems.map((groupId) => (
-								<Sortable.Item
-									key={groupId}
-									id={groupId}
-									style={{
-										...itemStyle,
-										gridTemplateColumns: "var(--control-height) 1fr",
-										alignItems: "start"
-									}}>
-									<Sortable.DragHandle title={`Перетащить ${groupId}`} />
-									<div style={{ display: "grid", gap: "var(--space-sm)" }}>
-										<strong>{groupId}</strong>
-										<Sortable.Container containerId={`parent:${groupId}`} items={childItemsByGroup[groupId] ?? []}>
-											<div style={{ display: "grid", gap: "var(--space-xs)" }}>
-												{(childItemsByGroup[groupId] ?? []).map((item) => (
-													<Sortable.Item
-														key={item}
-														id={item}
-														style={{
-															...itemStyle,
-															background: "var(--surface-1)"
-														}}>
-														<Sortable.DragHandle title={`Перетащить ${item}`} />
-														<div>{item}</div>
-													</Sortable.Item>
-												))}
-											</div>
-										</Sortable.Container>
-									</div>
-								</Sortable.Item>
-							))}
-						</div>
-					</Sortable.Container>
-				</Sortable.Root>
-
-				<div style={{ fontSize: 14, opacity: 0.8 }}>
-					Вложенные контейнеры сортируются независимо и используют общий `Sortable.Root`.
-				</div>
-			</div>
-		);
+		return <NestedContainersCanvas args={args} onTopItemsChange={(initialItems) => updateArgs({ initialItems })} />;
 	}
 };

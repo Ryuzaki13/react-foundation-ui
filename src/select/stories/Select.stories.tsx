@@ -1,6 +1,9 @@
 import { useState } from "react";
 
-import { Select } from "../Select";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
+
+import { Select, type SelectProps } from "../Select";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -31,7 +34,7 @@ const meta = {
 		placeholder: "Не выбрано",
 		value: undefined,
 		options: departmentOptions,
-		onChange: () => {},
+		onChange: fn<(value: DepartmentOption) => void>(),
 		getOptionKey: (option: DepartmentOption) => option.id,
 		getOptionLabel: (option: DepartmentOption) => option.name,
 		getOptionCode: (option: DepartmentOption) => option.code,
@@ -109,21 +112,57 @@ const meta = {
 			description: "Кастомный рендер выбранного значения в кнопке.",
 			control: false
 		},
-		className: {
-			description: "Дополнительный CSS-класс корневого контейнера.",
-			control: "text"
-		},
-		buttonClassName: {
-			description: "Дополнительный CSS-класс кнопки выбора.",
-			control: "text"
-		},
-		optionsClassName: {
-			description: "Дополнительный CSS-класс контейнера списка.",
-			control: "text"
-		},
 		optionsMaxWidth: {
 			description: "Максимальная ширина выпадающего списка в любом допустимом CSS-формате.",
 			control: "text"
+		},
+		buttonClassName: {
+			description: "Класс trigger-кнопки Select без изменения корневого контейнера.",
+			control: "text"
+		},
+		optionsClassName: {
+			description: "Класс popup со списком option.",
+			control: "text"
+		},
+		optionsContentClassName: {
+			description: "Класс области содержимого popup, например для особой плотности списка.",
+			control: "text"
+		},
+		searchable: {
+			description: "Включает поиск по option в trigger-поле.",
+			control: "boolean"
+		},
+		query: {
+			description: "Контролируемый текст поиска.",
+			control: "text"
+		},
+		defaultQuery: {
+			description: "Начальный текст поиска в uncontrolled-режиме.",
+			control: "text"
+		},
+		onQuery: {
+			description: "Вызывается при вводе поисковой строки.",
+			control: false
+		},
+		defaultFilter: {
+			description: "Включает встроенную фильтрацию option.",
+			control: "boolean"
+		},
+		renderPopupHeader: {
+			description: "Дополнительное содержимое над списком option.",
+			control: false
+		},
+		emptyState: {
+			description: "Содержимое при пустом списке option.",
+			control: false
+		},
+		loadingState: {
+			description: "Содержимое при загрузке option.",
+			control: false
+		},
+		errorState: {
+			description: "Содержимое при ошибке загрузки option.",
+			control: false
 		},
 		size: {
 			description: "Размер поля и подписей.",
@@ -138,6 +177,10 @@ const meta = {
 		disabled: {
 			description: "Блокирует взаимодействие с полем.",
 			control: "boolean"
+		},
+		clearable: {
+			description: "Показывает действие очистки выбранной option.",
+			control: "boolean"
 		}
 	}
 } satisfies Meta<typeof Select<DepartmentOption>>;
@@ -147,10 +190,22 @@ type Story = StoryObj<typeof meta>;
 
 export const ControlledObjects: Story = {
 	name: "Объекты",
-	render: (args) => {
-		const [value, setValue] = useState<DepartmentOption | undefined>(departmentOptions[1]);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SelectProps<DepartmentOption>>();
 
-		return <Select {...args} value={value} onChange={setValue} />;
+		return (
+			<Select
+				{...args}
+				value={args.value ?? departmentOptions[1]}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+		);
+	},
+	args: {
+		value: departmentOptions[1]
 	}
 };
 
@@ -176,23 +231,32 @@ export const PrimitiveOptions: Story = {
 };
 
 export const Placeholder: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<DepartmentOption | undefined>(undefined);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SelectProps<DepartmentOption>>();
 
-		return <Select {...args} value={value} onChange={setValue} />;
+		return (
+			<Select
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+		);
 	}
 };
 
 export const GroupedOptions: Story = {
 	name: "Группированные опции",
-	render: (args) => {
-		const [value, setValue] = useState<DepartmentOption | undefined>();
-
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SelectProps<DepartmentOption>>();
 		return (
 			<Select
 				{...args}
-				value={value}
-				onChange={setValue}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
 				getOptionGroup={(option) => ({ key: option.direction, label: option.direction })}
 				optionsMaxWidth="40rem"
 			/>
@@ -202,14 +266,16 @@ export const GroupedOptions: Story = {
 
 export const CustomOptionLayout: Story = {
 	name: "Кастомный рендер",
-	render: (args) => {
-		const [value, setValue] = useState<DepartmentOption | undefined>(departmentOptions[0]);
-
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SelectProps<DepartmentOption>>();
 		return (
 			<Select
 				{...args}
-				value={value}
-				onChange={setValue}
+				value={args.value ?? departmentOptions[0]}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
 				renderValue={(option) => `${option.code} · ${option.name}`}
 				renderOption={(option, state) => (
 					<>

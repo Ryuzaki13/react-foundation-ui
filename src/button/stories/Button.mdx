@@ -46,6 +46,8 @@ export function Example() {
 
 Если нужна более гибкая настройка, можно передать `tone` и `appearance`. У них приоритет выше, чем у `variant`, поэтому они подходят для точной донастройки без создания нового варианта.
 
+`brand` выделяет фирменное действие. Для главного действия используйте `brand + solid` (или `variant="brand"`), а для вторичного — `brand + outline` (или `variant="brandOutline"`). Отдельные `primary` и `secondary` тоны не нужны: эту иерархию уже задаёт `appearance`.
+
 ### Готовые варианты
 
 <Canvas of={ButtonStories.Variants} />
@@ -59,6 +61,8 @@ export function ActionVariants() {
 			<Button variant="neutral">Основное действие</Button>
 			<Button variant="neutralOutline">Вторичное действие</Button>
 			<Button variant="ghost">Легкое действие</Button>
+			<Button variant="brand">Сохранить</Button>
+			<Button variant="brandOutline">Предпросмотр</Button>
 			<Button variant="success">Подтвердить</Button>
 			<Button variant="errorOutline">Отменить</Button>
 			<Button variant="transparent">Действие в плотном интерфейсе</Button>
@@ -82,6 +86,12 @@ export function CustomScheme() {
 			</Button>
 			<Button tone="neutral" appearance="outline">
 				Neutral Outline
+			</Button>
+			<Button tone="brand" appearance="solid">
+				Сохранить
+			</Button>
+			<Button tone="brand" appearance="ghost">
+				Подробнее
 			</Button>
 			<Button tone="info" appearance="outline">
 				Показать детали
@@ -153,6 +163,7 @@ export function FormActions() {
 ## Практические рекомендации
 
 - Для типовых сценариев сначала выбирай `variant`, а не комбинацию отдельных пропсов.
+- Для фирменного основного действия используй `brand`, а его вторичную и компактную формы выражай через `outline` и `ghost`.
 - Для destructive-операций лучше использовать семантически явные схемы `error` или `errorOutline`.
 - Для иконки без текста всегда задавай `title` или `aria-label`.
 - Если нужна кнопка удаления с подтверждением в два шага, стоит рассмотреть `ButtonRemove` из того же модуля.

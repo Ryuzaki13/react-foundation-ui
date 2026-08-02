@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
-import { InputFile } from "../InputFile";
+import { InputFile, type InputFileProps } from "../InputFile";
 
 import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -21,12 +22,16 @@ const createMockReadFileResult = (name: string, mime: string = "application/pdf"
 	};
 };
 
+type DataUrlInputFileProps = Extract<InputFileProps, { readMode?: "data-url" }>;
+type ArrayBufferInputFileProps = Extract<InputFileProps, { readMode: "array-buffer" }>;
+
 const meta = {
 	title: "Shared/UI/InputFile",
 	component: InputFile,
 	args: {
 		value: undefined,
-		onChange: () => {}
+		onChange: fn<DataUrlInputFileProps["onChange"]>(),
+		readMode: "data-url"
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -63,7 +68,7 @@ const meta = {
 		},
 		accept: {
 			description: "HTML `accept` для нативного диалога выбора файла.",
-			control: "text"
+			control: "object"
 		},
 		allowedMime: {
 			description: "Белый список MIME-типов для readFile-валидации.",
@@ -99,23 +104,54 @@ const meta = {
 } satisfies Meta<typeof InputFile>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type DataUrlStory = StoryObj<DataUrlInputFileProps>;
+type ArrayBufferStory = StoryObj<ArrayBufferInputFileProps>;
 
-export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadFileResult | undefined>(args.value);
-		const [error, setError] = useState(args.error ?? "");
+function InputFileDataUrlStoryCanvas(args: DataUrlInputFileProps) {
+	const [, updateArgs] = useArgs<DataUrlInputFileProps>();
+	const inputProps = {
+		...args,
+		onChange: (value: Extract<ReadFileResult, { mode: "data-url" }>) => {
+			args.onChange(value);
+			updateArgs({ value });
+		},
+		onClear: () => {
+			args.onClear?.();
+			updateArgs({ value: undefined });
+		},
+		onClearError: () => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}
+	} satisfies DataUrlInputFileProps;
 
-		return (
-			<InputFile
-				{...args}
-				value={value}
-				error={error || undefined}
-				onChange={setValue}
-				onClear={() => setValue(undefined)}
-				onClearError={() => setError("")}
-			/>
-		);
+	return <InputFile {...inputProps} />;
+}
+
+function InputFileArrayBufferStoryCanvas(args: ArrayBufferInputFileProps) {
+	const [, updateArgs] = useArgs<ArrayBufferInputFileProps>();
+	const inputProps = {
+		...args,
+		onChange: (value: Extract<ReadFileResult, { mode: "array-buffer" }>) => {
+			args.onChange(value);
+			updateArgs({ value });
+		},
+		onClear: () => {
+			args.onClear?.();
+			updateArgs({ value: undefined });
+		},
+		onClearError: () => {
+			args.onClearError?.();
+			updateArgs({ error: undefined });
+		}
+	} satisfies ArrayBufferInputFileProps;
+
+	return <InputFile {...inputProps} />;
+}
+
+export const Controlled: DataUrlStory = {
+	render: function Render(args) {
+		return <InputFileDataUrlStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Документ",
@@ -127,21 +163,20 @@ export const Controlled: Story = {
 	}
 };
 
-export const WithInitialValue: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadFileResult | undefined>(createMockReadFileResult("report.pdf"));
-		return <InputFile {...args} value={value} onChange={setValue} onClear={() => setValue(undefined)} />;
+export const WithInitialValue: DataUrlStory = {
+	render: function Render(args) {
+		return <InputFileDataUrlStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Файл с предзаполнением",
-		description: "Демонстрация состояния после успешной загрузки."
+		description: "Демонстрация состояния после успешной загрузки.",
+		value: createMockReadFileResult("report.pdf")
 	}
 };
 
-export const ArrayBufferMode: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadFileResult | undefined>(undefined);
-		return <InputFile {...args} value={value} onChange={setValue} onClear={() => setValue(undefined)} />;
+export const ArrayBufferMode: ArrayBufferStory = {
+	render: function Render(args) {
+		return <InputFileArrayBufferStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Двоичное чтение",

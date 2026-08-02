@@ -21,7 +21,11 @@ export type UiBaseProps<C, V = C> = {
 	onChange: ChangeHandler<C>;
 };
 
-export type UiTone = "neutral" | "error" | "warning" | "success" | "info";
+/**
+ * Цветовой тон задаёт смысл цвета, а `UiAppearance` — визуальную иерархию действия.
+ * `brand` предназначен для фирменных действий и не заменяет статусные тоны.
+ */
+export type UiTone = "neutral" | "brand" | "error" | "warning" | "success" | "info";
 
 export type UiAppearance = "solid" | "outline" | "ghost" | "transparent";
 
@@ -29,11 +33,13 @@ export type UiVariant =
 	| "transparent"
 	| "ghost"
 	| "neutral"
+	| "brand"
 	| "error"
 	| "warning"
 	| "success"
 	| "info"
 	| "neutralOutline"
+	| "brandOutline"
 	| "errorOutline"
 	| "warningOutline"
 	| "successOutline"

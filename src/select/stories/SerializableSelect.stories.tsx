@@ -1,6 +1,9 @@
-import { useMemo, useState } from "react";
+import { useMemo } from "react";
 
-import { SerializableSelect } from "../SerializableSelect";
+import { useArgs, useState as useStorybookState } from "storybook/preview-api";
+import { fn } from "storybook/test";
+
+import { SerializableSelect, type SerializableSelectProps } from "../SerializableSelect";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -29,7 +32,7 @@ const meta = {
 		optionKey: "id",
 		optionLabel: "name",
 		value: undefined,
-		onChange: () => {},
+		onChange: fn<(value: number | undefined) => void>(),
 		size: "md"
 	},
 	parameters: {
@@ -88,9 +91,9 @@ const meta = {
 			description: "Блокирует взаимодействие с полем.",
 			control: "boolean"
 		},
-		className: {
-			description: "Дополнительный CSS-класс корневого контейнера.",
-			control: "text"
+		clearable: {
+			description: "Показывает действие очистки выбранного ключа.",
+			control: "boolean"
 		}
 	}
 } satisfies Meta<typeof SerializableSelect<DepartmentOption, "id", "name">>;
@@ -100,38 +103,69 @@ type Story = StoryObj<typeof meta>;
 
 export const Controlled: Story = {
 	name: "Выбор по ключу",
-	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(20);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SerializableSelectProps<DepartmentOption, "id", "name">>();
 
-		return <SerializableSelect {...args} value={value} onChange={setValue} />;
+		return (
+			<SerializableSelect
+				{...args}
+				value={args.value ?? 20}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+		);
+	},
+	args: {
+		value: 20
 	}
 };
 
 export const Placeholder: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(undefined);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SerializableSelectProps<DepartmentOption, "id", "name">>();
 
-		return <SerializableSelect {...args} value={value} onChange={setValue} />;
+		return (
+			<SerializableSelect
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+		);
 	}
 };
 
 export const WithCode: Story = {
 	name: "С кодом",
-	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(10);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SerializableSelectProps<DepartmentOption, "id", "name">>();
 
-		return <SerializableSelect {...args} value={value} onChange={setValue} renderCode />;
+		return (
+			<SerializableSelect
+				{...args}
+				value={args.value ?? 10}
+				renderCode
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+		);
 	},
 	args: {
+		value: 10,
 		renderCode: true
 	}
 };
 
 export const AsyncReloadLike: Story = {
 	name: "Смена набора опций",
-	render: (args) => {
-		const [value, setValue] = useState<number | undefined>(30);
-		const [showShortList, setShowShortList] = useState(false);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SerializableSelectProps<DepartmentOption, "id", "name">>();
+		const [showShortList, setShowShortList] = useStorybookState(false);
 		const options = useMemo(
 			() => (showShortList ? departmentOptions.filter((option) => option.id !== 20) : departmentOptions),
 			[showShortList]
@@ -142,9 +176,20 @@ export const AsyncReloadLike: Story = {
 				<button type="button" onClick={() => setShowShortList((current) => !current)}>
 					{showShortList ? "Показать полный список" : "Скрыть одну опцию"}
 				</button>
-				<SerializableSelect {...args} options={options} value={value} onChange={setValue} />
+				<SerializableSelect
+					{...args}
+					options={options}
+					value={args.value ?? 30}
+					onChange={(value) => {
+						args.onChange(value);
+						updateArgs({ value });
+					}}
+				/>
 			</div>
 		);
+	},
+	args: {
+		value: 30
 	}
 };
 

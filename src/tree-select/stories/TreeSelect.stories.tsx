@@ -1,37 +1,25 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
 
-import { TreeSelect } from "../TreeSelect";
-import { TreeSelectValue } from "../types";
+import { TreeSelect, type TreeSelectProps } from "../TreeSelect";
 
 import { demoTreeNodes } from "./treeStoryFixtures";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function StatefulTreeSelect({
-	initialValue,
-	label = "TreeSelect",
-	description,
-	defaultExpandedCodeKeys
-}: {
-	initialValue?: TreeSelectValue;
-	label?: string;
-	description?: string;
-	defaultExpandedCodeKeys?: readonly string[];
-}) {
-	const [value, setValue] = useState<TreeSelectValue | undefined>(initialValue);
+function TreeSelectStoryCanvas(args: TreeSelectProps) {
+	const [, updateArgs] = useArgs<TreeSelectProps>();
 
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<TreeSelect
-				label={label}
-				description={description}
-				nodes={demoTreeNodes}
-				value={value}
-				onChange={setValue}
-				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
-				Текущее значение: {value ? `${value.codeKey}=${value.value}` : "пусто"}
+				Текущее значение: {args.value ? `${args.value.codeKey}=${args.value.value}` : "пусто"}
 			</div>
 		</div>
 	);
@@ -52,9 +40,21 @@ const meta = {
 		onChange: () => {}
 	},
 	argTypes: {
-		nodes: { control: false },
-		value: { control: false },
-		onChange: { control: false }
+		label: { description: "Заголовок поля.", control: "text" },
+		description: { description: "Описание под полем.", control: "text" },
+		placeholder: { description: "Текст без выбранного узла.", control: "text" },
+		nodes: { description: "Дерево доступных узлов.", control: false },
+		value: { description: "Выбранный узел в формате codeKey/value.", control: false },
+		onChange: { description: "Вызывается при выборе узла.", control: false },
+		query: { description: "Контролируемый текст поиска.", control: "text" },
+		defaultQuery: { description: "Начальный текст поиска в uncontrolled-режиме.", control: "text" },
+		onQuery: { description: "Вызывается при вводе поисковой строки.", control: false },
+		isLoading: { description: "Показывает загрузку дерева.", control: "boolean" },
+		error: { description: "Текст ошибки загрузки.", control: "text" },
+		clearable: { description: "Показывает действие очистки выбора.", control: "boolean" },
+		defaultExpandedCodeKeys: { description: "Ключи уровней, раскрываемых при открытии.", control: false },
+		disabled: { description: "Блокирует взаимодействие с полем.", control: "boolean" },
+		size: { description: "Размер поля и подписей.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] }
 	}
 } satisfies Meta<typeof TreeSelect>;
 
@@ -62,30 +62,40 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-	render: () => <StatefulTreeSelect initialValue={{ codeKey: "BRANCH", value: "B0101" }} />
+	render: function Render(args) {
+		return <TreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		value: { codeKey: "BRANCH", value: "B0101" }
+	}
 };
 
 export const SelectParent: Story = {
-	render: () => (
-		<StatefulTreeSelect
-			label="Выбор родителя"
-			description="Проверка single-select сценария, когда выбирается не leaf, а промежуточный узел."
-			initialValue={{ codeKey: "REGION", value: "R01" }}
-		/>
-	)
+	render: function Render(args) {
+		return <TreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Выбор родителя",
+		description: "Проверка single-select сценария, когда выбирается не leaf, а промежуточный узел.",
+		value: { codeKey: "REGION", value: "R01" }
+	}
 };
 
 export const FirstLevelExpanded: Story = {
-	render: () => (
-		<StatefulTreeSelect
-			label="Раскрыт первый уровень"
-			description="Все узлы уровня REGION раскрыты до первого ручного действия пользователя."
-			defaultExpandedCodeKeys={["REGION"]}
-		/>
-	)
+	render: function Render(args) {
+		return <TreeSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Раскрыт первый уровень",
+		description: "Все узлы уровня REGION раскрыты до первого ручного действия пользователя.",
+		defaultExpandedCodeKeys: ["REGION"]
+	}
 };
 
 export const Empty: Story = {
+	render: function Render(args) {
+		return <TreeSelectStoryCanvas {...args} />;
+	},
 	args: {
 		nodes: [],
 		description: "Состояние без доступных узлов."

@@ -1,6 +1,7 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
-import { InputImage } from "../InputImage";
+import { InputImage, type InputImageProps } from "../InputImage";
 
 import type { ReadImageResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -30,7 +31,8 @@ const meta = {
 	component: InputImage,
 	args: {
 		value: undefined,
-		onChange: () => {}
+		onChange: fn<NonNullable<InputImageProps["onChange"]>>(),
+		readMode: "data-url"
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -101,10 +103,31 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+function InputImageStoryCanvas(args: InputImageProps) {
+	const [, updateArgs] = useArgs<InputImageProps>();
+
+	return (
+		<InputImage
+			{...args}
+			onChange={(value) => {
+				args.onChange(value);
+				updateArgs({ value });
+			}}
+			onClear={() => {
+				args.onClear?.();
+				updateArgs({ value: undefined });
+			}}
+			onClearError={() => {
+				args.onClearError?.();
+				updateArgs({ error: undefined });
+			}}
+		/>
+	);
+}
+
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadImageResult | undefined>(args.value);
-		return <InputImage {...args} value={value} onChange={setValue} onClear={() => setValue(undefined)} />;
+	render: function Render(args) {
+		return <InputImageStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Аватар",
@@ -117,12 +140,27 @@ export const Controlled: Story = {
 };
 
 export const WithInitialImage: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadImageResult | undefined>(createMockReadImageResult());
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<InputImageProps>();
+		const value = args.value;
 
 		return (
 			<div style={{ display: "grid", gap: 12 }}>
-				<InputImage {...args} value={value} onChange={setValue} onClear={() => setValue(undefined)} />
+				<InputImage
+					{...args}
+					onChange={(nextValue) => {
+						args.onChange(nextValue);
+						updateArgs({ value: nextValue });
+					}}
+					onClear={() => {
+						args.onClear?.();
+						updateArgs({ value: undefined });
+					}}
+					onClearError={() => {
+						args.onClearError?.();
+						updateArgs({ error: undefined });
+					}}
+				/>
 				{value?.mode === "data-url" && (
 					<img
 						src={value.dataUrl}
@@ -135,14 +173,14 @@ export const WithInitialImage: Story = {
 	},
 	args: {
 		label: "Изображение с предпросмотром",
-		description: "Сторис показывает, что значение можно использовать для preview."
+		description: "Сторис показывает, что значение можно использовать для preview.",
+		value: createMockReadImageResult()
 	}
 };
 
 export const ArrayBufferMode: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<ReadImageResult | undefined>(undefined);
-		return <InputImage {...args} value={value} onChange={setValue} onClear={() => setValue(undefined)} />;
+	render: function Render(args) {
+		return <InputImageStoryCanvas {...args} />;
 	},
 	args: {
 		label: "Двоичный режим",

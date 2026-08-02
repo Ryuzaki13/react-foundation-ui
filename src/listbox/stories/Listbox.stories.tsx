@@ -1,4 +1,7 @@
-import { useState } from "react";
+import type { ComponentProps, ReactNode } from "react";
+
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
 import { Listbox } from "../Listbox";
 
@@ -18,7 +21,7 @@ function StringListbox(props: {
 	disabled?: boolean;
 	focusOnMount?: boolean;
 	onChange?: (value: string | string[], option: StringOption) => void;
-	renderItem?: (option: StringOption, selected: boolean, active: boolean) => React.ReactNode;
+	renderItem?: (option: StringOption, selected: boolean, active: boolean) => ReactNode;
 	getKey?: (option: StringOption, index: number) => string;
 	className?: string;
 }) {
@@ -46,7 +49,7 @@ const meta = {
 		options,
 		multiple: false,
 		value: "medium",
-		onChange: () => {}
+		onChange: fn<(value: string | string[], option: StringOption) => void>()
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -88,10 +91,6 @@ const meta = {
 		getKey: {
 			description: "Функция генерации ключа для опции.",
 			control: false
-		},
-		className: {
-			description: "Дополнительный CSS-класс.",
-			control: "text"
 		}
 	}
 } satisfies Meta<typeof StringListbox>;
@@ -100,8 +99,9 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const SingleSelect: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<string>("medium");
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<ComponentProps<typeof StringListbox>>();
+		const value = typeof args.value === "string" ? args.value : "medium";
 
 		return (
 			<div style={{ display: "grid", gap: 12, maxWidth: 280 }}>
@@ -109,8 +109,11 @@ export const SingleSelect: Story = {
 					{...args}
 					multiple={false}
 					value={value}
-					onChange={(next) => {
-						if (typeof next === "string") setValue(next);
+					onChange={(next, option) => {
+						if (typeof next !== "string") return;
+
+						args.onChange?.(next, option);
+						updateArgs({ value: next });
 					}}
 				/>
 				<div>Выбрано: {value}</div>
@@ -120,8 +123,9 @@ export const SingleSelect: Story = {
 };
 
 export const MultiSelect: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<string[]>(["low", "high"]);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<ComponentProps<typeof StringListbox>>();
+		const value = Array.isArray(args.value) ? args.value : ["low", "high"];
 
 		return (
 			<div style={{ display: "grid", gap: 12, maxWidth: 320 }}>
@@ -129,8 +133,11 @@ export const MultiSelect: Story = {
 					{...args}
 					multiple
 					value={value}
-					onChange={(next) => {
-						if (Array.isArray(next)) setValue(next);
+					onChange={(next, option) => {
+						if (!Array.isArray(next)) return;
+
+						args.onChange?.(next, option);
+						updateArgs({ value: next });
 					}}
 				/>
 				<div>Выбрано: {value.join(", ") || "пусто"}</div>
@@ -143,15 +150,19 @@ export const MultiSelect: Story = {
 };
 
 export const CustomRender: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<string>("low");
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<ComponentProps<typeof StringListbox>>();
+		const value = typeof args.value === "string" ? args.value : "low";
 
 		return (
 			<StringListbox
 				{...args}
 				value={value}
-				onChange={(next) => {
-					if (typeof next === "string") setValue(next);
+				onChange={(next, option) => {
+					if (typeof next !== "string") return;
+
+					args.onChange?.(next, option);
+					updateArgs({ value: next });
 				}}
 				renderItem={(option, selected, active) => (
 					<div style={{ display: "flex", justifyContent: "space-between", width: "100%", opacity: option.disabled ? 0.5 : 1 }}>

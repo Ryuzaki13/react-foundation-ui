@@ -1,8 +1,11 @@
 // Flex.stories.tsx
 import React from "react";
 
+import { useArgs } from "storybook/preview-api";
+
 import { Flex } from "../Flex";
 
+import type { FlexContainerProps } from "../types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 // Стили для демонстрационных блоков
@@ -41,8 +44,50 @@ const DemoItem = ({ children, index = 0 }: { children: React.ReactNode; index?: 
 const meta = {
 	title: "Shared/Layout/Flex",
 	component: Flex.Container,
+	args: {
+		row: true,
+		gap: "md"
+	},
 	parameters: {
 		layout: "padded"
+	},
+	decorators: [
+		(story) => {
+			const [args] = useArgs<FlexContainerProps>();
+			const StoryComponent = story;
+
+			return <StoryComponent args={args} />;
+		}
+	],
+	argTypes: {
+		inline: { description: "Использует inline-flex вместо flex.", control: "boolean" },
+		row: { description: "Направляет элементы по строке.", control: "boolean" },
+		column: { description: "Направляет элементы по колонке.", control: "boolean" },
+		rowReverse: { description: "Разворачивает порядок строки.", control: "boolean" },
+		columnReverse: { description: "Разворачивает порядок колонки.", control: "boolean" },
+		wrap: { description: "Разрешает перенос элементов.", control: "boolean" },
+		nowrap: { description: "Запрещает перенос элементов.", control: "boolean" },
+		wrapReverse: { description: "Разворачивает направление строк при переносе.", control: "boolean" },
+		align: {
+			description: "Выравнивание по поперечной оси.",
+			control: "select",
+			options: ["start", "center", "end", "stretch", "baseline"]
+		},
+		justify: {
+			description: "Выравнивание по главной оси.",
+			control: "select",
+			options: ["start", "center", "end", "stretch", "between", "around", "evenly"]
+		},
+		alignContent: {
+			description: "Распределение строк по поперечной оси.",
+			control: "select",
+			options: ["start", "center", "end", "stretch", "between", "around", "evenly"]
+		},
+		gap: { description: "Общий интервал между элементами.", control: "select", options: ["none", "xs", "sm", "md", "lg", "xl"] },
+		gapRow: { description: "Интервал между строками.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] },
+		gapColumn: { description: "Интервал между колонками.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] },
+		as: { description: "Семантический HTML-тег контейнера.", control: "select", options: ["div", "section", "main", "nav", "ul"] },
+		children: { description: "Содержимое flex-контейнера.", control: false }
 	}
 } satisfies Meta<typeof Flex.Container>;
 

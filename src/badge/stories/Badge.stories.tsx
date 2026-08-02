@@ -1,9 +1,13 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
+
+import { useArgs } from "storybook/preview-api";
 
 import { Badge } from "../Badge";
 import { BadgeList } from "../BadgeList";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+type BadgeStoryArgs = ComponentProps<typeof Badge>;
 
 const meta = {
 	title: "Shared/UI/Badge",
@@ -26,12 +30,12 @@ const meta = {
 		size: {
 			description: "Размер бейджа.",
 			control: "inline-radio",
-			options: ["sm", "md", "lg"]
+			options: ["xs", "sm", "md", "lg", "xl"]
 		},
 		tone: {
-			description: "Семантический тон бейджа.",
+			description: "Цветовой тон бейджа.",
 			control: "inline-radio",
-			options: ["neutral", "success", "warning", "error", "info"]
+			options: ["neutral", "brand", "success", "warning", "error", "info"]
 		},
 		appearance: {
 			description: "Форма бейджа.",
@@ -41,18 +45,20 @@ const meta = {
 		onRemove: {
 			description: "Показывает кнопку удаления и вызывает обработчик по клику.",
 			control: false
-		},
-		className: {
-			description: "Дополнительный CSS-класс контейнера.",
-			control: "text"
 		}
 	}
-} satisfies Meta<typeof Badge>;
+} satisfies Meta<BadgeStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<BadgeStoryArgs>;
 
-export const Basic: Story = {};
+export const Basic: Story = {
+	render: function Render() {
+		const [args] = useArgs<BadgeStoryArgs>();
+
+		return <Badge {...args} />;
+	}
+};
 
 export const Tones: Story = {
 	render: () => (

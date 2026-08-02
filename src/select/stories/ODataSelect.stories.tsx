@@ -1,4 +1,6 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
+
+import { useArgs } from "storybook/preview-api";
 
 import { ODataSelect } from "../ODataSelect";
 
@@ -12,41 +14,23 @@ import {
 	withODataStoryQueryClient
 } from "./odataStoryFixtures";
 
-import type { ODataCollectionConfig, ODataCollectionModel, ODataCollectionSegment } from "@ryuzaki13/react-foundation-api/odata";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function StatefulODataSelect({
-	initialValue,
-	odata = baseOData,
-	model = baseModel,
-	segment = baseSegment,
-	dependencies,
-	label = "OData Select",
-	description
-}: {
-	initialValue?: string;
-	odata?: ODataCollectionConfig;
-	model?: ODataCollectionModel;
-	segment?: ODataCollectionSegment;
-	dependencies?: Record<string, string[]>;
-	label?: string;
-	description?: string;
-}) {
-	const [value, setValue] = useState<string | undefined>(initialValue);
+type ODataSelectStoryArgs = ComponentProps<typeof ODataSelect>;
+
+function ODataSelectStoryCanvas(args: ODataSelectStoryArgs) {
+	const [, updateArgs] = useArgs<ODataSelectStoryArgs>();
 
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<ODataSelect
-				label={label}
-				description={description}
-				odata={odata}
-				model={model}
-				segment={segment}
-				value={value}
-				dependencies={dependencies}
-				onChange={setValue}
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {value || "пусто"}</div>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {args.value || "пусто"}</div>
 		</div>
 	);
 }
@@ -144,9 +128,17 @@ const meta = {
 		onChange: () => {}
 	},
 	argTypes: {
-		onChange: { control: false },
-		value: { control: false },
-		dependencies: { control: false }
+		label: { description: "Заголовок поля.", control: "text" },
+		description: { description: "Описание под полем.", control: "text" },
+		odata: { description: "Конфигурация OData-источника.", control: false },
+		model: { description: "Модель OData-коллекции и codeKey.", control: false },
+		segment: { description: "Конфигурация отображения сегмента.", control: false },
+		dependencies: { description: "Выбранные значения upstream-сегментов.", control: false },
+		value: { description: "Контролируемый код или текст выбранной option.", control: false },
+		onChange: { description: "Вызывается с новым значением option.", control: false },
+		clearable: { description: "Показывает действие очистки выбора.", control: "boolean" },
+		disabled: { description: "Блокирует взаимодействие с полем.", control: "boolean" },
+		size: { description: "Размер поля и подписей.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] }
 	}
 } satisfies Meta<typeof ODataSelect>;
 
@@ -156,55 +148,59 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicDivision: Story = {
 	name: "Базовый регион",
-	render: () => (
-		<StatefulODataSelect
-			label="Регион"
-			description="Базовая настройка single-select для выбора кода REGION."
-			model={{ ...baseModel, codeKey: "REGION" }}
-			segment={{ placeholder: "Регион" }}
-			initialValue={storyValues.region}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Регион",
+		description: "Базовая настройка single-select для выбора кода REGION.",
+		model: { ...baseModel, codeKey: "REGION" },
+		segment: { placeholder: "Регион" },
+		value: storyValues.region
+	}
 };
 
 export const HideCode: Story = {
 	name: "Скрытый код",
-	render: () => (
-		<StatefulODataSelect
-			label="Подразделение"
-			description="Код скрыт и в выпадающем списке, и в выбранном значении."
-			model={{ ...baseModel, codeKey: "BRANCH" }}
-			segment={{ placeholder: "Подразделение", hideCode: true }}
-			initialValue={storyValues.branch}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Подразделение",
+		description: "Код скрыт и в выпадающем списке, и в выбранном значении.",
+		model: { ...baseModel, codeKey: "BRANCH" },
+		segment: { placeholder: "Подразделение", hideCode: true },
+		value: storyValues.branch
+	}
 };
 
 export const SelectTextValue: Story = {
 	name: "Выбор текста вместо кода",
-	render: () => (
-		<StatefulODataSelect
-			label="Регион по тексту"
-			description="Снаружи хранится текстовое значение, а не код."
-			model={{ ...baseModel, codeKey: "REGION" }}
-			segment={{ placeholder: "Регион", selectText: true }}
-			initialValue={storyValues.regionText}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Регион по тексту",
+		description: "Снаружи хранится текстовое значение, а не код.",
+		model: { ...baseModel, codeKey: "REGION" },
+		segment: { placeholder: "Регион", selectText: true },
+		value: storyValues.regionText
+	}
 };
 
 export const StaticDependency: Story = {
 	name: "Зависимость от региона",
-	render: () => (
-		<StatefulODataSelect
-			label="Подразделение c зависимостью"
-			description="Фильтрация подразделений по уже выбранному региону через props.dependencies."
-			model={{ ...baseModel, codeKey: "BRANCH" }}
-			segment={{ placeholder: "Подразделение" }}
-			dependencies={{ REGION: [storyValues.region] }}
-			initialValue={storyValues.branch}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		label: "Подразделение c зависимостью",
+		description: "Фильтрация подразделений по уже выбранному региону через props.dependencies.",
+		model: { ...baseModel, codeKey: "BRANCH" },
+		segment: { placeholder: "Подразделение" },
+		dependencies: { REGION: [storyValues.region] },
+		value: storyValues.branch
+	}
 };
 
 export const LinkedFilters: Story = {
@@ -217,15 +213,16 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: () => (
-		<StatefulODataSelect
-			odata={odataStoryOData.loading}
-			label="Команда"
-			description="Mock с задержкой ответа, чтобы проверить loading-state."
-			model={{ ...baseModel, codeKey: "TEAM" }}
-			segment={{ placeholder: "Команда" }}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		odata: odataStoryOData.loading,
+		label: "Команда",
+		description: "Mock с задержкой ответа, чтобы проверить loading-state.",
+		model: { ...baseModel, codeKey: "TEAM" },
+		segment: { placeholder: "Команда" }
+	}
 };
 
 export const MetadataError: Story = {
@@ -233,15 +230,16 @@ export const MetadataError: Story = {
 	parameters: {
 		odataMockMode: "metadataError"
 	},
-	render: () => (
-		<StatefulODataSelect
-			odata={odataStoryOData.metadataError}
-			label="Регион"
-			description="Сервис возвращает ошибку metadata."
-			model={{ ...baseModel, codeKey: "REGION" }}
-			segment={{ placeholder: "Регион" }}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		odata: odataStoryOData.metadataError,
+		label: "Регион",
+		description: "Сервис возвращает ошибку metadata.",
+		model: { ...baseModel, codeKey: "REGION" },
+		segment: { placeholder: "Регион" }
+	}
 };
 
 export const CollectionError: Story = {
@@ -249,13 +247,14 @@ export const CollectionError: Story = {
 	parameters: {
 		odataMockMode: "collectionError"
 	},
-	render: () => (
-		<StatefulODataSelect
-			odata={odataStoryOData.collectionError}
-			label="Ответственный"
-			description="Transport возвращает 500, а текущий API-контракт безопасно показывает пустой список."
-			model={{ ...baseModel, codeKey: "OWNER" }}
-			segment={{ placeholder: "Ответственный" }}
-		/>
-	)
+	render: function Render(args) {
+		return <ODataSelectStoryCanvas {...args} />;
+	},
+	args: {
+		odata: odataStoryOData.collectionError,
+		label: "Ответственный",
+		description: "Transport возвращает 500, а текущий API-контракт безопасно показывает пустой список.",
+		model: { ...baseModel, codeKey: "OWNER" },
+		segment: { placeholder: "Ответственный" }
+	}
 };

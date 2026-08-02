@@ -19,6 +19,7 @@ declare const styles: {
   readonly required: "required";
   readonly invalid: "invalid";
   readonly uiToneNeutral: "uiToneNeutral";
+  readonly uiToneBrand: "uiToneBrand";
   readonly uiToneError: "uiToneError";
   readonly uiToneWarning: "uiToneWarning";
   readonly uiToneSuccess: "uiToneSuccess";

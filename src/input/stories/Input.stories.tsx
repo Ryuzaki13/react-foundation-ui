@@ -1,8 +1,64 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
 
-import { Meta, StoryObj } from "@storybook/react-vite";
+import { InputNumber, InputText, type BaseInputProps, type InputTextProps } from "../Input";
 
-import { InputNumber, InputText } from "../Input";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+type InputTextStoryArgs = InputTextProps;
+type InputNumberStoryArgs = BaseInputProps<number | undefined>;
+
+function InputTextStoryCanvas({ args }: { args: InputTextStoryArgs }) {
+	const [, updateArgs] = useArgs<InputTextStoryArgs>();
+
+	return (
+		<InputText
+			{...args}
+			value={args.value ?? ""}
+			onChange={(value) => {
+				args.onChange?.(value);
+				updateArgs({ value });
+			}}
+			onClear={
+				args.onClear
+					? () => {
+							args.onClear?.();
+							updateArgs({ value: "" });
+						}
+					: undefined
+			}
+			onClearError={() => {
+				args.onClearError?.();
+				updateArgs({ error: undefined });
+			}}
+		/>
+	);
+}
+
+function InputNumberStoryCanvas({ args }: { args: InputNumberStoryArgs }) {
+	const [, updateArgs] = useArgs<InputNumberStoryArgs>();
+
+	return (
+		<InputNumber
+			{...args}
+			onChange={(value) => {
+				args.onChange?.(value);
+				updateArgs({ value });
+			}}
+			onClear={
+				args.onClear
+					? () => {
+							args.onClear?.();
+							updateArgs({ value: undefined });
+						}
+					: undefined
+			}
+			onClearError={() => {
+				args.onClearError?.();
+				updateArgs({ error: undefined });
+			}}
+		/>
+	);
+}
 
 const meta = {
 	title: "Shared/UI/Input",
@@ -48,6 +104,11 @@ const meta = {
 			description: "Вызывается при вводе для сброса внешней ошибки.",
 			control: false
 		},
+		type: {
+			description: "Семантика текстового значения для нативного ввода.",
+			control: "select",
+			options: ["text", "email", "password", "search", "tel", "url"]
+		},
 		disabled: {
 			description: "Блокирует редактирование.",
 			control: "boolean"
@@ -60,85 +121,89 @@ const meta = {
 		allowedPattern: {
 			description: "Регулярное выражение для валидации введенной строки.",
 			control: false
+		},
+		endAdornment: {
+			description: "Дополнительный элемент справа внутри поля.",
+			control: false
+		},
+		endAdornmentClassName: {
+			description: "CSS-класс контейнера дополнительного элемента справа.",
+			control: "text"
+		},
+		endAdornmentWidth: {
+			description: "Явная ширина области дополнительного элемента справа.",
+			control: "text"
 		}
 	}
-} satisfies Meta<typeof InputText>;
+} satisfies Meta<InputTextStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type TextStory = StoryObj<InputTextStoryArgs>;
+type NumberStory = StoryObj<InputNumberStoryArgs>;
 
-export const TextControlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState(args.value ?? "");
-		return <InputText {...args} value={value} onChange={setValue} onClear={() => setValue("")} />;
+export const TextControlled: TextStory = {
+	render: function Render(args) {
+		return <InputTextStoryCanvas args={args} />;
 	},
 	args: {
 		label: "Наименование",
 		description: "Пример обычного текстового поля.",
 		placeholder: "Введите значение",
 		value: "",
-		size: "md"
+		size: "md",
+		onClear: () => {}
 	}
 };
 
-export const NumberControlled: Story = {
-	render: () => {
-		const [value, setValue] = useState<number | undefined>(25);
-
-		return (
-			<InputNumber
-				label="Количество"
-				description="Числовой ввод с min/max."
-				placeholder="0"
-				value={value}
-				min={0}
-				max={100}
-				onChange={setValue}
-				onClear={() => setValue(0)}
-			/>
-		);
+export const NumberControlled: NumberStory = {
+	render: function Render(args) {
+		return <InputNumberStoryCanvas args={args} />;
 	},
 	args: {
-		value: undefined
+		label: "Количество",
+		description: "Числовой ввод с min/max.",
+		placeholder: "0",
+		value: 25,
+		min: 0,
+		max: 100,
+		onChange: () => {},
+		onClear: () => {}
+	},
+	argTypes: {
+		value: {
+			description: "Текущее числовое значение поля.",
+			control: "number"
+		}
+	},
+	parameters: {
+		controls: {
+			exclude: ["type", "allowedPattern"]
+		}
 	}
 };
 
-export const PatternValidation: Story = {
-	render: () => {
-		const [value, setValue] = useState("");
-		return (
-			<InputText
-				label="Только цифры"
-				description="`allowedPattern` подсвечивает невалидный ввод."
-				placeholder="12345"
-				value={value}
-				onChange={setValue}
-				allowedPattern={/^\d*$/}
-			/>
-		);
+export const PatternValidation: TextStory = {
+	render: function Render(args) {
+		return <InputTextStoryCanvas args={args} />;
 	},
 	args: {
-		value: undefined
+		label: "Только цифры",
+		description: "`allowedPattern` подсвечивает невалидный ввод.",
+		placeholder: "12345",
+		value: "",
+		allowedPattern: /^\d*$/
 	}
 };
 
-export const WithError: Story = {
-	render: () => {
-		const [value, setValue] = useState("admin");
-		const [error, setError] = useState("Логин уже занят");
-
-		return (
-			<InputText
-				label="Логин"
-				value={value}
-				error={error}
-				onChange={setValue}
-				onClear={() => setValue("")}
-				onClearError={() => setError("")}
-			/>
-		);
+export const WithError: TextStory = {
+	render: function Render(args) {
+		return <InputTextStoryCanvas args={args} />;
 	},
 	args: {
-		value: undefined
+		label: "Логин",
+		value: "admin",
+		error: "Логин уже занят",
+		onClear: () => {},
+		onClearError: () => {}
 	}
 };

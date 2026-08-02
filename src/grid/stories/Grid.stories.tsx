@@ -1,8 +1,11 @@
 // Grid.stories.tsx
 import React from "react";
 
+import { useArgs } from "storybook/preview-api";
+
 import { Grid } from "../Grid";
 
+import type { GridContainerProps } from "../types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 // Стили для демонстрационных блоков (аналогично Flex)
@@ -41,8 +44,60 @@ const DemoItem = ({ children, index = 0, style }: { children: React.ReactNode; i
 const meta = {
 	title: "Shared/Layout/Grid",
 	component: Grid.Container,
+	args: {
+		gap: "md"
+	},
 	parameters: {
 		layout: "padded"
+	},
+	decorators: [
+		(story) => {
+			const [args] = useArgs<GridContainerProps>();
+			const StoryComponent = story;
+
+			return <StoryComponent args={args} />;
+		}
+	],
+	argTypes: {
+		inline: { description: "Использует inline-grid вместо grid.", control: "boolean" },
+		row: { description: "Автоматически размещает элементы по строкам.", control: "boolean" },
+		column: { description: "Автоматически размещает элементы по колонкам.", control: "boolean" },
+		dense: { description: "Заполняет свободные ячейки плотным auto-flow.", control: "boolean" },
+		gap: { description: "Общий интервал между ячейками.", control: "select", options: ["none", "xs", "sm", "md", "lg", "xl"] },
+		gapRow: { description: "Интервал между строками.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] },
+		gapColumn: { description: "Интервал между колонками.", control: "select", options: ["xs", "sm", "md", "lg", "xl"] },
+		align: {
+			description: "Выравнивание содержимого ячеек по вертикали.",
+			control: "select",
+			options: ["start", "center", "end", "stretch", "baseline"]
+		},
+		justify: {
+			description: "Выравнивание содержимого ячеек по горизонтали.",
+			control: "select",
+			options: ["start", "center", "end", "stretch"]
+		},
+		alignContent: {
+			description: "Распределение всей сетки по вертикали.",
+			control: "select",
+			options: ["start", "center", "end", "stretch", "between", "around", "evenly"]
+		},
+		justifyContent: {
+			description: "Распределение всей сетки по горизонтали.",
+			control: "select",
+			options: ["start", "center", "end", "stretch", "between", "around", "evenly"]
+		},
+		templateColumns: { description: "Шаблон колонок CSS Grid.", control: "text" },
+		templateRows: { description: "Шаблон строк CSS Grid.", control: "text" },
+		autoColumns: { description: "Размер автоматически созданных колонок.", control: "text" },
+		autoRows: { description: "Размер автоматически созданных строк.", control: "text" },
+		areas: { description: "Именованные области grid-template-areas.", control: "text" },
+		variant: {
+			description: "Готовый вариант раскладки.",
+			control: "select",
+			options: ["single-column", "auto-1fr", "auto1fr-rows-auto"]
+		},
+		as: { description: "Семантический HTML-тег контейнера.", control: "select", options: ["div", "section", "main", "nav", "ul"] },
+		children: { description: "Содержимое grid-контейнера.", control: false }
 	}
 } satisfies Meta<typeof Grid.Container>;
 

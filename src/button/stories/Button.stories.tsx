@@ -1,7 +1,7 @@
 import { BellIcon, CheckIcon, DownloadIcon, PlusIcon } from "lucide-react";
-import { fn } from "storybook/test";
+import { useArgs } from "storybook/preview-api";
 
-import { Button } from "../Button";
+import { Button, type ButtonProps } from "../Button";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -12,8 +12,7 @@ const meta = {
 		children: "Действие",
 		variant: "neutralOutline",
 		disabled: false,
-		iconEnd: false,
-		onClick: fn()
+		iconEnd: false
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -31,10 +30,12 @@ const meta = {
 				"neutral",
 				"neutralOutline",
 				"ghost",
+				"brand",
 				"error",
 				"warning",
 				"success",
 				"info",
+				"brandOutline",
 				"errorOutline",
 				"warningOutline",
 				"successOutline",
@@ -43,9 +44,9 @@ const meta = {
 			]
 		},
 		tone: {
-			description: "Семантический тон кнопки.",
+			description: "Цветовой тон кнопки.",
 			control: "inline-radio",
-			options: ["neutral", "error", "warning", "success", "info"]
+			options: ["neutral", "brand", "error", "warning", "success", "info"]
 		},
 		appearance: {
 			description: "Визуальная форма кнопки.",
@@ -60,29 +61,27 @@ const meta = {
 			description: "Перемещает иконку в конец кнопки.",
 			control: "boolean"
 		},
-		title: {
-			description: "Текст тултипа и `aria-label` для кнопки.",
-			control: "text"
+		type: {
+			description: "Тип нативной кнопки; по умолчанию безопасный `button`.",
+			control: "select",
+			options: ["button", "submit", "reset"]
 		},
 		disabled: {
 			description: "Блокирует нажатие.",
 			control: "boolean"
-		},
-		onClick: {
-			description: "Вызывается при нажатии на кнопку.",
-			control: false
-		},
-		className: {
-			description: "Дополнительный CSS-класс.",
-			control: "text"
 		}
 	}
-} satisfies Meta<typeof Button>;
+} satisfies Meta<ButtonProps>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<ButtonProps>;
 
 export const Basic: Story = {
+	render: function Render() {
+		const [args] = useArgs<ButtonProps>();
+
+		return <Button {...args} />;
+	}
 	// play: async function ({ args, canvas, userEvent }) {
 	// 	const button = canvas.getByRole("button", { name: /button/i });
 	// 	// 👇 Simulate behavior
@@ -99,6 +98,8 @@ export const Variants: Story = {
 			<Button variant="neutral">Neutral Solid</Button>
 			<Button variant="neutralOutline">Neutral Outline</Button>
 			<Button variant="ghost">Ghost</Button>
+			<Button variant="brand">Brand Solid</Button>
+			<Button variant="brandOutline">Brand Outline</Button>
 			<Button variant="info">Info Solid</Button>
 			<Button variant="success">Success Solid</Button>
 			<Button variant="warning">Warning Solid</Button>
@@ -126,6 +127,18 @@ export const ComposableScheme: Story = {
 			</Button>
 			<Button tone="neutral" appearance="ghost">
 				Neutral Ghost
+			</Button>
+			<Button tone="brand" appearance="solid">
+				Brand Solid
+			</Button>
+			<Button tone="brand" appearance="outline">
+				Brand Outline
+			</Button>
+			<Button tone="brand" appearance="ghost">
+				Brand Ghost
+			</Button>
+			<Button tone="brand" appearance="transparent">
+				Brand Transparent
 			</Button>
 			<Button tone="info" appearance="outline">
 				Info Outline

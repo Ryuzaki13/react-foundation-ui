@@ -1,8 +1,27 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 
-import { Meta, StoryObj } from "@storybook/react-vite";
+import { useArgs } from "storybook/preview-api";
 
 import { CheckBox } from "../CheckBox";
+
+import type { Meta, StoryObj } from "@storybook/react-vite";
+
+type CheckBoxStoryArgs = ComponentProps<typeof CheckBox>;
+
+function CheckBoxStoryCanvas({ args }: { args: CheckBoxStoryArgs }) {
+	const [, updateArgs] = useArgs<CheckBoxStoryArgs>();
+
+	return (
+		<CheckBox
+			{...args}
+			value={args.value ?? false}
+			onChange={(value) => {
+				args.onChange?.(value);
+				updateArgs({ value });
+			}}
+		/>
+	);
+}
 
 const meta = {
 	title: "Shared/UI/CheckBox",
@@ -46,20 +65,27 @@ const meta = {
 			options: ["xs", "sm", "md", "lg", "xl"]
 		},
 		tone: {
-			description: "Семантический тон чекбокса.",
+			description: "Цветовой тон чекбокса.",
 			control: "inline-radio",
-			options: ["neutral", "error", "warning", "success", "info"]
+			options: ["neutral", "brand", "error", "warning", "success", "info"]
+		},
+		noWrap: {
+			description: "Не переносит текст подписи на новую строку.",
+			control: "boolean"
+		},
+		indeterminate: {
+			description: 'Показывает частично выбранное состояние с `aria-checked="mixed"`.',
+			control: "boolean"
 		}
 	}
-} satisfies Meta<typeof CheckBox>;
+} satisfies Meta<CheckBoxStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<CheckBoxStoryArgs>;
 
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState(args.value ?? false);
-		return <CheckBox {...args} value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <CheckBoxStoryCanvas args={args} />;
 	},
 	args: {
 		label: "Принимать условия",
@@ -124,6 +150,9 @@ export const Sizes: Story = {
 };
 
 export const Disabled: Story = {
+	render: function Render(args) {
+		return <CheckBoxStoryCanvas args={args} />;
+	},
 	args: {
 		label: "Недоступный чекбокс",
 		description: "Изменение недоступно из-за прав доступа.",

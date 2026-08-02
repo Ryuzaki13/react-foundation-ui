@@ -1,8 +1,12 @@
+import { type ComponentProps, type ReactNode } from "react";
+
+import { useArgs } from "storybook/preview-api";
+
 import { Splitter } from "../Splitter";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function StoryCanvas({ children }: { children: React.ReactNode }) {
+function StoryCanvas({ children }: { children: ReactNode }) {
 	return <div style={{ height: 490 }}>{children}</div>;
 }
 
@@ -43,7 +47,7 @@ function Panel({ title, description, items = [] }: { title: string; description:
 	);
 }
 
-function TwoPaneLayout(args: React.ComponentProps<typeof Splitter>) {
+function TwoPaneLayout(args: ComponentProps<typeof Splitter>) {
 	return (
 		<StoryCanvas>
 			<Splitter {...args}>
@@ -62,10 +66,10 @@ function TwoPaneLayout(args: React.ComponentProps<typeof Splitter>) {
 	);
 }
 
-function NestedFourPaneLayout() {
+function NestedFourPaneLayout(args: ComponentProps<typeof Splitter>) {
 	return (
 		<StoryCanvas>
-			<Splitter initial={0.48} min={0.25} max={0.75}>
+			<Splitter {...args}>
 				<Splitter direction="horizontal" initial={0.58} min={0.25} max={0.75}>
 					<Panel
 						title="Список"
@@ -96,7 +100,7 @@ function NestedFourPaneLayout() {
 	);
 }
 
-function ConstrainedLayout(args: React.ComponentProps<typeof Splitter>) {
+function ConstrainedLayout(args: ComponentProps<typeof Splitter>) {
 	return (
 		<StoryCanvas>
 			<Splitter {...args}>
@@ -146,9 +150,10 @@ const meta = {
 			description: "Максимальная доля первой панели. Если `min` и `max` перепутаны местами, компонент сам исправит диапазон.",
 			control: { type: "range", min: 0, max: 1, step: 0.01 }
 		},
-		className: {
-			description: "Дополнительный CSS-класс корневого контейнера.",
-			control: "text"
+		collapsedPane: {
+			description: "Сворачивает начальную или конечную панель.",
+			control: "inline-radio",
+			options: [null, "start", "end"]
 		},
 		children: {
 			description:
@@ -163,12 +168,20 @@ type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
 	name: "Две панели",
-	render: (args) => <TwoPaneLayout {...args} />
+	render: function Render() {
+		const [args] = useArgs<ComponentProps<typeof Splitter>>();
+
+		return <TwoPaneLayout {...args} />;
+	}
 };
 
 export const Horizontal: Story = {
 	name: "Горизонтальное разделение",
-	render: (args) => <TwoPaneLayout {...args} />,
+	render: function Render() {
+		const [args] = useArgs<ComponentProps<typeof Splitter>>();
+
+		return <TwoPaneLayout {...args} />;
+	},
 	args: {
 		direction: "horizontal",
 		initial: 0.55
@@ -177,12 +190,25 @@ export const Horizontal: Story = {
 
 export const NestedFourPanels: Story = {
 	name: "Четыре панели через вложенность",
-	render: () => <NestedFourPaneLayout />
+	render: function Render() {
+		const [args] = useArgs<ComponentProps<typeof Splitter>>();
+
+		return <NestedFourPaneLayout {...args} />;
+	},
+	args: {
+		initial: 0.48,
+		min: 0.25,
+		max: 0.75
+	}
 };
 
 export const Constrained: Story = {
 	name: "Ограничения и клавиатура",
-	render: (args) => <ConstrainedLayout {...args} />,
+	render: function Render() {
+		const [args] = useArgs<ComponentProps<typeof Splitter>>();
+
+		return <ConstrainedLayout {...args} />;
+	},
 	args: {
 		initial: 0.35,
 		min: 0.25,

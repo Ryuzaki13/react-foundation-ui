@@ -5,6 +5,7 @@ import { type EntityColumnProperty, EntityMetadata, ServiceMetadata } from "@ryu
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
 import { createTableColumnsFromODataMetadata, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { useArgs } from "storybook/preview-api";
 
 import { TreeTable, type TreeTableProps } from "../TreeTable";
 
@@ -447,10 +448,36 @@ const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
 	return <QueryClientProvider client={queryClient}>{storyRenderer()}</QueryClientProvider>;
 };
 
+function TreeTableStoryCanvas<TData extends object>({ args }: { args: TreeTableProps<TData> }) {
+	const [, updateArgs] = useArgs<TreeTableProps<TData>>();
+
+	return (
+		<TreeTable
+			{...args}
+			onColumnVisibilityChange={(state) => {
+				args.onColumnVisibilityChange?.(state);
+				updateArgs({ columnVisibility: state });
+			}}
+			onColumnOrderChange={(state) => {
+				args.onColumnOrderChange?.(state);
+				updateArgs({ columnOrder: state });
+			}}
+			onColumnSizingChange={(state) => {
+				args.onColumnSizingChange?.(state);
+				updateArgs({ columnSizing: state });
+			}}
+			onColumnPinningChange={(state) => {
+				args.onColumnPinningChange?.(state);
+				updateArgs({ columnPinning: state });
+			}}
+		/>
+	);
+}
+
 /**
  * Демонстрирует режим `build`, когда hook сам создаёт колонки для дерева по metadata.
  */
-function HookBuildTreeTableStory() {
+function HookBuildTreeTableStory({ args }: { args: TreeTableProps<FinancialFormattingRow> }) {
 	const { columns, metadata, isLoading } = useODataTableColumns<FinancialFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -463,16 +490,7 @@ function HookBuildTreeTableStory() {
 				Режим build: hook собрал {columns.length} колонки из metadata
 				{metadata ? ` для сущности «${metadata.title}».` : "."}
 			</div>
-			<TreeTable
-				title="useODataTableColumns: build"
-				data={formattingRows}
-				columns={columns}
-				hierarchy={formattingHierarchy}
-				selectionMode="none"
-				expandFirstLevel
-				indentSize={1}
-				isLoading={isLoading}
-			/>
+			<TreeTableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
 		</div>
 	);
 }
@@ -480,7 +498,7 @@ function HookBuildTreeTableStory() {
 /**
  * Демонстрирует режим `enrich`, когда hook сохраняет ручные колонки дерева и дозаполняет их metadata-контекстом.
  */
-function HookEnrichTreeTableStory() {
+function HookEnrichTreeTableStory({ args }: { args: TreeTableProps<FinancialFormattingRow> }) {
 	const { columns, metadata, isLoading } = useODataTableColumns<FinancialFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -520,16 +538,7 @@ function HookEnrichTreeTableStory() {
 				Режим enrich: hook сохранил ручные tree-колонки и дополнил их formatting-контекстом
 				{metadata ? ` из metadata «${metadata.title}».` : "."}
 			</div>
-			<TreeTable
-				title="useODataTableColumns: enrich"
-				data={formattingRows}
-				columns={columns}
-				hierarchy={formattingHierarchy}
-				selectionMode="none"
-				expandFirstLevel
-				indentSize={1}
-				isLoading={isLoading}
-			/>
+			<TreeTableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
 		</div>
 	);
 }
@@ -551,6 +560,18 @@ const meta = {
 		layout: "padded"
 	},
 	argTypes: {
+		title: {
+			description: "Заголовок таблицы.",
+			control: "text"
+		},
+		isLoading: {
+			description: "Показывает состояние первичной загрузки.",
+			control: "boolean"
+		},
+		isFetching: {
+			description: "Показывает фоновое обновление без очистки дерева.",
+			control: "boolean"
+		},
 		data: {
 			description: "Плоский источник данных OData.",
 			control: false
@@ -562,10 +583,6 @@ const meta = {
 		hierarchy: {
 			description: "Функции получения id строки и id родителя.",
 			control: false
-		},
-		title: {
-			description: "Заголовок таблицы.",
-			control: "text"
 		},
 		selectionMode: {
 			description: "Режим выбора строк.",
@@ -588,8 +605,72 @@ const meta = {
 			description: "Отступ на уровень вложенности; число трактуется как em.",
 			control: "number"
 		},
+		columnVisibility: {
+			description: "Controlled-состояние видимости колонок.",
+			control: false
+		},
+		defaultColumnVisibility: {
+			description: "Стартовое uncontrolled-состояние видимости колонок.",
+			control: false
+		},
+		columnOrder: {
+			description: "Controlled-порядок идентификаторов колонок.",
+			control: false
+		},
+		defaultColumnOrder: {
+			description: "Стартовый uncontrolled-порядок колонок.",
+			control: false
+		},
+		columnSizing: {
+			description: "Controlled-ширины колонок в px.",
+			control: false
+		},
+		defaultColumnSizing: {
+			description: "Стартовые uncontrolled-ширины колонок.",
+			control: false
+		},
+		columnPinning: {
+			description: "Controlled-состояние закрепления колонок слева.",
+			control: false
+		},
+		defaultColumnPinning: {
+			description: "Стартовое uncontrolled-состояние закрепления колонок слева.",
+			control: false
+		},
+		enableColumnResizing: {
+			description: "Включает изменение ширины колонок через header-handle.",
+			control: "boolean"
+		},
+		enableColumnReordering: {
+			description: "Включает перетаскивание заголовков для изменения порядка колонок.",
+			control: "boolean"
+		},
+		columnResizeMinWidth: {
+			description: "Минимальная ширина колонки при resize в px.",
+			control: "number"
+		},
+		onColumnVisibilityChange: {
+			description: "Вызывается после изменения видимости колонок.",
+			control: false
+		},
+		onColumnOrderChange: {
+			description: "Вызывается после изменения порядка колонок.",
+			control: false
+		},
+		onColumnSizingChange: {
+			description: "Вызывается после изменения ширины колонок.",
+			control: false
+		},
+		onColumnPinningChange: {
+			description: "Вызывается после изменения закрепления колонок слева.",
+			control: false
+		},
 		getRowCanSelect: {
 			description: "Позволяет запретить выбор отдельных строк.",
+			control: false
+		},
+		getRowClassName: {
+			description: "Позволяет назначить CSS-класс конкретной строке.",
 			control: false
 		},
 		onRowClick: {
@@ -604,220 +685,276 @@ const meta = {
 			description: "Вызывается после изменения раскрытых строк.",
 			control: false
 		},
-		isLoading: {
-			description: "Первичная загрузка таблицы.",
-			control: "boolean"
+		onReachEnd: {
+			description: "Вызывается при достижении конца дерева внутри scroll-контейнера.",
+			control: false
 		},
-		isFetching: {
-			description: "Фоновое обновление уже загруженных данных.",
-			control: "boolean"
+		renderHeaderContextMenu: {
+			description: "Слот контекстного меню заголовка колонки.",
+			control: false
+		},
+		renderCellContent: {
+			description: "Слот содержимого ячейки поверх стандартного formatting-runtime.",
+			control: false
 		}
 	}
 } satisfies Meta<TreeTableProps<FinancialRow>>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type FinancialStory = StoryObj<TreeTableProps<FinancialRow>>;
+type FormattingStory = StoryObj<TreeTableProps<FinancialFormattingRow>>;
+type DivisionStory = StoryObj<TreeTableProps<DivisionTreeRow>>;
 
 /**
  * Базовый сценарий дерева с раскрытием первого уровня.
  */
-export const Basic: Story = {};
+export const Basic: FinancialStory = {
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
+	}
+};
+
+function SelectionTreeTableCanvas({ args, intro }: { args: TreeTableProps<FinancialRow>; intro?: string }) {
+	const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
+
+	return (
+		<div style={{ display: "grid", gap: "0.75em" }}>
+			{intro ? <div>{intro}</div> : null}
+			<div>Выбрано: {selectedLabels.length > 0 ? selectedLabels.join(", ") : "ничего"}</div>
+			<TreeTableStoryCanvas
+				args={{
+					...args,
+					onRowSelectionChange: (rows) => {
+						args.onRowSelectionChange?.(rows);
+						setSelectedLabels(rows.map((row) => row.label));
+					}
+				}}
+			/>
+		</div>
+	);
+}
 
 /**
  * Множественный выбор с отображением текущего результата.
  */
-export const MultiSelect: Story = {
-	render: (args) => {
-		const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-
-		return (
-			<div style={{ display: "grid", gap: "0.75em" }}>
-				<div>Выбрано: {selectedLabels.length > 0 ? selectedLabels.join(", ") : "ничего"}</div>
-				<TreeTable
-					{...args}
-					selectionMode="multi"
-					onRowSelectionChange={(rows) => setSelectedLabels(rows.map((row) => row.label))}
-				/>
-			</div>
-		);
+export const MultiSelect: FinancialStory = {
+	args: {
+		selectionMode: "multi"
+	},
+	render: function Render(args) {
+		return <SelectionTreeTableCanvas args={args} />;
 	}
 };
 
 /**
  * Дерево остаётся свёрнутым до взаимодействия пользователя.
  */
-export const CollapsedByDefault: Story = {
+export const CollapsedByDefault: FinancialStory = {
 	args: {
 		expandFirstLevel: false
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Дополнительно раскрывает конкретную ветку при первой инициализации.
  */
-export const WithDefaultExpandedBranch: Story = {
+export const WithDefaultExpandedBranch: FinancialStory = {
 	args: {
 		expandFirstLevel: false,
 		defaultExpandedRowIds: ["margin", "margin_logistics"]
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Часть строк можно показать, но запретить выбирать.
  */
-export const WithDisabledRows: Story = {
+export const WithDisabledRows: FinancialStory = {
 	args: {
 		selectionMode: "multi",
 		getRowCanSelect: (row) => !row.isLocked
 	},
-	render: (args) => {
-		const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
-
-		return (
-			<div style={{ display: "grid", gap: "0.75em" }}>
-				<div>Строка «Экспортная логистика» остаётся в дереве, но не участвует в выборе.</div>
-				<div>Выбрано: {selectedLabels.length > 0 ? selectedLabels.join(", ") : "ничего"}</div>
-				<TreeTable {...args} onRowSelectionChange={(rows) => setSelectedLabels(rows.map((row) => row.label))} />
-			</div>
-		);
+	render: function Render(args) {
+		return <SelectionTreeTableCanvas args={args} intro="Строка «Экспортная логистика» остаётся в дереве, но не участвует в выборе." />;
 	}
 };
 
 /**
  * Сценарий фонового обновления данных без очистки дерева.
  */
-export const Fetching: Story = {
+export const Fetching: FinancialStory = {
 	args: {
 		isFetching: true
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Пустой источник данных.
  */
-export const Empty: Story = {
+export const Empty: FinancialStory = {
 	args: {
 		data: []
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Состояние первичной загрузки.
  */
-export const Loading: Story = {
+export const Loading: FinancialStory = {
 	args: {
 		isLoading: true
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Сценарий с formula-based колонкой в древовидной таблице.
  */
-export const WithFormulaColumn: Story = {
-	render: () => (
-		<TreeTable
-			title="Формула в дереве"
-			data={formattingRows}
-			columns={formulaColumns}
-			hierarchy={formattingHierarchy}
-			selectionMode="none"
-			expandFirstLevel
-			indentSize={1}
-		/>
-	)
+export const WithFormulaColumn: FormattingStory = {
+	args: {
+		title: "Формула в дереве",
+		data: formattingRows,
+		columns: formulaColumns,
+		hierarchy: formattingHierarchy,
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий, где formatting применяется прямо в tree-колонке.
  */
-export const WithFormattedTreeColumn: Story = {
-	render: () => (
-		<TreeTable
-			title="Форматирование tree-колонки"
-			data={formattingRows}
-			columns={treeFormattedColumns}
-			hierarchy={formattingHierarchy}
-			treeColumnId="totalAmount"
-			selectionMode="none"
-			expandFirstLevel
-			indentSize={1}
-		/>
-	)
+export const WithFormattedTreeColumn: FormattingStory = {
+	args: {
+		title: "Форматирование tree-колонки",
+		data: formattingRows,
+		columns: treeFormattedColumns,
+		hierarchy: formattingHierarchy,
+		treeColumnId: "totalAmount",
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий со скрытием нулевых значений в дереве.
  */
-export const WithHiddenZero: Story = {
-	render: () => (
-		<TreeTable
-			title="Скрытие нулей в дереве"
-			data={formattingRows}
-			columns={hiddenZeroColumns}
-			hierarchy={formattingHierarchy}
-			selectionMode="none"
-			expandFirstLevel
-			indentSize={1}
-		/>
-	)
+export const WithHiddenZero: FormattingStory = {
+	args: {
+		title: "Скрытие нулей в дереве",
+		data: formattingRows,
+		columns: hiddenZeroColumns,
+		hierarchy: formattingHierarchy,
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий со слиянием дубликатов на одной глубине в `TreeTable`.
  */
-export const WithMergedDuplicates: Story = {
-	render: () => (
-		<TreeTable
-			title="Слияние дубликатов в дереве"
-			data={divisionTreeRows}
-			columns={divisionTreeColumns}
-			hierarchy={divisionTreeHierarchy}
-			selectionMode="none"
-			expandFirstLevel
-			indentSize={1}
-		/>
-	)
+export const WithMergedDuplicates: DivisionStory = {
+	args: {
+		title: "Слияние дубликатов в дереве",
+		data: divisionTreeRows,
+		columns: divisionTreeColumns,
+		hierarchy: divisionTreeHierarchy,
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий со статическим OData metadata adapter в build-режиме.
  */
-export const WithODataMetadataAdapter: Story = {
-	render: () => (
-		<TreeTable
-			title="OData metadata adapter"
-			data={formattingRows}
-			columns={adapterColumns}
-			hierarchy={formattingHierarchy}
-			selectionMode="none"
-			expandFirstLevel
-			indentSize={1}
-		/>
-	)
+export const WithODataMetadataAdapter: FormattingStory = {
+	args: {
+		title: "OData metadata adapter",
+		data: formattingRows,
+		columns: adapterColumns,
+		hierarchy: formattingHierarchy,
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
+	render: function Render(args) {
+		return <TreeTableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Реальный hook-сценарий `useODataTableColumns(...)` в режиме build для TreeTable.
  */
-export const WithUseODataTableColumnsBuildHook: Story = {
+export const WithUseODataTableColumnsBuildHook: FormattingStory = {
+	args: {
+		title: "useODataTableColumns: build",
+		data: formattingRows,
+		columns: [],
+		hierarchy: formattingHierarchy,
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
 	decorators: [withMockedHookODataMetadata],
 	parameters: {
 		odataService: HOOK_ODATA_SERVICE,
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: () => <HookBuildTreeTableStory />
+	render: function Render(args) {
+		return <HookBuildTreeTableStory args={args} />;
+	}
 };
 
 /**
  * Реальный hook-сценарий `useODataTableColumns(...)` в режиме enrich для TreeTable.
  */
-export const WithUseODataTableColumnsEnrichHook: Story = {
+export const WithUseODataTableColumnsEnrichHook: FormattingStory = {
+	args: {
+		title: "useODataTableColumns: enrich",
+		data: formattingRows,
+		columns: [],
+		hierarchy: formattingHierarchy,
+		selectionMode: "none",
+		expandFirstLevel: true,
+		indentSize: 1
+	},
 	decorators: [withMockedHookODataMetadata],
 	parameters: {
 		odataService: HOOK_ODATA_SERVICE,
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: () => <HookEnrichTreeTableStory />
+	render: function Render(args) {
+		return <HookEnrichTreeTableStory args={args} />;
+	}
 };

@@ -4,6 +4,7 @@ import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
 import { enrichTableColumnsWithODataFormatting, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 import { QueryClientProvider } from "@tanstack/react-query";
+import { useArgs } from "storybook/preview-api";
 
 import { Table, type TableProps } from "../Table";
 
@@ -452,10 +453,49 @@ const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
 	return <QueryClientProvider client={queryClient}>{storyRenderer()}</QueryClientProvider>;
 };
 
+function getStorySelectedRowIds<TData extends object>(args: TableProps<TData>, rows: readonly TData[]) {
+	const data = args.data ?? [];
+
+	return rows.map((row) => {
+		const index = data.indexOf(row);
+		return args.getRowId?.(row, index) ?? String(index);
+	});
+}
+
+function TableStoryCanvas<TData extends object>({ args }: { args: TableProps<TData> }) {
+	const [, updateArgs] = useArgs<TableProps<TData>>();
+
+	return (
+		<Table
+			{...args}
+			onColumnVisibilityChange={(state) => {
+				args.onColumnVisibilityChange?.(state);
+				updateArgs({ columnVisibility: state });
+			}}
+			onColumnOrderChange={(state) => {
+				args.onColumnOrderChange?.(state);
+				updateArgs({ columnOrder: state });
+			}}
+			onColumnSizingChange={(state) => {
+				args.onColumnSizingChange?.(state);
+				updateArgs({ columnSizing: state });
+			}}
+			onColumnPinningChange={(state) => {
+				args.onColumnPinningChange?.(state);
+				updateArgs({ columnPinning: state });
+			}}
+			onRowSelectionChange={(rows) => {
+				args.onRowSelectionChange?.(rows);
+				updateArgs({ selectedRowIds: getStorySelectedRowIds(args, rows) });
+			}}
+		/>
+	);
+}
+
 /**
  * Демонстрирует режим `build`, когда hook сам строит колонки только по OData metadata.
  */
-function HookBuildTableStory() {
+function HookBuildTableStory({ args }: { args: TableProps<DealFormattingRow> }) {
 	const { columns, metadata, isLoading } = useODataTableColumns<DealFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -468,14 +508,7 @@ function HookBuildTableStory() {
 				Режим build: hook собрал {columns.length} колонки из metadata
 				{metadata ? ` для сущности «${metadata.title}».` : "."}
 			</div>
-			<Table
-				title="useODataTableColumns: build"
-				data={formattingRows}
-				columns={columns}
-				selectionMode="none"
-				isLoading={isLoading}
-				getRowId={(row) => row.id}
-			/>
+			<TableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
 		</div>
 	);
 }
@@ -483,7 +516,7 @@ function HookBuildTableStory() {
 /**
  * Демонстрирует режим `enrich`, когда hook дозаполняет вручную описанные колонки metadata-контекстом.
  */
-function HookEnrichTableStory() {
+function HookEnrichTableStory({ args }: { args: TableProps<DealFormattingRow> }) {
 	const { columns, metadata, isLoading } = useODataTableColumns<DealFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -497,14 +530,7 @@ function HookEnrichTableStory() {
 				Режим enrich: hook сохранил ручные заголовки и дополнил formatting-контекст
 				{metadata ? ` из metadata «${metadata.title}».` : "."}
 			</div>
-			<Table
-				title="useODataTableColumns: enrich"
-				data={formattingRows}
-				columns={columns}
-				selectionMode="none"
-				isLoading={isLoading}
-				getRowId={(row) => row.id}
-			/>
+			<TableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
 		</div>
 	);
 }
@@ -524,25 +550,65 @@ const meta = {
 		layout: "padded"
 	},
 	argTypes: {
-		data: {
-			description: "Плоский источник данных.",
-			control: false
-		},
-		columns: {
-			description: "Колонки таблицы.",
-			control: false
-		},
 		title: {
 			description: "Заголовок таблицы.",
 			control: "text"
+		},
+		isLoading: {
+			description: "Показывает состояние первичной загрузки.",
+			control: "boolean"
+		},
+		isFetching: {
+			description: "Показывает фоновое обновление без очистки строк.",
+			control: "boolean"
+		},
+		data: {
+			description: "Плоский источник строк.",
+			control: false
+		},
+		columns: {
+			description: "Описание колонок таблицы.",
+			control: false
 		},
 		selectionMode: {
 			description: "Режим выбора строк.",
 			control: "inline-radio",
 			options: ["none", "single", "multi"]
 		},
+		selectedRowIds: {
+			description: "Controlled-набор выбранных id строк.",
+			control: false
+		},
 		getRowId: {
 			description: "Функция получения стабильного id строки.",
+			control: false
+		},
+		minHeight: {
+			description: "Минимальная высота scroll-области таблицы в em или процентах.",
+			control: "text"
+		},
+		columnVisibility: {
+			description: "Controlled-состояние видимости колонок.",
+			control: false
+		},
+		defaultColumnVisibility: {
+			description: "Стартовое uncontrolled-состояние видимости колонок.",
+			control: false
+		},
+		columnOrder: {
+			description: "Controlled-порядок идентификаторов колонок.",
+			control: false
+		},
+		defaultColumnOrder: {
+			description: "Стартовый uncontrolled-порядок колонок.",
+			control: false
+		},
+		columnSizing: {
+			description: "Controlled-ширины колонок в px.",
+			control: false
+		},
+		defaultColumnSizing: {
+			description: "Стартовые uncontrolled-ширины колонок.",
 			control: false
 		},
 		columnPinning: {
@@ -555,6 +621,30 @@ const meta = {
 		},
 		onColumnPinningChange: {
 			description: "Вызывается после изменения закрепления колонок слева.",
+			control: false
+		},
+		enableColumnResizing: {
+			description: "Включает изменение ширины колонок через header-handle.",
+			control: "boolean"
+		},
+		enableColumnReordering: {
+			description: "Включает перетаскивание заголовков для изменения порядка колонок.",
+			control: "boolean"
+		},
+		columnResizeMinWidth: {
+			description: "Минимальная ширина колонки при resize в px.",
+			control: "number"
+		},
+		onColumnVisibilityChange: {
+			description: "Вызывается после изменения видимости колонок.",
+			control: false
+		},
+		onColumnOrderChange: {
+			description: "Вызывается после изменения порядка колонок.",
+			control: false
+		},
+		onColumnSizingChange: {
+			description: "Вызывается после изменения ширины колонок.",
 			control: false
 		},
 		getRowCanSelect: {
@@ -577,49 +667,57 @@ const meta = {
 			description: "Вызывается при достижении конца списка внутри scroll-контейнера.",
 			control: false
 		},
-		isLoading: {
-			description: "Первичная загрузка таблицы.",
-			control: "boolean"
+		renderHeaderContextMenu: {
+			description: "Слот контекстного меню заголовка колонки.",
+			control: false
 		},
-		isFetching: {
-			description: "Фоновое обновление уже загруженных данных.",
-			control: "boolean"
+		renderCellContent: {
+			description: "Слот содержимого ячейки поверх стандартного formatting-runtime.",
+			control: false
 		}
 	}
 } satisfies Meta<TableProps<DealRow>>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type DealStory = StoryObj<TableProps<DealRow>>;
+type FormattingStory = StoryObj<TableProps<DealFormattingRow>>;
+type DivisionMergeStory = StoryObj<TableProps<DivisionMergeRow>>;
 
 /**
  * Базовый сценарий плоской таблицы с одиночным выбором.
  */
-export const Basic: Story = {};
+export const Basic: DealStory = {
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
+	}
+};
 
 /**
  * Демонстрирует controlled left-pinning через внешний story-state без встроенного UI таблицы.
  */
-export const WithColumnPinning: Story = {
-	render: (args) => {
-		const [columnPinning, setColumnPinning] = useState<{ left?: string[] }>({
-			left: ["number"]
-		});
+export const WithColumnPinning: DealStory = {
+	args: {
+		columnPinning: { left: ["number"] }
+	},
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<TableProps<DealRow>>();
+		const columnPinning = args.columnPinning ?? { left: [] };
 
 		return (
 			<div style={{ display: "grid", gap: "0.75em" }}>
 				<div style={{ display: "flex", gap: "0.5em", flexWrap: "wrap" }}>
-					<button type="button" onClick={() => setColumnPinning({ left: ["number"] })}>
+					<button type="button" onClick={() => updateArgs({ columnPinning: { left: ["number"] } })}>
 						Закрепить «Номер»
 					</button>
-					<button type="button" onClick={() => setColumnPinning({ left: ["number", "client"] })}>
+					<button type="button" onClick={() => updateArgs({ columnPinning: { left: ["number", "client"] } })}>
 						Закрепить «Номер» и «Клиент»
 					</button>
-					<button type="button" onClick={() => setColumnPinning({ left: [] })}>
+					<button type="button" onClick={() => updateArgs({ columnPinning: { left: [] } })}>
 						Снять закрепление
 					</button>
 				</div>
 				<div>Закреплено слева: {columnPinning.left?.length ? columnPinning.left.join(", ") : "ничего"}</div>
-				<Table {...args} columnPinning={columnPinning} onColumnPinningChange={setColumnPinning} />
+				<TableStoryCanvas args={{ ...args, columnPinning }} />
 			</div>
 		);
 	}
@@ -628,14 +726,16 @@ export const WithColumnPinning: Story = {
 /**
  * Множественный выбор с отображением текущего результата.
  */
-export const MultiSelect: Story = {
-	render: (args) => {
-		const [selectedNumbers, setSelectedNumbers] = useState<string[]>([]);
-
+export const MultiSelect: DealStory = {
+	args: {
+		selectionMode: "multi",
+		selectedRowIds: []
+	},
+	render: function Render(args) {
 		return (
 			<div style={{ display: "grid", gap: "0.75em" }}>
-				<div>Выбрано: {selectedNumbers.length > 0 ? selectedNumbers.join(", ") : "ничего"}</div>
-				<Table {...args} selectionMode="multi" onRowSelectionChange={(rows) => setSelectedNumbers(rows.map((row) => row.number))} />
+				<div>Выбрано: {args.selectedRowIds?.length ? args.selectedRowIds.join(", ") : "ничего"}</div>
+				<TableStoryCanvas args={args} />
 			</div>
 		);
 	}
@@ -644,20 +744,19 @@ export const MultiSelect: Story = {
 /**
  * Часть строк можно показать, но запретить выбирать.
  */
-export const WithDisabledRows: Story = {
+export const WithDisabledRows: DealStory = {
 	args: {
 		data: nonSelectableRows,
 		selectionMode: "multi",
+		selectedRowIds: [],
 		getRowCanSelect: (row) => !row.isLocked
 	},
-	render: (args) => {
-		const [selectedNumbers, setSelectedNumbers] = useState<string[]>([]);
-
+	render: function Render(args) {
 		return (
 			<div style={{ display: "grid", gap: "0.75em" }}>
 				<div>Строка со статусом «Архив» остаётся видимой, но не участвует в выборе.</div>
-				<div>Выбрано: {selectedNumbers.length > 0 ? selectedNumbers.join(", ") : "ничего"}</div>
-				<Table {...args} onRowSelectionChange={(rows) => setSelectedNumbers(rows.map((row) => row.number))} />
+				<div>Выбрано: {args.selectedRowIds?.length ? args.selectedRowIds.join(", ") : "ничего"}</div>
+				<TableStoryCanvas args={args} />
 			</div>
 		);
 	}
@@ -666,134 +765,190 @@ export const WithDisabledRows: Story = {
 /**
  * Сценарий фонового обновления данных без очистки таблицы.
  */
-export const Fetching: Story = {
+export const Fetching: DealStory = {
 	args: {
 		isFetching: true
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Пустой источник данных.
  */
-export const Empty: Story = {
+export const Empty: DealStory = {
 	args: {
 		data: []
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
 	}
 };
+
+function ReachEndTableCanvas({ args }: { args: TableProps<DealRow> }) {
+	const [reachEndCount, setReachEndCount] = useState(0);
+
+	return (
+		<div style={{ display: "grid", gap: "0.75em" }}>
+			<div>Событие достижения конца: {reachEndCount}</div>
+			<TableStoryCanvas
+				args={{
+					...args,
+					onReachEnd: () => {
+						args.onReachEnd?.();
+						setReachEndCount((current) => current + 1);
+					}
+				}}
+			/>
+		</div>
+	);
+}
 
 /**
  * Демонстрация callback при достижении конца списка.
  */
-export const ReachEnd: Story = {
+export const ReachEnd: DealStory = {
 	args: {
 		data: reachEndRows
 	},
-	render: (args) => {
-		const [reachEndCount, setReachEndCount] = useState(0);
-
-		return (
-			<div style={{ display: "grid", gap: "0.75em" }}>
-				<div>Событие достижения конца: {reachEndCount}</div>
-				<Table {...args} onReachEnd={() => setReachEndCount((current) => current + 1)} />
-			</div>
-		);
+	render: function Render(args) {
+		return <ReachEndTableCanvas args={args} />;
 	}
 };
 
 /**
  * Состояние первичной загрузки.
  */
-export const Loading: Story = {
+export const Loading: DealStory = {
 	args: {
 		isLoading: true
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
 	}
 };
 
 /**
  * Сценарий с formula-based колонкой без кастомного `cell`.
  */
-export const WithFormulaColumn: Story = {
-	render: () => (
-		<Table title="Формула наценки" data={formattingRows} columns={formulaColumns} selectionMode="none" getRowId={(row) => row.id} />
-	)
+export const WithFormulaColumn: FormattingStory = {
+	args: {
+		title: "Формула наценки",
+		data: formattingRows,
+		columns: formulaColumns,
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий с pipeline display-formatting и value-state.
  */
-export const WithFormattingPipeline: Story = {
-	render: () => (
-		<Table
-			title="Pipeline форматирования"
-			data={formattingRows}
-			columns={pipelineColumns}
-			selectionMode="none"
-			getRowId={(row) => row.id}
-		/>
-	)
+export const WithFormattingPipeline: FormattingStory = {
+	args: {
+		title: "Pipeline форматирования",
+		data: formattingRows,
+		columns: pipelineColumns,
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий со скрытием нулевых значений через `emptyWhenZero`.
  */
-export const WithHiddenZero: Story = {
-	render: () => (
-		<Table title="Скрытие нулей" data={formattingRows} columns={hiddenZeroColumns} selectionMode="none" getRowId={(row) => row.id} />
-	)
+export const WithHiddenZero: FormattingStory = {
+	args: {
+		title: "Скрытие нулей",
+		data: formattingRows,
+		columns: hiddenZeroColumns,
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий со display-only слиянием подряд идущих дубликатов через пустые ячейки и CSS-склейку.
  */
-export const WithMergedDuplicates: Story = {
-	render: () => (
-		<Table
-			title="Слияние дубликатов"
-			data={divisionMergeRows}
-			columns={divisionMergeColumns}
-			selectionMode="none"
-			getRowId={(row) => row.id}
-		/>
-	)
+export const WithMergedDuplicates: DivisionMergeStory = {
+	args: {
+		title: "Слияние дубликатов",
+		data: divisionMergeRows,
+		columns: divisionMergeColumns,
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Сценарий со статическим OData metadata adapter в режиме enrich.
  */
-export const WithODataMetadataAdapter: Story = {
-	render: () => (
-		<Table
-			title="OData metadata adapter"
-			data={formattingRows}
-			columns={adapterColumns}
-			selectionMode="none"
-			getRowId={(row) => row.id}
-		/>
-	)
+export const WithODataMetadataAdapter: FormattingStory = {
+	args: {
+		title: "OData metadata adapter",
+		data: formattingRows,
+		columns: adapterColumns,
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
+	render: function Render(args) {
+		return <TableStoryCanvas args={args} />;
+	}
 };
 
 /**
  * Реальный hook-сценарий `useODataTableColumns(...)` в режиме build.
  */
-export const WithUseODataTableColumnsBuildHook: Story = {
+export const WithUseODataTableColumnsBuildHook: FormattingStory = {
+	args: {
+		title: "useODataTableColumns: build",
+		data: formattingRows,
+		columns: [],
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
 	decorators: [withMockedHookODataMetadata],
 	parameters: {
 		odataService: HOOK_ODATA_SERVICE,
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: () => <HookBuildTableStory />
+	render: function Render(args) {
+		return <HookBuildTableStory args={args} />;
+	}
 };
 
 /**
  * Реальный hook-сценарий `useODataTableColumns(...)` в режиме enrich.
  */
-export const WithUseODataTableColumnsEnrichHook: Story = {
+export const WithUseODataTableColumnsEnrichHook: FormattingStory = {
+	args: {
+		title: "useODataTableColumns: enrich",
+		data: formattingRows,
+		columns: [],
+		selectionMode: "none",
+		getRowId: (row) => row.id
+	},
 	decorators: [withMockedHookODataMetadata],
 	parameters: {
 		odataService: HOOK_ODATA_SERVICE,
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: () => <HookEnrichTableStory />
+	render: function Render(args) {
+		return <HookEnrichTableStory args={args} />;
+	}
 };

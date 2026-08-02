@@ -1,6 +1,9 @@
-import { useState } from "react";
+import type { ComponentType } from "react";
 
-import { InputDate, InputDateTime, InputTime } from "../InputDateTime";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
+
+import { InputDate, InputDateTime, InputTime, type InputDateProps } from "../InputDateTime";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -9,7 +12,7 @@ const meta = {
 	component: InputDate,
 	args: {
 		value: undefined,
-		onChange: () => {}
+		onChange: fn<NonNullable<InputDateProps["onChange"]>>()
 	},
 	parameters: {
 		atomicCanvas: true,
@@ -22,6 +25,10 @@ const meta = {
 		},
 		description: {
 			description: "Описание под заголовком.",
+			control: "text"
+		},
+		placeholder: {
+			description: "Общий placeholder-параметр сегментного поля.",
 			control: "text"
 		},
 		value: {
@@ -58,7 +65,7 @@ const meta = {
 			options: ["xs", "sm", "md", "lg", "xl"]
 		},
 		"aria-label": {
-			description: "ARIA-метка для контейнера сегментного ввода.",
+			description: "Явное доступное имя контейнера сегментного ввода; заменяет связь с видимой подписью.",
 			control: "text"
 		}
 	}
@@ -67,10 +74,36 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
+type InputDateTimeStoryCanvasProps = InputDateProps & {
+	component: ComponentType<InputDateProps>;
+};
+
+function InputDateTimeStoryCanvas({ component, ...args }: InputDateTimeStoryCanvasProps) {
+	const [, updateArgs] = useArgs<InputDateProps>();
+	const Component = component;
+
+	return (
+		<Component
+			{...args}
+			onChange={(value) => {
+				args.onChange(value);
+				updateArgs({ value });
+			}}
+			onClear={() => {
+				args.onClear?.();
+				updateArgs({ value: undefined });
+			}}
+			onClearError={() => {
+				args.onClearError?.();
+				updateArgs({ error: undefined });
+			}}
+		/>
+	);
+}
+
 export const DateOnly: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<Date | undefined>(args.value);
-		return <InputDate {...args} value={value} onChange={setValue} onClear={() => setValue(undefined)} />;
+	render: function Render(args) {
+		return <InputDateTimeStoryCanvas {...args} component={InputDate} />;
 	},
 	args: {
 		label: "Дата",
@@ -80,55 +113,35 @@ export const DateOnly: Story = {
 };
 
 export const TimeOnly: Story = {
-	render: () => {
-		const [value, setValue] = useState<Date | undefined>(new Date(2026, 2, 5, 14, 30, 0));
-		return (
-			<InputTime
-				label="Время"
-				description="Формат по умолчанию: hh:mm"
-				value={value}
-				onChange={setValue}
-				onClear={() => setValue(undefined)}
-			/>
-		);
+	render: function Render(args) {
+		return <InputDateTimeStoryCanvas {...args} component={InputTime} />;
 	},
 	args: {
-		value: undefined
+		label: "Время",
+		description: "Формат по умолчанию: hh:mm",
+		value: new Date(2026, 2, 5, 14, 30, 0)
 	}
 };
 
 export const DateAndTime: Story = {
-	render: () => {
-		const [value, setValue] = useState<Date | undefined>(new Date(2026, 2, 5, 9, 15, 0));
-		return (
-			<InputDateTime
-				label="Дата и время"
-				description="Комбинированный ввод даты и времени."
-				value={value}
-				onChange={setValue}
-				onClear={() => setValue(undefined)}
-			/>
-		);
+	render: function Render(args) {
+		return <InputDateTimeStoryCanvas {...args} component={InputDateTime} />;
 	},
 	args: {
-		value: undefined
+		label: "Дата и время",
+		description: "Комбинированный ввод даты и времени.",
+		value: new Date(2026, 2, 5, 9, 15, 0)
 	}
 };
 
 export const CustomMask: Story = {
-	render: () => {
-		const [value, setValue] = useState<Date | undefined>(new Date(2026, 2, 5, 9, 15, 42));
-		return (
-			<InputDateTime
-				label="Кастомная маска"
-				description="Добавлены секунды: YYYY.MM.DD hh:mm:ss"
-				mask="YYYY.MM.DD hh:mm:ss"
-				value={value}
-				onChange={setValue}
-			/>
-		);
+	render: function Render(args) {
+		return <InputDateTimeStoryCanvas {...args} component={InputDateTime} />;
 	},
 	args: {
-		value: undefined
+		label: "Кастомная маска",
+		description: "Добавлены секунды: YYYY.MM.DD hh:mm:ss",
+		mask: "YYYY.MM.DD hh:mm:ss",
+		value: new Date(2026, 2, 5, 9, 15, 42)
 	}
 };

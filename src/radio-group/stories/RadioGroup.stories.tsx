@@ -1,22 +1,77 @@
-import { useState } from "react";
+import type { ReactNode } from "react";
+
+import { useArgs } from "storybook/preview-api";
 
 import { RadioGroup } from "../RadioGroup";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function StringRadioGroup(props: {
+type StringRadioGroupProps = {
 	value?: string;
 	onChange?: (value: string) => void;
 	label?: string;
 	description?: string;
 	disabled?: boolean;
-	className?: string;
 	noWrap?: true;
 	orientation?: "vertical" | "horizontal";
-	children: React.ReactNode;
-}) {
+	"aria-label"?: string;
+	children: ReactNode;
+};
+
+type RadioGroupOption = {
+	value: string;
+	label: ReactNode;
+	description?: ReactNode;
+};
+
+function StringRadioGroup(props: StringRadioGroupProps) {
 	return <RadioGroup<string> {...props} />;
 }
+
+function RadioGroupStoryCanvas({
+	args,
+	options,
+	showValue = false
+}: {
+	args: StringRadioGroupProps;
+	options: readonly RadioGroupOption[];
+	showValue?: boolean;
+}) {
+	const [, updateArgs] = useArgs<StringRadioGroupProps>();
+
+	return (
+		<div style={{ display: "grid", gap: 10 }}>
+			<StringRadioGroup
+				{...args}
+				onChange={(value) => {
+					args.onChange?.(value);
+					updateArgs({ value });
+				}}>
+				{options.map((option) => (
+					<RadioGroup.Option key={option.value} value={option.value} label={option.label} description={option.description} />
+				))}
+			</StringRadioGroup>
+			{showValue && <div>Выбрано: {args.value ?? "не выбрано"}</div>}
+		</div>
+	);
+}
+
+const notificationOptions = [
+	{ value: "email", label: "Email", description: "Письма на корпоративную почту" },
+	{ value: "sms", label: "SMS", description: "Сообщения на телефон" },
+	{ value: "push", label: "Push", description: "Уведомления в приложении" }
+] as const satisfies readonly RadioGroupOption[];
+
+const documentStatusOptions = [
+	{ value: "draft", label: "Черновик" },
+	{ value: "review", label: "На согласовании" },
+	{ value: "approved", label: "Утвержден" }
+] as const satisfies readonly RadioGroupOption[];
+
+const confirmationOptions = [
+	{ value: "yes", label: "Да" },
+	{ value: "no", label: "Нет" }
+] as const satisfies readonly RadioGroupOption[];
 
 const meta = {
 	title: "Shared/UI/RadioGroup",
@@ -63,68 +118,40 @@ const meta = {
 			control: "inline-radio",
 			options: ["horizontal", "vertical"]
 		},
-		className: {
-			description: "Дополнительный CSS-класс контейнера.",
-			control: "text"
-		},
 		children: {
 			description: "Элементы `RadioGroup.Option` внутри группы.",
 			control: false
 		}
 	}
-} satisfies Meta<typeof StringRadioGroup>;
+} satisfies Meta<StringRadioGroupProps>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<StringRadioGroupProps>;
 
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState("email");
-
-		return (
-			<div style={{ display: "grid", gap: 10 }}>
-				<StringRadioGroup {...args} value={value} onChange={setValue}>
-					<RadioGroup.Option value="email" label="Email" description="Письма на корпоративную почту" />
-					<RadioGroup.Option value="sms" label="SMS" description="Сообщения на телефон" />
-					<RadioGroup.Option value="push" label="Push" description="Уведомления в приложении" />
-				</StringRadioGroup>
-				<div>Выбрано: {value}</div>
-			</div>
-		);
+	render: function Render(args) {
+		return <RadioGroupStoryCanvas args={args} options={notificationOptions} showValue />;
 	},
-	args: {
-		children: undefined
-	}
+	args: {}
 };
 
 export const Vertical: Story = {
-	render: (args) => {
-		const [value, setValue] = useState("draft");
-
-		return (
-			<StringRadioGroup {...args} value={value} onChange={setValue} orientation="vertical" label="Статус документа">
-				<RadioGroup.Option value="draft" label="Черновик" />
-				<RadioGroup.Option value="review" label="На согласовании" />
-				<RadioGroup.Option value="approved" label="Утвержден" />
-			</StringRadioGroup>
-		);
+	render: function Render(args) {
+		return <RadioGroupStoryCanvas args={args} options={documentStatusOptions} />;
 	},
 	args: {
 		orientation: "vertical",
-		children: undefined
+		label: "Статус документа",
+		value: "draft"
 	}
 };
 
 export const Disabled: Story = {
-	render: (args) => (
-		<StringRadioGroup {...args} disabled>
-			<RadioGroup.Option value="yes" label="Да" />
-			<RadioGroup.Option value="no" label="Нет" />
-		</StringRadioGroup>
-	),
+	render: function Render(args) {
+		return <RadioGroupStoryCanvas args={args} options={confirmationOptions} />;
+	},
 	args: {
 		disabled: true,
-		value: "yes",
-		children: undefined
+		value: "yes"
 	}
 };

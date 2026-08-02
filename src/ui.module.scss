@@ -139,6 +139,10 @@
 	@include ui-tone("neutral");
 }
 
+.uiToneBrand {
+	@include ui-tone("brand");
+}
+
 .uiToneError {
 	@include ui-tone("error");
 }

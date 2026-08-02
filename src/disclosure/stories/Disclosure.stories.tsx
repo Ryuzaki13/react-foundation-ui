@@ -1,5 +1,7 @@
+import { useArgs } from "storybook/preview-api";
+
 import { Button } from "../../button";
-import { Disclosure } from "../Disclosure";
+import { Disclosure, type DisclosureProps } from "../Disclosure";
 import { DisclosureGroup } from "../DisclosureGroup";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -22,7 +24,7 @@ const meta = {
 			control: "text"
 		},
 		defaultOpen: {
-			description: "Начальное состояние (открыт/закрыт).",
+			description: "Начальное состояние (открыт/закрыт). Изменение аргумента перемонтирует демонстрационный экземпляр.",
 			control: "boolean"
 		},
 		headerActions: {
@@ -39,27 +41,20 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {};
+function DisclosureStoryCanvas() {
+	const [args] = useArgs<DisclosureProps>();
 
-export const HeaderActions: Story = {
-	args: {
-		headerActions: (
-			<Button variant="transparent" onClick={() => undefined}>
-				Очистить
-			</Button>
-		)
-	}
-};
+	// Disclosure поддерживает только initial state, поэтому при изменении defaultOpen
+	// через Controls монтируется новый экземпляр с обновлённым начальным значением.
+	return <Disclosure key={`disclosure-${String(args.defaultOpen)}`} {...args} />;
+}
 
-export const Group: Story = {
-	render: () => (
+function DisclosureGroupStoryCanvas() {
+	const [args] = useArgs<DisclosureProps>();
+
+	return (
 		<DisclosureGroup>
-			<Disclosure label="Параметры поиска" defaultOpen>
-				<div style={{ display: "grid", gap: 8 }}>
-					<span>Период: март 2026</span>
-					<span>Регион: Урал</span>
-				</div>
-			</Disclosure>
+			<Disclosure key={`search-${String(args.defaultOpen)}`} {...args} />
 			<Disclosure label="Сортировка">
 				<div style={{ display: "grid", gap: 8 }}>
 					<span>Поле: Дата создания</span>
@@ -73,8 +68,34 @@ export const Group: Story = {
 				</div>
 			</Disclosure>
 		</DisclosureGroup>
-	),
+	);
+}
+
+export const Basic: Story = {
+	render: () => <DisclosureStoryCanvas />
+};
+
+export const HeaderActions: Story = {
 	args: {
-		label: "Раздел"
-	}
+		headerActions: (
+			<Button variant="transparent" onClick={() => undefined}>
+				Очистить
+			</Button>
+		)
+	},
+	render: () => <DisclosureStoryCanvas />
+};
+
+export const Group: Story = {
+	args: {
+		label: "Параметры поиска",
+		defaultOpen: true,
+		children: (
+			<div style={{ display: "grid", gap: 8 }}>
+				<span>Период: март 2026</span>
+				<span>Регион: Урал</span>
+			</div>
+		)
+	},
+	render: () => <DisclosureGroupStoryCanvas />
 };

@@ -1,6 +1,9 @@
 import { useState, type CSSProperties } from "react";
 
-import { Tabs, TabsBox, TabsLayout, type TabsBoxItem } from "..";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
+
+import { Tabs, TabsBox, TabsLayout, type TabsBoxItem, type TabsBoxProps, type TabsLayoutProps, type TabsProps } from "..";
 import { Scrollable } from "../../misc";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -78,12 +81,136 @@ const disabledItems: TabsBoxItem[] = [
 
 const longLines = Array.from({ length: 12 }, (_, index) => `Элемент ${index + 1}`);
 
-function LayoutStory() {
-	const [value, setValue] = useState("details");
+const meta = {
+	title: "Shared/UI/Tabs",
+	component: TabsBox,
+	args: {
+		items: demoItems,
+		value: "profile",
+		onValueChange: fn<(value: string) => void>(),
+		orientation: "horizontal",
+		activationMode: "automatic",
+		mountStrategy: "unmount",
+		isLoading: false,
+		loadingText: "Загрузка вкладок...",
+		cleanPanel: false,
+		bordered: false,
+		loop: true
+	},
+	parameters: {
+		atomicCanvas: true,
+		layout: "padded"
+	},
+	argTypes: {
+		items: {
+			description: "Набор вкладок для `TabsBox`. Каждая вкладка задаётся через `id`, `title`, `content` и опциональный `disabled`.",
+			control: false
+		},
+		value: {
+			description: "Активная вкладка в controlled-режиме.",
+			control: "text"
+		},
+		defaultValue: {
+			description: "Начальная вкладка в uncontrolled-режиме.",
+			control: "text"
+		},
+		onValueChange: {
+			description: "Вызывается при смене активной вкладки.",
+			control: false
+		},
+		orientation: {
+			description: "Направление списка вкладок.",
+			control: "inline-radio",
+			options: ["horizontal", "vertical"]
+		},
+		activationMode: {
+			description: "Режим клавиатурной активации: `automatic` меняет вкладку стрелками, `manual` только переводит фокус.",
+			control: "inline-radio",
+			options: ["automatic", "manual"]
+		},
+		mountStrategy: {
+			description: "Политика монтирования панелей: `unmount`, `lazy` или `keep-mounted`.",
+			control: "inline-radio",
+			options: ["unmount", "lazy", "keep-mounted"]
+		},
+		cleanPanel: {
+			description: "Убирает базовые padding и surface-оформление panel-области.",
+			control: "boolean"
+		},
+		bordered: {
+			description: "Добавляет рамку вокруг области панелей.",
+			control: "boolean"
+		},
+		loop: {
+			description: "Разрешает циклическую навигацию стрелками и Home/End.",
+			control: "boolean"
+		},
+		isLoading: {
+			description: "Показывает loading-состояние `TabsBox`.",
+			control: "boolean"
+		},
+		loadingText: {
+			description: "Текст внутри loading-состояния.",
+			control: "text"
+		},
+		"aria-label": {
+			description: "Собственное доступное имя `tablist`, если рядом нет видимого заголовка.",
+			control: "text"
+		},
+		"aria-labelledby": {
+			description: "Ссылка на внешний заголовок `tablist` вместо текстовой ARIA-метки.",
+			control: "text"
+		}
+	}
+} satisfies Meta<typeof TabsBox>;
+
+export default meta;
+
+type Story = StoryObj<typeof meta>;
+type LayoutStory = StoryObj<TabsLayoutProps>;
+type LegacyStory = StoryObj<TabsProps>;
+
+function TabsBoxStoryCanvas({ height }: { height?: number } = {}) {
+	const [args, updateArgs] = useArgs<TabsBoxProps>();
+	const value = args.value ?? args.defaultValue;
+
+	const tabs = (
+		<TabsBox
+			{...args}
+			value={value}
+			onValueChange={(nextValue) => {
+				args.onValueChange?.(nextValue);
+				updateArgs({ value: nextValue });
+			}}
+		/>
+	);
+
+	return height === undefined ? tabs : <div style={{ height }}>{tabs}</div>;
+}
+
+function TabsLayoutStoryCanvas() {
+	const [args, updateArgs] = useArgs<TabsLayoutProps>();
+	const value = args.value ?? args.defaultValue ?? "details";
+	const onValueChange = (nextValue: string) => {
+		args.onValueChange?.(nextValue);
+		updateArgs({ value: nextValue });
+	};
 
 	return (
 		<div style={{ height: 360 }}>
-			<TabsLayout value={value} onValueChange={setValue} bordered aria-label="Составные панели документа">
+			<TabsLayout
+				value={value}
+				defaultValue={args.defaultValue}
+				onValueChange={onValueChange}
+				orientation={args.orientation}
+				activationMode={args.activationMode}
+				mountStrategy={args.mountStrategy}
+				loop={args.loop}
+				cleanPanel={args.cleanPanel}
+				bordered={args.bordered}
+				className={args.className}
+				aria-label={args["aria-label"]}
+				aria-labelledby={args["aria-labelledby"]}>
 				<TabsLayout.Tab id="details" title="Детали">
 					<TabsLayout.Toolbar>
 						<div className="surface0 border radiusSm paddingSm">Панель инструментов вне scroll-области.</div>
@@ -127,141 +254,100 @@ function LayoutStory() {
 	);
 }
 
-const meta = {
-	title: "Shared/UI/Tabs",
-	component: TabsBox,
-	args: {
-		items: demoItems,
-		orientation: "horizontal",
-		activationMode: "automatic",
-		mountStrategy: "unmount",
-		isLoading: false,
-		loadingText: "Загрузка вкладок...",
-		bordered: false,
-		loop: true
-	},
-	parameters: {
-		atomicCanvas: true,
-		layout: "padded"
-	},
-	argTypes: {
-		items: {
-			description: "Набор вкладок для `TabsBox`. Каждая вкладка задаётся через `id`, `title`, `content` и опциональный `disabled`.",
-			control: false
-		},
-		value: {
-			description: "Активная вкладка в controlled-режиме.",
-			control: "text"
-		},
-		defaultValue: {
-			description: "Начальная вкладка в uncontrolled-режиме.",
-			control: "text"
-		},
-		onValueChange: {
-			description: "Вызывается при смене активной вкладки.",
-			control: false
-		},
-		orientation: {
-			description: "Направление списка вкладок.",
-			control: "inline-radio",
-			options: ["horizontal", "vertical"]
-		},
-		activationMode: {
-			description: "Режим клавиатурной активации: `automatic` меняет вкладку стрелками, `manual` только переводит фокус.",
-			control: "inline-radio",
-			options: ["automatic", "manual"]
-		},
-		mountStrategy: {
-			description: "Политика монтирования панелей: `unmount`, `lazy` или `keep-mounted`.",
-			control: "inline-radio",
-			options: ["unmount", "lazy", "keep-mounted"]
-		},
-		bordered: {
-			description: "Добавляет рамку вокруг области панелей.",
-			control: "boolean"
-		},
-		loop: {
-			description: "Разрешает циклическую навигацию стрелками и Home/End.",
-			control: "boolean"
-		},
-		className: {
-			description: "Дополнительный CSS-класс корневого контейнера.",
-			control: "text"
-		},
-		isLoading: {
-			description: "Показывает loading-состояние `TabsBox`.",
-			control: "boolean"
-		},
-		loadingText: {
-			description: "Текст внутри loading-состояния.",
-			control: "text"
-		},
-		"aria-label": {
-			description: "Текстовая подпись для `tablist`, если рядом нет видимого заголовка.",
-			control: "text"
-		},
-		"aria-labelledby": {
-			description: "Ссылка на внешний заголовок `tablist`.",
-			control: "text"
-		}
-	}
-} satisfies Meta<typeof TabsBox>;
+function LegacyTabsStoryCanvas() {
+	const [args, updateArgs] = useArgs<TabsProps>();
+	const value = args.value ?? args.defaultValue;
 
-export default meta;
-type Story = StoryObj<typeof meta>;
+	return (
+		<Tabs
+			{...args}
+			value={value}
+			onValueChange={(nextValue) => {
+				args.onValueChange?.(nextValue);
+				updateArgs({ value: nextValue });
+			}}
+		/>
+	);
+}
 
 export const BoxBasic: Story = {
 	args: {
 		"aria-label": "Основные разделы профиля"
-	}
+	},
+	render: () => <TabsBoxStoryCanvas />
 };
 
 export const BoxControlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState("settings");
-
-		return <TabsBox {...args} value={value} onValueChange={setValue} />;
-	},
 	args: {
 		value: "settings",
 		"aria-label": "Управляемые вкладки"
-	}
+	},
+	render: () => <TabsBoxStoryCanvas />
 };
 
 export const BoxVertical: Story = {
-	render: (args) => (
-		<div style={{ height: 320 }}>
-			<TabsBox {...args} />
-		</div>
-	),
 	args: {
 		orientation: "vertical",
 		bordered: true,
 		"aria-label": "Вертикальные вкладки"
-	}
+	},
+	render: () => <TabsBoxStoryCanvas height={320} />
 };
 
 export const BoxMountStrategies: Story = {
-	render: (args) => <TabsBox {...args} items={lifecycleItems} />,
 	args: {
+		items: lifecycleItems,
 		mountStrategy: "lazy",
 		"aria-label": "Демонстрация стратегий монтирования"
-	}
+	},
+	render: () => <TabsBoxStoryCanvas />
 };
 
 export const DisabledTabs: Story = {
 	args: {
 		items: disabledItems,
+		value: "overview",
 		"aria-label": "Вкладки с недоступным разделом"
-	}
+	},
+	render: () => <TabsBoxStoryCanvas />
 };
 
-export const LayoutPanels: Story = {
-	render: () => <LayoutStory />
+export const LayoutPanels: LayoutStory = {
+	args: {
+		value: "details",
+		onValueChange: fn<(value: string) => void>(),
+		orientation: "horizontal",
+		activationMode: "manual",
+		mountStrategy: "lazy",
+		cleanPanel: false,
+		bordered: true,
+		loop: true,
+		"aria-label": "Составные панели документа"
+	},
+	render: () => <TabsLayoutStoryCanvas />
 };
 
-export const LegacyTabs: Story = {
-	render: (args) => <Tabs {...args} items={demoItems} aria-label="Устаревший совместимый API" />,
+export const LegacyTabs: LegacyStory = {
+	args: {
+		items: demoItems,
+		value: "profile",
+		onValueChange: fn<(value: string) => void>(),
+		onChange: fn<(value: string) => void>(),
+		orientation: "horizontal",
+		activationMode: "automatic",
+		mountStrategy: "unmount",
+		cleanPanel: false,
+		bordered: false,
+		loop: true,
+		"aria-label": "Устаревший совместимый API"
+	},
+	render: () => <LegacyTabsStoryCanvas />,
+	argTypes: {
+		onChange: {
+			description: "Deprecated callback совместимого компонента `Tabs`.",
+			control: false
+		}
+	},
 	parameters: {
 		docs: {
 			description: {
@@ -275,11 +361,14 @@ export const Loading: Story = {
 	args: {
 		isLoading: true,
 		items: demoItems
-	}
+	},
+	render: () => <TabsBoxStoryCanvas />
 };
 
 export const Empty: Story = {
 	args: {
-		items: []
-	}
+		items: [],
+		value: undefined
+	},
+	render: () => <TabsBoxStoryCanvas />
 };

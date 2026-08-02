@@ -1,10 +1,9 @@
-import { useState } from "react";
-
 import { UploadCloudIcon } from "lucide-react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
-import { DropZone } from "../DropZone";
+import { DropZone, type DropZoneProps } from "../DropZone";
 
-import type { ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
@@ -12,7 +11,8 @@ const meta = {
 	component: DropZone,
 	args: {
 		value: [],
-		onChange: () => {},
+		onChange: fn<DropZoneProps["onChange"]>(),
+		onChangeError: fn<NonNullable<DropZoneProps["onChangeError"]>>(),
 		multiple: true,
 		readMode: "data-url",
 		disabled: false
@@ -22,6 +22,10 @@ const meta = {
 		layout: "padded"
 	},
 	argTypes: {
+		value: {
+			description: "Текущий массив успешно прочитанных файлов.",
+			control: false
+		},
 		onChange: {
 			description: "Вызывается с массивом успешно прочитанных файлов.",
 			control: false
@@ -30,9 +34,13 @@ const meta = {
 			description: "Вызывается при ошибке валидации или чтения файла.",
 			control: false
 		},
+		accept: {
+			description: "Допустимые расширения или MIME-типы для нативного input.",
+			control: "object"
+		},
 		allowedMime: {
 			description: "Список допустимых MIME-типов для проверки.",
-			control: false
+			control: "object"
 		},
 		maxBytes: {
 			description: "Максимальный размер одного файла в байтах.",
@@ -54,10 +62,6 @@ const meta = {
 		children: {
 			description: "Кастомный контент внутри drop-зоны.",
 			control: false
-		},
-		className: {
-			description: "Дополнительный CSS-класс контейнера.",
-			control: "text"
 		}
 	}
 } satisfies Meta<typeof DropZone>;
@@ -65,36 +69,53 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-export const Basic: Story = {
-	render: (args) => {
-		const [files, setFiles] = useState<ReadFileResult[]>([]);
+function DropZoneStoryCanvas({ showStatus = false, ...args }: DropZoneProps & { showStatus?: boolean }) {
+	const [, updateArgs] = useArgs<DropZoneProps>();
 
-		return (
-			<div style={{ display: "grid", gap: 12 }}>
-				<DropZone {...args} onChange={(results) => setFiles(results)} />
+	return (
+		<div style={{ display: "grid", gap: 12 }}>
+			<DropZone
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+			{showStatus && (
 				<div style={{ fontSize: 14 }}>
-					{files.length > 0 ? `Получено файлов: ${files.length}` : "Перетащите файл(ы) в область выше"}
+					{args.value.length > 0 ? `Получено файлов: ${args.value.length}` : "Перетащите файл(ы) в область выше"}
 				</div>
-			</div>
-		);
+			)}
+		</div>
+	);
+}
+
+export const Basic: Story = {
+	render: function Render(args) {
+		return <DropZoneStoryCanvas {...args} showStatus />;
 	}
 };
 
 export const SingleFile: Story = {
-	render: (args) => (
-		<DropZone {...args} multiple={false}>
-			<div style={{ display: "grid", placeItems: "center", gap: 6, minHeight: 120 }}>
-				<UploadCloudIcon />
-				<span>Перетащите один файл</span>
-			</div>
-		</DropZone>
-	),
+	render: function Render(args) {
+		return (
+			<DropZoneStoryCanvas {...args}>
+				<div style={{ display: "grid", placeItems: "center", gap: 6, minHeight: 120 }}>
+					<UploadCloudIcon />
+					<span>Перетащите один файл</span>
+				</div>
+			</DropZoneStoryCanvas>
+		);
+	},
 	args: {
 		multiple: false
 	}
 };
 
 export const Disabled: Story = {
+	render: function Render(args) {
+		return <DropZoneStoryCanvas {...args} />;
+	},
 	args: {
 		disabled: true,
 		multiple: true

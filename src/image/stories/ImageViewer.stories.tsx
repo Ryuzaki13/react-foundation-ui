@@ -1,9 +1,8 @@
-import { useState } from "react";
-
 import { type Meta, type StoryObj } from "@storybook/react-vite";
+import { useArgs } from "storybook/preview-api";
 
 import { Button } from "../../button";
-import { type ImageViewerImage, type ImageViewerStyle } from "../model/imageViewerTypes";
+import { type ImageViewerImage, type ImageViewerProps, type ImageViewerStyle } from "../model/imageViewerTypes";
 import { ImageViewer } from "../ui/ImageViewer";
 
 const IMAGE_IDS = ["photo-1500530855697-b586d89ba3ee", "photo-1441974231531-c6227db76b6e", "photo-1470252649378-9c29740c9fa8"];
@@ -48,6 +47,18 @@ const meta = {
 	},
 	parameters: {
 		layout: "centered"
+	},
+	argTypes: {
+		open: { description: "Открывает полноэкранный viewer.", control: "boolean" },
+		images: { description: "Массив изображений и их responsive-источников.", control: false },
+		index: { description: "Индекс активного изображения.", control: { type: "number", min: 0, step: 1 } },
+		onClose: { description: "Вызывается при запросе закрыть viewer.", control: false },
+		onIndexChange: { description: "Вызывается при переходе к другому изображению.", control: false },
+		features: { description: "Включает доступные функции viewer.", control: false },
+		loop: { description: "Зацикливает навигацию между изображениями.", control: "boolean" },
+		closeOnBackdropClick: { description: "Закрывает viewer кликом по фону.", control: "boolean" },
+		closeOnPullDown: { description: "Закрывает viewer жестом pull-down.", control: "boolean" },
+		labels: { description: "Локализованные подписи действий viewer.", control: false }
 	}
 } satisfies Meta<typeof ImageViewer>;
 
@@ -55,19 +66,24 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const ResponsiveGallery: Story = {
-	render: (args) => {
-		const [open, setOpen] = useState(false);
-		const [index, setIndex] = useState(0);
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<ImageViewerProps>();
 
 		return (
 			<>
-				<Button onClick={() => setOpen(true)}>Открыть галерею</Button>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть галерею</Button>
 				<ImageViewer
 					{...args}
-					open={open}
-					index={index}
-					onClose={() => setOpen(false)}
-					onIndexChange={setIndex}
+					open={args.open}
+					index={args.index ?? 0}
+					onClose={() => {
+						args.onClose();
+						updateArgs({ open: false });
+					}}
+					onIndexChange={(index) => {
+						args.onIndexChange?.(index);
+						updateArgs({ index });
+					}}
 					features={{ download: true }}
 					style={CUSTOM_STYLE}
 				/>
@@ -77,13 +93,20 @@ export const ResponsiveGallery: Story = {
 };
 
 export const SingleImage: Story = {
-	render: (args) => {
-		const [open, setOpen] = useState(false);
-
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<ImageViewerProps>();
 		return (
 			<>
-				<Button onClick={() => setOpen(true)}>Открыть одно изображение</Button>
-				<ImageViewer {...args} open={open} images={IMAGES.slice(0, 1)} onClose={() => setOpen(false)} />
+				<Button onClick={() => updateArgs({ open: true })}>Открыть одно изображение</Button>
+				<ImageViewer
+					{...args}
+					open={args.open}
+					images={IMAGES.slice(0, 1)}
+					onClose={() => {
+						args.onClose();
+						updateArgs({ open: false });
+					}}
+				/>
 			</>
 		);
 	}

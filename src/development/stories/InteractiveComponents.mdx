@@ -1,0 +1,209 @@
+import { Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as BadgeStories from "../../badge/stories/Badge.stories";
+import * as ButtonStories from "../../button/stories/Button.stories";
+import * as CheckBoxStories from "../../check-box/stories/CheckBox.stories";
+import * as ContextMenuStories from "../../context-menu/stories/ContextMenu.stories";
+import * as DateInputStories from "../../date-input/stories/DateInput.stories";
+import * as DateRangePresetSelectStories from "../../date-range-preset-select/stories/DateRangePresetSelect.stories";
+import * as SingleDateTimeInputStories from "../../date-time-input/stories/SingleDateTimeInput.stories";
+import * as DialogStories from "../../dialog/stories/Dialog.stories";
+import * as DisclosureStories from "../../disclosure/stories/Disclosure.stories";
+import * as DropZoneStories from "../../drop-zone/stories/DropZone.stories";
+import * as ExpandableActionPanelStories from "../../expandable-action-panel/stories/ExpandableActionPanel.stories";
+import * as InputFileStories from "../../input-file/stories/InputFile.stories";
+import * as InputFilesStories from "../../input-files/stories/InputFiles.stories";
+import * as InputImageStories from "../../input-image/stories/InputImage.stories";
+import * as InputStories from "../../input/stories/Input.stories";
+import * as LayoutPickerStories from "../../layout-picker/stories/LayoutPicker.stories";
+import * as ListboxStories from "../../listbox/stories/Listbox.stories";
+import * as ModalStories from "../../modal/stories/Modal.stories";
+import * as MultiSelectStories from "../../multi-select/ui/stories/MultiSelect.stories";
+import * as PeriodSelectStories from "../../period-select/stories/PeriodSelect.stories";
+import * as PopoverStories from "../../popover/stories/Popover.stories";
+import * as PresetRangeDateInputStories from "../../preset-range-date-input/ui/stories/PresetRangeDateInput.stories";
+import * as RadioButtonStories from "../../radio-button/stories/RadioButton.stories";
+import * as RadioGroupStories from "../../radio-group/stories/RadioGroup.stories";
+import * as SelectStories from "../../select/stories/Select.stories";
+import * as SliderStories from "../../slider/stories/Slider.stories";
+import * as SliderInputStories from "../../slider/stories/SliderInput.stories";
+import * as StateSelectStories from "../../state-select/stories/StateSelect.stories";
+import * as SwitchStories from "../../switch/stories/Switch.stories";
+import * as TabsStories from "../../tabs/stories/Tabs.stories";
+import * as TagInputStories from "../../tag-input/stories/TagInput.stories";
+import * as TextareaStories from "../../textarea/stories/Textarea.stories";
+import * as ToggleStories from "../../toggle/stories/Toggle.stories";
+import * as TreeMultiSelectStories from "../../tree-select/stories/TreeMultiSelect.stories";
+
+<Meta title="Development/Interactive components/Catalog" />
+
+# Каталог интерактивных компонентов
+
+Эта страница собирает существующие CSF-сторисы в одном месте. Каждый canvas использует канонический сценарий компонента, поэтому его состояние, `args` и обработчики остаются в исходной story, а не дублируются в development-витрине.
+
+## Поля ввода и простые переключатели
+
+### Badge
+
+<Canvas of={BadgeStories.Basic} meta={BadgeStories} sourceState="none" withToolbar={false} />
+
+### Button
+
+<Canvas of={ButtonStories.Basic} meta={ButtonStories} sourceState="none" withToolbar={false} />
+
+### InputText
+
+<Canvas of={InputStories.TextControlled} meta={InputStories} sourceState="none" withToolbar={false} />
+
+### InputNumber
+
+<Canvas of={InputStories.NumberControlled} meta={InputStories} sourceState="none" withToolbar={false} />
+
+### Textarea
+
+<Canvas of={TextareaStories.Controlled} meta={TextareaStories} sourceState="none" withToolbar={false} />
+
+### CheckBox
+
+<Canvas of={CheckBoxStories.Controlled} meta={CheckBoxStories} sourceState="none" withToolbar={false} />
+
+### RadioButton
+
+<Canvas of={RadioButtonStories.Controlled} meta={RadioButtonStories} sourceState="none" withToolbar={false} />
+
+### RadioGroup
+
+<Canvas of={RadioGroupStories.Controlled} meta={RadioGroupStories} sourceState="none" withToolbar={false} />
+
+### Switch
+
+<Canvas of={SwitchStories.BiState} meta={SwitchStories} sourceState="none" withToolbar={false} />
+
+### Toggle
+
+<Canvas of={ToggleStories.Controlled} meta={ToggleStories} sourceState="none" withToolbar={false} />
+
+### Slider
+
+<Canvas of={SliderStories.SingleStep} meta={SliderStories} sourceState="none" withToolbar={false} />
+
+### SliderRange
+
+<Canvas of={SliderStories.RangePlain} meta={SliderStories} sourceState="none" withToolbar={false} />
+
+### SliderInput
+
+<Canvas of={SliderInputStories.Basic} meta={SliderInputStories} sourceState="none" withToolbar={false} />
+
+### SliderRangeInput
+
+<Canvas of={SliderInputStories.RangeInputPlain} meta={SliderInputStories} sourceState="none" withToolbar={false} />
+
+`InputSearch` пока не имеет отдельной CSF-story, поэтому в каталог не добавляется до появления переиспользуемого сценария.
+
+## Выбор и списки
+
+### Select
+
+<Canvas of={SelectStories.ControlledObjects} meta={SelectStories} sourceState="none" withToolbar={false} />
+
+### MultiSelect
+
+<Canvas of={MultiSelectStories.Basic} meta={MultiSelectStories} sourceState="none" withToolbar={false} />
+
+### TreeMultiSelect
+
+<Canvas of={TreeMultiSelectStories.Basic} meta={TreeMultiSelectStories} sourceState="none" withToolbar={false} />
+
+### TagInput
+
+<Canvas of={TagInputStories.Controlled} meta={TagInputStories} sourceState="none" withToolbar={false} />
+
+### Listbox
+
+<Canvas of={ListboxStories.SingleSelect} meta={ListboxStories} sourceState="none" withToolbar={false} />
+
+### StateSelect
+
+<Canvas of={StateSelectStories.Controlled} meta={StateSelectStories} sourceState="none" withToolbar={false} />
+
+### LayoutPicker
+
+<Canvas of={LayoutPickerStories.Controlled} meta={LayoutPickerStories} sourceState="none" withToolbar={false} />
+
+### PeriodSelect
+
+<Canvas of={PeriodSelectStories.Controlled} meta={PeriodSelectStories} sourceState="none" withToolbar={false} />
+
+## Дата и время
+
+### SingleDateInput
+
+<Canvas of={DateInputStories.Single} meta={DateInputStories} sourceState="none" withToolbar={false} />
+
+### RangeDateInput
+
+<Canvas of={DateInputStories.Range} meta={DateInputStories} sourceState="none" withToolbar={false} />
+
+### SingleDateTimeInput
+
+<Canvas of={SingleDateTimeInputStories.Default} meta={SingleDateTimeInputStories} sourceState="none" withToolbar={false} />
+
+### DateRangePresetSelect
+
+<Canvas of={DateRangePresetSelectStories.Default} meta={DateRangePresetSelectStories} sourceState="none" withToolbar={false} />
+
+### PresetRangeDateInput
+
+<Canvas of={PresetRangeDateInputStories.Default} meta={PresetRangeDateInputStories} sourceState="none" withToolbar={false} />
+
+## Файлы и изображения
+
+### InputFile
+
+<Canvas of={InputFileStories.Controlled} meta={InputFileStories} sourceState="none" withToolbar={false} />
+
+### InputFiles
+
+<Canvas of={InputFilesStories.Controlled} meta={InputFilesStories} sourceState="none" withToolbar={false} />
+
+### InputImage
+
+<Canvas of={InputImageStories.Controlled} meta={InputImageStories} sourceState="none" withToolbar={false} />
+
+### DropZone
+
+<Canvas of={DropZoneStories.Basic} meta={DropZoneStories} sourceState="none" withToolbar={false} />
+
+## Контент и оверлеи
+
+### TabsBox
+
+<Canvas of={TabsStories.BoxBasic} meta={TabsStories} sourceState="none" withToolbar={false} />
+
+### Disclosure
+
+<Canvas of={DisclosureStories.Basic} meta={DisclosureStories} sourceState="none" withToolbar={false} />
+
+### ExpandableActionPanel
+
+<Canvas of={ExpandableActionPanelStories.Labeled} meta={ExpandableActionPanelStories} sourceState="none" withToolbar={false} />
+
+### Popover
+
+<Canvas of={PopoverStories.Default} meta={PopoverStories} sourceState="none" withToolbar={false} />
+
+### DropdownMenu
+
+<Canvas of={ContextMenuStories.DropdownMenuBasic} meta={ContextMenuStories} sourceState="none" withToolbar={false} />
+
+### ContextMenu
+
+<Canvas of={ContextMenuStories.ContextMenuBasic} meta={ContextMenuStories} sourceState="none" withToolbar={false} />
+
+### Dialog
+
+<Canvas of={DialogStories.Controlled} meta={DialogStories} sourceState="none" withToolbar={false} />
+
+### Modal
+
+<Canvas of={ModalStories.Controlled} meta={ModalStories} sourceState="none" withToolbar={false} />

@@ -1,8 +1,8 @@
-import { useState } from "react";
-
 import { AlertTriangleIcon, CheckCircle2Icon, InfoIcon, MinusCircleIcon, XCircleIcon } from "lucide-react";
+import { useArgs } from "storybook/preview-api";
+import { fn } from "storybook/test";
 
-import { StateSelect } from "../StateSelect";
+import { StateSelect, type StateSelectProps } from "../StateSelect";
 
 import type { State } from "@ryuzaki13/react-foundation-lib/types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -15,7 +15,7 @@ const meta = {
 		description: "Выберите визуальный статус.",
 		placeholder: "Выберите значение",
 		value: "information",
-		onChange: () => {},
+		onChange: fn<(value: State | undefined) => void>(),
 		disabled: false,
 		size: "md"
 	},
@@ -57,14 +57,14 @@ const meta = {
 			description: "Блокирует взаимодействие с полем.",
 			control: "boolean"
 		},
+		clearable: {
+			description: "Показывает действие очистки выбранного состояния.",
+			control: "boolean"
+		},
 		size: {
 			description: "Размер поля и подписей.",
 			control: "select",
 			options: ["xs", "sm", "md", "lg", "xl"]
-		},
-		className: {
-			description: "Дополнительный CSS-класс.",
-			control: "text"
 		}
 	}
 } satisfies Meta<typeof StateSelect>;
@@ -73,21 +73,33 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<State | undefined>("information");
-		return <StateSelect {...args} value={value} onChange={setValue} />;
-	}
-};
-
-export const WithMeta: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<State | undefined>("warning");
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<StateSelectProps>();
 
 		return (
 			<StateSelect
 				{...args}
-				value={value}
-				onChange={setValue}
+				value={args.value ?? "information"}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+		);
+	}
+};
+
+export const WithMeta: Story = {
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<StateSelectProps>();
+		return (
+			<StateSelect
+				{...args}
+				value={args.value ?? "warning"}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
 				stateMeta={{
 					none: { label: "Без статуса", icon: <MinusCircleIcon /> },
 					information: { label: "Инфо", icon: <InfoIcon /> },
@@ -104,9 +116,20 @@ export const WithMeta: Story = {
 };
 
 export const PaletteOnly: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<State | undefined>("none");
-		return <StateSelect {...args} value={value} onChange={setValue} options={["none", "success", "error"]} />;
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<StateSelectProps>();
+
+		return (
+			<StateSelect
+				{...args}
+				value={args.value ?? "none"}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+				options={["none", "success", "error"]}
+			/>
+		);
 	},
 	args: {
 		options: ["none", "success", "error"],

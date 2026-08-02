@@ -1,8 +1,49 @@
-import { useState } from "react";
+import type { ComponentProps } from "react";
+
+import { useArgs } from "storybook/preview-api";
 
 import { Switch } from "../Switch";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+type SwitchStoryArgs = ComponentProps<typeof Switch>;
+type BiStateSwitchStoryArgs = Extract<SwitchStoryArgs, { triState?: false }>;
+type TriStateSwitchStoryArgs = Extract<SwitchStoryArgs, { triState: true }>;
+
+function BiStateSwitchStoryCanvas({ args }: { args: BiStateSwitchStoryArgs }) {
+	const [, updateArgs] = useArgs<BiStateSwitchStoryArgs>();
+
+	return (
+		<Switch
+			{...args}
+			triState={false}
+			value={args.value ?? false}
+			onChange={(value) => {
+				args.onChange(value);
+				updateArgs({ value });
+			}}
+		/>
+	);
+}
+
+function TriStateSwitchStoryCanvas({ args }: { args: TriStateSwitchStoryArgs }) {
+	const [, updateArgs] = useArgs<TriStateSwitchStoryArgs>();
+
+	return (
+		<div style={{ display: "grid", gap: 8 }}>
+			<Switch
+				{...args}
+				triState
+				value={args.value}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value });
+				}}
+			/>
+			<div>Текущее значение: {String(args.value)}</div>
+		</div>
+	);
+}
 
 const meta = {
 	title: "Shared/UI/Switch",
@@ -30,7 +71,7 @@ const meta = {
 		},
 		value: {
 			description: "Текущее значение (`boolean` или `undefined` в tri-state).",
-			control: false
+			control: "boolean"
 		},
 		onChange: {
 			description: "Вызывается при изменении состояния.",
@@ -56,24 +97,18 @@ const meta = {
 } satisfies Meta<typeof Switch>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type BiStateStory = StoryObj<BiStateSwitchStoryArgs>;
+type TriStateStory = StoryObj<TriStateSwitchStoryArgs>;
 
-export const BiState: Story = {
-	render: (args) => {
-		const [value, setValue] = useState(false);
-		return <Switch {...args} value={value} onChange={setValue} triState={false} />;
+export const BiState: BiStateStory = {
+	render: function Render(args) {
+		return <BiStateSwitchStoryCanvas args={args} />;
 	}
 };
 
-export const TriState: Story = {
-	render: (args) => {
-		const [value, setValue] = useState<boolean | undefined>(undefined);
-		return (
-			<div style={{ display: "grid", gap: 8 }}>
-				<Switch {...args} value={value} onChange={setValue} triState />
-				<div>Текущее значение: {String(value)}</div>
-			</div>
-		);
+export const TriState: TriStateStory = {
+	render: function Render(args) {
+		return <TriStateSwitchStoryCanvas args={args} />;
 	},
 	args: {
 		triState: true,
@@ -81,7 +116,10 @@ export const TriState: Story = {
 	}
 };
 
-export const Disabled: Story = {
+export const Disabled: BiStateStory = {
+	render: function Render(args) {
+		return <BiStateSwitchStoryCanvas args={args} />;
+	},
 	args: {
 		disabled: true,
 		value: true

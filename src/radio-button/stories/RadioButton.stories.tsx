@@ -1,8 +1,27 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
+
+import { useArgs } from "storybook/preview-api";
 
 import { RadioButton } from "../RadioButton";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+type RadioButtonStoryArgs = ComponentProps<typeof RadioButton>;
+
+function RadioButtonStoryCanvas({ args }: { args: RadioButtonStoryArgs }) {
+	const [, updateArgs] = useArgs<RadioButtonStoryArgs>();
+
+	return (
+		<RadioButton
+			{...args}
+			value={args.value ?? false}
+			onChange={(value) => {
+				args.onChange?.(value);
+				updateArgs({ value });
+			}}
+		/>
+	);
+}
 
 const meta = {
 	title: "Shared/UI/RadioButton",
@@ -46,30 +65,24 @@ const meta = {
 			options: ["xs", "sm", "md", "lg", "xl"]
 		},
 		tone: {
-			description: "Семантический тон радиокнопки.",
+			description: "Цветовой тон радиокнопки.",
 			control: "inline-radio",
-			options: ["neutral", "error", "warning", "success", "info"]
-		},
-		name: {
-			description: "HTML `name` для группировки кнопок.",
-			control: "text"
+			options: ["neutral", "brand", "error", "warning", "success", "info"]
 		}
 	}
-} satisfies Meta<typeof RadioButton>;
+} satisfies Meta<RadioButtonStoryArgs>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<RadioButtonStoryArgs>;
 
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState(args.value ?? false);
-		return <RadioButton {...args} value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <RadioButtonStoryCanvas args={args} />;
 	},
 	args: {
 		label: "Выбрать опцию",
 		description: "Одиночная радиокнопка в controlled-режиме.",
 		value: false,
-		name: "single-radio",
 		tone: "neutral"
 	}
 };
@@ -81,19 +94,12 @@ export const Group: Story = {
 		return (
 			<div role="radiogroup" aria-label="Канал уведомлений" style={{ display: "grid", gap: 12 }}>
 				<RadioButton
-					name="notify-channel"
 					label="Email"
 					value={selected === "email"}
 					onChange={(checked) => checked && setSelected("email")}
 					tone="info"
 				/>
-				<RadioButton
-					name="notify-channel"
-					label="SMS"
-					value={selected === "sms"}
-					onChange={(checked) => checked && setSelected("sms")}
-					tone="info"
-				/>
+				<RadioButton label="SMS" value={selected === "sms"} onChange={(checked) => checked && setSelected("sms")} tone="info" />
 			</div>
 		);
 	},
@@ -103,6 +109,9 @@ export const Group: Story = {
 };
 
 export const Disabled: Story = {
+	render: function Render(args) {
+		return <RadioButtonStoryCanvas args={args} />;
+	},
 	args: {
 		label: "Недоступная опция",
 		description: "Заблокировано политикой конфигурации.",

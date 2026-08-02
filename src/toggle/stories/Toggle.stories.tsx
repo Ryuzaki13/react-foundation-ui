@@ -1,8 +1,23 @@
-import { useState } from "react";
+import { useArgs } from "storybook/preview-api";
 
-import { Toggle } from "../Toggle";
+import { Toggle, type ToggleProps } from "../Toggle";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
+
+function ToggleStoryCanvas({ args }: { args: ToggleProps }) {
+	const [, updateArgs] = useArgs<ToggleProps>();
+
+	return (
+		<Toggle
+			{...args}
+			value={args.value ?? false}
+			onChange={(value) => {
+				args.onChange?.(value);
+				updateArgs({ value });
+			}}
+		/>
+	);
+}
 
 const meta = {
 	title: "Shared/UI/Toggle",
@@ -22,6 +37,10 @@ const meta = {
 		},
 		description: {
 			description: "Описание под переключателем.",
+			control: "text"
+		},
+		placeholder: {
+			description: "Резервная подпись, если `label` не задан.",
 			control: "text"
 		},
 		value: {
@@ -58,12 +77,11 @@ const meta = {
 } satisfies Meta<typeof Toggle>;
 
 export default meta;
-type Story = StoryObj<typeof meta>;
+type Story = StoryObj<ToggleProps>;
 
 export const Controlled: Story = {
-	render: (args) => {
-		const [value, setValue] = useState(args.value ?? false);
-		return <Toggle {...args} value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <ToggleStoryCanvas args={args} />;
 	},
 	args: {
 		label: "Режим синхронизации",
@@ -76,9 +94,8 @@ export const Controlled: Story = {
 };
 
 export const LabelAfter: Story = {
-	render: (args) => {
-		const [value, setValue] = useState(args.value ?? true);
-		return <Toggle {...args} value={value} onChange={setValue} />;
+	render: function Render(args) {
+		return <ToggleStoryCanvas args={args} />;
 	},
 	args: {
 		label: "Уведомления",
@@ -88,6 +105,9 @@ export const LabelAfter: Story = {
 };
 
 export const Disabled: Story = {
+	render: function Render(args) {
+		return <ToggleStoryCanvas args={args} />;
+	},
 	args: {
 		label: "Недоступный переключатель",
 		value: true,
