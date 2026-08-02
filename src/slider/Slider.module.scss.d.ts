@@ -1,15 +1,15 @@
 declare const styles: {
   readonly slider: "slider";
+  readonly rail: "rail";
+  readonly fill: "fill";
+  readonly thumb: "thumb";
+  readonly mark: "mark";
+  readonly compactMark: "compactMark";
   readonly sliderCompact: "sliderCompact";
   readonly trackShell: "trackShell";
   readonly track: "track";
   readonly tooltipReference: "tooltipReference";
-  readonly rail: "rail";
-  readonly fill: "fill";
-  readonly thumb: "thumb";
   readonly marks: "marks";
-  readonly mark: "mark";
-  readonly compactMark: "compactMark";
   readonly markDot: "markDot";
   readonly markLabel: "markLabel";
   readonly popoverContent: "popoverContent";

@@ -411,7 +411,10 @@ export function SliderBase(props: SliderBaseProps) {
 			labelId={labelId}
 			descriptionId={descriptionId}
 			errorId={errorId}>
-			<div id={controlId} className={cn(styles.slider, marksDisplay === "compact" && styles.sliderCompact)}>
+			<div
+				id={controlId}
+				className={cn(styles.slider, marksDisplay === "compact" && styles.sliderCompact)}
+				data-disabled={disabled || undefined}>
 				<div className={styles.trackShell}>
 					<div
 						ref={trackRef}

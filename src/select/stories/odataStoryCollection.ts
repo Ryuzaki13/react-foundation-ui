@@ -21,6 +21,16 @@ type DemoRegion = {
 	branches: DemoBranch[];
 };
 
+function createOwners(firstId: number, count: number): DemoOwner[] {
+	return Array.from({ length: count }, (_, index) => {
+		const id = firstId + index;
+		return {
+			code: `P${String(id).padStart(4, "0")}`,
+			text: `Ответственный ${id}`
+		};
+	});
+}
+
 const demoRegions: DemoRegion[] = [
 	{
 		code: "R01",
@@ -33,19 +43,17 @@ const demoRegions: DemoRegion[] = [
 					{
 						code: "T0101",
 						text: "Команда поддержки",
-						owners: [
-							{ code: "P0001", text: "Ответственный 1" },
-							{ code: "P0002", text: "Ответственный 2" },
-							{ code: "P0003", text: "Ответственный 3" }
-						]
+						owners: createOwners(1, 8)
 					},
 					{
 						code: "T0102",
 						text: "Команда внедрения",
-						owners: [
-							{ code: "P0004", text: "Ответственный 4" },
-							{ code: "P0005", text: "Ответственный 5" }
-						]
+						owners: createOwners(9, 6)
+					},
+					{
+						code: "T0103",
+						text: "Команда инфраструктуры",
+						owners: createOwners(15, 5)
 					}
 				]
 			},
@@ -56,10 +64,12 @@ const demoRegions: DemoRegion[] = [
 					{
 						code: "T0201",
 						text: "Команда аналитики",
-						owners: [
-							{ code: "P0006", text: "Ответственный 6" },
-							{ code: "P0007", text: "Ответственный 7" }
-						]
+						owners: createOwners(20, 6)
+					},
+					{
+						code: "T0202",
+						text: "Проектный офис",
+						owners: createOwners(26, 5)
 					}
 				]
 			}
@@ -76,10 +86,23 @@ const demoRegions: DemoRegion[] = [
 					{
 						code: "T0301",
 						text: "Команда сопровождения",
-						owners: [
-							{ code: "P0008", text: "Ответственный 8" },
-							{ code: "P0009", text: "Ответственный 9" }
-						]
+						owners: createOwners(31, 6)
+					},
+					{
+						code: "T0302",
+						text: "Команда продаж",
+						owners: createOwners(37, 5)
+					}
+				]
+			},
+			{
+				code: "B0202",
+				text: "Подразделение Логистика",
+				teams: [
+					{
+						code: "T0401",
+						text: "Команда логистики",
+						owners: createOwners(42, 5)
 					}
 				]
 			}
@@ -94,12 +117,14 @@ const demoRegions: DemoRegion[] = [
 				text: "Подразделение Дельта",
 				teams: [
 					{
-						code: "T0401",
+						code: "T0501",
 						text: "Команда развития",
-						owners: [
-							{ code: "P0010", text: "Ответственный 10" },
-							{ code: "P0011", text: "Ответственный 11" }
-						]
+						owners: createOwners(47, 6)
+					},
+					{
+						code: "T0502",
+						text: "Команда архитектуры",
+						owners: createOwners(53, 5)
 					}
 				]
 			},
@@ -108,12 +133,31 @@ const demoRegions: DemoRegion[] = [
 				text: "Подразделение Омега",
 				teams: [
 					{
-						code: "T0501",
+						code: "T0601",
 						text: "Команда качества",
-						owners: [
-							{ code: "P0012", text: "Ответственный 12" },
-							{ code: "P0013", text: "Ответственный 13" }
-						]
+						owners: createOwners(58, 5)
+					}
+				]
+			}
+		]
+	},
+	{
+		code: "R04",
+		text: "Западный регион",
+		branches: [
+			{
+				code: "B0401",
+				text: "Подразделение Сигма",
+				teams: [
+					{
+						code: "T0701",
+						text: "Финансовая команда",
+						owners: createOwners(63, 5)
+					},
+					{
+						code: "T0702",
+						text: "Команда по работе с клиентами",
+						owners: createOwners(68, 5)
 					}
 				]
 			}

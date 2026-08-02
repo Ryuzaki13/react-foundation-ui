@@ -51,7 +51,7 @@ function StatefulODataSelect({
 	);
 }
 
-function LinkedFiltersDemo() {
+export function LinkedFiltersDemo() {
 	const [region, setRegion] = useState<string | undefined>(storyValues.region);
 	const [branch, setBranch] = useState<string | undefined>(storyValues.branch);
 	const [team, setTeam] = useState<string | undefined>(storyValues.team);

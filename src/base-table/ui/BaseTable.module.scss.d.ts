@@ -1,0 +1,23 @@
+declare const styles: {
+  readonly root: "root";
+  readonly headerContextMenuTrigger: "headerContextMenuTrigger";
+  readonly table: "table";
+  readonly head: "head";
+  readonly pinnedLeftBoundary: "pinnedLeftBoundary";
+  readonly headerRow: "headerRow";
+  readonly headerCell: "headerCell";
+  readonly headerCellContent: "headerCellContent";
+  readonly headerCellDraggable: "headerCellDraggable";
+  readonly headerCellDragging: "headerCellDragging";
+  readonly headerCellPinnedLeft: "headerCellPinnedLeft";
+  readonly bodyRow: "bodyRow";
+  readonly bodyRowInteractive: "bodyRowInteractive";
+  readonly bodyCell: "bodyCell";
+  readonly bodyRowSelected: "bodyRowSelected";
+  readonly bodyCellPinnedLeft: "bodyCellPinnedLeft";
+  readonly bodyCellMergedWithNext: "bodyCellMergedWithNext";
+  readonly feedbackCell: "feedbackCell";
+  readonly fetchingRow: "fetchingRow";
+  readonly noData: "noData";
+};
+export default styles;

@@ -4,7 +4,9 @@ import { type ReadFileAsDataUrlResult, type ReadFileResult, type ReadImageResult
 import { type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 import { type State } from "@ryuzaki13/react-foundation-lib/types";
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 
+import { Badge, BadgeList } from "../../badge";
 import { Button } from "../../button";
 import { CheckBox } from "../../check-box";
 import { ContextMenu, DropdownMenu } from "../../context-menu";
@@ -15,6 +17,7 @@ import { Dialog } from "../../dialog";
 import { Disclosure, DisclosureGroup } from "../../disclosure";
 import { DropZone } from "../../drop-zone";
 import { ExpandableActionPanel } from "../../expandable-action-panel";
+import { GridContainer } from "../../grid";
 import { InputNumber, InputText } from "../../input";
 import { InputFile } from "../../input-file";
 import { InputFiles } from "../../input-files";
@@ -30,7 +33,7 @@ import { PresetRangeDateInput } from "../../preset-range-date-input";
 import { RadioButton } from "../../radio-button";
 import { RadioGroup } from "../../radio-group";
 import { Select } from "../../select";
-import { Slider, SliderInput } from "../../slider";
+import { Slider, SliderInput, SliderRange, SliderRangeInput, SliderRangeValue } from "../../slider";
 import { StateSelect } from "../../state-select";
 import { Switch } from "../../switch";
 import { TabsBox } from "../../tabs";
@@ -40,14 +43,13 @@ import { Toggle } from "../../toggle";
 import { TreeMultiSelect, TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "../../tree-select";
 import { demoTreeNodes } from "../../tree-select/stories/treeStoryFixtures";
 
-import type { StoryObj } from "@storybook/react-vite";
-
 const gridStyle = {
 	display: "grid",
 	gridTemplateColumns: "repeat(auto-fit, minmax(var(--ui-width-xl), 1fr))",
 	alignItems: "start",
 	gap: "2em",
-	padding: "2em"
+	padding: "2em",
+	background: "var(--surface-2)"
 } satisfies CSSProperties;
 
 const cardStyle = {
@@ -59,7 +61,7 @@ const cardStyle = {
 	overflow: "hidden",
 	// border: "var(--border)",
 	borderRadius: "var(--radius-md)",
-	background: "var(--surface-0)",
+	background: "var(--surface-1)",
 	boxShadow: "var(--shadow-lg)"
 } satisfies CSSProperties;
 
@@ -88,6 +90,22 @@ const listboxOptions = [
 	{ value: "day", label: "День" },
 	{ value: "week", label: "Неделя" },
 	{ value: "month", label: "Месяц" }
+];
+
+type DepartmentOption = {
+	id: number;
+	name: string;
+	code: string;
+	manager: string;
+	direction: string;
+	disabled?: boolean;
+};
+
+const departmentOptions: DepartmentOption[] = [
+	{ id: 1, name: "Отдел продаж", code: "SLS", manager: "Елена Миронова", direction: "Коммерческий блок" },
+	{ id: 2, name: "Закупки", code: "PRC", manager: "Антон Мелихов", direction: "Коммерческий блок" },
+	{ id: 3, name: "Логистика", code: "LGS", manager: "Мария Климова", direction: "Операционный блок", disabled: true },
+	{ id: 4, name: "Поддержка клиентов", code: "SUP", manager: "Ирина Белова", direction: "Операционный блок" }
 ];
 
 function ComponentCard({ title, children }: { title: string; children: ReactNode }) {
@@ -142,7 +160,9 @@ export function InteractiveComponents() {
 	const [radioGroup, setRadioGroup] = useState("first");
 	const [switchValue, setSwitchValue] = useState(true);
 	const [toggleValue, setToggleValue] = useState(false);
-	const [sliderValue, setSliderValue] = useState<number | undefined>(60);
+	const [sliderValue, setSliderValue] = useState<number | undefined>(3);
+	const [sliderRangeValue, setSliderRangeValue] = useState<SliderRangeValue | undefined>();
+	const [sliderRangeInputValue, setSliderRangeInputValue] = useState<SliderRangeValue>([0, 0]);
 	const [sliderInputValue, setSliderInputValue] = useState(60);
 	const [selectedStatus, setSelectedStatus] = useState<(typeof statusOptions)[number] | undefined>(statusOptions[0]);
 	const [selectedCities, setSelectedCities] = useState<CollectionItem[]>([cityOptions[0]!]);
@@ -162,15 +182,46 @@ export function InteractiveComponents() {
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
 
+	const [departmentValue, setDepartmentValue] = useState<DepartmentOption | undefined>();
+
 	return (
 		<div style={gridStyle}>
+			<ComponentCard title="Badge">
+				<BadgeList>
+					<Badge tone="neutral" appearance="outline">
+						Neutral
+					</Badge>
+					<Badge tone="success" appearance="solid">
+						Успешно
+					</Badge>
+					<Badge tone="warning" appearance="solid">
+						Внимание
+					</Badge>
+					<Badge tone="error" appearance="solid">
+						Ошибка
+					</Badge>
+					<Badge tone="info" appearance="solid">
+						Информация
+					</Badge>
+				</BadgeList>
+			</ComponentCard>
+
 			<ComponentCard title="Button">
-				<Button variant="transparent">Действие</Button>
-				<Button variant="ghost">Действие</Button>
-				<Button variant="neutral">Действие</Button>
-				<Button variant="neutralOutline">Действие</Button>
-				<Button variant="info">Действие</Button>
-				<Button variant="infoOutline">Действие</Button>
+				<GridContainer gap="sm" templateColumns="1fr 1fr">
+					<Button variant="transparent">Действие</Button>
+					<Button variant="ghost">Действие</Button>
+					<Button variant="neutralOutline">Действие</Button>
+					<Button variant="infoOutline">Действие</Button>
+					<Button variant="successOutline">Действие</Button>
+					<Button variant="warningOutline">Действие</Button>
+					<Button variant="errorOutline">Действие</Button>
+
+					<Button variant="neutral">Действие</Button>
+					<Button variant="info">Действие</Button>
+					<Button variant="success">Действие</Button>
+					<Button variant="warning">Действие</Button>
+					<Button variant="error">Действие</Button>
+				</GridContainer>
 			</ComponentCard>
 
 			<ComponentCard title="InputText">
@@ -195,10 +246,41 @@ export function InteractiveComponents() {
 			</ComponentCard>
 
 			<ComponentCard title="InputNumber">
-				<InputNumber label="Количество" value={number} min={0} onChange={setNumber} disabled />
-				<InputNumber label="Количество" value={number} min={0} onChange={setNumber} required />
-				<InputNumber label="Количество" value={number} min={0} onChange={setNumber} />
-				<InputNumber label="Количество" value={number} min={0} onChange={setNumber} onClear={() => setNumber(undefined)} />
+				<InputNumber
+					label="Количество"
+					description="Поле ввода числа"
+					placeholder="Введите число"
+					value={number}
+					min={0}
+					onChange={setNumber}
+					disabled
+				/>
+				<InputNumber
+					label="Количество"
+					description="Поле ввода числа"
+					placeholder="Введите число"
+					value={number}
+					min={0}
+					onChange={setNumber}
+					required
+				/>
+				<InputNumber
+					label="Количество"
+					description="Поле ввода числа"
+					placeholder="Введите число"
+					value={number}
+					min={0}
+					onChange={setNumber}
+				/>
+				<InputNumber
+					label="Количество"
+					description="Поле ввода числа"
+					placeholder="Введите число"
+					value={number}
+					min={0}
+					onChange={setNumber}
+					onClear={() => setNumber(undefined)}
+				/>
 			</ComponentCard>
 
 			<ComponentCard title="InputSearch">
@@ -217,49 +299,168 @@ export function InteractiveComponents() {
 			</ComponentCard>
 
 			<ComponentCard title="CheckBox">
-				<CheckBox label="Опция включена" disabled value={checked} onChange={setChecked} />
-				<CheckBox label="Опция включена" value={checked} onChange={setChecked} indeterminate />
+				<CheckBox label="Опция" description="Описание чекбокса" disabled value={checked} onChange={setChecked} />
+				<CheckBox label="Опция" description="Описание чекбокса" value={checked} onChange={setChecked} />
+				<CheckBox label="Опция" description="Описание чекбокса" value={checked} onChange={setChecked} indeterminate />
 			</ComponentCard>
 
 			<ComponentCard title="RadioButton">
-				<RadioButton label="Выбранная опция" disabled value={radio} onChange={setRadio} />
-				<RadioButton label="Выбранная опция" value={radio} onChange={setRadio} />
+				<RadioButton label="Опция" description="Описание радиокнопки" disabled value={radio} onChange={setRadio} />
+				<RadioButton label="Опция" description="Описание радиокнопки" name="radio-1" value={radio} onChange={setRadio} />
+				<RadioButton label="Опция" description="Описание радиокнопки" name="radio-1" value={radio} onChange={setRadio} />
 			</ComponentCard>
 
 			<ComponentCard title="RadioGroup">
-				<RadioGroup value={radioGroup} onChange={setRadioGroup} orientation="vertical" aria-label="Вариант">
+				<RadioGroup
+					label="Радио группа"
+					description="Вертикальная группа"
+					value={radioGroup}
+					onChange={setRadioGroup}
+					orientation="vertical"
+					aria-label="Вариант">
 					<RadioGroup.Option value="first" label="Первый" />
 					<RadioGroup.Option value="second" label="Второй" />
+					<RadioGroup.Option value="third" label="Третий" description="Новая опциональная опция" />
+				</RadioGroup>
+
+				<RadioGroup
+					label="Радио группа"
+					description="Горизонтальная группа"
+					value={radioGroup}
+					onChange={setRadioGroup}
+					orientation="horizontal"
+					aria-label="Вариант">
+					<RadioGroup.Option value="first" label="Первый" />
+					<RadioGroup.Option value="second" label="Второй" />
+					<RadioGroup.Option value="third" label="Третий" description="Новая опциональная опция" />
 				</RadioGroup>
 			</ComponentCard>
 
 			<ComponentCard title="Switch">
-				<Switch label="Уведомления" value={switchValue} onChange={setSwitchValue} />
+				<Switch label="Уведомления" description="Устаревный компонент" value={switchValue} onChange={setSwitchValue} />
 			</ComponentCard>
 
 			<ComponentCard title="Toggle">
-				<Toggle label="Режим" value={toggleValue} onChange={setToggleValue} checkedText="Вкл" uncheckedText="Выкл" />
+				<Toggle
+					label="Режим"
+					description="Переключатель состояния"
+					value={toggleValue}
+					onChange={setToggleValue}
+					checkedText="Вкл"
+					uncheckedText="Выкл"
+				/>
+				<Toggle
+					label="Режим"
+					description="Переключатель состояния"
+					labelPosition="after"
+					value={toggleValue}
+					onChange={setToggleValue}
+					checkedText="Вкл"
+					uncheckedText="Выкл"
+				/>
 			</ComponentCard>
 
 			<ComponentCard title="Slider">
-				<Slider label="Уровень" value={sliderValue} min={0} max={100} onChange={setSliderValue} />
+				<Slider label="Уровень" description="Простой слайдер" value={sliderValue} min={0} max={100} onChange={setSliderValue} />
+				<Slider
+					label="Уровень"
+					description="Простой слайдер"
+					disabled
+					marks={[
+						{ value: 1, label: "m1" },
+						{ value: 2, label: "m2" },
+						{ value: 3, label: "m3" },
+						{ value: 4, label: "m4" },
+						{ value: 5, label: "m5" },
+						{ value: 6, label: "m6" }
+					]}
+					marksPosition="index"
+					value={sliderValue}
+					min={0}
+					max={100}
+					onChange={setSliderValue}
+				/>
+
+				<SliderRange
+					label="Уровень"
+					description="Диапазон"
+					marks={[
+						{ value: 0, label: "m1" },
+						{ value: 1, label: "m2" },
+						{ value: 2, label: "m3" },
+						{ value: 3, label: "m4" }
+					]}
+					marksPosition="index"
+					value={sliderRangeValue}
+					min={0}
+					max={100}
+					onChange={setSliderRangeValue}
+				/>
 			</ComponentCard>
 
 			<ComponentCard title="SliderInput">
 				<SliderInput label="Порог" value={sliderInputValue} min={0} max={100} onChange={setSliderInputValue} />
+				<SliderRangeInput
+					label="Порог"
+					value={sliderRangeInputValue}
+					onChange={setSliderRangeInputValue}
+					min={0}
+					max={100}
+					marks={[
+						{ value: 0, label: "0" },
+						{ value: 20, label: "20" },
+						{ value: 40, label: "40" },
+						{ value: 60, label: "60" },
+						{ value: 80, label: "80" },
+						{ value: 100, label: "100" }
+					]}
+				/>
+				<SliderRangeInput
+					label="Срок: открытые границы и дни в фильтре"
+					description="Крайние marks отдают null, обычные marks отдают дни через `outputValue`."
+					min={0}
+					max={25}
+					marks={[
+						{ value: 0, label: "-", outputValue: null },
+						{ value: 1, label: "1м.", outputValue: 30 },
+						{ value: 3, label: "3м.", outputValue: 90 },
+						{ value: 6, label: "6м.", outputValue: 180 },
+						{ value: 12, label: "1г.", outputValue: 360 },
+						{ value: 18, label: "1.5г.", outputValue: 540 },
+						{ value: 24, label: "2г.", outputValue: 720 },
+						{ value: 25, label: "-", outputValue: null }
+					]}
+					value={sliderRangeInputValue}
+					onChange={setSliderRangeInputValue}
+				/>
+
+				<SliderRangeInput
+					label="Срок текстом"
+					description="В поле выводится готовый текст по marks, а изменение через popover коммитится при закрытии."
+					placeholder="Любой срок"
+					readonlyValueText
+					min={0}
+					max={25}
+					marks={[
+						{ value: 0, label: "-", outputValue: null },
+						{ value: 1, label: "1м.", outputValue: 30 },
+						{ value: 3, label: "3м.", outputValue: 90 },
+						{ value: 6, label: "6м.", outputValue: 180 },
+						{ value: 12, label: "1г.", outputValue: 360 },
+						{ value: 18, label: "1.5г.", outputValue: 540 },
+						{ value: 24, label: "2г.", outputValue: 720 },
+						{ value: 25, label: "-", outputValue: null }
+					]}
+					marksPosition="index"
+					value={sliderRangeInputValue}
+					onChange={setSliderRangeInputValue}
+				/>
 			</ComponentCard>
 
 			<ComponentCard title="Select">
 				<Select
 					label="Статус"
-					options={statusOptions}
-					value={selectedStatus}
-					onChange={setSelectedStatus}
-					getOptionKey={(option) => option.id}
-					getOptionLabel={(option) => option.label}
-				/>
-				<Select
-					label="Статус"
+					description="searchable"
 					searchable
 					options={statusOptions}
 					value={selectedStatus}
@@ -267,6 +468,43 @@ export function InteractiveComponents() {
 					getOptionKey={(option) => option.id}
 					getOptionLabel={(option) => option.label}
 				/>
+				<Select
+					label="Статус"
+					description="disabled"
+					disabled
+					options={statusOptions}
+					value={selectedStatus}
+					onChange={setSelectedStatus}
+					getOptionKey={(option) => option.id}
+					getOptionLabel={(option) => option.label}
+				/>
+				<Select
+					label="Статус"
+					description="Пример использования низкоуровневого Select со строковыми значениями."
+					placeholder="Выберите статус"
+					options={statusOptions}
+					value={selectedStatus}
+					onChange={setSelectedStatus}
+					getOptionKey={(option) => option.id}
+					getOptionLabel={(option) => option.label}
+				/>
+
+				<Select
+					label="Подразделение"
+					description="Выберите подразделение из списка."
+					placeholder="Не выбрано"
+					options={departmentOptions}
+					value={departmentValue}
+					onChange={setDepartmentValue}
+					getOptionKey={(option: DepartmentOption) => option.id}
+					getOptionLabel={(option: DepartmentOption) => option.name}
+					getOptionCode={(option: DepartmentOption) => option.code}
+					getOptionDisabled={(option: DepartmentOption) => option.disabled ?? false}
+					getOptionGroup={(option) => ({ key: option.direction, label: option.direction })}
+					optionsMaxWidth="40em"
+				/>
+
+				{/* <LinkedFiltersDemo /> */}
 			</ComponentCard>
 
 			<ComponentCard title="MultiSelect">
