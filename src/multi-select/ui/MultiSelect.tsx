@@ -33,13 +33,13 @@ import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
 interface MultiSelectOptionsProps extends PropsWithChildren {
 	isNoData?: boolean;
-	isLoading?: boolean;
+	// isLoading?: boolean;
 	error?: string;
 }
 
-function MultiSelectOptionsWrapper({ isNoData, isLoading, error, children }: MultiSelectOptionsProps) {
+function MultiSelectOptionsWrapper({ isNoData, error, children }: MultiSelectOptionsProps) {
 	if (isNoData) return <PickerStatus emptyState={<MultiSelectOptionSkeleton text="Нет данных" />} />;
-	if (isLoading) return <PickerStatus loadingState={<MultiSelectOptionSkeleton text="Загрузка..." />} />;
+	// if (isLoading) return <PickerStatus loadingState={<MultiSelectOptionSkeleton text="Загрузка..." />} />;
 	if (error) return <PickerStatus errorState={<MultiSelectOptionSkeleton isError text="Ошибка загрузки" />} />;
 
 	return <>{children}</>;
@@ -481,6 +481,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								type="text"
 								role="combobox"
 								autoComplete="off"
+								isLoading={isLoading}
 								disabled={disabled}
 								value={currentQuery}
 								placeholder={
@@ -562,7 +563,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								tabIndex={-1}
 								className={uiStyles.uiPopupOptions}
 								header={toolbarNode}>
-								<MultiSelectOptionsWrapper isNoData={isNoData} isLoading={isLoading} error={error}>
+								<MultiSelectOptionsWrapper isNoData={isNoData} error={error}>
 									<div className="scrollable h100">
 										<MultiSelectOptionGroup
 											entries={selectedEntries}

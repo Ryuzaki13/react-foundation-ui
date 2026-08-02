@@ -296,7 +296,8 @@ export function TreePickerBase({
 							type="text"
 							role="combobox"
 							autoComplete="off"
-							disabled={disabled || isLoading}
+							isLoading={isLoading}
+							disabled={disabled}
 							readOnly={triggerMode !== "search"}
 							value={triggerMode === "display" && showSummaryOverlay ? "" : triggerValue}
 							placeholder={showTriggerPlaceholder ? placeholderText : undefined}
@@ -410,11 +411,7 @@ export function TreePickerBase({
 							header={popupHeader}>
 							<div className={cn(optionsLayout === "columns" && styles.treeColumns)}>
 								{visibleEntries.length === 0 ? (
-									<PickerStatus
-										errorState={error}
-										loadingState={isLoading ? "Загрузка..." : undefined}
-										emptyState={!error && !isLoading ? "Нет данных" : undefined}
-									/>
+									<PickerStatus errorState={error} emptyState={!error && !isLoading ? "Нет данных" : undefined} />
 								) : (
 									visibleEntries.map((entry, index) => {
 										const selected =

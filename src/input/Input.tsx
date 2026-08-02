@@ -48,6 +48,10 @@ function InputLabel({ label, controlId, labelId }: { label: React.ReactNode; con
 	);
 }
 
+export function InputLoadingFrame() {
+	return <div className={cn(uiStyles.uiInputControlFake, "skeletonLine")} />;
+}
+
 export function InputUILoading({
 	label,
 	description,
@@ -70,7 +74,7 @@ export function InputUILoading({
 					{description}
 				</p>
 			)}
-			<div className={cn(uiStyles.uiInputControlFake, "skeletonLine")} />
+			<InputLoadingFrame />
 		</div>
 	);
 }

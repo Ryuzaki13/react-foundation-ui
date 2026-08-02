@@ -23,62 +23,24 @@ const frameStyle: CSSProperties = {
 	overflow: "hidden",
 	border: "var(--border)",
 	borderRadius: "var(--radius-lg)",
-	background: "var(--surface-0)",
-	boxShadow: "var(--shadow-sm)"
+	background: "var(--surface-1)",
+	boxShadow: "var(--shadow-lg)"
 };
 
 const toolbarStyle: CSSProperties = {
 	display: "flex",
 	alignItems: "center",
 	justifyContent: "space-between",
-	gap: 12,
-	padding: "14px 16px",
+	padding: 8,
 	borderBottom: "var(--border)",
-	background: "var(--surface-2)"
-};
-
-const toolbarMetaStyle: CSSProperties = {
-	display: "grid",
-	gap: 2
-};
-
-const toolbarCaptionStyle: CSSProperties = {
-	fontSize: "var(--font-size-sm)",
-	color: "var(--content-2)"
-};
-
-const toolbarTitleStyle: CSSProperties = {
-	fontSize: "var(--font-size-md)",
-	fontWeight: 600
-};
-
-const toolbarActionsStyle: CSSProperties = {
-	display: "flex",
-	alignItems: "center",
-	gap: 8,
-	flexWrap: "wrap",
-	justifyContent: "flex-end"
-};
-
-const themeBadgeStyle: CSSProperties = {
-	display: "inline-flex",
-	alignItems: "center",
-	gap: 6,
-	padding: "6px 10px",
-	borderRadius: 999,
-	border: "var(--border)",
-	background: "var(--surface-0)",
-	fontSize: "var(--font-size-sm)",
-	color: "var(--content-1)"
+	background: "var(--surface-1)"
 };
 
 const toggleButtonStyle: CSSProperties = {
 	display: "inline-flex",
 	alignItems: "center",
-	gap: 8,
-	padding: "8px 12px",
-	borderRadius: 999,
-	border: "var(--border)",
+	padding: 8,
+	borderRadius: "var(--radius-lg)",
 	background: "var(--surface-0)",
 	color: "var(--content-0)",
 	font: "inherit",
@@ -209,22 +171,13 @@ export function AtomicStoryCanvas({ children, layout, viewMode }: { children: Re
 		<div style={{ ...shellStyle, ...frameHeightStyle }}>
 			<div style={frameStyle}>
 				<div style={toolbarStyle}>
-					<div style={toolbarMetaStyle}>
-						<span style={toolbarCaptionStyle}>UI Storybook</span>
-						<span style={toolbarTitleStyle}>Тема интерфейса</span>
-					</div>
-
-					<div style={toolbarActionsStyle}>
-						<span style={themeBadgeStyle}>{isLight ? "Light" : "Dark"}</span>
-
-						<button
-							type="button"
-							style={toggleButtonStyle}
-							onClick={() => setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"))}>
-							{isLight ? <MoonStarIcon size={16} /> : <SunIcon size={16} />}
-							<span>{isLight ? "Тёмная тема" : "Светлая тема"}</span>
-						</button>
-					</div>
+					<button
+						type="button"
+						aria-label={`Switch to ${isLight ? "dark" : "light"} theme`}
+						style={toggleButtonStyle}
+						onClick={() => setTheme((currentTheme) => (currentTheme === "light" ? "dark" : "light"))}>
+						{isLight ? <MoonStarIcon size={16} /> : <SunIcon size={16} />}
+					</button>
 				</div>
 
 				<div style={{ ...contentStyle, ...canvasHeightStyle, ...canvasLayoutStyle }}>

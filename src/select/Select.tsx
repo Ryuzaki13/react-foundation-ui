@@ -54,9 +54,9 @@ type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TO
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
 	defaultFilter?: boolean;
+	isLoading?: boolean;
 	renderPopupHeader?: ReactNode;
 	emptyState?: ReactNode;
-	loadingState?: ReactNode;
 	errorState?: ReactNode;
 	placement?: Placement;
 };
@@ -104,7 +104,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		onQuery,
 		renderPopupHeader,
 		emptyState,
-		loadingState,
+		isLoading,
 		errorState,
 		placement = "bottom-start",
 		clearable = false
@@ -273,6 +273,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							readOnly={!searchable}
 							autoComplete="off"
 							role="combobox"
+							isLoading={isLoading}
 							value={inputValue}
 							placeholder={
 								selectedOption === undefined || showSearchValue
@@ -382,7 +383,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 										visibleOptions.map((option, index) => renderOptionNode(listId, option, index))
 									)
 								) : (
-									<PickerStatus emptyState={emptyState} loadingState={loadingState} errorState={errorState} />
+									<PickerStatus emptyState={emptyState} errorState={errorState} />
 								)}
 							</div>
 						</PickerPopup>

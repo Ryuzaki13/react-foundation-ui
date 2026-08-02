@@ -2,7 +2,7 @@ import { ComponentPropsWithoutRef, forwardRef, ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { InputControl } from "../input";
+import { InputControl, InputLoadingFrame } from "../input";
 import uiStyles from "../ui.module.scss";
 
 import styles from "./Picker.module.scss";
@@ -13,18 +13,25 @@ interface PickerTriggerInputProps extends Omit<ComponentPropsWithoutRef<"input">
 	overlay?: ReactNode;
 	rootClassName?: string;
 	inputClassName?: string;
+	isLoading?: boolean;
 }
 
 export const PickerTriggerInput = forwardRef<HTMLInputElement, PickerTriggerInputProps>(
-	({ rootRef, endAdornment, overlay, rootClassName, inputClassName, ...props }, ref) => {
+	({ rootRef, endAdornment, overlay, rootClassName, inputClassName, isLoading, ...props }, ref) => {
 		return (
 			<div ref={rootRef} className={cn(uiStyles.uiInputContainer, styles.triggerContainer, rootClassName)}>
-				<InputControl endAdornment={endAdornment}>
-					{({ controlClassName }) => (
-						<input {...props} ref={ref} className={cn(uiStyles.uiInputWithToggle, controlClassName, inputClassName)} />
-					)}
-				</InputControl>
-				{overlay}
+				{isLoading ? (
+					<InputLoadingFrame />
+				) : (
+					<>
+						<InputControl endAdornment={endAdornment}>
+							{({ controlClassName }) => (
+								<input {...props} ref={ref} className={cn(uiStyles.uiInputWithToggle, controlClassName, inputClassName)} />
+							)}
+						</InputControl>
+						{overlay}
+					</>
+				)}
 			</div>
 		);
 	}

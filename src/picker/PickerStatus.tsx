@@ -8,12 +8,12 @@ import styles from "./Picker.module.scss";
 
 interface PickerStatusProps {
 	emptyState?: ReactNode;
-	loadingState?: ReactNode;
+	// loadingState?: ReactNode;
 	errorState?: ReactNode;
 }
 
-export function PickerStatus({ emptyState, loadingState, errorState }: PickerStatusProps) {
-	const content = errorState ?? loadingState ?? emptyState;
+export function PickerStatus({ emptyState, errorState }: PickerStatusProps) {
+	const content = errorState ?? emptyState;
 
 	if (content === undefined || content === null) {
 		return null;

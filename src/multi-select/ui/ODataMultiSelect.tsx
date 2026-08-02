@@ -46,7 +46,8 @@ export const ODataMultiSelect: React.FC<ODataMultiSelectProps> = ({
 			query={odataModel.query}
 			defaultFilter={false}
 			highlightQuery={odataModel.debouncedQuery}
-			disabled={disabled || odataModel.isLoading}
+			isLoading={odataModel.isLoading}
+			disabled={disabled}
 			placeholder={odataModel.placeholder}
 			error={odataModel.isError ? "Ошибка загрузки" : undefined}
 		/>
