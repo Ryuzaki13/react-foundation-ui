@@ -44,3 +44,5 @@ export type UiVariant =
 	| "warningOutline"
 	| "successOutline"
 	| "infoOutline";
+
+export type UiPanelTone = "primary" | "secondary" | "tertiary";

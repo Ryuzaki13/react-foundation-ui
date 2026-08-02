@@ -1,5 +1,7 @@
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import uiStyles from "../../ui.module.scss";
+import { getUiPanelToneClassName } from "../../uiClasses";
 import { shouldMountTabPanel } from "../lib/tabs";
 import { TabsBoxProps } from "../model/types";
 import { useTabsState } from "../model/useTabsState";
@@ -28,6 +30,7 @@ export function TabsBox({
 	activationMode = "automatic",
 	mountStrategy = "unmount",
 	loop = true,
+	tone = "primary",
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy
 }: TabsBoxProps) {
@@ -46,6 +49,8 @@ export function TabsBox({
 		styles[orientation],
 		bordered && styles.bordered,
 		cleanPanel && styles.cleanPanel,
+		uiStyles.uiFilledPanel,
+		getUiPanelToneClassName(tone),
 		className
 	);
 	const tabListClassName = styles.tabs;

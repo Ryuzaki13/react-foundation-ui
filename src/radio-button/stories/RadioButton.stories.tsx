@@ -87,12 +87,19 @@ export const Group: Story = {
 		return (
 			<div role="radiogroup" aria-label="Канал уведомлений" style={{ display: "grid", gap: 12 }}>
 				<RadioButton
+					name="notification-channel"
 					label="Email"
 					value={selected === "email"}
 					onChange={(checked) => checked && setSelected("email")}
 					tone="info"
 				/>
-				<RadioButton label="SMS" value={selected === "sms"} onChange={(checked) => checked && setSelected("sms")} tone="info" />
+				<RadioButton
+					name="notification-channel"
+					label="SMS"
+					value={selected === "sms"}
+					onChange={(checked) => checked && setSelected("sms")}
+					tone="info"
+				/>
 			</div>
 		);
 	},

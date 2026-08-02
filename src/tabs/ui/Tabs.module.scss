@@ -1,8 +1,7 @@
 .tabsContainer {
-	--tabs-border: none;
-	--tabs-panel-border: none;
+	--tabs-border: var(--border);
+	--tabs-panel-border: var(--border);
 	--tabs-panel-padding: var(--space-md);
-	--tabs-panel-bg: var(--surface-0);
 
 	display: grid;
 	// gap: var(--space-sm);
@@ -12,38 +11,26 @@
 	overflow: hidden;
 }
 
-.bordered {
-	--tabs-border: var(--border);
-	--tabs-panel-border: var(--border);
-}
-
-.cleanPanel {
-	--tabs-panel-padding: 0;
-	--tabs-panel-bg: none;
-	--tabs-panel-border: none;
-}
-
 .tabs {
 	display: flex;
-	gap: var(--space-xs);
 	min-width: 0;
 
 	border: var(--tabs-border);
-	// background-color: var(--surface-0);
-	padding: var(--space-sm);
+	background-color: var(--surface-1);
 }
 
 .panels {
 	min-width: 0;
 	min-height: 0;
 	border: var(--tabs-panel-border);
-	background-color: var(--tabs-panel-bg);
 }
 
 .horizontal {
 	grid-template-rows: auto minmax(0, 1fr);
 
 	.tabs {
+		padding: var(--space-sm);
+
 		border-top-left-radius: var(--radius-sm);
 		border-top-right-radius: var(--radius-sm);
 	}
@@ -56,7 +43,14 @@
 	}
 
 	.tab {
-		border-bottom: var(--focus-width) solid transparent;
+		&::before {
+			content: "";
+			position: absolute;
+			bottom: 0;
+			left: 0;
+			right: 0;
+			border-bottom: var(--focus-width) solid var(--decoration-color);
+		}
 	}
 }
 
@@ -79,7 +73,14 @@
 	}
 
 	.tab {
-		border-left: var(--focus-width) solid transparent;
+		&::before {
+			content: "";
+			position: absolute;
+			top: 0;
+			bottom: 0;
+			right: 0;
+			border-right: var(--focus-width) solid var(--decoration-color);
+		}
 	}
 }
 
@@ -88,13 +89,15 @@
 }
 
 .tab {
+	--decoration-color: transparent;
+
 	text-align: left;
 
 	position: relative;
 	min-height: var(--control-height);
 	padding: var(--space-xs) var(--space-md);
 	color: var(--content-2);
-	// border-radius: var(--radius-sm);
+	border-radius: var(--radius-sm);
 	font-weight: 700;
 	font-variation-settings: "wght" 700;
 
@@ -102,15 +105,16 @@
 
 	&:hover {
 		cursor: pointer;
-		color: var(--content-1);
+		color: var(--content-accent);
 		// background-color: var(--surface-accent);
-		border-color: var(--border-2);
+		--decoration-color: var(--border-accent);
 	}
 
 	&.selected {
-		color: var(--content-accent);
-		// background-color: var(--status-info-fill);
-		border-color: var(--border-accent);
+		color: var(--status-brand-text);
+		// color: var(--content-0);
+		// background-color: var(--status-brand-fill);
+		--decoration-color: var(--status-brand-border);
 	}
 
 	&:disabled {

@@ -269,6 +269,22 @@
 	}
 }
 
+.uiPanelTonePrimary {
+	--ui-panel-background: var(--surface-0);
+}
+
+.uiPanelToneSecondary {
+	--ui-panel-background: var(--surface-1);
+}
+
+.uiPanelToneTertiary {
+	--ui-panel-background: var(--surface-2);
+}
+
+.uiFilledPanel {
+	background-color: var(--ui-panel-background, var(--surface-0));
+}
+
 .uiFramedPanel {
 	border: var(--border);
 	border-radius: var(--radius-sm);
@@ -277,9 +293,7 @@
 
 .uiPanel {
 	@extend .uiFramedPanel;
-
-	background-color: var(--ui-panel-background, var(--surface-0));
-	color: var(--content-0);
+	@extend .uiFilledPanel;
 }
 
 .uiPopupOptions {

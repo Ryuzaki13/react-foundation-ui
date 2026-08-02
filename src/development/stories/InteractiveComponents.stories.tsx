@@ -38,6 +38,7 @@ import { StateSelect } from "../../state-select";
 import { Switch } from "../../switch";
 import { TabsBox } from "../../tabs";
 import { TagInput } from "../../tag-input";
+import { Text } from "../../text";
 import { Textarea } from "../../textarea";
 import { Toggle } from "../../toggle";
 import { TreeMultiSelect, TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "../../tree-select";
@@ -63,6 +64,10 @@ const cardStyle = {
 	borderRadius: "var(--radius-md)",
 	background: "var(--surface-1)",
 	boxShadow: "var(--shadow-lg)"
+
+	// backgroundImage: "radial-gradient(#e8e8e8 1.5px, transparent 1.5px), radial-gradient(#e8e8e8 1.5px, var(--surface-1) 1.5px)",
+	// backgroundSize: "20px 20px",
+	// backgroundPosition: "0 0,10px 10px"
 } satisfies CSSProperties;
 
 const cardTitleStyle = {
@@ -186,6 +191,18 @@ export function InteractiveComponents() {
 
 	return (
 		<div style={gridStyle}>
+			<ComponentCard title="Text">
+				<Text color="primary">Основной</Text>
+				<Text color="secondary">Дополнительный</Text>
+				<Text color="muted">Приглушенный</Text>
+				<Text color="accent">Акцентированный</Text>
+				<Text color="brand">Брендовый</Text>
+				<Text color="info">Информация</Text>
+				<Text color="success">Успешно</Text>
+				<Text color="warning">Предупреждение</Text>
+				<Text color="error">Ошибка</Text>
+			</ComponentCard>
+
 			<ComponentCard title="Badge">
 				<BadgeList>
 					<Badge tone="neutral" appearance="outline">
@@ -605,12 +622,47 @@ export function InteractiveComponents() {
 			<ComponentCard title="TabsBox">
 				<TabsBox
 					defaultValue="first"
+					tone="tertiary"
+					items={[
+						{ id: "first", title: "Первый", content: "Содержимое" },
+						{ id: "second", title: "Второй", content: "Другая панель" },
+						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
+						{ id: "quat", title: "Четвертая", content: "Четвертая панель" },
+						{ id: "five", title: "Пятая", content: "Пятая панель" }
+					]}
+				/>
+
+				<TabsBox
+					defaultValue="first"
 					bordered
 					items={[
 						{ id: "first", title: "Первый", content: "Содержимое" },
 						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Другая панель" },
-						{ id: "quat", title: "Четвертая", content: "Другая панель" }
+						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
+						{ id: "quat", title: "Четвертая", content: "Четвертая панель" }
+					]}
+				/>
+
+				<TabsBox
+					defaultValue="first"
+					bordered
+					cleanPanel
+					items={[
+						{ id: "first", title: "Первый", content: "Содержимое" },
+						{ id: "second", title: "Второй", content: "Другая панель" },
+						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
+						{ id: "quat", title: "Четвертая", content: "Четвертая панель" }
+					]}
+				/>
+
+				<TabsBox
+					defaultValue="first"
+					cleanPanel
+					items={[
+						{ id: "first", title: "Первый", content: "Содержимое" },
+						{ id: "second", title: "Второй", content: "Другая панель" },
+						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
+						{ id: "quat", title: "Четвертая", content: "Четвертая панель" }
 					]}
 				/>
 			</ComponentCard>
@@ -637,7 +689,9 @@ export function InteractiveComponents() {
 					<Disclosure label="Раскрыть 4">Содержимое панели 4</Disclosure>
 				</DisclosureGroup>
 
-				<Disclosure label="Раскрыть 1">Содержимое панели 1</Disclosure>
+				<Disclosure label="Раскрыть 1" tone="secondary">
+					Содержимое панели 1
+				</Disclosure>
 			</ComponentCard>
 
 			<ComponentCard title="ExpandableActionPanel">

@@ -1,6 +1,6 @@
 import uiStyles from "./ui.module.scss";
 
-import type { UiAppearance, UiTone, UiVariant } from "./types";
+import type { UiAppearance, UiPanelTone, UiTone, UiVariant } from "./types";
 
 export type UiScheme = {
 	tone: UiTone;
@@ -42,12 +42,22 @@ const appearanceClassNameMap: Record<UiAppearance, string> = {
 	transparent: uiStyles.uiAppearanceTransparent
 };
 
+const panelToneClassNameMap: Record<UiPanelTone, string> = {
+	primary: uiStyles.uiPanelTonePrimary,
+	secondary: uiStyles.uiPanelToneSecondary,
+	tertiary: uiStyles.uiPanelToneTertiary
+};
+
 export function getUiToneClassName(tone: UiTone): string {
 	return toneClassNameMap[tone];
 }
 
 export function getUiAppearanceClassName(appearance: UiAppearance): string {
 	return appearanceClassNameMap[appearance];
+}
+
+export function getUiPanelToneClassName(tone: UiPanelTone): string {
+	return panelToneClassNameMap[tone];
 }
 
 export function resolveUiScheme({

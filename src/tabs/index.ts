@@ -1,4 +1,3 @@
-export { Tabs } from "./ui/Tabs";
 export { TabsBox } from "./ui/TabsBox";
 export { TabsLayout } from "./ui/TabsLayout";
 
@@ -14,4 +13,3 @@ export type {
 	TabsMountStrategy,
 	TabsOrientation
 } from "./model/types";
-export type { TabsItem, TabsProps } from "./ui/Tabs";

@@ -3,7 +3,7 @@ import React, { CSSProperties, useMemo } from "react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 export type TextSize = "xs" | "sm" | "md" | "lg" | "xl";
-export type TextColor = "primary" | "secondary" | "muted" | "error" | "warning" | "success" | "info";
+export type TextColor = "primary" | "secondary" | "muted" | "error" | "warning" | "success" | "info" | "brand" | "accent";
 export type TextWeight = "lighter" | "light" | "regular" | "medium" | "bold" | "bolder";
 export type TextWrap = "wrap" | "noWrap";
 
@@ -14,7 +14,9 @@ const textColors: Record<TextColor, string> = {
 	info: "statusInfo",
 	success: "statusSuccess",
 	warning: "statusWarning",
-	error: "statusError"
+	error: "statusError",
+	brand: "statusBrand",
+	accent: "contentAccent"
 };
 
 const textSizes: Record<TextSize, string> = {

@@ -1,7 +1,5 @@
 declare const styles: {
   readonly tabsContainer: "tabsContainer";
-  readonly bordered: "bordered";
-  readonly cleanPanel: "cleanPanel";
   readonly tabs: "tabs";
   readonly panels: "panels";
   readonly horizontal: "horizontal";

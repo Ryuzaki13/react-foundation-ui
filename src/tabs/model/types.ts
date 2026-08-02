@@ -1,4 +1,6 @@
-import React from "react";
+import { type ReactNode } from "react";
+
+import { UiPanelTone } from "../../types";
 
 /**
  * Направление списка вкладок.
@@ -20,7 +22,7 @@ export type TabsMountStrategy = "unmount" | "lazy" | "keep-mounted";
  */
 export interface TabsDescriptor {
 	id: string;
-	title: React.ReactNode;
+	title: ReactNode;
 	disabled?: boolean;
 }
 
@@ -37,6 +39,7 @@ export interface TabsCommonProps {
 	loop?: boolean;
 	cleanPanel?: boolean;
 	bordered?: boolean;
+	tone?: UiPanelTone;
 	className?: string;
 	"aria-label"?: string;
 	"aria-labelledby"?: string;
@@ -46,7 +49,7 @@ export interface TabsCommonProps {
  * Элемент данных для простого сценария `TabsBox`.
  */
 export interface TabsBoxItem extends TabsDescriptor {
-	content: React.ReactNode;
+	content: ReactNode;
 }
 
 /**
@@ -62,7 +65,7 @@ export interface TabsBoxProps extends TabsCommonProps {
  * Пропсы секций compound-режима `TabsLayout`.
  */
 export interface TabsLayoutSectionProps {
-	children: React.ReactNode;
+	children: ReactNode;
 	className?: string;
 }
 
@@ -70,12 +73,12 @@ export interface TabsLayoutSectionProps {
  * Описание одной вкладки в compound-режиме `TabsLayout`.
  */
 export interface TabsLayoutTabProps extends TabsDescriptor {
-	children: React.ReactNode;
+	children: ReactNode;
 }
 
 /**
  * Публичный API для compound-сценария `TabsLayout`.
  */
 export interface TabsLayoutProps extends TabsCommonProps {
-	children: React.ReactNode;
+	children: ReactNode;
 }
