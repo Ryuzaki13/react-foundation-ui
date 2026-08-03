@@ -6,7 +6,8 @@ import {
 	getSelectableTreeNodeIds,
 	getTreeNodeSelectionState,
 	toggleTreeMultiSelection,
-	treeMultiValueToSelectedIds
+	treeMultiValueToSelectedIds,
+	treeSelectedIdsToMultiValue
 } from "./treeUtils";
 
 import type { TreeSelectNode } from "../types";
@@ -53,6 +54,69 @@ const nodes: TreeSelectNode[] = [
 				label: "Пермь",
 				code: "0204",
 				searchText: "0204 Пермь"
+			}
+		]
+	}
+];
+
+/** Два визуальных представления одного server predicate в разных ветвях. */
+const duplicatePredicateNodes: TreeSelectNode[] = [
+	{
+		id: "GROUP:02",
+		codeKey: "GROUP",
+		value: "02",
+		label: "02",
+		searchText: "02",
+		selectionBehavior: "descendants",
+		children: [
+			{
+				id: "GROUP:02/ZPRODH01:A",
+				codeKey: "ZPRODH01",
+				value: "A",
+				label: "Группа A",
+				searchText: "A Группа A",
+				children: [
+					{
+						id: "GROUP:02/ZPRODH01:A/ZPRODH11:A1",
+						codeKey: "ZPRODH11",
+						value: "A1",
+						label: "Подгруппа 1",
+						searchText: "A1 Подгруппа 1"
+					},
+					{
+						id: "GROUP:02/ZPRODH01:A/ZPRODH11:A2",
+						codeKey: "ZPRODH11",
+						value: "A2",
+						label: "Подгруппа 2",
+						searchText: "A2 Подгруппа 2"
+					}
+				]
+			}
+		]
+	},
+	{
+		id: "GROUP:other",
+		codeKey: "GROUP",
+		value: "other",
+		label: "Остальные",
+		searchText: "Остальные",
+		selectionBehavior: "descendants",
+		children: [
+			{
+				id: "GROUP:other/ZPRODH01:A",
+				codeKey: "ZPRODH01",
+				value: "A",
+				label: "Группа A",
+				searchText: "A Группа A",
+				children: [
+					{
+						id: "GROUP:other/ZPRODH01:A/ZPRODH11:A3",
+						codeKey: "ZPRODH11",
+						value: "A3",
+						label: "Подгруппа 3",
+						searchText: "A3 Подгруппа 3"
+					}
+				]
 			}
 		]
 	}
@@ -216,5 +280,32 @@ describe("tree selection utils", () => {
 		]);
 
 		expect(treeMultiValueToSelectedIds({ GROUP: ["main"] }, index)).toEqual(new Set(["ZDIV:04/ZCFO1:0202", "ZDIV:04/ZCFO1:0204"]));
+	});
+
+	it("связывает все визуальные узлы одного server predicate с одним multi-value", () => {
+		const index = createTreeNodeIndex(duplicatePredicateNodes);
+		const equivalentIds = new Set(["GROUP:02/ZPRODH01:A", "GROUP:other/ZPRODH01:A"]);
+
+		expect(treeMultiValueToSelectedIds({ ZPRODH01: ["A"] }, index)).toEqual(equivalentIds);
+		expect(treeSelectedIdsToMultiValue(equivalentIds, index)).toEqual({ ZPRODH01: ["A"] });
+		expect(toggleTreeMultiSelection({}, "GROUP:02/ZPRODH01:A", index)).toEqual({ ZPRODH01: ["A"] });
+		expect(toggleTreeMultiSelection({ ZPRODH01: ["A"] }, "GROUP:02/ZPRODH01:A", index)).toEqual({});
+	});
+
+	it("разворачивает все эквивалентные parent-ветви при частичном снятии выбора", () => {
+		const index = createTreeNodeIndex(duplicatePredicateNodes);
+
+		expect(toggleTreeMultiSelection({ ZPRODH01: ["A"] }, "GROUP:02/ZPRODH01:A/ZPRODH11:A1", index)).toEqual({ ZPRODH11: ["A2", "A3"] });
+	});
+
+	it("не схлопывает дочерние значения до полного покрытия всех эквивалентных parent-ветвей", () => {
+		const index = createTreeNodeIndex(duplicatePredicateNodes);
+
+		expect(treeMultiValueToSelectedIds({ ZPRODH11: ["A1", "A2"] }, index)).toEqual(
+			new Set(["GROUP:02/ZPRODH01:A/ZPRODH11:A1", "GROUP:02/ZPRODH01:A/ZPRODH11:A2"])
+		);
+		expect(treeMultiValueToSelectedIds({ ZPRODH11: ["A1", "A2", "A3"] }, index)).toEqual(
+			new Set(["GROUP:02/ZPRODH01:A", "GROUP:other/ZPRODH01:A"])
+		);
 	});
 });

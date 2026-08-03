@@ -7,6 +7,8 @@ export type TreeNodeIndex = {
 	childrenById: Map<string, string[]>;
 	preorderIndexById: Map<string, number>;
 	nodeIdByCodeValue: Map<string, string>;
+	/** Все визуальные узлы одного сериализуемого значения в порядке обхода дерева. */
+	nodeIdsByCodeValue: Map<string, string[]>;
 };
 
 export type TreeNodeSelectionState = {
@@ -33,13 +35,21 @@ export function createTreeNodeIndex(nodes: readonly TreeSelectNode[]): TreeNodeI
 	const childrenById = new Map<string, string[]>();
 	const preorderIndexById = new Map<string, number>();
 	const nodeIdByCodeValue = new Map<string, string>();
+	const nodeIdsByCodeValue = new Map<string, string[]>();
 	let preorderIndex = 0;
 
 	const walk = (node: TreeSelectNode, parentId?: string) => {
 		nodeById.set(node.id, node);
 		parentById.set(node.id, parentId);
 		preorderIndexById.set(node.id, preorderIndex++);
-		nodeIdByCodeValue.set(makeCodeValueKey(node.codeKey, node.value), node.id);
+		const codeValueKey = makeCodeValueKey(node.codeKey, node.value);
+		nodeIdByCodeValue.set(codeValueKey, node.id);
+		const equivalentNodeIds = nodeIdsByCodeValue.get(codeValueKey);
+		if (equivalentNodeIds) {
+			equivalentNodeIds.push(node.id);
+		} else {
+			nodeIdsByCodeValue.set(codeValueKey, [node.id]);
+		}
 
 		const childIds = (node.children ?? []).map((child) => child.id);
 		childrenById.set(node.id, childIds);
@@ -59,8 +69,17 @@ export function createTreeNodeIndex(nodes: readonly TreeSelectNode[]): TreeNodeI
 		parentById,
 		childrenById,
 		preorderIndexById,
-		nodeIdByCodeValue
+		nodeIdByCodeValue,
+		nodeIdsByCodeValue
 	};
+}
+
+/** Возвращает все визуальные представления одного сериализуемого значения. */
+function getEquivalentTreeNodeIds(nodeId: string, index: TreeNodeIndex) {
+	const node = index.nodeById.get(nodeId);
+	if (!node) return [];
+
+	return index.nodeIdsByCodeValue.get(makeCodeValueKey(node.codeKey, node.value)) ?? [];
 }
 
 export function treeSelectValueToId(value: TreeSelectValue | undefined, index: TreeNodeIndex) {
@@ -77,8 +96,7 @@ export function treeMultiValueToSelectedIds(value: TreeMultiSelectValue | undefi
 
 	for (const [codeKey, values] of Object.entries(value)) {
 		for (const itemValue of values) {
-			const nodeId = index.nodeIdByCodeValue.get(makeCodeValueKey(codeKey, itemValue));
-			if (nodeId) {
+			for (const nodeId of index.nodeIdsByCodeValue.get(makeCodeValueKey(codeKey, itemValue)) ?? []) {
 				selectedIds.add(nodeId);
 			}
 		}
@@ -94,13 +112,17 @@ export function treeSelectedIdsToMultiValue(selectedIds: Set<string>, index: Tre
 			(index.preorderIndexById.get(rightId) ?? Number.MAX_SAFE_INTEGER)
 	);
 	const result: TreeMultiSelectValue = {};
+	const serializedCodeValues = new Set<string>();
 
 	for (const nodeId of orderedIds) {
 		const node = index.nodeById.get(nodeId);
 		if (!node) continue;
+		const codeValueKey = makeCodeValueKey(node.codeKey, node.value);
+		if (serializedCodeValues.has(codeValueKey)) continue;
 
 		result[node.codeKey] = result[node.codeKey] ?? [];
 		result[node.codeKey].push(node.value);
+		serializedCodeValues.add(codeValueKey);
 	}
 
 	return result;
@@ -206,8 +228,28 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 		}
 
 		if (children.every((childId) => isNodeFullySelected(childId, nextSelectedIds, index))) {
-			removeDescendantSelections(nextSelectedIds, nodeId, index);
-			nextSelectedIds.add(nodeId);
+			const equivalentNodeIds = getEquivalentTreeNodeIds(nodeId, index);
+			const canCollapseEquivalentNodes = equivalentNodeIds.every((equivalentNodeId) => {
+				const equivalentNode = index.nodeById.get(equivalentNodeId);
+				return (
+					equivalentNode &&
+					!equivalentNode.disabled &&
+					equivalentNode.selectionBehavior !== "descendants" &&
+					isNodeFullySelected(equivalentNodeId, nextSelectedIds, index)
+				);
+			});
+
+			/*
+			 * Одинаковый server predicate может быть показан в нескольких ветвях.
+			 * Схлопывать детей в parent безопасно только при полном покрытии всех
+			 * его визуальных представлений, иначе сериализация расширила бы выбор.
+			 */
+			if (canCollapseEquivalentNodes) {
+				for (const equivalentNodeId of equivalentNodeIds) {
+					removeDescendantSelections(nextSelectedIds, equivalentNodeId, index);
+					nextSelectedIds.add(equivalentNodeId);
+				}
+			}
 		}
 	}
 
@@ -219,15 +261,18 @@ function expandNearestSelectedAncestor(selectedIds: Set<string>, nodeId: string,
 
 	while (currentId) {
 		if (selectedIds.has(currentId)) {
-			selectedIds.delete(currentId);
+			for (const equivalentAncestorId of getEquivalentTreeNodeIds(currentId, index)) {
+				if (!selectedIds.has(equivalentAncestorId)) continue;
+				selectedIds.delete(equivalentAncestorId);
 
-			/*
-			 * Узел мог стать disabled уже после сохранения выбора его ancestor.
-			 * При частичном снятии разворачиваем ancestor только в актуально
-			 * доступное покрытие, чтобы запрещённое значение не попало в onChange.
-			 */
-			for (const childId of getSelectableTreeNodeIds(index, index.childrenById.get(currentId) ?? [])) {
-				selectedIds.add(childId);
+				/*
+				 * Узел мог стать disabled уже после сохранения выбора его ancestor.
+				 * При частичном снятии разворачиваем все представления одного server
+				 * predicate только в их актуально доступное покрытие.
+				 */
+				for (const childId of getSelectableTreeNodeIds(index, index.childrenById.get(equivalentAncestorId) ?? [])) {
+					selectedIds.add(childId);
+				}
 			}
 
 			return true;
@@ -320,12 +365,14 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 	const selectedIds = treeMultiValueToSelectedIds(currentValue, index);
 
 	const toggle = (targetId: string) => {
-		if (isTreeNodeSelected(targetId, selectedIds, index)) {
-			if (selectedIds.has(targetId)) {
-				selectedIds.delete(targetId);
-				return;
+		if (selectedIds.has(targetId)) {
+			for (const equivalentTargetId of getEquivalentTreeNodeIds(targetId, index)) {
+				selectedIds.delete(equivalentTargetId);
 			}
+			return;
+		}
 
+		if (isTreeNodeSelected(targetId, selectedIds, index)) {
 			if (expandNearestSelectedAncestor(selectedIds, targetId, index)) {
 				toggle(targetId);
 			}
@@ -333,8 +380,10 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 			return;
 		}
 
-		removeDescendantSelections(selectedIds, targetId, index);
-		selectedIds.add(targetId);
+		for (const equivalentTargetId of getEquivalentTreeNodeIds(targetId, index)) {
+			removeDescendantSelections(selectedIds, equivalentTargetId, index);
+			selectedIds.add(equivalentTargetId);
+		}
 	};
 
 	const selectableTargetIds = [...getSelectableTreeNodeIds(index, [targetNodeId])];
