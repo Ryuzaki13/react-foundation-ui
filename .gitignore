@@ -1,6 +1,7 @@
 node_modules
 dist
 coverage
+debug-storybook.log
 storybook-static
 .DS_Store
 *.tsbuildinfo

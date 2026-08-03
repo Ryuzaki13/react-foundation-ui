@@ -1,7 +1,7 @@
 import { CSSProperties } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { CheckIcon, ChevronRightIcon, MinusIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 
 import { CheckBox } from "../check-box";
 import { SelectOptionContent } from "../select/SelectOptionContent";
@@ -59,7 +59,7 @@ export function TreeNodeContent({
 				<span className={styles.treeExpanderPlaceholder} aria-hidden="true" />
 			) : null}
 
-			{selectionMode === "multi" && optionsLayout === "columns" ? (
+			{selectionMode === "multi" || optionsLayout === "columns" ? (
 				<span
 					className={styles.treeColumnCheckBox}
 					onMouseDown={(event) => event.stopPropagation()}
@@ -71,16 +71,6 @@ export function TreeNodeContent({
 						aria-label={`Выбрать ${node.label}`}
 						onChange={() => onToggleSelection?.()}
 					/>
-				</span>
-			) : selectionMode === "multi" ? (
-				<span
-					className={cn(styles.treeSelection, selected && styles.treeSelectionChecked, partial && styles.treeSelectionPartial)}
-					aria-hidden="true">
-					{selected ? (
-						<CheckIcon className={styles.treeSelectionIcon} />
-					) : partial ? (
-						<MinusIcon className={styles.treeSelectionIcon} />
-					) : null}
 				</span>
 			) : null}
 
