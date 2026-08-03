@@ -67,7 +67,7 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 		middleware: [
 			offset(8),
 			flip({ fallbackAxisSideDirection: "end", fallbackPlacements: ["top", "right", "bottom"] }),
-			shift({ padding: 16 }),
+			shift({ padding: 8 }),
 			arrow({ element: arrowRef, padding: 8 })
 		],
 		whileElementsMounted: autoUpdate
