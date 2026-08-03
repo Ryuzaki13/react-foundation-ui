@@ -87,6 +87,20 @@ describe("buildODataTreeNodes", () => {
 		expect(nodes[0].children?.[0].children).toBeUndefined();
 	});
 
+	it("сохраняет потомков разрешённого пустого структурного уровня", () => {
+		const nodes = buildODataTreeNodes({
+			items: [{ ROOT: "", CHILD: "10", CHILD_TEXT: "Десять" }],
+			orderedCodeKeys: ["ROOT", "CHILD"],
+			keyPairsMap: { CHILD: "CHILD_TEXT" },
+			hiddenCodeKeys: new Set(),
+			allowEmptyCodeKeys: new Set(["ROOT"])
+		});
+
+		expect(nodes).toHaveLength(1);
+		expect(nodes[0]).toMatchObject({ codeKey: "ROOT", value: "" });
+		expect(nodes[0].children).toEqual([expect.objectContaining({ codeKey: "CHILD", value: "10", label: "Десять" })]);
+	});
+
 	it("использует текст как value для сегментов с selectText", () => {
 		const nodes = buildODataTreeNodes({
 			items: [

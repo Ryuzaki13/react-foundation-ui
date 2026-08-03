@@ -34,9 +34,11 @@ function getRootCodeKey(orderedSegmentItems: readonly ODataDependentSegmentItem[
 type UseODataTreeDataProps = Pick<ODataDependentBaseProps, "odata" | "segments" | "model"> & {
 	/** Явный порядок уровней поверх автоматически разрешённой metadata-chain. */
 	segmentOrder?: readonly string[];
+	/** Уровни, на которых пустой код не должен обрывать последующие уровни дерева. */
+	allowEmptyCodeKeys?: readonly string[];
 };
 
-export function useODataTreeData({ odata, segments, model, segmentOrder }: UseODataTreeDataProps) {
+export function useODataTreeData({ odata, segments, model, segmentOrder, allowEmptyCodeKeys }: UseODataTreeDataProps) {
 	const serviceKey = `${odata.service}.${odata.target}`;
 	const baseSegmentItems = useMemo(() => buildOrderedSegmentItems(odata, segments, model), [odata, segments, model]);
 	const chains = useODataCollectionChains([odata]);
@@ -45,6 +47,7 @@ export function useODataTreeData({ odata, segments, model, segmentOrder }: UseOD
 		[baseSegmentItems, chains, segmentOrder]
 	);
 	const orderedCodeKeys = useMemo(() => orderedSegmentItems.map((item) => item.id), [orderedSegmentItems]);
+	const allowedEmptyCodeKeys = useMemo(() => new Set(allowEmptyCodeKeys), [allowEmptyCodeKeys]);
 	const rootCodeKey = getRootCodeKey(orderedSegmentItems) ?? Object.keys(segments)[0];
 	const odataModel = useODataCollectionModel({
 		codeKey: rootCodeKey,
@@ -80,9 +83,18 @@ export function useODataTreeData({ odata, segments, model, segmentOrder }: UseOD
 				keyPairsMap: collection.data?.keyPairsMap ?? {},
 				hiddenCodeKeys,
 				textValueCodeKeys,
+				allowEmptyCodeKeys: allowedEmptyCodeKeys,
 				sortByCode: odata.sortByCode
 			}),
-		[collection.data?.items, collection.data?.keyPairsMap, hiddenCodeKeys, odata.sortByCode, orderedCodeKeys, textValueCodeKeys]
+		[
+			allowedEmptyCodeKeys,
+			collection.data?.items,
+			collection.data?.keyPairsMap,
+			hiddenCodeKeys,
+			odata.sortByCode,
+			orderedCodeKeys,
+			textValueCodeKeys
+		]
 	);
 	const placeholder = orderedSegmentItems[0]?.segment.placeholder ?? "Выберите значение";
 	const hasResolvedChain = Boolean(chains[serviceKey]?.length);

@@ -131,13 +131,15 @@ describe("ODataTree wrappers", () => {
 				onChange={vi.fn()}
 				defaultExpandedCodeKeys={["A", "B"]}
 				segmentOrder={["A", "B"]}
+				allowEmptyCodeKeys={["A"]}
 				transformNodes={transformNodes}
 			/>
 		);
 
 		expect(useODataTreeData).toHaveBeenCalledWith(
 			expect.objectContaining({
-				segmentOrder: ["A", "B"]
+				segmentOrder: ["A", "B"],
+				allowEmptyCodeKeys: ["A"]
 			})
 		);
 		expect(transformNodes).toHaveBeenCalledWith(sourceNodes, { orderedCodeKeys: ["A"] });

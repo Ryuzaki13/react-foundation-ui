@@ -9,6 +9,8 @@ type BuildODataTreeNodesArgs = {
 	keyPairsMap: Record<string, string>;
 	hiddenCodeKeys: Set<string>;
 	textValueCodeKeys?: Set<string>;
+	/** Уровни, для которых пустой код остаётся структурным узлом вместо остановки ветки. */
+	allowEmptyCodeKeys?: ReadonlySet<string>;
 	/** Выбирает локальный порядок узлов: по исходному коду или отображаемому тексту. */
 	sortByCode?: boolean;
 };
@@ -93,6 +95,7 @@ export function buildODataTreeNodes({
 	keyPairsMap,
 	hiddenCodeKeys,
 	textValueCodeKeys,
+	allowEmptyCodeKeys,
 	sortByCode = true
 }: BuildODataTreeNodesArgs): TreeSelectNode[] {
 	if (orderedCodeKeys.length === 0 || items.length === 0) {
@@ -108,7 +111,7 @@ export function buildODataTreeNodes({
 		for (const codeKey of orderedCodeKeys) {
 			const codeValue = String(item[codeKey] ?? "");
 
-			if (!codeValue) {
+			if (!codeValue && !allowEmptyCodeKeys?.has(codeKey)) {
 				break;
 			}
 

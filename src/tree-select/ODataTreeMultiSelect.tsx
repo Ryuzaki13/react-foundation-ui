@@ -34,6 +34,8 @@ export interface ODataTreeMultiSelectProps
 	defaultExpandedCodeKeys?: readonly string[];
 	/** Явный порядок уровней поверх порядка, автоматически полученного из metadata-chain. */
 	segmentOrder?: readonly string[];
+	/** Уровни, на которых пустой код не обрывает последующие уровни дерева. */
+	allowEmptyCodeKeys?: readonly string[];
 	/**
 	 * Создаёт consumer-представление поверх уже загруженного OData-дерева.
 	 *
@@ -60,13 +62,15 @@ export function ODataTreeMultiSelect({
 	model,
 	defaultExpandedCodeKeys,
 	segmentOrder,
+	allowEmptyCodeKeys,
 	transformNodes
 }: ODataTreeMultiSelectProps) {
 	const treeData = useODataTreeData({
 		odata,
 		segments,
 		model,
-		segmentOrder
+		segmentOrder,
+		allowEmptyCodeKeys
 	});
 	const nodes = useMemo(
 		() => transformNodes?.(treeData.nodes, { orderedCodeKeys: treeData.orderedCodeKeys }) ?? treeData.nodes,
