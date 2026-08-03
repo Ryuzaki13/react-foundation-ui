@@ -59,6 +59,24 @@ const NODES: TreeSelectNode[] = [
 	}
 ];
 
+/** Один сериализуемый predicate, показанный в двух физических ветвях. */
+const DUPLICATE_VALUE_NODES: TreeSelectNode[] = [
+	{
+		id: "GROUP:02/ZPRODH01:A",
+		codeKey: "ZPRODH01",
+		value: "A",
+		label: "Группа A (02)",
+		searchText: "A Группа A 02"
+	},
+	{
+		id: "GROUP:other/ZPRODH01:A",
+		codeKey: "ZPRODH01",
+		value: "A",
+		label: "Группа A (Остальные)",
+		searchText: "A Группа A Остальные"
+	}
+];
+
 const ASYNC_NODES: TreeSelectNode[] = Array.from({ length: 12 }, (_, index) => ({
 	id: `DIV:${index}`,
 	codeKey: "DIV",
@@ -443,6 +461,13 @@ describe("TreeMultiSelect columns layout", () => {
 
 		expect(findInnermostElementWithText("2 элемента")).toBeTruthy();
 		expect(container?.textContent).not.toContain("Выбрано 2 узл.");
+	});
+
+	it("считает повторные визуальные узлы как один выбранный server predicate", async () => {
+		await renderHarness({ initialValue: { ZPRODH01: ["A"] }, nodes: DUPLICATE_VALUE_NODES, open: false });
+
+		expect(findInnermostElementWithText("Группа A (02)")).toBeTruthy();
+		expect(container?.textContent).not.toContain("2 элемента");
 	});
 
 	it("показывает настроенный placeholder только до выбора и сохраняет доступное имя поля", async () => {

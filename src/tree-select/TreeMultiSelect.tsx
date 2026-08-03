@@ -34,12 +34,19 @@ export interface TreeMultiSelectProps extends Omit<UiBaseProps<TreeMultiSelectVa
 }
 
 function formatTreeMultiSummary(selectedIds: Set<string>, treeIndex: ReturnType<typeof createTreeNodeIndex>) {
-	if (selectedIds.size === 0) {
+	const serializedValue = treeSelectedIdsToMultiValue(selectedIds, treeIndex);
+	const selectedPredicateCount = Object.values(serializedValue).reduce((count, values) => count + values.length, 0);
+	if (selectedPredicateCount === 0) {
 		return undefined;
 	}
 
-	if (selectedIds.size === 1) {
-		const selectedNode = treeIndex.nodeById.get([...selectedIds][0]);
+	if (selectedPredicateCount === 1) {
+		const selectedNodeId = [...selectedIds].sort(
+			(leftId, rightId) =>
+				(treeIndex.preorderIndexById.get(leftId) ?? Number.MAX_SAFE_INTEGER) -
+				(treeIndex.preorderIndexById.get(rightId) ?? Number.MAX_SAFE_INTEGER)
+		)[0];
+		const selectedNode = treeIndex.nodeById.get(selectedNodeId);
 
 		if (!selectedNode) {
 			return undefined;
@@ -48,7 +55,7 @@ function formatTreeMultiSummary(selectedIds: Set<string>, treeIndex: ReturnType<
 		return selectedNode.label;
 	}
 
-	return formatOptionCount(selectedIds.size);
+	return formatOptionCount(selectedPredicateCount);
 }
 
 /**

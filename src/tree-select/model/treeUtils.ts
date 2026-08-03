@@ -9,6 +9,8 @@ export type TreeNodeIndex = {
 	nodeIdByCodeValue: Map<string, string>;
 	/** Все визуальные узлы одного сериализуемого значения в порядке обхода дерева. */
 	nodeIdsByCodeValue: Map<string, string[]>;
+	/** Признак disabled-ограничения в узле или любом его потомке. */
+	subtreeContainsDisabledById: Map<string, boolean>;
 };
 
 export type TreeNodeSelectionState = {
@@ -36,6 +38,7 @@ export function createTreeNodeIndex(nodes: readonly TreeSelectNode[]): TreeNodeI
 	const preorderIndexById = new Map<string, number>();
 	const nodeIdByCodeValue = new Map<string, string>();
 	const nodeIdsByCodeValue = new Map<string, string[]>();
+	const subtreeContainsDisabledById = new Map<string, boolean>();
 	let preorderIndex = 0;
 
 	const walk = (node: TreeSelectNode, parentId?: string) => {
@@ -57,6 +60,11 @@ export function createTreeNodeIndex(nodes: readonly TreeSelectNode[]): TreeNodeI
 		for (const child of node.children ?? []) {
 			walk(child, node.id);
 		}
+
+		subtreeContainsDisabledById.set(
+			node.id,
+			node.disabled === true || childIds.some((childId) => subtreeContainsDisabledById.get(childId) === true)
+		);
 	};
 
 	for (const node of nodes) {
@@ -70,7 +78,8 @@ export function createTreeNodeIndex(nodes: readonly TreeSelectNode[]): TreeNodeI
 		childrenById,
 		preorderIndexById,
 		nodeIdByCodeValue,
-		nodeIdsByCodeValue
+		nodeIdsByCodeValue,
+		subtreeContainsDisabledById
 	};
 }
 
@@ -164,6 +173,38 @@ function isDescendantOf(nodeId: string, ancestorId: string, index: TreeNodeIndex
 	return false;
 }
 
+/**
+ * Проверяет, можно ли безопасно синхронизировать повторные визуальные узлы
+ * одним server predicate. Disabled-поддеревья, виртуальные группы и вложенные
+ * дубли требуют более точного выбора на уровне доступных потомков.
+ */
+function canSynchronizeEquivalentTreeNodes(nodeId: string, index: TreeNodeIndex) {
+	const equivalentNodeIds = getEquivalentTreeNodeIds(nodeId, index);
+	if (!equivalentNodeIds.length) return false;
+
+	if (
+		equivalentNodeIds.some((equivalentNodeId) => {
+			const node = index.nodeById.get(equivalentNodeId);
+			return !node || node.selectionBehavior === "descendants" || index.subtreeContainsDisabledById.get(equivalentNodeId) === true;
+		})
+	) {
+		return false;
+	}
+
+	return !equivalentNodeIds.some((candidateId, candidateIndex) =>
+		equivalentNodeIds.some(
+			(otherId, otherIndex) =>
+				candidateIndex !== otherIndex &&
+				(isDescendantOf(candidateId, otherId, index) || isDescendantOf(otherId, candidateId, index))
+		)
+	);
+}
+
+/** Возвращает эквивалентные узлы только для безопасно синхронизируемого predicate. */
+function getSynchronizedEquivalentTreeNodeIds(nodeId: string, index: TreeNodeIndex) {
+	return canSynchronizeEquivalentTreeNodes(nodeId, index) ? getEquivalentTreeNodeIds(nodeId, index) : [nodeId];
+}
+
 function removeDescendantSelections(selectedIds: Set<string>, nodeId: string, index: TreeNodeIndex) {
 	for (const selectedId of [...selectedIds]) {
 		if (isDescendantOf(selectedId, nodeId, index)) {
@@ -229,15 +270,17 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 
 		if (children.every((childId) => isNodeFullySelected(childId, nextSelectedIds, index))) {
 			const equivalentNodeIds = getEquivalentTreeNodeIds(nodeId, index);
-			const canCollapseEquivalentNodes = equivalentNodeIds.every((equivalentNodeId) => {
-				const equivalentNode = index.nodeById.get(equivalentNodeId);
-				return (
-					equivalentNode &&
-					!equivalentNode.disabled &&
-					equivalentNode.selectionBehavior !== "descendants" &&
-					isNodeFullySelected(equivalentNodeId, nextSelectedIds, index)
-				);
-			});
+			const canCollapseEquivalentNodes =
+				canSynchronizeEquivalentTreeNodes(nodeId, index) &&
+				equivalentNodeIds.every((equivalentNodeId) => {
+					const equivalentNode = index.nodeById.get(equivalentNodeId);
+					return (
+						equivalentNode &&
+						!equivalentNode.disabled &&
+						equivalentNode.selectionBehavior !== "descendants" &&
+						isNodeFullySelected(equivalentNodeId, nextSelectedIds, index)
+					);
+				});
 
 			/*
 			 * Одинаковый server predicate может быть показан в нескольких ветвях.
@@ -352,8 +395,9 @@ export function getSelectableTreeNodeIds(index: TreeNodeIndex, rootIds: readonly
 		if (node.selectionBehavior === "descendants") {
 			return { containsDisabled, selectedIds: selectedChildIds };
 		}
+		const containsUnsafeEquivalent = !canSynchronizeEquivalentTreeNodes(nodeId, index);
 
-		return containsDisabled
+		return containsDisabled || containsUnsafeEquivalent
 			? { containsDisabled: true, selectedIds: selectedChildIds }
 			: { containsDisabled: false, selectedIds: [nodeId] };
 	};
@@ -380,13 +424,16 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 			return;
 		}
 
-		for (const equivalentTargetId of getEquivalentTreeNodeIds(targetId, index)) {
+		for (const equivalentTargetId of getSynchronizedEquivalentTreeNodeIds(targetId, index)) {
 			removeDescendantSelections(selectedIds, equivalentTargetId, index);
 			selectedIds.add(equivalentTargetId);
 		}
 	};
 
-	const selectableTargetIds = [...getSelectableTreeNodeIds(index, [targetNodeId])];
+	const resolvedSelectableTargetIds = [...getSelectableTreeNodeIds(index, [targetNodeId])];
+	/* Небезопасный сохранённый predicate остаётся доступен для явного снятия. */
+	const selectableTargetIds =
+		resolvedSelectableTargetIds.length === 0 && selectedIds.has(targetNodeId) ? [targetNodeId] : resolvedSelectableTargetIds;
 	const allSelectableTargetsSelected =
 		selectableTargetIds.length > 0 && selectableTargetIds.every((nodeId) => isTreeNodeSelected(nodeId, selectedIds, index));
 

@@ -122,6 +122,15 @@ const duplicatePredicateNodes: TreeSelectNode[] = [
 	}
 ];
 
+/** Создаёт независимое дерево с одним явно запрещённым узлом. */
+function disableTreeNode(sourceNodes: readonly TreeSelectNode[], disabledNodeId: string): TreeSelectNode[] {
+	return sourceNodes.map((node) => ({
+		...node,
+		disabled: node.id === disabledNodeId ? true : node.disabled,
+		children: node.children ? disableTreeNode(node.children, disabledNodeId) : undefined
+	}));
+}
+
 describe("tree expansion utils", () => {
 	const index = createTreeNodeIndex(nodes);
 	const rootId = "ZDIV:04";
@@ -288,6 +297,7 @@ describe("tree selection utils", () => {
 
 		expect(treeMultiValueToSelectedIds({ ZPRODH01: ["A"] }, index)).toEqual(equivalentIds);
 		expect(treeSelectedIdsToMultiValue(equivalentIds, index)).toEqual({ ZPRODH01: ["A"] });
+		expect(treeSelectedIdsToMultiValue(getSelectableTreeNodeIds(index), index)).toEqual({ ZPRODH01: ["A"] });
 		expect(toggleTreeMultiSelection({}, "GROUP:02/ZPRODH01:A", index)).toEqual({ ZPRODH01: ["A"] });
 		expect(toggleTreeMultiSelection({ ZPRODH01: ["A"] }, "GROUP:02/ZPRODH01:A", index)).toEqual({});
 	});
@@ -307,5 +317,62 @@ describe("tree selection utils", () => {
 		expect(treeMultiValueToSelectedIds({ ZPRODH11: ["A1", "A2", "A3"] }, index)).toEqual(
 			new Set(["GROUP:02/ZPRODH01:A", "GROUP:other/ZPRODH01:A"])
 		);
+	});
+
+	it("не сериализует parent predicate при disabled-потомке в эквивалентной ветви", () => {
+		const nodesWithDisabledDescendant = disableTreeNode(duplicatePredicateNodes, "GROUP:other/ZPRODH01:A/ZPRODH11:A3");
+		const index = createTreeNodeIndex(nodesWithDisabledDescendant);
+
+		expect(toggleTreeMultiSelection({}, "GROUP:02/ZPRODH01:A", index)).toEqual({ ZPRODH11: ["A1", "A2"] });
+		expect(treeSelectedIdsToMultiValue(getSelectableTreeNodeIds(index), index)).toEqual({ ZPRODH11: ["A1", "A2"] });
+	});
+
+	it("блокирует новый общий predicate для enabled и disabled дублей, но позволяет снять сохранённый", () => {
+		const duplicateLeafNodes: TreeSelectNode[] = [
+			{
+				id: "ROOT:01/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Разрешённый X",
+				searchText: "Разрешённый X"
+			},
+			{
+				id: "ROOT:02/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Запрещённый X",
+				searchText: "Запрещённый X",
+				disabled: true
+			}
+		];
+		const index = createTreeNodeIndex(duplicateLeafNodes);
+
+		expect(toggleTreeMultiSelection({}, "ROOT:01/VALUE:X", index)).toEqual({});
+		expect(toggleTreeMultiSelection({ VALUE: ["X"] }, "ROOT:01/VALUE:X", index)).toEqual({});
+	});
+
+	it("не создаёт новый predicate для вложенных дублей одного codeKey/value", () => {
+		const nestedDuplicateNodes: TreeSelectNode[] = [
+			{
+				id: "VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Родитель X",
+				searchText: "Родитель X",
+				children: [
+					{
+						id: "VALUE:X/VALUE:X",
+						codeKey: "VALUE",
+						value: "X",
+						label: "Потомок X",
+						searchText: "Потомок X"
+					}
+				]
+			}
+		];
+		const index = createTreeNodeIndex(nestedDuplicateNodes);
+
+		expect(toggleTreeMultiSelection({}, "VALUE:X", index)).toEqual({});
+		expect(toggleTreeMultiSelection({ VALUE: ["X"] }, "VALUE:X", index)).toEqual({});
 	});
 });
