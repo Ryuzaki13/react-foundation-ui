@@ -77,6 +77,25 @@ const DUPLICATE_VALUE_NODES: TreeSelectNode[] = [
 	}
 ];
 
+/** Общий predicate нельзя выбрать, если одно из его визуальных вхождений запрещено. */
+const DUPLICATE_DISABLED_VALUE_NODES: TreeSelectNode[] = [
+	{
+		id: "GROUP:01/VALUE:X",
+		codeKey: "VALUE",
+		value: "X",
+		label: "Разрешённый X",
+		searchText: "Разрешённый X"
+	},
+	{
+		id: "GROUP:02/VALUE:X",
+		codeKey: "VALUE",
+		value: "X",
+		label: "Запрещённый X",
+		searchText: "Запрещённый X",
+		disabled: true
+	}
+];
+
 const ASYNC_NODES: TreeSelectNode[] = Array.from({ length: 12 }, (_, index) => ({
 	id: `DIV:${index}`,
 	codeKey: "DIV",
@@ -468,6 +487,27 @@ describe("TreeMultiSelect columns layout", () => {
 
 		expect(findInnermostElementWithText("Группа A (02)")).toBeTruthy();
 		expect(container?.textContent).not.toContain("2 элемента");
+	});
+
+	it("помечает enabled-дубль недоступным, когда общий predicate затрагивает disabled-узел", async () => {
+		await renderHarness({ initialValue: {}, nodes: DUPLICATE_DISABLED_VALUE_NODES });
+
+		const enabledDuplicateOption = getOptionByText("Разрешённый X");
+		expect(enabledDuplicateOption.getAttribute("aria-disabled")).toBe("true");
+		expect(getCheckBox("Разрешённый X").disabled).toBe(true);
+	});
+
+	it("оставляет выбранный unsafe predicate доступным для явного снятия", async () => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({ initialValue: { VALUE: ["X"] }, nodes: DUPLICATE_DISABLED_VALUE_NODES, onChange });
+
+		const enabledDuplicateCheckBox = getCheckBox("Разрешённый X");
+		expect(enabledDuplicateCheckBox.disabled).toBe(false);
+		await clickElement(enabledDuplicateCheckBox);
+		await closePopup();
+
+		expect(getCommittedValueText()).toBe("{}");
+		expect(onChange).toHaveBeenLastCalledWith({});
 	});
 
 	it("показывает настроенный placeholder только до выбора и сохраняет доступное имя поля", async () => {

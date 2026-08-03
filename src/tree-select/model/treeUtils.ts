@@ -213,6 +213,21 @@ function removeDescendantSelections(selectedIds: Set<string>, nodeId: string, in
 	}
 }
 
+/**
+ * Снимает все сериализуемые predicates, которыми полностью покрыто поддерево.
+ * Эквивалентные id удаляются во всех ветвях, потому что внешний multi-value не
+ * способен сохранить один визуальный экземпляр и исключить другой.
+ */
+function removeSelectedSubtreePredicates(selectedIds: Set<string>, nodeId: string, index: TreeNodeIndex) {
+	const selectedSubtreeIds = [...selectedIds].filter((selectedId) => selectedId === nodeId || isDescendantOf(selectedId, nodeId, index));
+
+	for (const selectedSubtreeId of selectedSubtreeIds) {
+		for (const equivalentNodeId of getEquivalentTreeNodeIds(selectedSubtreeId, index)) {
+			selectedIds.delete(equivalentNodeId);
+		}
+	}
+}
+
 function isNodeFullySelected(nodeId: string, selectedIds: Set<string>, index: TreeNodeIndex): boolean {
 	if (selectedIds.has(nodeId)) {
 		return true;
@@ -415,6 +430,10 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 			}
 			return;
 		}
+		if (isNodeFullySelected(targetId, selectedIds, index)) {
+			removeSelectedSubtreePredicates(selectedIds, targetId, index);
+			return;
+		}
 
 		if (isTreeNodeSelected(targetId, selectedIds, index)) {
 			if (expandNearestSelectedAncestor(selectedIds, targetId, index)) {
@@ -435,10 +454,14 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 	const selectableTargetIds =
 		resolvedSelectableTargetIds.length === 0 && selectedIds.has(targetNodeId) ? [targetNodeId] : resolvedSelectableTargetIds;
 	const allSelectableTargetsSelected =
-		selectableTargetIds.length > 0 && selectableTargetIds.every((nodeId) => isTreeNodeSelected(nodeId, selectedIds, index));
+		selectableTargetIds.length > 0 &&
+		selectableTargetIds.every(
+			(nodeId) => isTreeNodeSelected(nodeId, selectedIds, index) || isNodeFullySelected(nodeId, selectedIds, index)
+		);
 
 	for (const selectableTargetId of selectableTargetIds) {
-		const selected = isTreeNodeSelected(selectableTargetId, selectedIds, index);
+		const selected =
+			isTreeNodeSelected(selectableTargetId, selectedIds, index) || isNodeFullySelected(selectableTargetId, selectedIds, index);
 		if ((allSelectableTargetsSelected && selected) || (!allSelectableTargetsSelected && !selected)) {
 			toggle(selectableTargetId);
 		}

@@ -46,6 +46,8 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	selectionMode: "single" | "multi";
 	optionsLayout?: TreeMultiSelectOptionsLayout;
 	defaultExpandedCodeKeys?: readonly string[];
+	/** Узлы, которые текущий multi-select contract не может безопасно сериализовать. */
+	unavailableNodeIds?: ReadonlySet<string>;
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 	bulkActions?: TreePickerBulkActions;
@@ -73,6 +75,7 @@ export function TreePickerBase({
 	selectionMode,
 	optionsLayout = "tree",
 	defaultExpandedCodeKeys,
+	unavailableNodeIds,
 	open: controlledOpen,
 	onOpenChange,
 	bulkActions,
@@ -188,7 +191,7 @@ export function TreePickerBase({
 		open,
 		onOpenChange: handleOpenChange,
 		onSelect: (entry) => onNodeActivate(entry.node),
-		getOptionDisabled: (entry) => entry.node.disabled === true,
+		getOptionDisabled: (entry) => entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true,
 		disabled: disabled || isLoading,
 		closeOnSelect: selectionMode === "single",
 		allowOpenWithoutOptions: true,
@@ -420,7 +423,8 @@ export function TreePickerBase({
 												: selectedIds.has(entry.node.id);
 										const partial = selectionMode === "multi" && !selected && partialIds.has(entry.node.id);
 										const active = index === activeIndex;
-										const optionDisabled = entry.node.disabled === true;
+										const optionDisabled =
+											entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true;
 
 										return (
 											<div
@@ -452,7 +456,7 @@ export function TreePickerBase({
 												onClick={() => selectOption(entry)}>
 												<div className={styles.treeNodeButton}>
 													<TreeNodeContent
-														node={entry.node}
+														node={optionDisabled ? { ...entry.node, disabled: true } : entry.node}
 														level={entry.level}
 														highlight={currentQuery}
 														hasChildren={entry.hasChildren}

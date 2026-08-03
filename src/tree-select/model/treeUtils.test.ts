@@ -319,6 +319,14 @@ describe("tree selection utils", () => {
 		);
 	});
 
+	it("снимает полностью покрытую duplicate-ветвь вместо расширения до общего parent predicate", () => {
+		const index = createTreeNodeIndex(duplicatePredicateNodes);
+		const selectedChildren = { ZPRODH11: ["A1", "A2"] };
+
+		expect(toggleTreeMultiSelection(selectedChildren, "GROUP:02/ZPRODH01:A", index)).toEqual({});
+		expect(toggleTreeMultiSelection(selectedChildren, "GROUP:02", index)).toEqual({});
+	});
+
 	it("не сериализует parent predicate при disabled-потомке в эквивалентной ветви", () => {
 		const nodesWithDisabledDescendant = disableTreeNode(duplicatePredicateNodes, "GROUP:other/ZPRODH01:A/ZPRODH11:A3");
 		const index = createTreeNodeIndex(nodesWithDisabledDescendant);

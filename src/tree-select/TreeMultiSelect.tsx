@@ -100,6 +100,18 @@ export function TreeMultiSelect({
 	});
 	const currentValue = open ? draftValue : value;
 	const selectedIds = useMemo(() => treeMultiValueToSelectedIds(currentValue, treeIndex), [currentValue, treeIndex]);
+	const unavailableNodeIds = useMemo(
+		() =>
+			new Set(
+				[...treeIndex.nodeById.keys()].filter(
+					(nodeId) =>
+						treeIndex.nodeById.get(nodeId)?.disabled !== true &&
+						!selectedIds.has(nodeId) &&
+						getSelectableTreeNodeIds(treeIndex, [nodeId]).size === 0
+				)
+			),
+		[selectedIds, treeIndex]
+	);
 	const selectionState = useMemo(() => getTreeNodeSelectionState(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const selectedSummary = useMemo(() => formatTreeMultiSummary(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const handleOpenChange = (nextOpen: boolean) => {
@@ -133,6 +145,7 @@ export function TreeMultiSelect({
 			selectionMode="multi"
 			optionsLayout={optionsLayout}
 			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
+			unavailableNodeIds={unavailableNodeIds}
 			open={open}
 			onOpenChange={handleOpenChange}
 			bulkActions={{
