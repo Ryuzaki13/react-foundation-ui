@@ -169,6 +169,20 @@ function isNodeFullySelected(nodeId: string, selectedIds: Set<string>, index: Tr
 export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeNodeIndex) {
 	const nextSelectedIds = new Set(selectedIds);
 
+	/*
+	 * Внешнее значение могло быть сохранено до того, как узел стал виртуальной
+	 * группой. Разворачиваем такой выбор в актуальное покрытие потомков, чтобы
+	 * group-id не протекал обратно в публичный TreeMultiSelectValue.
+	 */
+	for (const selectedId of [...nextSelectedIds]) {
+		if (index.nodeById.get(selectedId)?.selectionBehavior !== "descendants") continue;
+
+		nextSelectedIds.delete(selectedId);
+		for (const descendantId of getSelectableTreeNodeIds(index, index.childrenById.get(selectedId) ?? [])) {
+			nextSelectedIds.add(descendantId);
+		}
+	}
+
 	for (const selectedId of [...nextSelectedIds]) {
 		if (getAncestorIds(selectedId, index).some((ancestorId) => nextSelectedIds.has(ancestorId))) {
 			nextSelectedIds.delete(selectedId);
@@ -182,7 +196,12 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 	for (const nodeId of orderedNodeIds) {
 		const children = index.childrenById.get(nodeId) ?? [];
 
-		if (children.length === 0 || nextSelectedIds.has(nodeId) || index.nodeById.get(nodeId)?.disabled) {
+		if (
+			children.length === 0 ||
+			nextSelectedIds.has(nodeId) ||
+			index.nodeById.get(nodeId)?.disabled ||
+			index.nodeById.get(nodeId)?.selectionBehavior === "descendants"
+		) {
 			continue;
 		}
 
@@ -284,6 +303,9 @@ export function getSelectableTreeNodeIds(index: TreeNodeIndex, rootIds: readonly
 
 		if (!node || node.disabled) {
 			return { containsDisabled: true, selectedIds: selectedChildIds };
+		}
+		if (node.selectionBehavior === "descendants") {
+			return { containsDisabled, selectedIds: selectedChildIds };
 		}
 
 		return containsDisabled

@@ -1,10 +1,22 @@
+import { useMemo } from "react";
+
 import { ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 
 import { UiBaseProps } from "../types";
 
 import { useODataTreeData } from "./model/useODataTreeData";
 import { TreeMultiSelect } from "./TreeMultiSelect";
-import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue } from "./types";
+import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "./types";
+
+export type ODataTreeMultiSelectNodesTransformContext = {
+	/** Фактический порядок запрошенных уровней после разрешения metadata-chain. */
+	orderedCodeKeys: readonly string[];
+};
+
+export type ODataTreeMultiSelectNodesTransform = (
+	nodes: readonly TreeSelectNode[],
+	context: ODataTreeMultiSelectNodesTransformContext
+) => readonly TreeSelectNode[];
 
 export interface ODataTreeMultiSelectProps
 	extends Omit<ODataDependentBaseProps, "model" | "value" | "dependencies">, Omit<UiBaseProps<TreeMultiSelectValue>, "placeholder"> {
@@ -20,6 +32,15 @@ export interface ODataTreeMultiSelectProps
 	 * В режиме `columns` дерево по-прежнему отображается полностью раскрытым.
 	 */
 	defaultExpandedCodeKeys?: readonly string[];
+	/** Явный порядок уровней поверх порядка, автоматически полученного из metadata-chain. */
+	segmentOrder?: readonly string[];
+	/**
+	 * Создаёт consumer-представление поверх уже загруженного OData-дерева.
+	 *
+	 * Преобразование не меняет Query cache и transport-запрос. Callback должен
+	 * оставаться чистым и возвращать новые узлы, не мутируя входное дерево.
+	 */
+	transformNodes?: ODataTreeMultiSelectNodesTransform;
 }
 
 export function ODataTreeMultiSelect({
@@ -37,13 +58,20 @@ export function ODataTreeMultiSelect({
 	odata,
 	segments,
 	model,
-	defaultExpandedCodeKeys
+	defaultExpandedCodeKeys,
+	segmentOrder,
+	transformNodes
 }: ODataTreeMultiSelectProps) {
 	const treeData = useODataTreeData({
 		odata,
 		segments,
-		model
+		model,
+		segmentOrder
 	});
+	const nodes = useMemo(
+		() => transformNodes?.(treeData.nodes, { orderedCodeKeys: treeData.orderedCodeKeys }) ?? treeData.nodes,
+		[transformNodes, treeData.nodes, treeData.orderedCodeKeys]
+	);
 
 	return (
 		<TreeMultiSelect
@@ -52,7 +80,7 @@ export function ODataTreeMultiSelect({
 			disabled={disabled || treeData.isLoading}
 			size={size}
 			placeholder={placeholder ?? treeData.placeholder}
-			nodes={treeData.nodes}
+			nodes={nodes}
 			value={value}
 			onChange={onChange}
 			query={query}

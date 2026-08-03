@@ -177,4 +177,44 @@ describe("tree selection utils", () => {
 		 */
 		expect(toggleTreeMultiSelection({ ZDIV: ["04"] }, "ZDIV:04/ZCFO1:0202", index)).toEqual({});
 	});
+
+	it("переключает виртуальную группу через потомков и не сериализует саму группу", () => {
+		const virtualGroupNodes: TreeSelectNode[] = [
+			{
+				id: "GROUP:main",
+				codeKey: "GROUP",
+				value: "main",
+				label: "Основные",
+				searchText: "Основные",
+				selectionBehavior: "descendants",
+				children: nodes[0].children
+			}
+		];
+		const index = createTreeNodeIndex(virtualGroupNodes);
+		const selectedValue = toggleTreeMultiSelection({}, "GROUP:main", index);
+
+		expect(selectedValue).toEqual({ ZCFO1: ["0202", "0204"] });
+		expect(selectedValue).not.toHaveProperty("GROUP");
+		expect(toggleTreeMultiSelection(selectedValue, "GROUP:main", index)).toEqual({});
+
+		const selectedIds = treeMultiValueToSelectedIds(selectedValue, index);
+		const selectionState = getTreeNodeSelectionState(selectedIds, index);
+		expect(selectionState.selectedIds.has("GROUP:main")).toBe(true);
+	});
+
+	it("разворачивает сохранённое значение виртуальной группы в актуальное покрытие потомков", () => {
+		const index = createTreeNodeIndex([
+			{
+				id: "GROUP:main",
+				codeKey: "GROUP",
+				value: "main",
+				label: "Основные",
+				searchText: "Основные",
+				selectionBehavior: "descendants",
+				children: nodes[0].children
+			}
+		]);
+
+		expect(treeMultiValueToSelectedIds({ GROUP: ["main"] }, index)).toEqual(new Set(["ZDIV:04/ZCFO1:0202", "ZDIV:04/ZCFO1:0204"]));
+	});
 });

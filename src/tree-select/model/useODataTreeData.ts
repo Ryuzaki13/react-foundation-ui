@@ -31,11 +31,19 @@ function getRootCodeKey(orderedSegmentItems: readonly ODataDependentSegmentItem[
 	return orderedSegmentItems[0]?.id;
 }
 
-export function useODataTreeData({ odata, segments, model }: Pick<ODataDependentBaseProps, "odata" | "segments" | "model">) {
+type UseODataTreeDataProps = Pick<ODataDependentBaseProps, "odata" | "segments" | "model"> & {
+	/** Явный порядок уровней поверх автоматически разрешённой metadata-chain. */
+	segmentOrder?: readonly string[];
+};
+
+export function useODataTreeData({ odata, segments, model, segmentOrder }: UseODataTreeDataProps) {
 	const serviceKey = `${odata.service}.${odata.target}`;
 	const baseSegmentItems = useMemo(() => buildOrderedSegmentItems(odata, segments, model), [odata, segments, model]);
 	const chains = useODataCollectionChains([odata]);
-	const orderedSegmentItems = useMemo(() => resolveOrderedTreeSegmentItems(baseSegmentItems, chains), [baseSegmentItems, chains]);
+	const orderedSegmentItems = useMemo(
+		() => resolveOrderedTreeSegmentItems(baseSegmentItems, chains, segmentOrder),
+		[baseSegmentItems, chains, segmentOrder]
+	);
 	const orderedCodeKeys = useMemo(() => orderedSegmentItems.map((item) => item.id), [orderedSegmentItems]);
 	const rootCodeKey = getRootCodeKey(orderedSegmentItems) ?? Object.keys(segments)[0];
 	const odataModel = useODataCollectionModel({

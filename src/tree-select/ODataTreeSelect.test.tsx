@@ -99,8 +99,21 @@ describe("ODataTree wrappers", () => {
 	});
 
 	it("пробрасывает данные и loading/error в TreeMultiSelect", async () => {
+		const sourceNodes = [{ id: "A:1", codeKey: "A", value: "1", label: "One", searchText: "1 One" }];
+		const transformedNodes = [
+			{
+				id: "GROUP:all",
+				codeKey: "GROUP",
+				value: "all",
+				label: "Все",
+				searchText: "Все",
+				selectionBehavior: "descendants" as const,
+				children: sourceNodes
+			}
+		];
+		const transformNodes = vi.fn(() => transformedNodes);
 		vi.mocked(useODataTreeData).mockReturnValue({
-			nodes: [{ id: "A:1", codeKey: "A", value: "1", label: "One", searchText: "1 One" }],
+			nodes: sourceNodes,
 			orderedSegmentItems: [],
 			orderedCodeKeys: ["A"],
 			isLoading: false,
@@ -117,8 +130,17 @@ describe("ODataTree wrappers", () => {
 				value={{ A: ["1"] }}
 				onChange={vi.fn()}
 				defaultExpandedCodeKeys={["A", "B"]}
+				segmentOrder={["A", "B"]}
+				transformNodes={transformNodes}
 			/>
 		);
+
+		expect(useODataTreeData).toHaveBeenCalledWith(
+			expect.objectContaining({
+				segmentOrder: ["A", "B"]
+			})
+		);
+		expect(transformNodes).toHaveBeenCalledWith(sourceNodes, { orderedCodeKeys: ["A"] });
 
 		expect(recordedProps.treeMultiSelect).toMatchObject({
 			placeholder: "Корень",
@@ -126,6 +148,7 @@ describe("ODataTree wrappers", () => {
 			isLoading: false,
 			error: undefined,
 			value: { A: ["1"] },
+			nodes: transformedNodes,
 			defaultExpandedCodeKeys: ["A", "B"]
 		});
 	});

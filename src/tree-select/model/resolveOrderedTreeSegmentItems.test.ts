@@ -36,4 +36,21 @@ describe("resolveOrderedTreeSegmentItems", () => {
 
 		expect(resolveOrderedTreeSegmentItems(items, {}).map((item) => item.id)).toEqual(["B", "A", "C"]);
 	});
+
+	it("накладывает явный порядок поверх metadata-chain", () => {
+		const items = [createItem("B", 0), createItem("A", 1), createItem("C", 2)];
+
+		expect(
+			resolveOrderedTreeSegmentItems(
+				items,
+				{
+					"S.T": [
+						{ codeKey: "A", count: 1 },
+						{ codeKey: "C", count: 2 }
+					]
+				},
+				["B", "A", "C"]
+			).map((item) => item.id)
+		).toEqual(["B", "A", "C"]);
+	});
 });
