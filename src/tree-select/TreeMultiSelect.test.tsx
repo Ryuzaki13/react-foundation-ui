@@ -96,6 +96,85 @@ const DUPLICATE_DISABLED_VALUE_NODES: TreeSelectNode[] = [
 	}
 ];
 
+/** Выбранный parent можно безопасно разложить при снятии unsafe duplicate-leaf. */
+const SELECTED_PARENT_WITH_DUPLICATE_DISABLED_LEAF_NODES: TreeSelectNode[] = [
+	{
+		id: "PARENT:P",
+		codeKey: "PARENT",
+		value: "P",
+		label: "Родитель P",
+		searchText: "Родитель P",
+		children: [
+			{
+				id: "PARENT:P/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Разрешённый X",
+				searchText: "Разрешённый X"
+			},
+			{
+				id: "PARENT:P/VALUE:Y",
+				codeKey: "VALUE",
+				value: "Y",
+				label: "Разрешённый Y",
+				searchText: "Разрешённый Y"
+			}
+		]
+	},
+	{
+		id: "PARENT:OTHER/VALUE:X",
+		codeKey: "VALUE",
+		value: "X",
+		label: "Запрещённый X",
+		searchText: "Запрещённый X",
+		disabled: true
+	}
+];
+
+/** Derived-full группа должна оставаться доступной для снятия unsafe predicates. */
+const DERIVED_FULL_UNSAFE_GROUP_NODES: TreeSelectNode[] = [
+	{
+		id: "GROUP:selected",
+		codeKey: "GROUP",
+		value: "selected",
+		label: "Виртуальная группа",
+		searchText: "Виртуальная группа",
+		selectionBehavior: "descendants",
+		children: [
+			{
+				id: "GROUP:selected/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Разрешённый X",
+				searchText: "Разрешённый X"
+			},
+			{
+				id: "GROUP:selected/VALUE:Y",
+				codeKey: "VALUE",
+				value: "Y",
+				label: "Разрешённый Y",
+				searchText: "Разрешённый Y"
+			}
+		]
+	},
+	{
+		id: "GROUP:disabled/VALUE:X",
+		codeKey: "VALUE",
+		value: "X",
+		label: "Запрещённый X",
+		searchText: "Запрещённый X",
+		disabled: true
+	},
+	{
+		id: "GROUP:disabled/VALUE:Y",
+		codeKey: "VALUE",
+		value: "Y",
+		label: "Запрещённый Y",
+		searchText: "Запрещённый Y",
+		disabled: true
+	}
+];
+
 const ASYNC_NODES: TreeSelectNode[] = Array.from({ length: 12 }, (_, index) => ({
 	id: `DIV:${index}`,
 	codeKey: "DIV",
@@ -504,6 +583,36 @@ describe("TreeMultiSelect columns layout", () => {
 		const enabledDuplicateCheckBox = getCheckBox("Разрешённый X");
 		expect(enabledDuplicateCheckBox.disabled).toBe(false);
 		await clickElement(enabledDuplicateCheckBox);
+		await closePopup();
+
+		expect(getCommittedValueText()).toBe("{}");
+		expect(onChange).toHaveBeenLastCalledWith({});
+	});
+
+	it("оставляет unsafe leaf активным для частичного снятия выбранного parent", async () => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({
+			initialValue: { PARENT: ["P"] },
+			nodes: SELECTED_PARENT_WITH_DUPLICATE_DISABLED_LEAF_NODES,
+			onChange
+		});
+
+		const unsafeLeafCheckBox = getCheckBox("Разрешённый X");
+		expect(unsafeLeafCheckBox.disabled).toBe(false);
+		await clickElement(unsafeLeafCheckBox);
+		await closePopup();
+
+		expect(getCommittedValueText()).toBe('{"VALUE":["Y"]}');
+		expect(onChange).toHaveBeenLastCalledWith({ VALUE: ["Y"] });
+	});
+
+	it("оставляет derived-full виртуальную группу доступной для снятия unsafe predicates", async () => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({ initialValue: { VALUE: ["X", "Y"] }, nodes: DERIVED_FULL_UNSAFE_GROUP_NODES, onChange });
+
+		const groupCheckBox = getCheckBox("Виртуальная группа");
+		expect(groupCheckBox.disabled).toBe(false);
+		await clickElement(groupCheckBox);
 		await closePopup();
 
 		expect(getCommittedValueText()).toBe("{}");

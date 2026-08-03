@@ -9,6 +9,7 @@ import {
 	createTreeNodeIndex,
 	getSelectableTreeNodeIds,
 	getTreeNodeSelectionState,
+	isTreeNodeSelected,
 	toggleTreeMultiSelection,
 	treeMultiValueToSelectedIds,
 	treeSelectedIdsToMultiValue
@@ -100,19 +101,20 @@ export function TreeMultiSelect({
 	});
 	const currentValue = open ? draftValue : value;
 	const selectedIds = useMemo(() => treeMultiValueToSelectedIds(currentValue, treeIndex), [currentValue, treeIndex]);
+	const selectionState = useMemo(() => getTreeNodeSelectionState(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const unavailableNodeIds = useMemo(
 		() =>
 			new Set(
 				[...treeIndex.nodeById.keys()].filter(
 					(nodeId) =>
 						treeIndex.nodeById.get(nodeId)?.disabled !== true &&
-						!selectedIds.has(nodeId) &&
+						!isTreeNodeSelected(nodeId, selectedIds, treeIndex) &&
+						!selectionState.selectedIds.has(nodeId) &&
 						getSelectableTreeNodeIds(treeIndex, [nodeId]).size === 0
 				)
 			),
-		[selectedIds, treeIndex]
+		[selectedIds, selectionState.selectedIds, treeIndex]
 	);
-	const selectionState = useMemo(() => getTreeNodeSelectionState(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const selectedSummary = useMemo(() => formatTreeMultiSummary(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const handleOpenChange = (nextOpen: boolean) => {
 		if (nextOpen && !open) {

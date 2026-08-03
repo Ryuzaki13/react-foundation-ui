@@ -359,6 +359,214 @@ describe("tree selection utils", () => {
 		expect(toggleTreeMultiSelection({ VALUE: ["X"] }, "ROOT:01/VALUE:X", index)).toEqual({});
 	});
 
+	it("снимает unsafe leaf через разложение выбранного parent на разрешённых siblings", () => {
+		const parentWithUnsafeLeafNodes: TreeSelectNode[] = [
+			{
+				id: "PARENT:P",
+				codeKey: "PARENT",
+				value: "P",
+				label: "Родитель P",
+				searchText: "Родитель P",
+				children: [
+					{
+						id: "PARENT:P/VALUE:X",
+						codeKey: "VALUE",
+						value: "X",
+						label: "Разрешённый X",
+						searchText: "Разрешённый X"
+					},
+					{
+						id: "PARENT:P/VALUE:Y",
+						codeKey: "VALUE",
+						value: "Y",
+						label: "Разрешённый Y",
+						searchText: "Разрешённый Y"
+					}
+				]
+			},
+			{
+				id: "PARENT:OTHER/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Запрещённый X",
+				searchText: "Запрещённый X",
+				disabled: true
+			}
+		];
+		const index = createTreeNodeIndex(parentWithUnsafeLeafNodes);
+
+		expect(toggleTreeMultiSelection({ PARENT: ["P"] }, "PARENT:P/VALUE:X", index)).toEqual({ VALUE: ["Y"] });
+	});
+
+	it("снимает redundant unsafe predicate вместе с leaf выбранного parent", () => {
+		const parentWithRedundantUnsafeLeafNodes: TreeSelectNode[] = [
+			{
+				id: "PARENT:P",
+				codeKey: "PARENT",
+				value: "P",
+				label: "Родитель P",
+				searchText: "Родитель P",
+				children: [
+					{
+						id: "PARENT:P/VALUE:X",
+						codeKey: "VALUE",
+						value: "X",
+						label: "Разрешённый X",
+						searchText: "Разрешённый X"
+					},
+					{
+						id: "PARENT:P/VALUE:Y",
+						codeKey: "VALUE",
+						value: "Y",
+						label: "Разрешённый Y",
+						searchText: "Разрешённый Y"
+					}
+				]
+			},
+			{
+				id: "PARENT:OTHER/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Запрещённый X",
+				searchText: "Запрещённый X",
+				disabled: true
+			}
+		];
+		const index = createTreeNodeIndex(parentWithRedundantUnsafeLeafNodes);
+
+		expect(toggleTreeMultiSelection({ PARENT: ["P"], VALUE: ["X"] }, "PARENT:P/VALUE:X", index)).toEqual({
+			VALUE: ["Y"]
+		});
+	});
+
+	it("снимает выбранный parent вместе с внешним дублем его descendant predicate", () => {
+		const parentWithExternalDuplicateDescendantNodes: TreeSelectNode[] = [
+			{
+				id: "PARENT:P",
+				codeKey: "PARENT",
+				value: "P",
+				label: "Родитель P",
+				searchText: "Родитель P",
+				children: [
+					{
+						id: "PARENT:P/VALUE:X",
+						codeKey: "VALUE",
+						value: "X",
+						label: "Значение X",
+						searchText: "Значение X"
+					},
+					{
+						id: "PARENT:P/VALUE:Y",
+						codeKey: "VALUE",
+						value: "Y",
+						label: "Значение Y",
+						searchText: "Значение Y"
+					}
+				]
+			},
+			{
+				id: "PARENT:OTHER/VALUE:Y",
+				codeKey: "VALUE",
+				value: "Y",
+				label: "Внешнее значение Y",
+				searchText: "Внешнее значение Y"
+			}
+		];
+		const index = createTreeNodeIndex(parentWithExternalDuplicateDescendantNodes);
+		const selectedParent = toggleTreeMultiSelection({ VALUE: ["Y"] }, "PARENT:P", index);
+
+		expect(selectedParent).toEqual({ PARENT: ["P"], VALUE: ["Y"] });
+		expect(toggleTreeMultiSelection(selectedParent, "PARENT:P", index)).toEqual({});
+	});
+
+	it("снимает derived-full виртуальную группу с unsafe duplicate-leaves", () => {
+		const virtualGroupWithUnsafeLeaves: TreeSelectNode[] = [
+			{
+				id: "GROUP:selected",
+				codeKey: "GROUP",
+				value: "selected",
+				label: "Виртуальная группа",
+				searchText: "Виртуальная группа",
+				selectionBehavior: "descendants",
+				children: [
+					{
+						id: "GROUP:selected/VALUE:X",
+						codeKey: "VALUE",
+						value: "X",
+						label: "Разрешённый X",
+						searchText: "Разрешённый X"
+					},
+					{
+						id: "GROUP:selected/VALUE:Y",
+						codeKey: "VALUE",
+						value: "Y",
+						label: "Разрешённый Y",
+						searchText: "Разрешённый Y"
+					}
+				]
+			},
+			{
+				id: "GROUP:disabled/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Запрещённый X",
+				searchText: "Запрещённый X",
+				disabled: true
+			},
+			{
+				id: "GROUP:disabled/VALUE:Y",
+				codeKey: "VALUE",
+				value: "Y",
+				label: "Запрещённый Y",
+				searchText: "Запрещённый Y",
+				disabled: true
+			}
+		];
+		const index = createTreeNodeIndex(virtualGroupWithUnsafeLeaves);
+
+		expect(toggleTreeMultiSelection({ VALUE: ["X", "Y"] }, "GROUP:selected", index)).toEqual({});
+	});
+
+	it("полностью снимает derived-full группу со смешанным safe и unsafe покрытием", () => {
+		const mixedCoverageGroupNodes: TreeSelectNode[] = [
+			{
+				id: "GROUP:selected",
+				codeKey: "GROUP",
+				value: "selected",
+				label: "Виртуальная группа",
+				searchText: "Виртуальная группа",
+				selectionBehavior: "descendants",
+				children: [
+					{
+						id: "GROUP:selected/VALUE:X",
+						codeKey: "VALUE",
+						value: "X",
+						label: "Unsafe X",
+						searchText: "Unsafe X"
+					},
+					{
+						id: "GROUP:selected/VALUE:Y",
+						codeKey: "VALUE",
+						value: "Y",
+						label: "Safe Y",
+						searchText: "Safe Y"
+					}
+				]
+			},
+			{
+				id: "GROUP:disabled/VALUE:X",
+				codeKey: "VALUE",
+				value: "X",
+				label: "Disabled X",
+				searchText: "Disabled X",
+				disabled: true
+			}
+		];
+		const index = createTreeNodeIndex(mixedCoverageGroupNodes);
+
+		expect(toggleTreeMultiSelection({ VALUE: ["X", "Y"] }, "GROUP:selected", index)).toEqual({});
+	});
+
 	it("не создаёт новый predicate для вложенных дублей одного codeKey/value", () => {
 		const nestedDuplicateNodes: TreeSelectNode[] = [
 			{

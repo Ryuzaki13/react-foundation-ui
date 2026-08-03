@@ -219,10 +219,14 @@ function removeDescendantSelections(selectedIds: Set<string>, nodeId: string, in
  * способен сохранить один визуальный экземпляр и исключить другой.
  */
 function removeSelectedSubtreePredicates(selectedIds: Set<string>, nodeId: string, index: TreeNodeIndex) {
-	const selectedSubtreeIds = [...selectedIds].filter((selectedId) => selectedId === nodeId || isDescendantOf(selectedId, nodeId, index));
+	const subtreeNodeIds = [nodeId];
 
-	for (const selectedSubtreeId of selectedSubtreeIds) {
-		for (const equivalentNodeId of getEquivalentTreeNodeIds(selectedSubtreeId, index)) {
+	for (let nodeIndex = 0; nodeIndex < subtreeNodeIds.length; nodeIndex += 1) {
+		const subtreeNodeId = subtreeNodeIds[nodeIndex];
+		if (!subtreeNodeId) continue;
+
+		subtreeNodeIds.push(...(index.childrenById.get(subtreeNodeId) ?? []));
+		for (const equivalentNodeId of getEquivalentTreeNodeIds(subtreeNodeId, index)) {
 			selectedIds.delete(equivalentNodeId);
 		}
 	}
@@ -423,11 +427,19 @@ export function getSelectableTreeNodeIds(index: TreeNodeIndex, rootIds: readonly
 export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | undefined, targetNodeId: string, index: TreeNodeIndex) {
 	const selectedIds = treeMultiValueToSelectedIds(currentValue, index);
 
+	/*
+	 * Derived-full ветка может содержать одновременно safe и unsafe predicates.
+	 * При повторном клике снимаем всё её фактическое покрытие до расчёта набора,
+	 * доступного для нового выбора: иначе safe subset оставил бы ветку partial.
+	 */
+	if (isNodeFullySelected(targetNodeId, selectedIds, index)) {
+		removeSelectedSubtreePredicates(selectedIds, targetNodeId, index);
+		return treeSelectedIdsToMultiValue(canonicalizeTreeSelection(selectedIds, index), index);
+	}
+
 	const toggle = (targetId: string) => {
 		if (selectedIds.has(targetId)) {
-			for (const equivalentTargetId of getEquivalentTreeNodeIds(targetId, index)) {
-				selectedIds.delete(equivalentTargetId);
-			}
+			removeSelectedSubtreePredicates(selectedIds, targetId, index);
 			return;
 		}
 		if (isNodeFullySelected(targetId, selectedIds, index)) {
@@ -437,7 +449,17 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 
 		if (isTreeNodeSelected(targetId, selectedIds, index)) {
 			if (expandNearestSelectedAncestor(selectedIds, targetId, index)) {
-				toggle(targetId);
+				/*
+				 * В глубоком дереве после одного разворачивания target может остаться
+				 * покрыт более близким ancestor — продолжаем разложение рекурсивно.
+				 * Если unsafe target выпал из доступного покрытия, всё равно удаляем
+				 * его predicate-класс, включая disabled-дубль вне целевой ветви.
+				 */
+				if (isTreeNodeSelected(targetId, selectedIds, index) || isNodeFullySelected(targetId, selectedIds, index)) {
+					toggle(targetId);
+				} else {
+					removeSelectedSubtreePredicates(selectedIds, targetId, index);
+				}
 			}
 
 			return;
@@ -452,7 +474,10 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 	const resolvedSelectableTargetIds = [...getSelectableTreeNodeIds(index, [targetNodeId])];
 	/* Небезопасный сохранённый predicate остаётся доступен для явного снятия. */
 	const selectableTargetIds =
-		resolvedSelectableTargetIds.length === 0 && selectedIds.has(targetNodeId) ? [targetNodeId] : resolvedSelectableTargetIds;
+		resolvedSelectableTargetIds.length === 0 &&
+		(isTreeNodeSelected(targetNodeId, selectedIds, index) || isNodeFullySelected(targetNodeId, selectedIds, index))
+			? [targetNodeId]
+			: resolvedSelectableTargetIds;
 	const allSelectableTargetsSelected =
 		selectableTargetIds.length > 0 &&
 		selectableTargetIds.every(
