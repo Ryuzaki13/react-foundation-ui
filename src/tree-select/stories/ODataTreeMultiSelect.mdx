@@ -8,7 +8,7 @@ import * as ODataTreeMultiSelectStories from "./ODataTreeMultiSelect.stories";
 
 `ODataTreeMultiSelect` строит дерево из одной OData-цепочки и отдает наружу канонизированный выбор в формате `Record<string, string[]>`.
 
-`segmentOrder` задаёт явный порядок уровней поверх автоматически разрешённой metadata-chain. `transformNodes` позволяет создать чистое consumer-представление поверх уже загруженных узлов, не меняя OData Query cache. Для синтетических корней используйте `selectionBehavior: "descendants"`: группа останется кликабельной, но в значение попадут только её реальные потомки.
+`segmentOrder` задаёт явный порядок уровней поверх автоматически разрешённой metadata-chain. `allowEmptyCodeKeys` сохраняет перечисленные пустые структурные уровни, чтобы их потомки не терялись. `transformNodes` позволяет создать чистое consumer-представление поверх уже загруженных узлов, не меняя OData Query cache. Для синтетических корней используйте `selectionBehavior: "descendants"`: группа останется кликабельной, но в значение попадут только её реальные потомки.
 
 ## Основной сценарий
 
