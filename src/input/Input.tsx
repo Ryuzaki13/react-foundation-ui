@@ -52,13 +52,14 @@ export function InputLoadingFrame() {
 	return <div className={cn(uiStyles.uiInputControlFake, "skeletonLine")} />;
 }
 
-export function InputUILoading({
+export function InputUIFrame({
 	label,
 	description,
 	size,
 	disabled,
+	isLoading,
 	className
-}: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "className">) {
+}: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "className"> & { isLoading?: boolean }) {
 	const { controlId, labelId, descriptionId } = useInputFieldIds({
 		hasLabel: label !== undefined && label !== null,
 		hasDescription: !!description
@@ -74,9 +75,13 @@ export function InputUILoading({
 					{description}
 				</p>
 			)}
-			<InputLoadingFrame />
+			<div className={cn(uiStyles.uiInputControlFake, isLoading && "skeletonLine")} />
 		</div>
 	);
+}
+
+export function InputUILoading(props: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "className">) {
+	return <InputUIFrame {...props} isLoading />;
 }
 
 /**
