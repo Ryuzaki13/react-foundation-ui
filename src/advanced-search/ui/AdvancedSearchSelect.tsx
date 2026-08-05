@@ -7,6 +7,7 @@ import { AdvancedSearchModal, type AdvancedSearchInitialSelection } from "./Adva
 import { AdvancedSearchSelectUI } from "./AdvancedSearchSelectUI";
 
 type AdvancedSearchSelectProps<T extends Record<string, string>> = UiBaseProps<string[]> & {
+	title?: string;
 	config: SearchConfig<T>;
 };
 
@@ -15,6 +16,7 @@ const EMPTY_INITIAL_SELECTION: readonly never[] = [];
 export function AdvancedSearchSelect<T extends Record<string, string>>({
 	value = [],
 	onChange,
+	title,
 	config,
 	...props
 }: AdvancedSearchSelectProps<T>) {
@@ -53,6 +55,7 @@ export function AdvancedSearchSelect<T extends Record<string, string>>({
 
 			{isModalOpen && (
 				<AdvancedSearchModal
+					title={title}
 					config={config}
 					onClose={handleClose}
 					onItemsSelect={handleSelect}

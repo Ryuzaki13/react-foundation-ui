@@ -19,6 +19,7 @@ interface AdvancedSearchModalSessionProps<T extends Record<string, string>> {
 	onItemsSelect: (items: T[]) => void;
 	/** Снимок committed-выбора, с которого начинается текущая сессия модалки. */
 	initialSelectedItems: readonly T[];
+	title?: string;
 	config: SearchConfig<T>;
 }
 
@@ -29,6 +30,7 @@ interface AdvancedSearchModalSessionProps<T extends Record<string, string>> {
 export function AdvancedSearchModalSession<T extends Record<string, string>>({
 	onClose,
 	onItemsSelect,
+	title,
 	config,
 	initialSelectedItems
 }: AdvancedSearchModalSessionProps<T>) {
@@ -110,7 +112,7 @@ export function AdvancedSearchModalSession<T extends Record<string, string>>({
 	}, [config]);
 
 	return (
-		<Modal isOpen onClose={onClose} title={config.title} size="lg" height="min(50em, 80dvh)">
+		<Modal isOpen onClose={onClose} title={title || config.title} size="lg" height="min(50em, 80dvh)">
 			<ModalToolbar>
 				<FlexContainer gap="sm">
 					{filterConfig && (

@@ -14,6 +14,7 @@ interface SearchModalProps<T extends Record<string, string>> {
 	onClose: () => void;
 	onItemsSelect: (items: T[]) => void;
 	initialSelection: AdvancedSearchInitialSelection<T>;
+	title?: string;
 	config: SearchConfig<T>;
 }
 
@@ -38,12 +39,14 @@ export function AdvancedSearchModal<T extends Record<string, string>>({
 	onClose,
 	onItemsSelect,
 	initialSelection,
+	title,
 	config
 }: SearchModalProps<T>) {
 	if (initialSelection.status === "ready") {
 		return (
 			<AdvancedSearchModalSession
 				key={buildAdvancedSearchModalSessionKey(config, initialSelection.items)}
+				title={title}
 				config={config}
 				onClose={onClose}
 				onItemsSelect={onItemsSelect}
@@ -53,7 +56,7 @@ export function AdvancedSearchModal<T extends Record<string, string>>({
 	}
 
 	return (
-		<Modal isOpen onClose={onClose} title={config.title} size="lg" height="min(50em, 80dvh)">
+		<Modal isOpen onClose={onClose} title={title || config.title} size="lg" height="min(50em, 80dvh)">
 			<ModalContent>
 				{initialSelection.status === "loading" ? (
 					<LoadingMessage text="Загружаем выбранные элементы..." />
