@@ -212,7 +212,7 @@ export function Option<T>({ value, label, description, className }: OptionProps<
 				{description && <span className="fontSizeSm">{description}</span>}
 			</span>
 			<span className={styles.radioItemIcon}>
-				<CheckCircleIcon style={{ display: "block", visibility: isChecked ? "visible" : "hidden", strokeWidth: 2 }} />
+				<CheckCircleIcon style={{ display: "block", visibility: isChecked ? "visible" : "hidden" }} />
 			</span>
 		</button>
 	);
