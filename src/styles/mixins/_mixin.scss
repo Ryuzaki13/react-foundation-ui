@@ -186,26 +186,26 @@
 @mixin generate-status-fill($name, $L, $C, $H, $mode) {
 	$s: status-scale($L, $C, $H, $mode);
 
-	--status-#{$name}-text: #{map.get(map.get($s, outline), base)};
-	--status-#{$name}-text-hover: #{map.get(map.get($s, outline), hover)};
-	--status-#{$name}-text-active: #{map.get(map.get($s, outline), active)};
+	--status-#{$name}-text: var(--hc-status-#{$name}-text, #{map.get(map.get($s, outline), base)});
+	--status-#{$name}-text-hover: var(--hc-status-#{$name}-text, #{map.get(map.get($s, outline), hover)});
+	--status-#{$name}-text-active: var(--hc-status-#{$name}-text, #{map.get(map.get($s, outline), active)});
 
-	--status-#{$name}-fill: #{map.get(map.get($s, fill), base)};
-	--status-#{$name}-fill-hover: #{map.get(map.get($s, fill), hover)};
-	--status-#{$name}-fill-active: #{map.get(map.get($s, fill), active)};
-	--status-#{$name}-on-fill: #{map.get(map.get($s, fill), on-fill)};
+	--status-#{$name}-fill: var(--hc-status-#{$name}-fill, #{map.get(map.get($s, fill), base)});
+	--status-#{$name}-fill-hover: var(--hc-status-#{$name}-fill, #{map.get(map.get($s, fill), hover)});
+	--status-#{$name}-fill-active: var(--hc-status-#{$name}-fill, #{map.get(map.get($s, fill), active)});
+	--status-#{$name}-on-fill: var(--hc-status-#{$name}-on-fill, #{map.get(map.get($s, fill), on-fill)});
 
-	--status-#{$name}-soft: #{map.get($s, soft)};
+	--status-#{$name}-soft: var(--hc-status-#{$name}-soft, #{map.get($s, soft)});
 }
 
 @mixin generate-status-border($name, $L, $C, $H, $mode) {
 	@if $name == neutral {
 		$s: status-border-neutral($L, $C, $H, $mode);
 
-		--border-0: #{map.get($s, base)};
-		--border-1: #{map.get($s, hover)};
-		--border-2: #{map.get($s, active)};
-		--border-focus: #{map.get($s, focus)};
+		--border-0: var(--hc-border, #{map.get($s, base)});
+		--border-1: var(--hc-border, #{map.get($s, hover)});
+		--border-2: var(--hc-border, #{map.get($s, active)});
+		--border-focus: var(--hc-border-focus, #{map.get($s, focus)});
 
 		--status-#{$name}-border: var(--border-0);
 		--status-#{$name}-border-hover: var(--border-1);
@@ -214,10 +214,10 @@
 	} @else {
 		$s: status-scale($L, $C, $H, $mode);
 
-		--status-#{$name}-border: #{map.get(map.get($s, border), base)};
-		--status-#{$name}-border-hover: #{map.get(map.get($s, border), hover)};
-		--status-#{$name}-border-active: #{map.get(map.get($s, border), active)};
-		--status-#{$name}-border-focus: #{map.get(map.get($s, border), focus)};
+		--status-#{$name}-border: var(--hc-status-#{$name}-border, #{map.get(map.get($s, border), base)});
+		--status-#{$name}-border-hover: var(--hc-status-#{$name}-border, #{map.get(map.get($s, border), hover)});
+		--status-#{$name}-border-active: var(--hc-status-#{$name}-border, #{map.get(map.get($s, border), active)});
+		--status-#{$name}-border-focus: var(--hc-status-#{$name}-border, #{map.get(map.get($s, border), focus)});
 	}
 }
 
@@ -271,10 +271,10 @@
 @mixin generate-neutral-border3($L, $C, $H, $mode) {
 	$s: status-border-neutral3($L, $C, $H, $mode);
 
-	--border-0: #{map.get($s, base)};
-	--border-1: #{map.get($s, hover)};
-	--border-2: #{map.get($s, active)};
-	--border-focus: #{map.get($s, focus)};
+	--border-0: var(--hc-border, #{map.get($s, base)});
+	--border-1: var(--hc-border, #{map.get($s, hover)});
+	--border-2: var(--hc-border, #{map.get($s, active)});
+	--border-focus: var(--hc-border-focus, #{map.get($s, focus)});
 
 	--status-neutral-border: var(--border-0);
 	--status-neutral-border-hover: var(--border-1);
@@ -284,16 +284,16 @@
 
 @mixin generate-accent($L, $C, $H, $mode) {
 	@if $mode == light {
-		--content-accent: oklch(#{$L} #{$C} #{$H});
-		--surface-accent: oklch(#{$L + 0.4} #{math.max(0, $C - 0.2)} #{$H - 15});
-		--border-accent: oklch(#{$L - 0.03} #{math.max(0, $C - 0.08)} #{$H});
-		// --focus-accent: oklch(#{$L + 0.04} #{$C + 0.05} #{$H});
+		--content-accent: var(--hc-content-accent, oklch(#{$L} #{$C} #{$H}));
+		--surface-accent: var(--hc-surface-accent, oklch(#{$L + 0.4} #{math.max(0, $C - 0.2)} #{$H - 15}));
+		--border-accent: var(--hc-border-accent, oklch(#{$L - 0.03} #{math.max(0, $C - 0.08)} #{$H}));
+		// --focus-accent: var(--hc-focus-accent, oklch(#{$L + 0.04} #{$C + 0.05} #{$H}));
 	}
 
 	@if $mode == dark {
-		--content-accent: oklch(#{$L} #{$C} #{$H});
-		--surface-accent: oklch(#{$L - 0.4} #{math.max(0, $C - 0.15)} #{$H - 10});
-		--border-accent: oklch(#{$L - 0.08} #{math.max(0, $C - 0.1)} #{$H});
-		// --focus-accent: oklch(#{$L + 0.06} #{$C + 0.03} #{$H});
+		--content-accent: var(--hc-content-accent, oklch(#{$L} #{$C} #{$H}));
+		--surface-accent: var(--hc-surface-accent, oklch(#{$L - 0.4} #{math.max(0, $C - 0.15)} #{$H - 10}));
+		--border-accent: var(--hc-border-accent, oklch(#{$L - 0.08} #{math.max(0, $C - 0.1)} #{$H}));
+		// --focus-accent: var(--hc-focus-accent, oklch(#{$L + 0.06} #{$C + 0.03} #{$H}));
 	}
 }
