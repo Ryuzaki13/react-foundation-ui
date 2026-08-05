@@ -53,7 +53,7 @@ export const AdvancedSearchSelectUI = ({
 
 				<div className={inputStyles.controlEndAdornment}>
 					<div className={uiStyles.uiToggleButtonContainer}>
-						<div className="flexEllipsis" style={{ maxWidth: "100%" }}>
+						<div className="flexEllipsis fontSizeSm fontLight" style={{ maxWidth: "100%" }}>
 							{token}
 						</div>
 
