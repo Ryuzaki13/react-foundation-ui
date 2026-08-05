@@ -5,5 +5,7 @@ declare const styles: {
   readonly vertical: "vertical";
   readonly radioItem: "radioItem";
   readonly checked: "checked";
+  readonly radioItemContent: "radioItemContent";
+  readonly radioItemIcon: "radioItemIcon";
 };
 export default styles;
