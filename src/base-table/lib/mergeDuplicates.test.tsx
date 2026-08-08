@@ -1,10 +1,9 @@
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { foundationTableFeatures, type FoundationTableRow, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
+import { useTable } from "@tanstack/react-table";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { buildBaseTableMergedCellsLayout } from "./mergeDuplicates";
-
-import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 
 type DemoRow = {
 	id: string;
@@ -20,16 +19,16 @@ function captureMergedLayout(args: {
 }) {
 	let captured:
 		| {
-				rows: ReturnType<ReturnType<typeof useReactTable<DemoRow>>["getRowModel"]>["rows"];
+				rows: FoundationTableRow<DemoRow>[];
 				layout: ReturnType<typeof buildBaseTableMergedCellsLayout<DemoRow>>;
 		  }
 		| undefined;
 
 	function Harness() {
-		const table = useReactTable<DemoRow>({
+		const table = useTable({
+			features: foundationTableFeatures,
 			data: args.data,
-			columns: args.columns,
-			getCoreRowModel: getCoreRowModel()
+			columns: args.columns
 		});
 
 		captured = {

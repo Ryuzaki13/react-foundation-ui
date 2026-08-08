@@ -1,7 +1,5 @@
 import { useMemo } from "react";
 
-import { ColumnDef } from "@tanstack/react-table";
-
 import { Table } from "../table";
 
 import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
@@ -20,7 +18,7 @@ interface SimpleTableProps<T extends object> {
 	 */
 	isFetching?: boolean;
 	data: T[] | undefined | null;
-	columns: ColumnDef<T>[];
+	columns: TableColumnDef<T>[];
 	className?: string;
 	tableClassName?: string;
 
@@ -54,16 +52,14 @@ export function SimpleTable<T extends object>({
 	const normalizedColumns = useMemo<TableColumnDef<T>[]>(
 		() =>
 			columns.map((column) => {
-				const tableColumn = column as TableColumnDef<T>;
-
-				if (tableColumn.meta?.width || typeof column.size !== "number") {
-					return tableColumn;
+				if (column.meta?.width || typeof column.size !== "number") {
+					return column;
 				}
 
 				return {
-					...tableColumn,
+					...column,
 					meta: {
-						...tableColumn.meta,
+						...column.meta,
 						width: column.size
 					}
 				};

@@ -674,15 +674,15 @@ describe("Table formatting integration", () => {
 					}
 				]}
 				columns={columns}
-				defaultColumnPinning={{ left: ["amount"] }}
+				defaultColumnPinning={{ start: ["amount"] }}
 				getRowId={(row) => row.id}
 			/>
 		);
 
 		expect(html.indexOf(">Сумма<")).toBeLessThan(html.indexOf(">Статус<"));
-		expect(html).toContain("headerCellPinnedLeft");
-		expect(html).toContain("bodyCellPinnedLeft");
-		expect(html).toContain("left:0px");
+		expect(html).toContain("headerCellPinnedStart");
+		expect(html).toContain("bodyCellPinnedStart");
+		expect(html).toContain("inset-inline-start:0px");
 	});
 
 	it("использует controlled columnPinning и не сообщает об изменениях на первом рендере", () => {
@@ -710,7 +710,7 @@ describe("Table formatting integration", () => {
 					}
 				]}
 				columns={columns}
-				columnPinning={{ left: ["amount"] }}
+				columnPinning={{ start: ["amount"] }}
 				onColumnPinningChange={handleColumnPinningChange}
 				getRowId={(row) => row.id}
 			/>
@@ -743,7 +743,7 @@ describe("Table formatting integration", () => {
 					}
 				]}
 				columns={columns}
-				defaultColumnPinning={{ left: ["amount"] }}
+				defaultColumnPinning={{ start: ["amount"] }}
 				selectedRowIds={["1"]}
 				selectionMode="single"
 				getRowId={(row) => row.id}
@@ -754,7 +754,7 @@ describe("Table formatting integration", () => {
 
 		expect(selectedCell).not.toBeNull();
 		// expect(selectedCell?.className).toContain("selectedIndicatorCell");
-		expect(selectedCell?.className).toContain("bodyCellPinnedLeft");
+		expect(selectedCell?.className).toContain("bodyCellPinnedStart");
 	});
 
 	it("оставляет структуру строк, но скрывает повторы и визуально склеивает группу", () => {
@@ -856,7 +856,7 @@ describe("Table formatting integration", () => {
 					{ id: "2", amount: 0, status: "В работе", division: "ДВД" }
 				]}
 				columns={columns}
-				defaultColumnPinning={{ left: ["status"] }}
+				defaultColumnPinning={{ start: ["status"] }}
 				getRowId={(row) => row.id}
 			/>
 		);

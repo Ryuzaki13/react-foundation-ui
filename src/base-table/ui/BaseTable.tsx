@@ -12,6 +12,10 @@ import { DragEndEvent } from "@dnd-kit/core";
 import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
 import { useDndSortableSensors } from "@ryuzaki13/react-foundation-lib/hooks";
 import {
+	type FoundationTableCell,
+	type FoundationTableHeader,
+	type FoundationTableInstance,
+	type FoundationTableRow,
 	getTableColumnMeta,
 	isTableInteractiveElement,
 	patchTableColumnWidth,
@@ -22,13 +26,13 @@ import {
 	type TableSelectionMode
 } from "@ryuzaki13/react-foundation-lib/table";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
-import { flexRender, Header, type Cell, type Row, type Table as TanStackTable } from "@tanstack/react-table";
+import { flexRender } from "@tanstack/react-table";
 
 import { ContextMenu } from "../../context-menu";
 import { GridContainer } from "../../grid";
 import { LoadingMessage, NoData, Scrollable } from "../../misc";
 import { getSortableReorderResult, Sortable } from "../../sortable";
-import { BaseTableColumnState, buildBaseTableColumnLayout, getLeftPinnedColumnOffsets } from "../lib/columnPinning";
+import { BaseTableColumnState, buildBaseTableColumnLayout, getStartPinnedColumnOffsets } from "../lib/columnPinning";
 import { BaseTableCellLayout } from "../lib/mergeDuplicates";
 
 import styles from "./BaseTable.module.scss";
@@ -40,8 +44,8 @@ import type { FormattersPipelineDisplayValue } from "@ryuzaki13/react-foundation
  * Аргументы кастомизации рендера ячейки базовой таблицы.
  */
 export interface BaseTableCellRenderArgs<TData extends object> {
-	row: Row<TData>;
-	cell: Cell<TData, unknown>;
+	row: FoundationTableRow<TData>;
+	cell: FoundationTableCell<TData>;
 	defaultContent: ReactNode;
 	/**
 	 * Display-модель ячейки после общего formatting runtime.
@@ -62,7 +66,7 @@ export interface BaseTableCellRenderArgs<TData extends object> {
  * @NOTE: не для использования напрямую, это база для `Table` и `TreeTable`
  */
 export interface BaseTableProps<TData extends object> {
-	table: TanStackTable<TData>;
+	table: FoundationTableInstance<TData>;
 	columnState: BaseTableColumnState;
 	title?: string;
 	isLoading?: boolean;
@@ -73,9 +77,9 @@ export interface BaseTableProps<TData extends object> {
 	selectionMode?: TableSelectionMode;
 	scrollableRef?: Ref<HTMLDivElement>;
 	interactiveElementSelector?: string;
-	onActivateRow?: (row: Row<TData>) => void;
-	isRowInteractive?: (row: Row<TData>) => boolean;
-	getRowClassName?: (row: Row<TData>) => string | undefined;
+	onActivateRow?: (row: FoundationTableRow<TData>) => void;
+	isRowInteractive?: (row: FoundationTableRow<TData>) => boolean;
+	getRowClassName?: (row: FoundationTableRow<TData>) => string | undefined;
 	getCellClassName?: (args: BaseTableCellRenderArgs<TData>) => string | undefined;
 	getCellStyle?: (args: BaseTableCellRenderArgs<TData>) => CSSProperties | undefined;
 	getCellLayout?: (args: BaseTableCellRenderArgs<TData>) => BaseTableCellLayout | undefined;
@@ -87,7 +91,7 @@ export interface BaseTableProps<TData extends object> {
 	 * действия. Он только сохраняет единый доступный способ открыть меню для
 	 * `Table` и `TreeTable`, а содержимое передает потребитель.
 	 */
-	renderHeaderContextMenu?: (header: Header<TData, unknown>) => ReactNode;
+	renderHeaderContextMenu?: (header: FoundationTableHeader<TData>) => ReactNode;
 	enableColumnResizing?: boolean;
 	enableColumnReordering?: boolean;
 	columnResizeMinWidth?: number;
@@ -95,10 +99,10 @@ export interface BaseTableProps<TData extends object> {
 }
 
 /**
- * Объединяет header groups из pinned/center/right зон в единый порядок рендера.
+ * Объединяет header groups из pinned-start/center/pinned-end зон в единый порядок рендера.
  */
 function resolveHeaderOrderIndex<TData extends object>(
-	header: Header<TData, unknown>,
+	header: FoundationTableHeader<TData>,
 	columnIndexById: ReadonlyMap<string, number>
 ): number {
 	const indexes = header
@@ -110,19 +114,19 @@ function resolveHeaderOrderIndex<TData extends object>(
 }
 
 function buildOrderedHeaderGroups<TData extends object>(
-	table: TanStackTable<TData>,
+	table: FoundationTableInstance<TData>,
 	columnIndexById: ReadonlyMap<string, number>
-): Header<TData, unknown>[][] {
-	const leftHeaderGroups = table.getLeftHeaderGroups();
+): FoundationTableHeader<TData>[][] {
+	const startHeaderGroups = table.getStartHeaderGroups();
 	const centerHeaderGroups = table.getCenterHeaderGroups();
-	const rightHeaderGroups = table.getRightHeaderGroups();
-	const headerGroupCount = Math.max(leftHeaderGroups.length, centerHeaderGroups.length, rightHeaderGroups.length);
+	const endHeaderGroups = table.getEndHeaderGroups();
+	const headerGroupCount = Math.max(startHeaderGroups.length, centerHeaderGroups.length, endHeaderGroups.length);
 
 	return Array.from({ length: headerGroupCount }, (_, index) => {
 		const headers = [
-			...(leftHeaderGroups[index]?.headers ?? []),
+			...(startHeaderGroups[index]?.headers ?? []),
 			...(centerHeaderGroups[index]?.headers ?? []),
-			...(rightHeaderGroups[index]?.headers ?? [])
+			...(endHeaderGroups[index]?.headers ?? [])
 		];
 
 		return headers
@@ -136,34 +140,37 @@ function buildOrderedHeaderGroups<TData extends object>(
 }
 
 /**
- * Проверяет, что весь header целиком относится к pinned-left зоне.
+ * Проверяет, что весь header целиком относится к pinned-start зоне.
  *
  * Смешанные grouped headers намеренно не переводятся в sticky-режим в первой итерации.
  */
-function resolveHeaderPinnedLeftState<TData extends object>(
-	header: Header<TData, unknown>,
-	leftPinnedOffsets: Readonly<Record<string, string>>,
+function resolveHeaderPinnedStartState<TData extends object>(
+	header: FoundationTableHeader<TData>,
+	startPinnedOffsets: Readonly<Record<string, string>>,
 	lastPinnedColumnId: string | undefined
-): { isPinnedLeft: boolean; left?: string; isPinnedBoundary: boolean } {
+): { isPinnedStart: boolean; insetInlineStart?: string; isPinnedBoundary: boolean } {
 	const leafHeaders = header.getLeafHeaders();
 	const leafColumnIds = leafHeaders.map((leafHeader) => leafHeader.column.id);
-	const isPinnedLeft = leafColumnIds.length > 0 && leafColumnIds.every((columnId) => columnId in leftPinnedOffsets);
+	const isPinnedStart = leafColumnIds.length > 0 && leafColumnIds.every((columnId) => columnId in startPinnedOffsets);
 
-	if (!isPinnedLeft) {
+	if (!isPinnedStart) {
 		return {
-			isPinnedLeft: false,
+			isPinnedStart: false,
 			isPinnedBoundary: false
 		};
 	}
 
 	return {
-		isPinnedLeft: true,
-		left: leftPinnedOffsets[leafColumnIds[0]!] ?? "0px",
+		isPinnedStart: true,
+		insetInlineStart: startPinnedOffsets[leafColumnIds[0]!] ?? "0px",
 		isPinnedBoundary: Boolean(lastPinnedColumnId && leafColumnIds.includes(lastPinnedColumnId))
 	};
 }
 
-function getCurrentLeafColumnOrder<TData extends object>(table: TanStackTable<TData>, columnState: BaseTableColumnState): string[] {
+function getCurrentLeafColumnOrder<TData extends object>(
+	table: FoundationTableInstance<TData>,
+	columnState: BaseTableColumnState
+): string[] {
 	const definedColumnIds = table.getAllLeafColumns().map((column) => column.id);
 
 	return resolveTableColumnOrder({
@@ -209,15 +216,15 @@ export function BaseTable<TData extends object>({
 	const visibleColumnIdSet = useMemo(() => new Set(visibleColumnIds), [visibleColumnIds]);
 	const sensors = useDndSortableSensors({ activationDistance: 8 });
 	const orderedHeaderGroups = buildOrderedHeaderGroups(table, visibleColumnIndexById);
-	const leftPinnedOffsets = getLeftPinnedColumnOffsets(table, columnState);
-	const lastPinnedColumnId = visibleColumns.filter((column) => column.getIsPinned() === "left").at(-1)?.id;
-	const pinnedLeftColumnIds = useMemo(() => columnState.columnPinning.left ?? [], [columnState.columnPinning.left]);
-	const pinnedLeftColumnIdSet = useMemo(() => new Set(pinnedLeftColumnIds), [pinnedLeftColumnIds]);
+	const startPinnedOffsets = getStartPinnedColumnOffsets(table, columnState);
+	const lastPinnedColumnId = visibleColumns.filter((column) => column.getIsPinned() === "start").at(-1)?.id;
+	const pinnedStartColumnIds = useMemo(() => columnState.columnPinning.start ?? [], [columnState.columnPinning.start]);
+	const pinnedStartColumnIdSet = useMemo(() => new Set(pinnedStartColumnIds), [pinnedStartColumnIds]);
 	const rowModel = table.getRowModel();
 	const hasTitle = Boolean(title);
 	const hasRows = rowModel.rows.length > 0;
 	const orderVisibleCells = useCallback(
-		(cells: readonly Cell<TData, unknown>[]) =>
+		(cells: readonly FoundationTableCell<TData>[]) =>
 			[...cells].sort(
 				(left, right) =>
 					(visibleColumnIndexById.get(left.column.id) ?? Number.MAX_SAFE_INTEGER) -
@@ -252,7 +259,7 @@ export function BaseTable<TData extends object>({
 			const nextOrder = resolveReorderedTableHeaderColumns({
 				order: currentOrder,
 				headerIds: visibleColumnIds,
-				pinnedIds: pinnedLeftColumnIds,
+				pinnedIds: pinnedStartColumnIds,
 				activeId: String(reorder.activeId),
 				overId: String(reorder.overId)
 			});
@@ -261,10 +268,10 @@ export function BaseTable<TData extends object>({
 
 			table.setColumnOrder(nextOrder);
 		},
-		[columnState, pinnedLeftColumnIds, table, visibleColumnIds]
+		[columnState, pinnedStartColumnIds, table, visibleColumnIds]
 	);
 
-	const renderHeaderContent = (header: Header<TData, unknown>) => {
+	const renderHeaderContent = (header: FoundationTableHeader<TData>) => {
 		if (header.isPlaceholder) return null;
 
 		const content = flexRender(header.column.columnDef.header, header.getContext());
@@ -289,7 +296,7 @@ export function BaseTable<TData extends object>({
 	/**
 	 * Обрабатывает клик по строке, не перехватывая вложенные интерактивные элементы.
 	 */
-	const handleRowClick = (event: ReactMouseEvent<HTMLTableRowElement>, row: Row<TData>) => {
+	const handleRowClick = (event: ReactMouseEvent<HTMLTableRowElement>, row: FoundationTableRow<TData>) => {
 		const interactive = isRowInteractive?.(row) ?? Boolean(onActivateRow);
 
 		if (!interactive || !onActivateRow || isTableInteractiveElement(event.target, interactiveElementSelector)) {
@@ -302,7 +309,7 @@ export function BaseTable<TData extends object>({
 	/**
 	 * Дублирует активацию строки для клавиатуры.
 	 */
-	const handleRowKeyDown = (event: ReactKeyboardEvent<HTMLTableRowElement>, row: Row<TData>) => {
+	const handleRowKeyDown = (event: ReactKeyboardEvent<HTMLTableRowElement>, row: FoundationTableRow<TData>) => {
 		const interactive = isRowInteractive?.(row) ?? Boolean(onActivateRow);
 
 		if (!interactive || !onActivateRow || isTableInteractiveElement(event.target, interactiveElementSelector)) {
@@ -339,22 +346,19 @@ export function BaseTable<TData extends object>({
 											{orderedHeaderGroups.map((headers, headerGroupIndex) => (
 												<tr key={`header-group-${headerGroupIndex}`} className={styles.headerRow}>
 													{headers.map((header) => {
-														const { isPinnedLeft, left, isPinnedBoundary } = resolveHeaderPinnedLeftState(
-															header,
-															leftPinnedOffsets,
-															lastPinnedColumnId
-														);
+														const { isPinnedStart, insetInlineStart, isPinnedBoundary } =
+															resolveHeaderPinnedStartState(header, startPinnedOffsets, lastPinnedColumnId);
 														const isDragDisabled =
 															header.isPlaceholder ||
 															!visibleColumnIdSet.has(header.column.id) ||
-															pinnedLeftColumnIdSet.has(header.column.id);
+															pinnedStartColumnIdSet.has(header.column.id);
 
 														return (
 															<BaseTableHeaderCell
 																key={header.id}
 																header={header}
-																isPinnedLeft={isPinnedLeft}
-																left={left}
+																isPinnedStart={isPinnedStart}
+																insetInlineStart={insetInlineStart}
 																isPinnedBoundary={isPinnedBoundary}
 																isDragDisabled={isDragDisabled}
 																enableColumnResizing={enableColumnResizing}
@@ -374,9 +378,9 @@ export function BaseTable<TData extends object>({
 									orderedHeaderGroups.map((headers, headerGroupIndex) => (
 										<tr key={`header-group-${headerGroupIndex}`} className={styles.headerRow}>
 											{headers.map((header) => {
-												const { isPinnedLeft, left, isPinnedBoundary } = resolveHeaderPinnedLeftState(
+												const { isPinnedStart, insetInlineStart, isPinnedBoundary } = resolveHeaderPinnedStartState(
 													header,
-													leftPinnedOffsets,
+													startPinnedOffsets,
 													lastPinnedColumnId
 												);
 
@@ -384,8 +388,8 @@ export function BaseTable<TData extends object>({
 													<BaseTableHeaderCell
 														key={header.id}
 														header={header}
-														isPinnedLeft={isPinnedLeft}
-														left={left}
+														isPinnedStart={isPinnedStart}
+														insetInlineStart={insetInlineStart}
 														isPinnedBoundary={isPinnedBoundary}
 														isDragDisabled
 														enableColumnResizing={enableColumnResizing}
@@ -420,9 +424,9 @@ export function BaseTable<TData extends object>({
 											onClick={(event) => handleRowClick(event, row)}
 											onKeyDown={(event) => handleRowKeyDown(event, row)}>
 											{orderVisibleCells([
-												...row.getLeftVisibleCells(),
+												...row.getStartVisibleCells(),
 												...row.getCenterVisibleCells(),
-												...row.getRightVisibleCells()
+												...row.getEndVisibleCells()
 											]).map((cell) => {
 												const columnMeta = getTableColumnMeta(cell.column.columnDef);
 												const defaultContent = flexRender(cell.column.columnDef.cell, cell.getContext());
@@ -433,12 +437,14 @@ export function BaseTable<TData extends object>({
 													columnMeta
 												};
 												const cellLayout = getCellLayout?.(renderArgs);
-												const isPinnedLeft = cell.column.getIsPinned() === "left";
+												const isPinnedStart = cell.column.getIsPinned() === "start";
 												const isPinnedBoundary = cell.column.id === lastPinnedColumnId;
 
 												const resolvedStyle = {
 													...(columnMeta?.align ? { textAlign: columnMeta.align } : {}),
-													...(isPinnedLeft ? { left: leftPinnedOffsets[cell.column.id] ?? "0px" } : {}),
+													...(isPinnedStart
+														? { insetInlineStart: startPinnedOffsets[cell.column.id] ?? "0px" }
+														: {}),
 													...(getCellStyle?.(renderArgs) ?? {})
 												};
 
@@ -447,8 +453,8 @@ export function BaseTable<TData extends object>({
 														key={cell.id}
 														className={cn(
 															styles.bodyCell,
-															isPinnedLeft && styles.bodyCellPinnedLeft,
-															isPinnedBoundary && styles.pinnedLeftBoundary,
+															isPinnedStart && styles.bodyCellPinnedStart,
+															isPinnedBoundary && styles.pinnedStartBoundary,
 															cellLayout?.mergeWithNext && styles.bodyCellMergedWithNext,
 															getCellClassName?.(renderArgs)
 														)}

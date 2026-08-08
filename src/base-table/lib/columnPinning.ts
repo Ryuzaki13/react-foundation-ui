@@ -1,16 +1,19 @@
 import { filterAndDeduplicateIds, pickExistingMapValues } from "@ryuzaki13/react-foundation-lib/array";
 import {
 	buildTableColumnLayout,
+	type FoundationTableColumn,
+	type FoundationTableInstance,
+	type FoundationTableState,
 	getTableColumnMeta,
 	resolveTableColumnOrder,
 	resolveTableLength
 } from "@ryuzaki13/react-foundation-lib/table";
 
-import type { Column, TableState, Table as TanStackTable } from "@tanstack/react-table";
+import type { ColumnPinningState } from "@tanstack/react-table";
 
 export type BaseTableColumnLayoutItem<TData extends object> = {
 	id: string;
-	column: Column<TData, unknown>;
+	column: FoundationTableColumn<TData>;
 	width: string;
 };
 
@@ -21,33 +24,33 @@ export type BaseTableColumnLayoutItem<TData extends object> = {
  * этот срез отдельным prop: React Compiler не должен кэшировать разметку колонок
  * поверх изменившихся order/sizing/pinning/visibility.
  */
-export type BaseTableColumnState = Pick<TableState, "columnOrder" | "columnPinning" | "columnSizing" | "columnVisibility">;
+export type BaseTableColumnState = Pick<FoundationTableState, "columnOrder" | "columnPinning" | "columnSizing" | "columnVisibility">;
 
 /**
  * Публичное состояние закрепления колонок для shared-таблиц.
  *
- * В первой итерации поддерживается только закрепление слева.
+ * Поддерживается только логическая начальная сторона: слева в LTR и справа в RTL.
  */
 export interface TableColumnPinningState {
 	/**
-	 * Идентификаторы колонок, закреплённых слева, в порядке отображения.
+	 * Идентификаторы колонок, закреплённых с начальной стороны, в порядке отображения.
 	 */
-	left?: string[];
+	start?: string[];
 }
 
 /**
  * Нормализует публичное состояние закрепления к формату TanStack Table.
  *
- * Правая зона принудительно очищается, чтобы не открывать неподдерживаемый API.
+ * Конечная зона принудительно очищается, чтобы не открывать неподдерживаемый API.
  */
-export function normalizeTableColumnPinning(state?: TableColumnPinningState): { left: string[]; right: string[] } {
+export function normalizeTableColumnPinning(state?: TableColumnPinningState): ColumnPinningState {
 	return {
-		left: Array.from(
+		start: Array.from(
 			new Set(
-				(state?.left ?? []).filter((columnId): columnId is string => typeof columnId === "string" && columnId.trim().length > 0)
+				(state?.start ?? []).filter((columnId): columnId is string => typeof columnId === "string" && columnId.trim().length > 0)
 			)
 		),
-		right: []
+		end: []
 	};
 }
 
@@ -55,7 +58,7 @@ export function normalizeTableColumnPinning(state?: TableColumnPinningState): { 
  * Возвращает ширину колонки в том же формате, что и colgroup базовой таблицы.
  */
 export function resolveBaseTableColumnWidth<TData extends object>(
-	column: Column<TData, unknown>,
+	column: FoundationTableColumn<TData>,
 	columnSizing?: Readonly<Record<string, number>>
 ): string {
 	const resizedWidth = columnSizing?.[column.id];
@@ -75,22 +78,22 @@ export function resolveBaseTableColumnWidth<TData extends object>(
 }
 
 /**
- * Собирает видимые leaf-колонки в фактическом порядке рендера: pinned-left -> center -> pinned-right.
+ * Собирает видимые leaf-колонки в фактическом порядке рендера: pinned-start -> center -> pinned-end.
  *
  * В отличие от отдельных TanStack getters, порядок явно строится из одного
  * источника `columnOrder`, поэтому `<colgroup>`, header и body получают один
  * и тот же layout после drag&drop.
  */
 export function getOrderedVisibleLeafColumns<TData extends object>(
-	table: TanStackTable<TData>,
+	table: FoundationTableInstance<TData>,
 	columnState: BaseTableColumnState
-): Column<TData, unknown>[] {
+): FoundationTableColumn<TData>[] {
 	const visibleColumns = table.getAllLeafColumns().filter((column) => column.getIsVisible());
 	const columnById = new Map(visibleColumns.map((column) => [column.id, column]));
 	const visibleColumnIds = visibleColumns.map((column) => column.id);
-	const leftIds = filterAndDeduplicateIds(columnState.columnPinning.left, visibleColumnIds);
-	const rightIds = filterAndDeduplicateIds(columnState.columnPinning.right, visibleColumnIds);
-	const pinnedIds = new Set([...leftIds, ...rightIds]);
+	const startIds = filterAndDeduplicateIds(columnState.columnPinning.start, visibleColumnIds);
+	const endIds = filterAndDeduplicateIds(columnState.columnPinning.end, visibleColumnIds);
+	const pinnedIds = new Set([...startIds, ...endIds]);
 	const centerIds: string[] = [];
 
 	for (const column of visibleColumns) {
@@ -104,11 +107,11 @@ export function getOrderedVisibleLeafColumns<TData extends object>(
 		order: columnState.columnOrder
 	});
 
-	return pickExistingMapValues([...leftIds, ...orderedCenterIds, ...rightIds], columnById);
+	return pickExistingMapValues([...startIds, ...orderedCenterIds, ...endIds], columnById);
 }
 
 export function buildBaseTableColumnLayout<TData extends object>(
-	table: TanStackTable<TData>,
+	table: FoundationTableInstance<TData>,
 	columnState: BaseTableColumnState
 ): BaseTableColumnLayoutItem<TData>[] {
 	const columns = getOrderedVisibleLeafColumns(table, columnState);
@@ -135,19 +138,19 @@ export function buildBaseTableColumnLayout<TData extends object>(
 }
 
 /**
- * Вычисляет sticky-offset для закреплённых слева колонок.
+ * Вычисляет sticky-offset для колонок, закреплённых с логической начальной стороны.
  *
  * Значения возвращаются как CSS-length, чтобы корректно суммировать `em`, `px` и `calc(...)`.
  */
-export function getLeftPinnedColumnOffsets<TData extends object>(
-	table: TanStackTable<TData>,
+export function getStartPinnedColumnOffsets<TData extends object>(
+	table: FoundationTableInstance<TData>,
 	columnState: BaseTableColumnState
 ): Readonly<Record<string, string>> {
 	const offsets: Record<string, string> = {};
 	const accumulatedWidths: string[] = [];
 
 	for (const column of getOrderedVisibleLeafColumns(table, columnState)) {
-		if (column.getIsPinned() !== "left") continue;
+		if (column.getIsPinned() !== "start") continue;
 
 		offsets[column.id] = combineCssLengths(accumulatedWidths);
 		accumulatedWidths.push(resolveBaseTableColumnWidth(column, columnState.columnSizing));

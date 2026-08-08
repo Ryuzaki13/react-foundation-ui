@@ -1,6 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { functionalUpdate, type Updater, type VisibilityState } from "@tanstack/react-table";
+import { type TableColumnVisibilityState } from "@ryuzaki13/react-foundation-lib/table";
+import { functionalUpdate, type Updater } from "@tanstack/react-table";
 
 /**
  * Аргументы управления видимостью колонок таблицы.
@@ -9,15 +10,15 @@ export interface UseTableColumnVisibilityArgs {
 	/**
 	 * Внешнее controlled-состояние видимости колонок.
 	 */
-	columnVisibility?: VisibilityState;
+	columnVisibility?: TableColumnVisibilityState;
 	/**
 	 * Стартовое uncontrolled-состояние видимости колонок.
 	 */
-	defaultColumnVisibility?: VisibilityState;
+	defaultColumnVisibility?: TableColumnVisibilityState;
 	/**
 	 * Вызывается после любого изменения visibility-state.
 	 */
-	onColumnVisibilityChange?: (state: VisibilityState) => void;
+	onColumnVisibilityChange?: (state: TableColumnVisibilityState) => void;
 }
 
 /**
@@ -27,11 +28,11 @@ export interface UseTableColumnVisibilityResult {
 	/**
 	 * Актуальный visibility-state, который нужно передать в TanStack Table.
 	 */
-	columnVisibility: VisibilityState;
+	columnVisibility: TableColumnVisibilityState;
 	/**
 	 * Обработчик изменения visibility-state из TanStack Table.
 	 */
-	onColumnVisibilityChange: (updater: Updater<VisibilityState>) => void;
+	onColumnVisibilityChange: (updater: Updater<TableColumnVisibilityState>) => void;
 }
 
 /**
@@ -46,14 +47,14 @@ export function useTableColumnVisibility({
 	defaultColumnVisibility,
 	onColumnVisibilityChange
 }: UseTableColumnVisibilityArgs): UseTableColumnVisibilityResult {
-	const [uncontrolledColumnVisibility, setUncontrolledColumnVisibility] = useState<VisibilityState | undefined>(undefined);
+	const [uncontrolledColumnVisibility, setUncontrolledColumnVisibility] = useState<TableColumnVisibilityState | undefined>(undefined);
 	const resolvedColumnVisibility = useMemo(
 		() => columnVisibility ?? uncontrolledColumnVisibility ?? defaultColumnVisibility ?? {},
 		[columnVisibility, defaultColumnVisibility, uncontrolledColumnVisibility]
 	);
 
 	const handleColumnVisibilityChange = useCallback(
-		(updater: Updater<VisibilityState>) => {
+		(updater: Updater<TableColumnVisibilityState>) => {
 			const nextColumnVisibility = functionalUpdate(updater, resolvedColumnVisibility);
 
 			if (columnVisibility === undefined) {

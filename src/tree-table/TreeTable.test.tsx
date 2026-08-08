@@ -395,12 +395,12 @@ describe("TreeTable formatting integration", () => {
 				]}
 				columns={columns}
 				hierarchy={hierarchy}
-				defaultColumnPinning={{ left: ["status"] }}
+				defaultColumnPinning={{ start: ["status"] }}
 			/>
 		);
 
 		expect(html.indexOf(">Статус<")).toBeLessThan(html.indexOf(">Показатель<"));
-		expect(html).toContain("bodyCellPinnedLeft");
+		expect(html).toContain("bodyCellPinnedStart");
 		expect(html).toContain("Развернуть строку");
 	});
 
@@ -441,13 +441,13 @@ describe("TreeTable formatting integration", () => {
 				]}
 				columns={columns}
 				hierarchy={hierarchy}
-				defaultColumnPinning={{ left: ["label"] }}
+				defaultColumnPinning={{ start: ["label"] }}
 				expandFirstLevel
 			/>
 		);
 
-		expect(html).toContain("headerCellPinnedLeft");
-		expect(html).toContain("bodyCellPinnedLeft");
+		expect(html).toContain("headerCellPinnedStart");
+		expect(html).toContain("bodyCellPinnedStart");
 		expect(html).toContain("Развернуть строку");
 		expect(html).toContain("padding-inline-start:calc(0 * 1em)");
 	});

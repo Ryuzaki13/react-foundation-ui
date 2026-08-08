@@ -693,30 +693,30 @@ export const Basic: DealStory = {
 };
 
 /**
- * Демонстрирует controlled left-pinning через внешний story-state без встроенного UI таблицы.
+ * Демонстрирует controlled start-pinning через внешний story-state без встроенного UI таблицы.
  */
 export const WithColumnPinning: DealStory = {
 	args: {
-		columnPinning: { left: ["number"] }
+		columnPinning: { start: ["number"] }
 	},
 	render: function Render(args) {
 		const [, updateArgs] = useArgs<TableProps<DealRow>>();
-		const columnPinning = args.columnPinning ?? { left: [] };
+		const columnPinning = args.columnPinning ?? { start: [] };
 
 		return (
 			<div style={{ display: "grid", gap: "0.75em" }}>
 				<div style={{ display: "flex", gap: "0.5em", flexWrap: "wrap" }}>
-					<button type="button" onClick={() => updateArgs({ columnPinning: { left: ["number"] } })}>
+					<button type="button" onClick={() => updateArgs({ columnPinning: { start: ["number"] } })}>
 						Закрепить «Номер»
 					</button>
-					<button type="button" onClick={() => updateArgs({ columnPinning: { left: ["number", "client"] } })}>
+					<button type="button" onClick={() => updateArgs({ columnPinning: { start: ["number", "client"] } })}>
 						Закрепить «Номер» и «Клиент»
 					</button>
-					<button type="button" onClick={() => updateArgs({ columnPinning: { left: [] } })}>
+					<button type="button" onClick={() => updateArgs({ columnPinning: { start: [] } })}>
 						Снять закрепление
 					</button>
 				</div>
-				<div>Закреплено слева: {columnPinning.left?.length ? columnPinning.left.join(", ") : "ничего"}</div>
+				<div>Закреплено в начале: {columnPinning.start?.length ? columnPinning.start.join(", ") : "ничего"}</div>
 				<TableStoryCanvas args={{ ...args, columnPinning }} />
 			</div>
 		);

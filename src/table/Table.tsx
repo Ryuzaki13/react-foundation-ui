@@ -1,16 +1,18 @@
-/* eslint-disable react-hooks/incompatible-library */
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import { TableFormulaRowData } from "@ryuzaki13/react-foundation-lib/formulas";
 import {
+	type FoundationTableRow,
+	foundationTableFeatures,
 	type TableColumnDef,
 	type TableColumnOrderState,
 	type TableColumnSizingState,
+	type TableColumnVisibilityState,
 	type TableSelectionMode,
 	useTableRowSelection
 } from "@ryuzaki13/react-foundation-lib/table";
-import { getCoreRowModel, useReactTable, type Row, type VisibilityState } from "@tanstack/react-table";
+import { useTable } from "@tanstack/react-table";
 
 import {
 	BaseTable,
@@ -91,11 +93,11 @@ export interface TableProps<TData extends object> {
 	/**
 	 * Внешнее controlled-состояние видимости колонок.
 	 */
-	columnVisibility?: VisibilityState;
+	columnVisibility?: TableColumnVisibilityState;
 	/**
 	 * Стартовое uncontrolled-состояние видимости колонок.
 	 */
-	defaultColumnVisibility?: VisibilityState;
+	defaultColumnVisibility?: TableColumnVisibilityState;
 	/**
 	 * Внешнее controlled-состояние порядка колонок.
 	 */
@@ -113,11 +115,11 @@ export interface TableProps<TData extends object> {
 	 */
 	defaultColumnSizing?: TableColumnSizingState;
 	/**
-	 * Внешнее controlled-состояние left-pinning для колонок.
+	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */
 	columnPinning?: TableColumnPinningState;
 	/**
-	 * Стартовое uncontrolled-состояние left-pinning для колонок.
+	 * Стартовое uncontrolled-состояние start-pinning для колонок.
 	 */
 	defaultColumnPinning?: TableColumnPinningState;
 	/**
@@ -135,7 +137,7 @@ export interface TableProps<TData extends object> {
 	/**
 	 * Вызывается после изменения видимости колонок.
 	 */
-	onColumnVisibilityChange?: (state: VisibilityState) => void;
+	onColumnVisibilityChange?: (state: TableColumnVisibilityState) => void;
 	/**
 	 * Вызывается после изменения порядка колонок.
 	 */
@@ -145,7 +147,7 @@ export interface TableProps<TData extends object> {
 	 */
 	onColumnSizingChange?: (state: TableColumnSizingState) => void;
 	/**
-	 * Вызывается после изменения left-pinning state.
+	 * Вызывается после изменения start-pinning state.
 	 */
 	onColumnPinningChange?: (state: TableColumnPinningState) => void;
 	/**
@@ -296,7 +298,8 @@ export function Table<TData extends object>({
 		return () => observer.disconnect();
 	}, [isLoading, onReachEnd, tableData.length]);
 
-	const table = useReactTable<TData>({
+	const table = useTable({
+		features: foundationTableFeatures,
 		data: tableData as TData[],
 		columns: columns as TableColumnDef<TData>[],
 		state: {
@@ -311,7 +314,6 @@ export function Table<TData extends object>({
 		onColumnSizingChange: handleColumnSizingChange,
 		onColumnVisibilityChange: handleColumnVisibilityChange,
 		getRowId: (row, index) => resolveRowId(row, index),
-		getCoreRowModel: getCoreRowModel(),
 		enableMultiRowSelection: selectionMode === "multi",
 		enableRowSelection: (row) => {
 			if (selectionMode === "none") {
@@ -337,7 +339,7 @@ export function Table<TData extends object>({
 	/**
 	 * Активирует строку: обновляет выбор в соответствии с режимом и вызывает внешний callback.
 	 */
-	const activateRow = (row: Row<TData>) => {
+	const activateRow = (row: FoundationTableRow<TData>) => {
 		activateRowSelection(row.id, row.getCanSelect());
 		onRowClick?.(row.original);
 	};

@@ -17,7 +17,7 @@ export interface UseTableColumnPinningArgs {
 	 */
 	defaultColumnPinning?: TableColumnPinningState;
 	/**
-	 * Вызывается после любого изменения left-pinning state.
+	 * Вызывается после любого изменения start-pinning state.
 	 */
 	onColumnPinningChange?: (state: TableColumnPinningState) => void;
 }
@@ -37,7 +37,7 @@ export interface UseTableColumnPinningResult {
 }
 
 /**
- * Инкапсулирует controlled/uncontrolled-паттерн для left column pinning.
+ * Инкапсулирует controlled/uncontrolled-паттерн для логического start-pinning.
  */
 export function useTableColumnPinning({
 	columnPinning,
@@ -54,7 +54,7 @@ export function useTableColumnPinning({
 		(updater: Updater<ColumnPinningState>) => {
 			const nextColumnPinning = normalizeTableColumnPinning(functionalUpdate(updater, resolvedColumnPinning));
 			const nextPublicColumnPinning: TableColumnPinningState = {
-				left: nextColumnPinning.left
+				start: nextColumnPinning.start
 			};
 
 			if (columnPinning === undefined) {

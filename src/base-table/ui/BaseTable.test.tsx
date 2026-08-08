@@ -1,11 +1,9 @@
-/* eslint-disable react-hooks/incompatible-library */
-import { getCoreRowModel, useReactTable } from "@tanstack/react-table";
+import { foundationTableFeatures, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
+import { useTable } from "@tanstack/react-table";
 import { renderToStaticMarkup } from "react-dom/server";
 import { describe, expect, it } from "vitest";
 
 import { BaseTable } from "./BaseTable";
-
-import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 
 type DemoRow = {
 	id: string;
@@ -26,19 +24,19 @@ function BaseTableHarness() {
 			header: "Статус"
 		}
 	];
-	const table = useReactTable<DemoRow>({
+	const table = useTable({
+		features: foundationTableFeatures,
 		data: [
 			{ id: "1", division: "ДВД", status: "Новая" },
 			{ id: "2", division: "ДВД", status: "В работе" }
 		],
-		columns,
-		getCoreRowModel: getCoreRowModel()
+		columns
 	});
 
 	return (
 		<BaseTable
 			table={table}
-			columnState={table.getState()}
+			columnState={table.state}
 			getCellLayout={({ cell, row }) => {
 				if (cell.column.id !== "division") {
 					return undefined;

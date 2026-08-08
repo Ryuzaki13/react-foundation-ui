@@ -1,25 +1,20 @@
-/* eslint-disable react-hooks/incompatible-library */
 import { useEffect, useEffectEvent, useMemo, useRef, useState, type ReactNode } from "react";
 
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import {
+	type FoundationTableRow,
+	foundationTableFeatures,
 	resolveTableLength,
 	TableColumnDef,
 	type TableColumnOrderState,
 	type TableColumnSizingState,
+	type TableColumnVisibilityState,
 	TableSelectionMode,
 	useTableRowSelection
 } from "@ryuzaki13/react-foundation-lib/table";
 import { buildTreeTableRows, type TreeTableFlatHierarchy, type TreeTableRowNode } from "@ryuzaki13/react-foundation-lib/tree-table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import {
-	getCoreRowModel,
-	getExpandedRowModel,
-	useReactTable,
-	type ExpandedState,
-	type Row,
-	type VisibilityState
-} from "@tanstack/react-table";
+import { useTable, type ExpandedState } from "@tanstack/react-table";
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 
 import {
@@ -114,11 +109,11 @@ export interface TreeTableProps<TData extends object> {
 	/**
 	 * Внешнее controlled-состояние видимости колонок.
 	 */
-	columnVisibility?: VisibilityState;
+	columnVisibility?: TableColumnVisibilityState;
 	/**
 	 * Стартовое uncontrolled-состояние видимости колонок.
 	 */
-	defaultColumnVisibility?: VisibilityState;
+	defaultColumnVisibility?: TableColumnVisibilityState;
 	/**
 	 * Внешнее controlled-состояние порядка колонок.
 	 */
@@ -136,11 +131,11 @@ export interface TreeTableProps<TData extends object> {
 	 */
 	defaultColumnSizing?: TableColumnSizingState;
 	/**
-	 * Внешнее controlled-состояние left-pinning для колонок.
+	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */
 	columnPinning?: TableColumnPinningState;
 	/**
-	 * Стартовое uncontrolled-состояние left-pinning для колонок.
+	 * Стартовое uncontrolled-состояние start-pinning для колонок.
 	 */
 	defaultColumnPinning?: TableColumnPinningState;
 	/**
@@ -158,7 +153,7 @@ export interface TreeTableProps<TData extends object> {
 	/**
 	 * Вызывается после изменения видимости колонок.
 	 */
-	onColumnVisibilityChange?: (state: VisibilityState) => void;
+	onColumnVisibilityChange?: (state: TableColumnVisibilityState) => void;
 	/**
 	 * Вызывается после изменения порядка колонок.
 	 */
@@ -168,7 +163,7 @@ export interface TreeTableProps<TData extends object> {
 	 */
 	onColumnSizingChange?: (state: TableColumnSizingState) => void;
 	/**
-	 * Вызывается после изменения left-pinning state.
+	 * Вызывается после изменения start-pinning state.
 	 */
 	onColumnPinningChange?: (state: TableColumnPinningState) => void;
 	/**
@@ -230,7 +225,7 @@ function extractExpandedRowIds(expanded: ExpandedState): string[] {
 /**
  * Нормализует исходную строку, убирая зависимость от внутреннего поля `children`.
  */
-function resolveOriginalRow<TData extends object>(row: Row<TreeTableRuntimeRow<TData>>, rowById: Map<string, TData>): TData {
+function resolveOriginalRow<TData extends object>(row: FoundationTableRow<TreeTableRuntimeRow<TData>>, rowById: Map<string, TData>): TData {
 	return rowById.get(row.id) ?? (row.original as TData);
 }
 
@@ -442,7 +437,8 @@ export function TreeTable<TData extends object>({
 		return () => observer.disconnect();
 	}, [isLoading, onReachEnd, treeData.rows.length]);
 
-	const table = useReactTable<TreeTableRuntimeRow<TData>>({
+	const table = useTable({
+		features: foundationTableFeatures,
 		data: treeData.rows as TreeTableRuntimeRow<TData>[],
 		columns: columns as TableColumnDef<TreeTableRuntimeRow<TData>>[],
 		state: {
@@ -455,8 +451,6 @@ export function TreeTable<TData extends object>({
 		},
 		getRowId: (row) => hierarchy.getRowId(row as TData),
 		getSubRows: (row) => row.children,
-		getCoreRowModel: getCoreRowModel(),
-		getExpandedRowModel: getExpandedRowModel(),
 		onColumnOrderChange: handleColumnOrderChange,
 		onColumnPinningChange: handleColumnPinningChange,
 		onColumnSizingChange: handleColumnSizingChange,
@@ -491,7 +485,7 @@ export function TreeTable<TData extends object>({
 	/**
 	 * Активирует строку: обновляет выбор в соответствии с режимом и вызывает внешний callback.
 	 */
-	const activateRow = (row: Row<TreeTableRuntimeRow<TData>>) => {
+	const activateRow = (row: FoundationTableRow<TreeTableRuntimeRow<TData>>) => {
 		const originalRow = resolveOriginalRow(row, treeData.rowById);
 
 		activateRowSelection(row.id, row.getCanSelect());

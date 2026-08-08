@@ -1,6 +1,9 @@
-import { getTableColumnMeta } from "@ryuzaki13/react-foundation-lib/table";
-
-import type { Cell, Column, Row } from "@tanstack/react-table";
+import {
+	type FoundationTableCell,
+	type FoundationTableColumn,
+	type FoundationTableRow,
+	getTableColumnMeta
+} from "@ryuzaki13/react-foundation-lib/table";
 
 /**
  * Layout-настройка body-ячейки базовой таблицы.
@@ -19,16 +22,16 @@ export type BaseTableCellLayoutById = ReadonlyMap<string, BaseTableCellLayout>;
  * Аргументы построения layout для display-only слияния дубликатов.
  */
 export interface BuildBaseTableMergedCellsLayoutArgs<TData extends object> {
-	rows: readonly Row<TData>[];
-	columns: readonly Column<TData, unknown>[];
-	resolveRowBoundaryKey?: (row: Row<TData>) => unknown;
+	rows: readonly FoundationTableRow<TData>[];
+	columns: readonly FoundationTableColumn<TData>[];
+	resolveRowBoundaryKey?: (row: FoundationTableRow<TData>) => unknown;
 	excludeColumnIds?: ReadonlySet<string>;
 }
 
 type VisibleRowCellLookup<TData extends object> = {
-	row: Row<TData>;
+	row: FoundationTableRow<TData>;
 	boundaryKey: unknown;
-	cellByColumnId: ReadonlyMap<string, Cell<TData, unknown>>;
+	cellByColumnId: ReadonlyMap<string, FoundationTableCell<TData>>;
 };
 
 function isMergeableValue(value: unknown): boolean {
@@ -36,8 +39,8 @@ function isMergeableValue(value: unknown): boolean {
 }
 
 function buildVisibleRowCellLookups<TData extends object>(
-	rows: readonly Row<TData>[],
-	resolveRowBoundaryKey: (row: Row<TData>) => unknown
+	rows: readonly FoundationTableRow<TData>[],
+	resolveRowBoundaryKey: (row: FoundationTableRow<TData>) => unknown
 ): VisibleRowCellLookup<TData>[] {
 	return rows.map((row) => ({
 		row,

@@ -17,7 +17,7 @@
 	z-index: 10;
 }
 
-.pinnedLeftBoundary {
+.pinnedStartBoundary {
 	box-shadow: inset var(--focus-offset) 0 0 var(--border-0);
 }
 
@@ -52,7 +52,7 @@
 	opacity: 0.75;
 }
 
-.headerCellPinnedLeft {
+.headerCellPinnedStart {
 	position: sticky;
 	z-index: 12;
 }
@@ -83,7 +83,7 @@
 	vertical-align: middle;
 }
 
-.bodyCellPinnedLeft {
+.bodyCellPinnedStart {
 	position: sticky;
 	z-index: 2;
 }
