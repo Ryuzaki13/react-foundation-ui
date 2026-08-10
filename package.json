@@ -194,6 +194,10 @@
 			"types": "./dist/notifications/index.d.ts",
 			"import": "./dist/notifications/index.js"
 		},
+		"./odata-dependent": {
+			"types": "./dist/odata-dependent/index.d.ts",
+			"import": "./dist/odata-dependent/index.js"
+		},
 		"./pages": {
 			"types": "./dist/pages/index.d.ts",
 			"import": "./dist/pages/index.js"

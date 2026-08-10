@@ -1,7 +1,10 @@
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 
+import { flattenODataDependentServices } from "@ryuzaki13/react-foundation-api/odata";
 import { useArgs } from "storybook/preview-api";
 
+import { useODataDependentSelection } from "../../odata-dependent";
+import { ODataDependentSegmentSelect } from "../ODataDependentSegmentSelect";
 import { ODataSelect } from "../ODataSelect";
 
 import {
@@ -11,12 +14,22 @@ import {
 	installODataStoryFetchMock,
 	odataStoryOData,
 	storyValues,
+	treeSegments,
 	withODataStoryQueryClient
 } from "./odataStoryFixtures";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type ODataSelectStoryArgs = ComponentProps<typeof ODataSelect>;
+
+const linkedSegmentItems = flattenODataDependentServices([
+	{
+		odata: baseOData,
+		segments: treeSegments,
+		model: baseModel
+	}
+]);
+const linkedSegmentOrder = linkedSegmentItems.map((item) => item.id);
 
 function ODataSelectStoryCanvas(args: ODataSelectStoryArgs) {
 	const [, updateArgs] = useArgs<ODataSelectStoryArgs>();
@@ -36,73 +49,31 @@ function ODataSelectStoryCanvas(args: ODataSelectStoryArgs) {
 }
 
 export function LinkedFiltersDemo() {
-	const [region, setRegion] = useState<string | undefined>(storyValues.region);
-	const [branch, setBranch] = useState<string | undefined>(storyValues.branch);
-	const [team, setTeam] = useState<string | undefined>(storyValues.team);
-	const [owner, setOwner] = useState<string | undefined>(storyValues.owner);
-
-	const regionDependencies = region ? { REGION: [region] } : undefined;
-	const teamDependencies = region && branch ? { REGION: [region], BRANCH: [branch] } : regionDependencies;
-	const ownerDependencies = region && branch && team ? { REGION: [region], BRANCH: [branch], TEAM: [team] } : teamDependencies;
+	const selection = useODataDependentSelection({
+		selectionMode: "sequential",
+		segmentOrder: linkedSegmentOrder
+	});
 
 	return (
 		<div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
-			<ODataSelect
-				label="Регион"
-				description="Первый фильтр в цепочке. Меняет доступный набор подразделений."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "REGION" }}
-				segment={{ placeholder: "Регион" }}
-				value={region}
-				onChange={(nextRegion) => {
-					setRegion(nextRegion);
-					setBranch(undefined);
-					setTeam(undefined);
-					setOwner(undefined);
-				}}
-			/>
-			<ODataSelect
-				label="Подразделение"
-				description="Второй фильтр зависит от выбранного региона."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "BRANCH" }}
-				segment={{ placeholder: "Подразделение" }}
-				dependencies={regionDependencies}
-				value={branch}
-				onChange={(nextBranch) => {
-					setBranch(nextBranch);
-					setTeam(undefined);
-					setOwner(undefined);
-				}}
-			/>
-			<ODataSelect
-				label="Команда"
-				description="Третий фильтр зависит от сочетания региона и подразделения."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "TEAM" }}
-				segment={{ placeholder: "Команда" }}
-				dependencies={teamDependencies}
-				value={team}
-				onChange={(nextTeam) => {
-					setTeam(nextTeam);
-					setOwner(undefined);
-				}}
-			/>
-			<ODataSelect
-				label="Ответственный"
-				description="Последний фильтр показывает leaf-узлы для выбранного пути."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "OWNER" }}
-				segment={{ placeholder: "Ответственный" }}
-				dependencies={ownerDependencies}
-				value={owner}
-				onChange={setOwner}
-			/>
+			{linkedSegmentItems.map((item, index) => (
+				<ODataDependentSegmentSelect
+					key={item.id}
+					item={item}
+					values={selection.values}
+					onChange={selection.updateValues}
+					selectionMode="sequential"
+					segmentOrder={linkedSegmentOrder}
+					label={item.segment.placeholder}
+					description={
+						index === 0 ? "Первый уровень доступен сразу." : "Уровень включается после заполнения всего предыдущего пути."
+					}
+					width={30}
+					clearable
+				/>
+			))}
 			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
-				<div>Регион: {region || "пусто"}</div>
-				<div>Подразделение: {branch || "пусто"}</div>
-				<div>Команда: {team || "пусто"}</div>
-				<div>Ответственный: {owner || "пусто"}</div>
+				<div>Общий снимок: {JSON.stringify(selection.values)}</div>
 			</div>
 		</div>
 	);

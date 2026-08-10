@@ -1,38 +1,26 @@
-import { useState } from "react";
+import { flattenODataDependentServices, type ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 
-import { flattenODataDependentServices, ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
+import { useODataDependentSelection } from "../../odata-dependent";
 
 import { ODataDependentSegmentMultiSelect } from "./ODataDependentSegmentMultiSelect";
 
-interface ODataDependentMultiSelectProps extends ODataDependentBaseProps {
-	/**
-	 * Выбранные значения (управляемый компонент)
-	 */
-	values?: Record<string, string[]>;
+import type { UseODataDependentSelectionOptions } from "../../odata-dependent";
 
-	/**
-	 * Обработчик изменения выбранных значений
-	 */
-	onChange?: (selected: Record<string, string[]>) => void;
+export type ODataDependentMultiSelectProps = Omit<ODataDependentBaseProps, "dependencies" | "value"> &
+	UseODataDependentSelectionOptions & {
+		/**
+		 * Ширина одного элемента в `em` единицах.
+		 *
+		 * @default 15
+		 */
+		width?: number;
+	};
 
-	/**
-	 * Ширина одного элемента в `em` единицах.
-	 *
-	 * @default 15
-	 */
-	width?: number;
-}
-
-export const ODataDependentMultiSelect: React.FC<ODataDependentMultiSelectProps> = ({
-	width = 15,
-	odata,
-	segments,
-	model,
-	values,
-	onChange
-}) => {
-	const [internalSelectedValues, setInternalSelectedValues] = useState<Record<string, string[]>>({});
-	const selectedValues = values ?? internalSelectedValues;
+export function ODataDependentMultiSelect(props: ODataDependentMultiSelectProps) {
+	const { width = 15, odata, segments, model, values, defaultValues, onChange, selectionMode, segmentOrder } = props;
+	const selection = useODataDependentSelection({ values, defaultValues, onChange });
+	const segmentSelectionProps =
+		selectionMode === "sequential" ? { selectionMode: "sequential" as const, segmentOrder } : { selectionMode, segmentOrder };
 	const items = flattenODataDependentServices([
 		{
 			odata,
@@ -45,15 +33,10 @@ export const ODataDependentMultiSelect: React.FC<ODataDependentMultiSelectProps>
 		<ODataDependentSegmentMultiSelect
 			key={item.id}
 			item={item}
-			values={selectedValues}
-			onChange={(nextSelectedValues) => {
-				if (!values) {
-					setInternalSelectedValues(nextSelectedValues);
-				}
-
-				onChange?.(nextSelectedValues);
-			}}
+			values={selection.values}
+			onChange={selection.updateValues}
+			{...segmentSelectionProps}
 			width={width}
 		/>
 	));
-};
+}

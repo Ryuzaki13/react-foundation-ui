@@ -1,51 +1,24 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
+
+import { useODataDependentSelection } from "../../odata-dependent";
 
 import { ODataMultiSelect } from "./ODataMultiSelect";
 
-import type { ODataDependentSegmentItem } from "@ryuzaki13/react-foundation-api/odata";
+import type { ODataDependentSegmentControlProps } from "../../odata-dependent";
 
-interface ODataDependentSegmentMultiSelectProps {
-	item: ODataDependentSegmentItem;
-	/**
-	 * Выбранные значения (управляемый компонент)
-	 */
-	values?: Record<string, string[]>;
-	/**
-	 * Обработчик изменения выбранных значений
-	 */
-	onChange?: (selected: Record<string, string[]>) => void;
-	/**
-	 * Ширина одного элемента в `em` единицах.
-	 *
-	 * @default 15
-	 */
-	width?: number;
-}
+export type ODataDependentSegmentMultiSelectProps = ODataDependentSegmentControlProps;
 
-export const ODataDependentSegmentMultiSelect: React.FC<ODataDependentSegmentMultiSelectProps> = ({
-	item,
-	values,
-	onChange,
-	width = 15
-}) => {
-	const [internalSelectedValues, setInternalSelectedValues] = useState<Record<string, string[]>>({});
-	const selectedValues = values ?? internalSelectedValues;
+export function ODataDependentSegmentMultiSelect(props: ODataDependentSegmentMultiSelectProps) {
+	const { item, disabled, label, description, size, width = 15 } = props;
+	const selection = useODataDependentSelection(props);
+	const { updateSegment } = selection;
 	const widthStyle = `calc(${width}em + var(--width-add))`;
 
 	const handleSelectionChange = useCallback(
 		(keys: string[]) => {
-			const nextSelectedValues = {
-				...selectedValues,
-				[item.id]: keys
-			};
-
-			if (!values) {
-				setInternalSelectedValues(nextSelectedValues);
-			}
-
-			onChange?.(nextSelectedValues);
+			updateSegment(item.id, keys);
 		},
-		[item.id, onChange, selectedValues, values]
+		[item.id, updateSegment]
 	);
 
 	return (
@@ -54,10 +27,14 @@ export const ODataDependentSegmentMultiSelect: React.FC<ODataDependentSegmentMul
 				odata={item.odata}
 				segment={item.segment}
 				model={item.model}
-				dependencies={selectedValues}
-				value={selectedValues[item.id]}
+				dependencies={selection.values}
+				value={selection.values[item.id]}
 				onChange={handleSelectionChange}
+				disabled={disabled || selection.isSegmentDisabled(item.id)}
+				label={label}
+				description={description}
+				size={size}
 			/>
 		</div>
 	);
-};
+}

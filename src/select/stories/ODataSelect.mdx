@@ -46,6 +46,7 @@ export function Example() {
 ## Практические рекомендации
 
 - Для OData-сценариев проверяйте не только выбор значения, но и поиск, загрузку, пустой результат и ошибочные ответы сервиса.
+- Для цепочки уже развёрнутых сегментов используйте `ODataDependentSegmentSelect` и один общий `useODataDependentSelection`; режим `sequential` блокирует downstream-уровни и сбрасывает их при смене родителя.
 
 ## Сценарии использования
 
@@ -66,6 +67,8 @@ export function Example() {
 <Canvas of={ODataSelectStories.StaticDependency} />
 
 ### Связка нескольких фильтров между собой
+
+Story использует `ODataDependentSegmentSelect` и общий массивный снимок. Изначально доступен только первый уровень; каждый следующий включается после заполнения предыдущего пути.
 
 <Canvas of={ODataSelectStories.LinkedFilters} />
 

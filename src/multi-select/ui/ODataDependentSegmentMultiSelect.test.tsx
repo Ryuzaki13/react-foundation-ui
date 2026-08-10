@@ -79,4 +79,67 @@ describe("ODataDependentSegmentMultiSelect", () => {
 			})
 		);
 	});
+
+	it("использует общий sequential-policy и сбрасывает последующие уровни", async () => {
+		const onChange = vi.fn();
+
+		await renderNode(
+			<ODataDependentSegmentMultiSelect
+				item={{
+					id: "ZCFO1",
+					serviceKey: "S1.T1",
+					serviceIndex: 0,
+					segmentIndex: 1,
+					odata: { service: "S1", target: "T1" },
+					segment: { placeholder: "Филиал" },
+					model: { codeKey: "ZCFO1" },
+					panelVisibility: "user"
+				}}
+				values={{ ZDIV: ["1000"], ZCFO1: ["0202"], VSTEL: ["1158"], OTHER: ["X"] }}
+				onChange={onChange}
+				selectionMode="sequential"
+				segmentOrder={["ZDIV", "ZCFO1", "VSTEL"]}
+			/>
+		);
+
+		const renderedProps = oDataMultiSelectSpy.mock.calls.at(-1)?.[0] as {
+			disabled?: boolean;
+			onChange: (values: string[]) => void;
+		};
+
+		expect(renderedProps.disabled).toBe(false);
+
+		await act(async () => {
+			renderedProps.onChange(["0204"]);
+		});
+
+		expect(onChange).toHaveBeenCalledWith({
+			ZDIV: ["1000"],
+			ZCFO1: ["0204"],
+			VSTEL: [],
+			OTHER: ["X"]
+		});
+	});
+
+	it("блокирует сегмент, пока не заполнен предыдущий sequential-уровень", async () => {
+		await renderNode(
+			<ODataDependentSegmentMultiSelect
+				item={{
+					id: "ZCFO1",
+					serviceKey: "S1.T1",
+					serviceIndex: 0,
+					segmentIndex: 1,
+					odata: { service: "S1", target: "T1" },
+					segment: { placeholder: "Филиал" },
+					model: { codeKey: "ZCFO1" },
+					panelVisibility: "user"
+				}}
+				values={{ ZDIV: [] }}
+				selectionMode="sequential"
+				segmentOrder={["ZDIV", "ZCFO1"]}
+			/>
+		);
+
+		expect(oDataMultiSelectSpy).toHaveBeenCalledWith(expect.objectContaining({ disabled: true }));
+	});
 });

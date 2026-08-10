@@ -1,7 +1,9 @@
-import { useState, type ComponentProps } from "react";
+import { type ComponentProps } from "react";
 
+import { flattenODataDependentServices } from "@ryuzaki13/react-foundation-api/odata";
 import { useArgs } from "storybook/preview-api";
 
+import { useODataDependentSelection } from "../../../odata-dependent";
 import {
 	baseModel,
 	baseOData,
@@ -9,13 +11,24 @@ import {
 	installODataStoryFetchMock,
 	odataStoryOData,
 	storyValues,
+	treeSegments,
 	withODataStoryQueryClient
 } from "../../../select/stories/odataStoryFixtures";
+import { ODataDependentSegmentMultiSelect } from "../ODataDependentSegmentMultiSelect";
 import { ODataMultiSelect } from "../ODataMultiSelect";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type ODataMultiSelectStoryArgs = ComponentProps<typeof ODataMultiSelect>;
+
+const linkedSegmentItems = flattenODataDependentServices([
+	{
+		odata: baseOData,
+		segments: treeSegments,
+		model: baseModel
+	}
+]);
+const linkedSegmentOrder = linkedSegmentItems.map((item) => item.id);
 
 function ODataMultiSelectStoryCanvas(args: ODataMultiSelectStoryArgs) {
 	const [, updateArgs] = useArgs<ODataMultiSelectStoryArgs>();
@@ -37,74 +50,30 @@ function ODataMultiSelectStoryCanvas(args: ODataMultiSelectStoryArgs) {
 }
 
 function LinkedFiltersDemo() {
-	const [regions, setRegions] = useState<string[]>([storyValues.region]);
-	const [branches, setBranches] = useState<string[]>([storyValues.branch, storyValues.branchAlt]);
-	const [teams, setTeams] = useState<string[]>([storyValues.team]);
-	const [owners, setOwners] = useState<string[]>([storyValues.owner, storyValues.ownerAlt]);
-
-	const regionDependencies = regions.length ? { REGION: regions } : undefined;
-	const teamDependencies = regions.length && branches.length ? { REGION: regions, BRANCH: branches } : regionDependencies;
-	const ownerDependencies =
-		regions.length && branches.length && teams.length ? { REGION: regions, BRANCH: branches, TEAM: teams } : teamDependencies;
+	const selection = useODataDependentSelection({
+		selectionMode: "sequential",
+		segmentOrder: linkedSegmentOrder
+	});
 
 	return (
 		<div style={{ display: "grid", gap: 16, maxWidth: 720 }}>
-			<ODataMultiSelect
-				label="Регион"
-				description="Корневой фильтр для цепочки. После смены значения downstream-фильтры сбрасываются."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "REGION" }}
-				segment={{ placeholder: "Регион" }}
-				value={regions}
-				onChange={(nextRegions) => {
-					setRegions(nextRegions);
-					setBranches([]);
-					setTeams([]);
-					setOwners([]);
-				}}
-			/>
-			<ODataMultiSelect
-				label="Подразделение"
-				description="Выбор нескольких подразделений внутри выбранных регионов."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "BRANCH" }}
-				segment={{ placeholder: "Подразделение" }}
-				dependencies={regionDependencies}
-				value={branches}
-				onChange={(nextBranches) => {
-					setBranches(nextBranches);
-					setTeams([]);
-					setOwners([]);
-				}}
-			/>
-			<ODataMultiSelect
-				label="Команда"
-				description="Третий уровень зависит от текущего набора подразделений."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "TEAM" }}
-				segment={{ placeholder: "Команда" }}
-				dependencies={teamDependencies}
-				value={teams}
-				onChange={(nextTeams) => {
-					setTeams(nextTeams);
-					setOwners([]);
-				}}
-			/>
-			<ODataMultiSelect
-				label="Ответственный"
-				description="Leaf-уровень для выбранных команд."
-				odata={baseOData}
-				model={{ ...baseModel, codeKey: "OWNER" }}
-				segment={{ placeholder: "Ответственный" }}
-				dependencies={ownerDependencies}
-				value={owners}
-				onChange={setOwners}
-			/>
+			{linkedSegmentItems.map((item, index) => (
+				<ODataDependentSegmentMultiSelect
+					key={item.id}
+					item={item}
+					values={selection.values}
+					onChange={selection.updateValues}
+					selectionMode="sequential"
+					segmentOrder={linkedSegmentOrder}
+					label={item.segment.placeholder}
+					description={
+						index === 0 ? "Первый уровень доступен сразу." : "Уровень включается после заполнения всего предыдущего пути."
+					}
+					width={30}
+				/>
+			))}
 			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
-				<div>Регион: {regions.length ? regions.join(", ") : "пусто"}</div>
-				<div>Подразделение: {branches.length ? branches.join(", ") : "пусто"}</div>
-				<div>Команда: {teams.length ? teams.join(", ") : "пусто"}</div>
-				<div>Ответственный: {owners.length ? owners.join(", ") : "пусто"}</div>
+				<div>Общий снимок: {JSON.stringify(selection.values)}</div>
 			</div>
 		</div>
 	);

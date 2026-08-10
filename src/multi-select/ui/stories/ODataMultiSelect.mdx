@@ -39,6 +39,7 @@ export function Example() {
 ## Практические рекомендации
 
 - Для асинхронных сценариев предусмотрите не только успешный путь, но и загрузку, пустой результат и ошибку.
+- Для внешней сортировки и композиции сегментов используйте `ODataDependentSegmentMultiSelect` с одним общим `useODataDependentSelection`; `ODataDependentMultiSelect` остаётся готовой группой одного service config.
 
 ## Сценарии использования
 
@@ -68,7 +69,7 @@ export function Example() {
 
 ### Связка нескольких фильтров между собой
 
-Связка нескольких фильтров между собой.
+Story использует segment-level MultiSelect и sequential-policy: downstream-уровни блокируются и сбрасываются при смене родителя.
 
 <Canvas of={ODataMultiSelectStories.LinkedFilters} />
 

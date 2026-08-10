@@ -563,6 +563,42 @@ npm run serve-storybook
 npm run pack:dry-run
 ```
 
+## Зависимые OData-сегменты
+
+`ODataDependentMultiSelect` принимает один `ODataDependentBaseProps`, сам разворачивает его `segments` и отображает готовую группу. `ODataDependentSegmentMultiSelect` и `ODataDependentSegmentSelect` работают с одним уже развёрнутым `ODataDependentSegmentItem`: этот уровень нужен композициям, которые объединяют несколько сервисов, сортируют сегменты по metadata-chain или накладывают пользовательский порядок.
+
+Общее состояние для single- и multi-select хранит `useODataDependentSelection` из отдельного entrypoint `@ryuzaki13/react-foundation-ui/odata-dependent`. Формат намеренно всегда массивный — `Record<string, string[]>`, поэтому один снимок без адаптеров передаётся в `dependencies` обоих OData-контролов.
+
+```tsx
+import { flattenODataDependentServices } from "@ryuzaki13/react-foundation-api/odata";
+import { useODataDependentSelection } from "@ryuzaki13/react-foundation-ui/odata-dependent";
+import { ODataDependentSegmentSelect } from "@ryuzaki13/react-foundation-ui/select";
+
+const items = flattenODataDependentServices([serviceConfig]);
+const segmentOrder = items.map((item) => item.id);
+
+export function SequentialFilters() {
+	const selection = useODataDependentSelection({
+		selectionMode: "sequential",
+		segmentOrder
+	});
+
+	return items.map((item) => (
+		<ODataDependentSegmentSelect
+			key={`${item.serviceKey}.${item.id}`}
+			item={item}
+			values={selection.values}
+			onChange={selection.updateValues}
+			selectionMode="sequential"
+			segmentOrder={segmentOrder}
+			clearable
+		/>
+	));
+}
+```
+
+В режиме `sequential` первый сегмент доступен сразу, а каждый следующий — только после заполнения всего предыдущего пути. Изменение любого уровня сбрасывает значения всех последующих уровней из переданного `segmentOrder`. Для segment-level композиции все контролы должны получать общий `values`/`onChange` от одного экземпляра hook; отдельные uncontrolled-экземпляры не могут разделять состояние между соседними React-компонентами. Если фактический порядок приходит из OData metadata, передавайте результат `sortODataDependentSegmentItemsByChains`, а не полагайтесь на порядок ключей объекта.
+
 ## Зависимости
 
 UI-пакет напрямую опирается на `@ryuzaki13/react-foundation-lib`.
