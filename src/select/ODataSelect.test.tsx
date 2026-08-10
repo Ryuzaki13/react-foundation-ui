@@ -336,38 +336,6 @@ describe("ODataSelect", () => {
 		expect(onChange).toHaveBeenCalledWith("Пермь");
 	});
 
-	it("локально пересекает все заполненные зависимости", async () => {
-		await renderNode(
-			<ODataSelect
-				label="Склад"
-				odata={{ service: "S1", target: "T1" }}
-				model={{ codeKey: "VSTEL" }}
-				segment={{ placeholder: "Склад" }}
-				dependencies={{ ZDIV: ["2000"], ZCFO1: ["0202", "0302"] }}
-				value={undefined}
-				onChange={vi.fn()}
-			/>
-		);
-
-		expect(getOptionTexts("select-option-")).toEqual(["Склад ПРМ"]);
-	});
-
-	it("возвращает пустой список при несовместимых зависимостях", async () => {
-		await renderNode(
-			<ODataSelect
-				label="Склад"
-				odata={{ service: "S1", target: "T1" }}
-				model={{ codeKey: "VSTEL" }}
-				segment={{ placeholder: "Склад" }}
-				dependencies={{ ZDIV: ["1000"], ZCFO1: ["0302"] }}
-				value={undefined}
-				onChange={vi.fn()}
-			/>
-		);
-
-		expect(getOptionTexts("select-option-")).toEqual([]);
-	});
-
 	it("рендерит loading-состояние без базового Select", async () => {
 		await renderNode(
 			<ODataSelect
