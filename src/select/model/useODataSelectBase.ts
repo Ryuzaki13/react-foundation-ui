@@ -59,17 +59,7 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 
 	const { codeKey, searchDebounceDelay, minSearchCodeLength, minSearchTextLength: minSearchLength } = model;
 
-	const {
-		data: rawData,
-		textKey,
-		isLoading,
-		isError,
-		getItems,
-		separatedItems,
-		findSourceItemsByKeys,
-		setFilteredItems,
-		debounce
-	} = useODataCollection({ odata, model });
+	const { data: rawData, textKey, isLoading, isError, getItems, separatedItems, debounce } = useODataCollection({ odata, model });
 
 	const itemsCount = separatedItems.length;
 	const selectionKey = segment.selectText && textKey ? textKey : codeKey;
@@ -79,38 +69,29 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 		return createDependencySignature(codeKey, rawData.keyPairsMap, dependencies);
 	}, [rawData, codeKey, dependencies]);
 
-	useEffect(() => {
-		if (!rawData) return;
+	/**
+	 * Зависимости фильтруют уже загруженные строки справочника и не меняют OData query.
+	 * Значения одного сегмента объединяются по OR, а заполненные сегменты пересекаются по AND;
+	 * итоговый Set содержит допустимые коды текущего контрола, включая корректный пустой результат.
+	 */
+	const dependencyFilteredKeys = useMemo(() => {
+		if (!rawData || !dependencySignature) return undefined;
 
-		const selfIndex = rawData.chain.findIndex((c) => c.codeKey === codeKey);
-		const currentDependencies = parseDependencySignature(dependencySignature);
+		const dependencyValueSets = Array.from(
+			parseDependencySignature(dependencySignature),
+			([key, values]) => [key, new Set(values)] as const
+		);
+		const filteredKeys = new Set<string>();
 
-		const resolveFilteredItems = (index: number) => {
-			const key = rawData.chain[index].codeKey;
-			const dependenciesValues = currentDependencies.get(key);
-			if (dependenciesValues?.length) {
-				return findSourceItemsByKeys(key, dependenciesValues);
-			}
-		};
-
-		for (let i = rawData.chain.length - 1; i > selfIndex; i--) {
-			const filteredItems = resolveFilteredItems(i);
-			if (filteredItems) {
-				setFilteredItems(filteredItems);
-				return;
-			}
-		}
-
-		for (let i = 0; i < selfIndex; i++) {
-			const filteredItems = resolveFilteredItems(i);
-			if (filteredItems) {
-				setFilteredItems(filteredItems);
-				return;
+		for (const item of rawData.items) {
+			const matchesEveryDependency = dependencyValueSets.every(([key, values]) => values.has(item[key]));
+			if (matchesEveryDependency && item[codeKey]) {
+				filteredKeys.add(item[codeKey]);
 			}
 		}
 
-		setFilteredItems(undefined);
-	}, [rawData, dependencySignature, codeKey, findSourceItemsByKeys, setFilteredItems]);
+		return filteredKeys;
+	}, [codeKey, dependencySignature, rawData]);
 
 	useEffect(() => {
 		debounce(
@@ -136,9 +117,10 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 			return [];
 		}
 
-		const isFiltered = debouncedQuery.length >= minSearchLength;
+		const isSearchFiltered = debouncedQuery.length >= minSearchLength;
+		const isDependencyFiltered = dependencyFilteredKeys !== undefined;
 
-		if (!isFiltered) {
+		if (!isSearchFiltered && !isDependencyFiltered) {
 			return getItems(undefined, selectedItems);
 		}
 
@@ -146,6 +128,14 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 		const isAheadCode = !segment.hideCode && debouncedQuery.length >= minSearchCodeLength && !Number.isNaN(Number(debouncedQuery));
 
 		return getItems((codeValue: string, textValue: string) => {
+			if (dependencyFilteredKeys && !dependencyFilteredKeys.has(codeValue)) {
+				return false;
+			}
+
+			if (!isSearchFiltered) {
+				return true;
+			}
+
 			if (codeValue && textValue) {
 				if (isAheadCode && startsWithIgnoringZeros(codeValue, debouncedQuery)) {
 					return true;
@@ -158,7 +148,7 @@ export function useODataSelectBase({ odata, segment, model, value, dependencies 
 
 			return false;
 		}, selectedItems);
-	}, [debouncedQuery, getItems, minSearchCodeLength, minSearchLength, rawData, segment.hideCode, selectedItems]);
+	}, [debouncedQuery, dependencyFilteredKeys, getItems, minSearchCodeLength, minSearchLength, rawData, segment.hideCode, selectedItems]);
 
 	// const placeholder = useMemo(() => {
 	// 	const filteredItemsLength = filteredItems.length;
