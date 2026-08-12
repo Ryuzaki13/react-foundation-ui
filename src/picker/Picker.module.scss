@@ -1,14 +1,47 @@
-.popupLayout {
+@use "@/styles/mixins" as *;
+
+.options {
+	--anchor-gap: var(--space-xs);
+	--anchor-padding: var(--space-xs);
+	--anchor-offset: 0;
+	--input-width: min(100vw, var(--base-width, 15em));
+
 	display: grid;
-	grid-template-rows: auto 1fr;
+	grid-template-rows: minmax(0, 1fr);
+	width: 100%;
+	min-width: var(--input-width);
 	min-height: 0;
 	max-height: 75vh;
+	padding: var(--space-sm);
 	overflow: hidden;
+	background-color: var(--surface-0);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	box-shadow: var(--shadow-md);
+	transform-origin: top;
+	z-index: var(--z-dropdown);
 
-	flex: 1 1 auto;
+	&:empty {
+		visibility: hidden;
+	}
+
+	&[data-has-toolbar="true"] {
+		grid-template-rows: auto minmax(0, 1fr);
+	}
 }
 
-.popupBody {
+.popupPositioner {
+	min-width: 0;
+	z-index: var(--z-dropdown);
+}
+
+.optionsToolbar {
+	display: grid;
+	gap: var(--space-xs);
+	padding: var(--space-xs);
+}
+
+.optionsBody {
 	min-height: 0;
 }
 
@@ -23,6 +56,30 @@
 
 .triggerContainer {
 	position: relative;
+}
+
+.inputWithSelectedToken {
+	color: transparent;
+	caret-color: transparent;
+}
+
+.selectedToken {
+	position: absolute;
+	inset: 0 calc(var(--control-height) * 2) 0 var(--space-sm);
+	display: flex;
+	align-items: center;
+	justify-content: flex-end;
+	min-width: 0;
+	overflow: hidden;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	pointer-events: none;
+}
+
+@include mobile {
+	.options {
+		--input-width: calc(100dvw - var(--space-xl));
+	}
 }
 
 .selectionActionButton {

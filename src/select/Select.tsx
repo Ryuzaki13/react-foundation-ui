@@ -3,15 +3,15 @@ import { type CSSProperties, Fragment, ReactNode, useCallback, useMemo, useRef, 
 import { Placement } from "@floating-ui/react";
 import { InputType } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { CheckIcon, XIcon } from "lucide-react";
+import { CheckIcon } from "lucide-react";
 
+import { OptionButton } from "../option";
 import {
 	extractPickerTextContent,
 	PickerField,
 	PickerPopup,
 	PickerStatus,
-	PickerTriggerActions,
-	PickerTriggerInput,
+	PickerTrigger,
 	usePickerDefaultFilter,
 	usePickerFloatingListbox,
 	usePickerQuery,
@@ -22,7 +22,6 @@ import uiStyles from "../ui.module.scss";
 
 import { getOptionSearchText } from "./lib";
 import { createSelectOptionSections } from "./lib/createSelectOptionSections";
-import styles from "./Select.module.scss";
 import { type SelectOptionGroup, type SelectOptionKey } from "./SelectOptionGroup";
 
 export { type SelectOptionGroup, type SelectOptionKey } from "./SelectOptionGroup";
@@ -38,6 +37,8 @@ type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TO
 	getOptionKey: (option: TOption) => SelectOptionKey;
 	getOptionLabel: (option: TOption) => ReactNode;
 	getOptionCode?: (option: TOption) => ReactNode;
+	/** Явный поисковый текст для опции с произвольным ReactNode-render. */
+	getOptionSearchText?: (option: TOption) => string | readonly string[];
 	getOptionDisabled?: (option: TOption) => boolean;
 	getOptionAriaLabel?: (option: TOption) => string;
 	getOptionGroup?: (option: TOption) => SelectOptionGroup | undefined;
@@ -86,6 +87,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		getOptionKey,
 		getOptionLabel,
 		getOptionCode,
+		getOptionSearchText: getExplicitOptionSearchText,
 		getOptionDisabled,
 		getOptionAriaLabel,
 		getOptionGroup,
@@ -136,13 +138,14 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 	};
 	const getSearchText = useCallback(
 		(option: TOption) =>
+			getExplicitOptionSearchText?.(option) ??
 			getOptionSearchText({
 				option,
 				getOptionLabel,
 				getOptionCode,
 				getOptionGroup
 			}),
-		[getOptionCode, getOptionGroup, getOptionLabel]
+		[getExplicitOptionSearchText, getOptionCode, getOptionGroup, getOptionLabel]
 	);
 	const visibleOptions = usePickerDefaultFilter({
 		options,
@@ -193,11 +196,6 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		extractPickerTextContent(displayContent) ?? labelText ?? codeText ?? (selectedKey !== undefined ? String(selectedKey) : "");
 	const showSearchValue = searchable && (open || currentQuery.length > 0);
 	const inputValue = showSearchValue ? currentQuery : selectedOption !== undefined ? displayText : "";
-	const showDisplayOverlay =
-		selectedOption !== undefined &&
-		displayContent !== undefined &&
-		extractPickerTextContent(displayContent) === undefined &&
-		!showSearchValue;
 	const triggerController = usePickerTriggerController({
 		mode: triggerMode,
 		open,
@@ -228,7 +226,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		const optionState = { active, selected, disabled: optionDisabled };
 
 		return (
-			<div
+			<OptionButton
 				key={optionKey}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
@@ -236,24 +234,16 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 				aria-selected={selected}
 				aria-disabled={optionDisabled || undefined}
 				aria-label={getOptionAriaLabel?.(option)}
-				className={cn(
-					uiStyles.uiPopupOption,
-					optionDisabled && uiStyles.disabled,
-					active && uiStyles.uiPopupOptionActive,
-					selected && uiStyles.selected,
-					getOptionClassName?.(option, optionState)
-				)}
-				onClick={() => selectOption(option)}>
-				{renderOption ? (
-					renderOption(option, optionState)
-				) : (
-					<>
-						{selected ? <CheckIcon className={uiStyles.uiPopupOptionIcon} /> : <span className={uiStyles.uiPopupOptionIcon} />}
-						<div className={uiStyles.uiOptionText}>{getOptionLabel(option)}</div>
-						{getOptionCode && <div className={uiStyles.uiOptionCode}>{getOptionCode(option)}</div>}
-					</>
-				)}
-			</div>
+				disabled={optionDisabled}
+				active={active}
+				selected={selected}
+				className={getOptionClassName?.(option, optionState)}
+				icon={renderOption ? undefined : selected ? <CheckIcon /> : <span />}
+				text={renderOption ? renderOption(option, optionState) : getOptionLabel(option)}
+				code={!renderOption && getOptionCode ? getOptionCode(option) : undefined}
+				onMouseDown={(event) => event.preventDefault()}
+				onClick={() => selectOption(option)}
+			/>
 		);
 	};
 
@@ -264,7 +254,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 
 				return (
 					<>
-						<PickerTriggerInput
+						<PickerTrigger
 							ref={setInputNode}
 							rootRef={setReference}
 							id={controlId}
@@ -274,12 +264,18 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							autoComplete="off"
 							role="combobox"
 							isLoading={isLoading}
+							open={open}
+							optionCount={options.length}
+							label={label}
+							placeholder={placeholder}
 							value={inputValue}
-							placeholder={
-								selectedOption === undefined || showSearchValue
-									? `${placeholder ?? label ?? ""} <${options.length}>`
-									: undefined
-							}
+							selectedValue={displayContent ?? displayText}
+							hasSelection={selectedOption !== undefined}
+							showSelectedValue={selectedOption !== undefined && !showSearchValue}
+							clearable={Boolean(clearable)}
+							onClear={handleClear}
+							onToggleMouseDown={triggerController.handleToggleMouseDown}
+							onToggleClick={triggerController.handleToggleClick}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
 							aria-haspopup="listbox"
@@ -287,35 +283,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							aria-controls={open ? listId : undefined}
 							aria-autocomplete={searchable ? "list" : "none"}
 							aria-activedescendant={open ? getActiveOptionId(listId) : undefined}
-							inputClassName={cn(showDisplayOverlay && styles.inputWithOverlay, buttonClassName, "textOverflow")}
-							overlay={showDisplayOverlay ? <div className={styles.valueOverlay}>{displayContent}</div> : undefined}
-							endAdornment={
-								<PickerTriggerActions
-									open={open}
-									disabled={disabled}
-									onToggleMouseDown={triggerController.handleToggleMouseDown}
-									onToggleClick={triggerController.handleToggleClick}>
-									{clearable && selectedOption !== undefined && !disabled ? (
-										<button
-											type="button"
-											className={uiStyles.uiClearButton}
-											data-ui="select-clear-button"
-											data-action="clear-select"
-											onMouseDown={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-											}}
-											onClick={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-												handleClear();
-											}}
-											aria-label="Очистить выбор">
-											<XIcon />
-										</button>
-									) : null}
-								</PickerTriggerActions>
-							}
+							inputClassName={cn(buttonClassName, "textOverflow")}
 							onChange={(event) => {
 								if (!searchable) {
 									return;
@@ -353,9 +321,9 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							setFloating={setFloating}
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handleFloatingKeyDown}
-							className={cn(uiStyles.uiPopupOptions, optionsClassName)}
+							className={optionsClassName}
 							maxWidth={optionsMaxWidth}
-							header={renderPopupHeader}>
+							toolbar={renderPopupHeader}>
 							<div className={cn(optionsContentClassName, "h100 scrollable")}>
 								{hasOptions ? (
 									optionSections ? (

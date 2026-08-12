@@ -1,11 +1,8 @@
 import { formatRussianPlural, type RussianPluralForms } from "@ryuzaki13/react-foundation-lib/formatters";
 import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
-import { PickerSelectionToolbar } from "../../picker";
-
 import { type MultiSelectItemState, type MultiSelectRenderContext } from "./MultiSelect";
 import { MultiSelectOption } from "./MultiSelectOption";
-import { MultiSelectToken } from "./MultiSelectToken";
 
 interface MultiSelectRendererConfig {
 	codeKey: string;
@@ -52,12 +49,8 @@ export function getDefaultMultiSelectTokenValue(items: CollectionItem[], codeKey
 
 export function createDefaultMultiSelectTokenRenderer(config: MultiSelectRendererConfig) {
 	return function renderDefaultToken(context: MultiSelectRenderContext) {
-		return <MultiSelectToken value={getDefaultMultiSelectTokenValue(context.selectedItems, config.codeKey, config.textKey)} />;
+		return getDefaultMultiSelectTokenValue(context.selectedItems, config.codeKey, config.textKey);
 	};
-}
-
-export function renderDefaultMultiSelectToolbar(context: MultiSelectRenderContext) {
-	return <PickerSelectionToolbar onSelectAll={context.selectAll} onDeselectAll={context.deselectAll} />;
 }
 
 export function createDefaultMultiSelectItemRenderer(config: MultiSelectRendererConfig) {

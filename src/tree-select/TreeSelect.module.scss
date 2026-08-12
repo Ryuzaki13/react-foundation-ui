@@ -4,44 +4,6 @@
 .treeRow {
 	display: flex;
 	align-items: stretch;
-	border-radius: var(--radius-sm);
-	cursor: pointer;
-
-	&:focus {
-		@include focusVisible;
-
-		background-color: var(--surface-accent);
-		border-color: var(--border-1);
-		cursor: pointer;
-	}
-
-	&:hover {
-		background-color: var(--surface-accent);
-		cursor: pointer;
-	}
-}
-
-// .uiOptionRowSelected
-.treeRowSelected {
-	background-color: var(--surface-2);
-	color: var(--content-accent);
-	cursor: default;
-}
-
-// .uiOptionRowActive
-.treeRowActive {
-	background-color: var(--surface-1);
-}
-
-// Недоступность принадлежит option целиком; вложенный checkbox только визуализирует то же состояние.
-.treeRowDisabled {
-	cursor: not-allowed;
-	opacity: var(--disabled-opacity);
-
-	&:hover {
-		background-color: transparent;
-		cursor: not-allowed;
-	}
 }
 
 .treeNodeButton {
@@ -169,35 +131,4 @@
 .treeSelectionIcon {
 	width: 0.75rem;
 	height: 0.75rem;
-}
-
-.treeSummary {
-	padding-right: calc(var(--control-height) * 2);
-}
-
-.inputWithOverlay {
-	color: transparent;
-	caret-color: transparent;
-}
-
-.valueOverlay {
-	position: absolute;
-	inset: 0 calc(var(--control-height) * 2) 0 var(--space-md);
-	display: flex;
-	align-items: center;
-	pointer-events: none;
-	overflow: hidden;
-}
-
-.treeActions {
-	position: absolute;
-	right: 0;
-	top: 0;
-	height: 100%;
-	display: flex;
-	align-items: center;
-}
-
-.treeClearButton {
-	color: var(--status-error-text);
 }

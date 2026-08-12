@@ -1,10 +1,6 @@
 declare const styles: {
-  readonly menuPanel: "menuPanel";
-  readonly menuScroller: "menuScroller";
-  readonly menuItem: "menuItem";
-  readonly menuItemIcon: "menuItemIcon";
-  readonly menuItemText: "menuItemText";
-  readonly menuItemHotKey: "menuItemHotKey";
+  readonly menuPositioner: "menuPositioner";
+  readonly menuOptions: "menuOptions";
   readonly radialPanel: "radialPanel";
   readonly radialRing: "radialRing";
   readonly radialCenterButton: "radialCenterButton";

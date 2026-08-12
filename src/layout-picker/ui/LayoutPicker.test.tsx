@@ -121,7 +121,7 @@ describe("LayoutPicker", () => {
 		expect(trigger.getAttribute("aria-label")).toBe("Выбрать раскладку");
 	});
 
-	it("по showPlaceholder отображает именно переданный placeholder", async () => {
+	it("по showPlaceholder отображает подпись выбранной раскладки", async () => {
 		await renderNode(
 			<LayoutPicker
 				value="single-cell"
@@ -136,14 +136,14 @@ describe("LayoutPicker", () => {
 			container?.querySelector<HTMLInputElement>('[data-ui="layout-picker-trigger"]'),
 			"Не найдена кнопка LayoutPicker"
 		);
-		const placeholder = getRequiredElement(
-			container?.querySelector<HTMLElement>('[data-ui="layout-picker-placeholder"]'),
-			"Не найден текст placeholder LayoutPicker"
+		const selectedLabel = getRequiredElement(
+			container?.querySelector<HTMLElement>('[data-ui="layout-picker-selected-label"]'),
+			"Не найдена подпись выбранной раскладки"
 		);
-		const overlay = getRequiredElement(placeholder.parentElement, "Не найден overlay значения LayoutPicker");
+		const overlay = getRequiredElement(selectedLabel.parentElement, "Не найден selected token LayoutPicker");
 
-		expect(placeholder.textContent).toBe("Выберите схему");
-		expect(overlay.textContent).toBe("Выберите схему");
+		expect(selectedLabel.textContent).toBe("Одна ячейка");
+		expect(overlay.textContent).toBe("Одна ячейка");
 		expect(trigger.value).toBe("Одна ячейка");
 		expect(trigger.getAttribute("aria-label")).toBe("Выбрать layout. Текущее значение: Одна ячейка");
 	});

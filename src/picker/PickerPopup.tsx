@@ -1,12 +1,10 @@
 import { type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 
 import { FloatingContext, FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 
-import { Separator } from "../separator";
-
 import styles from "./Picker.module.scss";
+import { PickerOptions, type PickerSelectionActions } from "./PickerOptions";
 
 interface PickerPopupProps {
 	open: boolean;
@@ -28,9 +26,9 @@ interface PickerPopupProps {
 	className?: string;
 	maxWidth?: CSSProperties["maxWidth"];
 	layoutClassName?: string;
-	headerClassName?: string;
 	bodyClassName?: string;
-	header?: ReactNode;
+	toolbar?: ReactNode | false;
+	selectionActions?: PickerSelectionActions;
 	children: ReactNode;
 }
 
@@ -58,9 +56,9 @@ export function PickerPopup({
 	className,
 	maxWidth,
 	layoutClassName,
-	headerClassName,
 	bodyClassName,
-	header,
+	toolbar,
+	selectionActions,
 	children
 }: PickerPopupProps) {
 	return (
@@ -85,19 +83,17 @@ export function PickerPopup({
 								"aria-multiselectable": ariaMultiselectable || undefined,
 								onMouseDown: stopNestedFloatingMouseDown,
 								onKeyDown,
-								className
+								className: styles.popupPositioner
 							})}>
-							<div className={cn(styles.popupLayout, layoutClassName)}>
-								{header ? (
-									<div className={headerClassName}>
-										{header}
-										<Separator className="marginBlockSm" />
-									</div>
-								) : (
-									<div />
-								)}
-								<div className={cn(styles.popupBody, bodyClassName)}>{children}</div>
-							</div>
+							<PickerOptions
+								className={className}
+								layoutClassName={layoutClassName}
+								bodyClassName={bodyClassName}
+								toolbar={toolbar}
+								selectionActions={selectionActions}
+								scrollable={false}>
+								{children}
+							</PickerOptions>
 						</motion.div>
 					</FloatingFocusManager>
 				</FloatingPortal>

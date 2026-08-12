@@ -1,26 +1,23 @@
-import { type ButtonHTMLAttributes, type ReactNode } from "react";
+import { type ButtonHTMLAttributes, type Ref } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import uiStyles from "../ui.module.scss";
 
-import { OptionHotkey } from "./OptionHotkey";
-import { OptionIcon } from "./OptionIcon";
-import { type OptionCodeChildren, type OptionTextChildren } from "./types";
+import { OptionContent, type OptionContentProps } from "./OptionContent";
 
-interface OptionButtonProps extends Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "children"> {
-	children: OptionTextChildren | [OptionTextChildren, OptionCodeChildren];
-	icon?: ReactNode;
-	hotkey?: string;
+export type OptionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "children"> &
+	OptionContentProps & {
+		ref?: Ref<HTMLButtonElement>;
+		active?: boolean;
+		selected?: boolean;
+	};
 
-	active?: boolean;
-	selected?: boolean;
-}
-
-export function OptionButton({ icon, hotkey, active, selected, children, ...props }: OptionButtonProps) {
+export function OptionButton({ ref, icon, slot, text, searchText, code, hotkey, active, selected, ...props }: OptionButtonProps) {
 	return (
 		<button
 			{...props}
+			ref={ref}
 			type="button"
 			className={cn(
 				uiStyles.uiPopupOption,
@@ -29,9 +26,7 @@ export function OptionButton({ icon, hotkey, active, selected, children, ...prop
 				props.disabled && uiStyles.disabled,
 				props.className
 			)}>
-			{icon ? <OptionIcon>{icon}</OptionIcon> : null}
-			{children}
-			{hotkey && <OptionHotkey>{hotkey}</OptionHotkey>}
+			<OptionContent icon={icon} slot={slot} text={text} searchText={searchText} {...(code !== undefined ? { code } : { hotkey })} />
 		</button>
 	);
 }

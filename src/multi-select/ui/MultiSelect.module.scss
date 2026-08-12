@@ -4,36 +4,3 @@
 	// Общий контейнер
 	padding: 0;
 }
-
-.multiSelectTokens {
-	display: flex;
-	align-items: center;
-	justify-content: flex-end;
-
-	position: absolute;
-	inset: 0 calc(var(--control-height) * 2) 0 var(--space-md);
-
-	pointer-events: none;
-	overflow: hidden;
-
-	&:empty {
-		display: none;
-	}
-}
-
-.multiSelectToken {
-	font-size: var(--font-size-sm);
-	// font-weight: 300;
-	// font-variation-settings: "wght" 300;
-
-	// flex: 1 1 0%;
-	// min-width: 0;
-	max-width: 100%;
-
-	overflow: hidden;
-	white-space: nowrap;
-	word-break: normal;
-	text-overflow: ellipsis;
-
-	pointer-events: none;
-}

@@ -2,22 +2,20 @@ import { type CSSProperties, ReactNode, useCallback, useLayoutEffect, useMemo, u
 
 import { type FloatingListboxSizeResolver } from "@ryuzaki13/react-foundation-lib/hooks";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { XIcon } from "lucide-react";
 
 import { InputText } from "../input";
+import { Option } from "../option";
 import {
 	PickerField,
 	PickerPopup,
 	PickerSelectionToolbar,
 	PickerStatus,
-	PickerTriggerActions,
-	PickerTriggerInput,
+	PickerTrigger,
 	usePickerFloatingListbox,
 	usePickerQuery,
 	usePickerTriggerController
 } from "../picker";
 import { UiBaseProps } from "../types";
-import uiStyles from "../ui.module.scss";
 
 import { buildTreeColumnsLayoutDescriptor } from "./model/buildTreeColumnsLayoutDescriptor";
 import { resolveBalancedTreeColumnsLayout } from "./model/resolveBalancedTreeColumnsLayout";
@@ -99,7 +97,6 @@ export function TreePickerBase({
 	const [manualExpansionById, setManualExpansionById] = useState<ReadonlyMap<string, boolean>>(() => new Map());
 	const resolvedTriggerMode = triggerMode === "search" ? (selectionMode === "multi" ? "search-multi" : "search-single") : "display";
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
-	const placeholderText = useMemo(() => `${placeholder} <${treeIndex.nodeById.size}>`, [placeholder, treeIndex]);
 	const defaultExpandedCodeKeySet = useMemo(() => new Set(defaultExpandedCodeKeys), [defaultExpandedCodeKeys]);
 	const {
 		query: currentQuery,
@@ -203,12 +200,6 @@ export function TreePickerBase({
 	const hasSelection = selectedIds.size > 0;
 	const showTriggerQuery = triggerMode === "search" && (open || currentQuery.length > 0);
 	const triggerValue = showTriggerQuery ? currentQuery : (selectedSummaryText ?? "");
-	const showSummaryOverlay = triggerMode === "display" && Boolean(selectedSummary);
-	const showSummaryToken = resolvedTriggerMode === "search-multi" && Boolean(selectedSummary);
-	const showTriggerPlaceholder =
-		(resolvedTriggerMode === "search-multi" && !hasSelection) ||
-		(resolvedTriggerMode === "search-single" && (!selectedSummaryText || showTriggerQuery)) ||
-		(resolvedTriggerMode === "display" && !hasSelection);
 	const triggerController = usePickerTriggerController({
 		mode: resolvedTriggerMode,
 		open,
@@ -292,7 +283,7 @@ export function TreePickerBase({
 
 				return (
 					<>
-						<PickerTriggerInput
+						<PickerTrigger
 							ref={setInputNode}
 							rootRef={setReference}
 							id={controlId}
@@ -301,9 +292,21 @@ export function TreePickerBase({
 							autoComplete="off"
 							isLoading={isLoading}
 							disabled={disabled}
+							open={open}
+							optionCount={treeIndex.nodeById.size}
+							label={label}
+							placeholder={placeholder}
 							readOnly={triggerMode !== "search"}
-							value={triggerMode === "display" && showSummaryOverlay ? "" : triggerValue}
-							placeholder={showTriggerPlaceholder ? placeholderText : undefined}
+							value={triggerValue}
+							selectedValue={selectedSummary ?? selectedSummaryText}
+							hasSelection={hasSelection}
+							showSelectedValue={
+								hasSelection && (resolvedTriggerMode === "search-multi" ? currentQuery.length === 0 : !showTriggerQuery)
+							}
+							clearable={onClearSelection !== undefined}
+							onClear={handleClearSelection}
+							onToggleMouseDown={triggerController.handleToggleMouseDown}
+							onToggleClick={triggerController.handleToggleClick}
 							aria-labelledby={labelId}
 							aria-label={labelId ? undefined : placeholder}
 							aria-describedby={describedBy}
@@ -313,41 +316,6 @@ export function TreePickerBase({
 							aria-autocomplete={optionsLayout !== "columns" && triggerMode === "search" ? "list" : "none"}
 							aria-activedescendant={
 								optionsLayout !== "columns" && open && visibleEntries.length > 0 ? getActiveOptionId(listId) : undefined
-							}
-							inputClassName={cn(hasSelection && styles.treeSummary, showSummaryOverlay && styles.inputWithOverlay)}
-							overlay={
-								showSummaryOverlay ? (
-									<div className={styles.valueOverlay}>{selectedSummary}</div>
-								) : showSummaryToken ? (
-									selectedSummary
-								) : undefined
-							}
-							endAdornment={
-								<PickerTriggerActions
-									open={open}
-									disabled={disabled || isLoading}
-									onToggleMouseDown={triggerController.handleToggleMouseDown}
-									onToggleClick={triggerController.handleToggleClick}>
-									{/* {showSummaryToken ? selectedSummary : null} */}
-
-									{hasSelection && onClearSelection ? (
-										<button
-											type="button"
-											className={styles.treeClearButton}
-											onMouseDown={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-											}}
-											onClick={(event) => {
-												event.preventDefault();
-												event.stopPropagation();
-												handleClearSelection();
-											}}
-											aria-label="Очистить выбор">
-											<XIcon />
-										</button>
-									) : null}
-								</PickerTriggerActions>
 							}
 							onChange={(event) => {
 								if (triggerMode !== "search") {
@@ -408,10 +376,9 @@ export function TreePickerBase({
 							setFloating={setFloating}
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handleFloatingKeyDown}
-							className={uiStyles.uiPopupOptions}
 							layoutClassName={optionsLayout === "columns" ? styles.treeColumnsPopupLayout : undefined}
 							bodyClassName="scrollable"
-							header={popupHeader}>
+							toolbar={popupHeader}>
 							<div className={cn(optionsLayout === "columns" && styles.treeColumns)}>
 								{visibleEntries.length === 0 ? (
 									<PickerStatus errorState={error} emptyState={!error && !isLoading ? "Нет данных" : undefined} />
@@ -427,21 +394,17 @@ export function TreePickerBase({
 											entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true;
 
 										return (
-											<div
+											<Option
 												key={entry.node.id}
 												data-ui="tree-select-option"
 												id={getOptionId(listId, index)}
 												ref={(node) => setOptionRef(index, node)}
 												role={optionsLayout === "columns" ? undefined : "option"}
 												aria-selected={optionsLayout === "columns" ? undefined : selected}
-												aria-disabled={optionDisabled || undefined}
-												className={cn(
-													styles.treeRow,
-													optionsLayout === "columns" && styles.treeColumnRow,
-													optionDisabled && styles.treeRowDisabled,
-													active && styles.treeRowActive,
-													selected && styles.treeRowSelected
-												)}
+												disabled={optionDisabled}
+												active={active}
+												selected={selected}
+												className={cn(styles.treeRow, optionsLayout === "columns" && styles.treeColumnRow)}
 												style={
 													optionsLayout === "columns"
 														? ({
@@ -469,7 +432,7 @@ export function TreePickerBase({
 														onToggleSelection={() => selectOption(entry)}
 													/>
 												</div>
-											</div>
+											</Option>
 										);
 									})
 								)}

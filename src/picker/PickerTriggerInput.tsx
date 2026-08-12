@@ -7,7 +7,7 @@ import uiStyles from "../ui.module.scss";
 
 import styles from "./Picker.module.scss";
 
-interface PickerTriggerInputProps extends Omit<ComponentPropsWithoutRef<"input">, "size"> {
+export interface PickerTriggerInputProps extends Omit<ComponentPropsWithoutRef<"input">, "size"> {
 	rootRef?: (node: HTMLDivElement | null) => void;
 	endAdornment?: ReactNode;
 	overlay?: ReactNode;

@@ -5,6 +5,7 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { AnimatePresence, motion } from "motion/react";
 import { createPortal } from "react-dom";
 
+import { PickerOptions } from "../../picker";
 import styles from "../ContextMenu.module.scss";
 
 import { useMenuContext } from "./MenuContext";
@@ -107,15 +108,15 @@ export const MenuContent: React.FC<MenuContentProps> = ({
 					style={floatingStyles}
 					role="menu"
 					tabIndex={-1}
-					className={cn(styles.menuPanel, className)}
+					className={styles.menuPositioner}
 					onKeyDown={onMenuKeyDown}
 					initial={{ opacity: 0, scale: 0.96, y: -2 }}
 					animate={{ opacity: 1, scale: 1, y: 0 }}
 					exit={{ opacity: 0, scale: 0.96, y: -2 }}
 					transition={{ duration: 0.14, ease: "easeOut" }}>
-					<div className={cn(styles.menuScroller, "scrollable")}>
+					<PickerOptions className={cn(styles.menuOptions, className)}>
 						{typeof children === "function" ? children({ closeMenu }) : children}
-					</div>
+					</PickerOptions>
 				</motion.div>
 			)}
 		</AnimatePresence>,

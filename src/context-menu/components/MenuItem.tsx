@@ -1,9 +1,6 @@
 import React, { type HTMLAttributeAnchorTarget, useCallback } from "react";
 
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-
-import { OptionButton, OptionLink, OptionText } from "../../option";
-import styles from "../ContextMenu.module.scss";
+import { OptionButton, OptionLink } from "../../option";
 
 import { useMenuContext } from "./MenuContext";
 
@@ -52,13 +49,12 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 		[disabled, onSelect, closeOnSelect, closeMenu]
 	);
 
-	const rootClassName = cn(styles.menuItem, className);
-
 	if (href) {
 		return (
 			<OptionLink
 				icon={icon}
 				hotkey={hotKey}
+				text={children}
 				href={href}
 				target={target}
 				rel={rel}
@@ -69,10 +65,9 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 				data-disabled={disabled ? "true" : undefined}
 				data-ui="context-menu-item"
 				data-action="select-context-menu-item"
-				className={rootClassName}
-				onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}>
-				<OptionText className={styles.menuItemText}>{children}</OptionText>
-			</OptionLink>
+				className={className}
+				onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}
+			/>
 		);
 	}
 
@@ -80,6 +75,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 		<OptionButton
 			icon={icon}
 			hotkey={hotKey}
+			text={children}
 			role="menuitem"
 			tabIndex={-1}
 			disabled={disabled}
@@ -87,9 +83,8 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 			data-disabled={disabled ? "true" : undefined}
 			data-ui="context-menu-item"
 			data-action="select-context-menu-item"
-			className={rootClassName}
-			onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}>
-			<OptionText className={styles.menuItemText}>{children}</OptionText>
-		</OptionButton>
+			className={className}
+			onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}
+		/>
 	);
 };

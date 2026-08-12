@@ -3,16 +3,9 @@ import { useRef, useState } from "react";
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import {
-	PickerField,
-	PickerPopup,
-	PickerTriggerActions,
-	PickerTriggerInput,
-	usePickerFloatingListbox,
-	usePickerTriggerController
-} from "../../picker";
+import { OptionButton } from "../../option";
+import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
 import { type UiBaseProps } from "../../types";
-import uiStyles from "../../ui.module.scss";
 import { DEFAULT_LAYOUT_PICKER_PRESETS, getLayoutCellStyle, getLayoutStyle, type LayoutPickerPreset } from "../lib";
 
 import styles from "./LayoutPicker.module.scss";
@@ -74,7 +67,6 @@ export function LayoutPicker({
 	const [open, setOpen] = useState(false);
 	const selectedIndex = presets.findIndex((preset) => preset.id === value);
 	const selectedPreset = selectedIndex >= 0 ? presets[selectedIndex] : undefined;
-	const previewPreset = selectedPreset ?? presets[0];
 	const triggerLabel = selectedPreset?.label ?? placeholder;
 	const {
 		activeIndex,
@@ -125,16 +117,38 @@ export function LayoutPicker({
 
 				return (
 					<>
-						<PickerTriggerInput
+						<PickerTrigger
 							ref={setInputNode}
 							rootRef={setReference}
 							id={controlId}
 							type="button"
 							disabled={disabled}
+							open={open}
+							optionCount={presets.length}
+							label={label}
+							placeholder={placeholder}
 							readOnly
 							autoComplete="off"
 							role="combobox"
 							value={triggerLabel}
+							selectedValue={
+								selectedPreset ? (
+									<>
+										<LayoutPresetPreview preset={selectedPreset} compact />
+										{showPlaceholder ? (
+											<span className={styles.triggerText} data-ui="layout-picker-selected-label">
+												{selectedPreset.label}
+											</span>
+										) : null}
+									</>
+								) : undefined
+							}
+							hasSelection={selectedPreset !== undefined}
+							showSelectedValue={selectedPreset !== undefined}
+							onToggleMouseDown={triggerController.handleToggleMouseDown}
+							onToggleClick={triggerController.handleToggleClick}
+							openAriaLabel="Открыть список layout"
+							closeAriaLabel="Закрыть список layout"
 							aria-haspopup="listbox"
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}
@@ -145,33 +159,6 @@ export function LayoutPicker({
 							aria-label={!labelId ? (ariaLabel ?? `Выбрать layout. Текущее значение: ${triggerLabel}`) : undefined}
 							data-ui="layout-picker-trigger"
 							rootClassName={triggerClassName}
-							inputClassName={styles.triggerInput}
-							overlay={
-								<div className={styles.valueOverlay}>
-									{previewPreset ? (
-										<LayoutPresetPreview preset={previewPreset} compact />
-									) : (
-										<span className={styles.previewPlaceholder} />
-									)}
-									{showPlaceholder ? (
-										<span
-											className={cn(styles.triggerText, uiStyles.uiPlaceholder)}
-											data-ui="layout-picker-placeholder">
-											{placeholder}
-										</span>
-									) : null}
-								</div>
-							}
-							endAdornment={
-								<PickerTriggerActions
-									open={open}
-									disabled={disabled}
-									onToggleMouseDown={triggerController.handleToggleMouseDown}
-									onToggleClick={triggerController.handleToggleClick}
-									openAriaLabel="Открыть список layout"
-									closeAriaLabel="Закрыть список layout"
-								/>
-							}
 							onClick={triggerController.handleTriggerClick}
 							onFocus={(event) => {
 								triggerController.handleTriggerFocus(event.currentTarget);
@@ -202,7 +189,7 @@ export function LayoutPicker({
 							setFloating={setFloating}
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handleFloatingKeyDown}
-							className={cn(uiStyles.uiPopupOptions, styles.popup, popupClassName)}
+							className={cn(styles.popup, popupClassName)}
 							layoutClassName={styles.popupLayout}
 							bodyClassName={styles.popupBody}>
 							<div className={styles.options}>
@@ -213,26 +200,29 @@ export function LayoutPicker({
 									const optionId = getOptionId(listId, index);
 
 									return (
-										<button
+										<OptionButton
 											key={preset.id}
 											id={optionId}
 											ref={(node) => setOptionRef(index, node)}
-											type="button"
 											role="option"
 											tabIndex={-1}
 											disabled={presetDisabled}
 											aria-selected={selected}
 											aria-disabled={presetDisabled || undefined}
 											aria-label={preset.description ? `${preset.label}. ${preset.description}` : preset.label}
-											className={cn(styles.option, selected && styles.optionSelected, active && styles.optionActive)}
+											className={styles.option}
+											active={active}
+											selected={selected}
+											text={
+												<span className={styles.optionPreviewWrap}>
+													<LayoutPresetPreview preset={preset} />
+												</span>
+											}
 											data-ui="layout-picker-option"
 											data-selected={selected || undefined}
 											onMouseDown={(event) => event.preventDefault()}
-											onClick={() => selectOption(preset)}>
-											<span className={styles.optionPreviewWrap}>
-												<LayoutPresetPreview preset={preset} />
-											</span>
-										</button>
+											onClick={() => selectOption(preset)}
+										/>
 									);
 								})}
 							</div>

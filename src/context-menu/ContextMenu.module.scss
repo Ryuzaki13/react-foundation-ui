@@ -1,46 +1,19 @@
 @use "@/styles/mixins" as *;
 
-.menuPanel {
-	--menu-max-height: min(22em, calc(100dvh - var(--space-xl)));
-	--menu-min-width: 13em;
-	--menu-max-width: min(22em, calc(100dvw - var(--space-xl)));
-
-	min-width: var(--menu-min-width);
-	max-width: var(--menu-max-width);
-	padding: var(--space-xs);
-
-	background-color: var(--surface-0);
-	border: var(--border);
-	border-radius: var(--radius-sm);
-	box-shadow: var(--shadow-md);
-
+.menuPositioner {
 	z-index: var(--z-dropdown);
 	outline: none;
 }
 
-.menuScroller {
+.menuOptions {
+	--menu-max-height: min(22em, calc(100dvh - var(--space-xl)));
+	--menu-min-width: 13em;
+	--menu-max-width: min(22em, calc(100dvw - var(--space-xl)));
+	--input-width: var(--menu-min-width);
+
+	min-width: var(--menu-min-width);
+	max-width: var(--menu-max-width);
 	max-height: var(--menu-max-height);
-	overflow: auto;
-}
-
-.menuItem {
-	gap: var(--space-sm);
-}
-
-.menuItemIcon {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-}
-
-.menuItemText {
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.menuItemHotKey {
-	font-size: var(--font-size-sm);
 }
 
 .radialPanel {

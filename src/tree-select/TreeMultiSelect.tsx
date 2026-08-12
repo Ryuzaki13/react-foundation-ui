@@ -1,6 +1,5 @@
 import { useMemo, useState } from "react";
 
-import { MultiSelectToken } from "../multi-select";
 import { formatOptionCount } from "../multi-select/ui/defaultRenderers";
 import { usePickerSelectionLifecycle } from "../picker";
 import { UiBaseProps } from "../types";
@@ -155,7 +154,7 @@ export function TreeMultiSelect({
 				onDeselectAll: () => setDraftValue({})
 			}}
 			triggerMode="search"
-			selectedSummary={selectedSummary ? <MultiSelectToken value={selectedSummary} /> : undefined}
+			selectedSummary={selectedSummary}
 			query={query}
 			defaultQuery={defaultQuery}
 			onQuery={onQuery}

@@ -32,6 +32,7 @@ export function PickerTriggerActions({
 
 			<button
 				type="button"
+				disabled={disabled}
 				aria-label={open ? closeAriaLabel : openAriaLabel}
 				className={uiStyles.uiToggleButton}
 				onMouseDown={onToggleMouseDown}

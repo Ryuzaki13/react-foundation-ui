@@ -1,15 +1,12 @@
 import React, { forwardRef, type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { XIcon } from "lucide-react";
-
 import { CheckBox } from "../../check-box";
+import { Option } from "../../option";
 import {
 	PickerField,
 	PickerPopup,
 	PickerStatus,
-	PickerTriggerActions,
-	PickerTriggerInput,
+	PickerTrigger,
 	usePickerDefaultFilter,
 	usePickerFloatingListbox,
 	usePickerQuery,
@@ -20,12 +17,7 @@ import { Separator } from "../../separator";
 import { type UiBaseProps } from "../../types";
 import uiStyles from "../../ui.module.scss";
 
-import {
-	createDefaultMultiSelectItemRenderer,
-	createDefaultMultiSelectTokenRenderer,
-	renderDefaultMultiSelectToolbar,
-	resolveMultiSelectTextKey
-} from "./defaultRenderers";
+import { createDefaultMultiSelectItemRenderer, createDefaultMultiSelectTokenRenderer, resolveMultiSelectTextKey } from "./defaultRenderers";
 import styles from "./MultiSelect.module.scss";
 import { MultiSelectOptionSkeleton } from "./MultiSelectOptionSkeleton";
 
@@ -159,19 +151,16 @@ function MultiSelectOptionGroup({
 		const optionDisabled = getOptionDisabled?.(item) ?? false;
 
 		return (
-			<div
+			<Option
 				key={`${getItemKey(item, codeKey)}-${index}`}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
 				role="option"
 				aria-selected={selected}
-				aria-disabled={optionDisabled || undefined}
-				className={cn(
-					uiStyles.uiSelectOption,
-					optionDisabled && uiStyles.disabled,
-					selected && uiStyles.selected,
-					active && uiStyles.uiPopupOptionActive
-				)}
+				disabled={optionDisabled}
+				selected={selected}
+				active={active}
+				className={uiStyles.uiSelectOption}
 				onMouseDown={(event) => {
 					event.preventDefault();
 				}}>
@@ -204,7 +193,7 @@ function MultiSelectOptionGroup({
 					}}>
 					{renderItem(item, { selected, active, disabled: optionDisabled, query, highlightQuery })}
 				</div>
-			</div>
+			</Option>
 		);
 	});
 }
@@ -436,7 +425,6 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 		};
 		const tokenRenderer =
 			renderToken === undefined ? createDefaultMultiSelectTokenRenderer({ codeKey, textKey: resolvedTextKey }) : renderToken;
-		const toolbarRenderer = renderToolbar === undefined ? renderDefaultMultiSelectToolbar : renderToolbar;
 		const itemRenderer =
 			renderItem ??
 			createDefaultMultiSelectItemRenderer({
@@ -445,8 +433,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 				hideCode
 			});
 		const tokenNode = typeof tokenRenderer === "function" ? tokenRenderer(renderContext) : null;
-		const toolbarNode = typeof toolbarRenderer === "function" ? toolbarRenderer(renderContext) : null;
-		// const hasToken = tokenNode !== null && tokenNode !== undefined;
+		const toolbarNode = typeof renderToolbar === "function" ? renderToolbar(renderContext) : renderToolbar;
 		const selectedEntries = filteredCommittedSelectedItems.map((item, index) => ({ item, index }));
 		const itemEntries = filteredAvailableItems.map((item, index) => ({ item, index: index + selectedEntries.length }));
 		const isNoData = !isLoading && !error && visibleOptions.length === 0;
@@ -474,7 +461,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 
 					return (
 						<>
-							<PickerTriggerInput
+							<PickerTrigger
 								ref={setInputNode}
 								rootRef={setReference}
 								id={controlId}
@@ -483,10 +470,20 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								autoComplete="off"
 								isLoading={isLoading}
 								disabled={disabled}
+								open={open}
+								optionCount={items.length}
+								label={label}
+								placeholder={placeholder}
+								placeholderFallback="Выберите значения"
 								value={currentQuery}
-								placeholder={
-									hasSelectedItems ? undefined : `${placeholder ?? label ?? "Выберите значения"} <${items.length}>`
-								}
+								selectedValue={tokenNode}
+								hasSelection={hasSelectedItems}
+								showSelectedValue={hasSelectedItems && currentQuery.length === 0}
+								clearable
+								onClear={clearSelection}
+								clearAriaLabel="Очистить все"
+								onToggleMouseDown={triggerController.handleToggleMouseDown}
+								onToggleClick={triggerController.handleToggleClick}
 								aria-labelledby={labelId}
 								aria-describedby={describedBy}
 								aria-haspopup="listbox"
@@ -495,25 +492,6 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								aria-autocomplete="list"
 								aria-activedescendant={open ? getActiveOptionId(listId) : undefined}
 								rootClassName="flex alignItemsCenter"
-								endAdornment={
-									<PickerTriggerActions
-										open={open}
-										disabled={disabled}
-										onToggleMouseDown={triggerController.handleToggleMouseDown}
-										onToggleClick={triggerController.handleToggleClick}>
-										<button
-											type="button"
-											disabled={!hasSelectedItems}
-											className={uiStyles.uiClearButton}
-											data-ui="multi-select-clear-button"
-											data-action="clear-multi-select"
-											onClick={clearSelection}
-											aria-label="Очистить все">
-											<XIcon />
-										</button>
-									</PickerTriggerActions>
-								}
-								overlay={tokenNode}
 								onChange={(event) => {
 									triggerController.handleTriggerInputChange(event.target.value);
 								}}
@@ -561,8 +539,10 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 								initialFocus={-1}
 								returnFocus={false}
 								tabIndex={-1}
-								className={uiStyles.uiPopupOptions}
-								header={toolbarNode}>
+								toolbar={toolbarNode}
+								selectionActions={
+									renderToolbar === undefined ? { onSelectAll: selectAll, onDeselectAll: deselectAll } : undefined
+								}>
 								<MultiSelectOptionsWrapper isNoData={isNoData} error={error}>
 									<div className="scrollable h100">
 										<MultiSelectOptionGroup

@@ -298,29 +298,6 @@
 	@extend .uiFilledPanel;
 }
 
-.uiPopupOptions {
-	@extend .uiPanel;
-
-	background-color: var(--surface-0);
-
-	--anchor-gap: var(--space-xs);
-	--anchor-padding: var(--space-xs);
-	--anchor-offset: 0;
-	--input-width: min(100vw, var(--base-width, 15em));
-
-	display: flex;
-	flex-direction: column;
-
-	min-width: var(--input-width);
-	transform-origin: top;
-	box-shadow: var(--shadow-md);
-	z-index: var(--z-dropdown);
-
-	&:empty {
-		visibility: hidden;
-	}
-}
-
 .uiStateFocus {
 	@include focusVisible;
 
@@ -423,6 +400,17 @@
 .uiOptionText {
 	// font-size: var(--font-size-sm);
 	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.uiOptionSlot {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex-shrink: 0;
 }
 
 .uiOptionCode {
@@ -477,12 +465,6 @@
 
 	&.uiToggleIconOpen {
 		transform: rotate(180deg);
-	}
-}
-
-@include mobile {
-	.uiPopupOptions {
-		--input-width: calc(100dvw - var(--space-xl));
 	}
 }
 

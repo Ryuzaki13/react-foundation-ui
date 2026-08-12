@@ -326,6 +326,35 @@ describe("Select", () => {
 		expect(document.querySelector('[role="group"]')?.textContent?.trim()).toBe("Второе направлениеГамма");
 	});
 
+	it("использует явный поисковый текст независимо от произвольного ReactNode-render", async () => {
+		await renderNode(
+			<Select
+				label="Статус"
+				searchable
+				options={OPTIONS}
+				value={undefined}
+				onChange={() => undefined}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => <span data-render="custom">Карточка {option.id}</span>}
+				getOptionSearchText={(option) => option.label}
+			/>
+		);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
+
+		await act(async () => openButton.click());
+		await act(async () => {
+			const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+			valueSetter?.call(input, "Бета");
+			input.dispatchEvent(new Event("input", { bubbles: true }));
+		});
+
+		expect(Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).map((option) => option.textContent?.trim())).toEqual([
+			"Карточка 2"
+		]);
+	});
+
 	it("SerializableSelect при очистке возвращает undefined", async () => {
 		const onChange = vi.fn();
 

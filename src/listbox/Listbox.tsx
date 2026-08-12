@@ -1,7 +1,6 @@
 import { HTMLAttributes, JSX, KeyboardEvent, ReactNode, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import {
-	cn,
 	findFirstEnabledIndex,
 	findLastEnabledIndex,
 	findNextEnabledIndex,
@@ -9,8 +8,8 @@ import {
 } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { OptionButton, OptionText } from "../option";
-import uiStyles from "../ui.module.scss";
+import { OptionButton } from "../option";
+import { PickerOptions } from "../picker";
 
 type ListboxOption<T> = {
 	value: T;
@@ -18,7 +17,7 @@ type ListboxOption<T> = {
 	disabled?: boolean;
 };
 
-interface ListboxBaseProps<T> extends Omit<HTMLAttributes<HTMLUListElement>, "onChange" | "defaultValue" | "value"> {
+interface ListboxBaseProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "value"> {
 	options: ListboxOption<T>[];
 	disabled?: boolean;
 	focusOnMount?: boolean;
@@ -81,7 +80,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	const autoId = useId();
 	const listId = externalId ?? `${autoId}-listbox`;
 	const [internalValue, setInternalValue] = useState<T | T[] | undefined>(defaultValue);
-	const listRef = useRef<HTMLUListElement>(null);
+	const listRef = useRef<HTMLDivElement>(null);
 	const [focusedIndex, setFocusedIndex] = useState(() => getInitialFocusIndex(options, value ?? defaultValue, multiple));
 	/**
 	 * Прокрутка нужна только после клавиатурной навигации. Это не даёт монтированию и Fast Refresh
@@ -113,7 +112,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 		if (!isControlled) setInternalValue(newValue);
 	};
 
-	const handleKeyDown = (e: KeyboardEvent<HTMLUListElement>) => {
+	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
 		if (disabled) return;
 
 		if (e.key === "ArrowDown") {
@@ -163,8 +162,8 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	}, [focusOnMount]);
 
 	return (
-		<ul
-			ref={listRef}
+		<PickerOptions
+			rootRef={listRef}
 			id={listId}
 			role="listbox"
 			// aria-label={}
@@ -174,7 +173,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 			{...rest}
 			aria-disabled={disabled || undefined}
 			tabIndex={disabled ? -1 : 0}
-			className={cn(uiStyles.uiPanel, "scrollable", disabled && uiStyles.disabled)}>
+			className={rest.className}>
 			{options.map((option, index) => {
 				const selected = multiple
 					? Array.isArray(selectedValues) && selectedValues.includes(option.value)
@@ -183,32 +182,29 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 				const optionDisabled = disabled || option.disabled || undefined;
 
 				return (
-					<li key={getKey ? getKey(option, index) : index}>
-						<OptionButton
-							id={`${listId}-option-${index}`}
-							role="option"
-							disabled={optionDisabled}
-							aria-selected={selected}
-							aria-disabled={optionDisabled}
-							onMouseDown={(e) => {
-								e.preventDefault(); // чтобы не сбрасывался фокус listbox
-								if (optionDisabled) {
-									return;
-								}
-								setFocusedIndex(index);
-								handleSelect(option);
-							}}
-							tabIndex={-1}
-							icon={selected ? <CheckIcon /> : <span />}
-							active={active}
-							selected={selected}>
-							<OptionText>
-								{renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
-							</OptionText>
-						</OptionButton>
-					</li>
+					<OptionButton
+						key={getKey ? getKey(option, index) : index}
+						id={`${listId}-option-${index}`}
+						role="option"
+						disabled={optionDisabled}
+						aria-selected={selected}
+						aria-disabled={optionDisabled}
+						onMouseDown={(e) => {
+							e.preventDefault(); // чтобы не сбрасывался фокус listbox
+							if (optionDisabled) {
+								return;
+							}
+							setFocusedIndex(index);
+							handleSelect(option);
+						}}
+						tabIndex={-1}
+						icon={selected ? <CheckIcon /> : <span />}
+						active={active}
+						selected={selected}
+						text={renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
+					/>
 				);
 			})}
-		</ul>
+		</PickerOptions>
 	);
 }

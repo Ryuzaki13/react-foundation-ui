@@ -1,7 +1,7 @@
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { OptionCode, OptionText } from "../option";
 import { HighlightText } from "../text";
-import uiStyles from "../ui.module.scss";
 
 interface OptionContentProps {
 	label: string;
@@ -18,15 +18,15 @@ interface OptionContentProps {
  */
 export function SelectOptionContent({ label, code, highlight, labelClassName, codeClassName }: OptionContentProps) {
 	return (
-		<div className={uiStyles.uiOptionBase}>
-			<div className={cn(uiStyles.uiOptionText, "flexEllipsis", labelClassName)}>
+		<>
+			<OptionText className={cn("flexEllipsis", labelClassName)} searchText={label}>
 				<HighlightText text={label} highlight={highlight} />
-			</div>
+			</OptionText>
 			{code && (
-				<div className={cn(uiStyles.uiOptionCode, codeClassName)}>
+				<OptionCode className={codeClassName}>
 					<HighlightText text={code} highlight={highlight} />
-				</div>
+				</OptionCode>
 			)}
-		</div>
+		</>
 	);
 }

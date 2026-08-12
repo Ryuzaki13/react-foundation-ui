@@ -1,25 +1,5 @@
 @use "@/styles/mixins" as *;
 
-.valueOverlay {
-	position: absolute;
-	inset: 0 calc(var(--control-height) + var(--space-xs)) 0 var(--space-sm);
-	display: flex;
-	align-items: center;
-	gap: var(--space-sm);
-	min-width: 0;
-	pointer-events: none;
-	overflow: hidden;
-}
-
-.triggerInput {
-	--ui-color: transparent;
-	--ui-color-hover: transparent;
-	--ui-color-active: transparent;
-
-	color: transparent;
-	caret-color: transparent;
-}
-
 .triggerText {
 	min-width: 0;
 	flex: 1 1 auto;
@@ -70,12 +50,7 @@
 	}
 }
 
-.optionActive {
-	background-color: var(--surface-2);
-	border-color: var(--border-2);
-}
-
-.optionSelected {
+.option[data-selected] {
 	border-color: var(--border-1);
 	background-color: var(--surface-1);
 

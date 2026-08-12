@@ -36,12 +36,12 @@ declare const styles: {
   readonly uiPopupOption: "uiPopupOption";
   readonly uiOptionText: "uiOptionText";
   readonly uiOptionCode: "uiOptionCode";
+  readonly uiOptionSlot: "uiOptionSlot";
   readonly uiPanelTonePrimary: "uiPanelTonePrimary";
   readonly uiPanelToneSecondary: "uiPanelToneSecondary";
   readonly uiPanelToneTertiary: "uiPanelToneTertiary";
   readonly uiFilledPanel: "uiFilledPanel";
   readonly uiPanel: "uiPanel";
-  readonly uiPopupOptions: "uiPopupOptions";
   readonly uiFramedPanel: "uiFramedPanel";
   readonly uiStateFocus: "uiStateFocus";
   readonly uiOptionBase: "uiOptionBase";

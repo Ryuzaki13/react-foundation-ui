@@ -4,7 +4,7 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import uiStyles from "../ui.module.scss";
 
-interface OptionHotkeyProps extends HTMLAttributes<HTMLElement> {
+export interface OptionHotkeyProps extends HTMLAttributes<HTMLElement> {
 	children: string;
 }
 
