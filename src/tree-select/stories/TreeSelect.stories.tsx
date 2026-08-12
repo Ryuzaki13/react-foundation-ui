@@ -1,14 +1,11 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { TreeSelect, type TreeSelectProps } from "../TreeSelect";
 
 import { demoTreeNodes } from "./treeStoryFixtures";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function TreeSelectStoryCanvas(args: TreeSelectProps) {
-	const [, updateArgs] = useArgs<TreeSelectProps>();
-
+function TreeSelectStoryCanvas({ args, updateArgs }: { args: TreeSelectProps; updateArgs: StoryArgsUpdater<TreeSelectProps> }) {
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<TreeSelect
@@ -24,6 +21,10 @@ function TreeSelectStoryCanvas(args: TreeSelectProps) {
 		</div>
 	);
 }
+
+const renderTreeSelectStory = createControlledStoryRender<TreeSelectProps>((args, updateArgs) => (
+	<TreeSelectStoryCanvas args={args} updateArgs={updateArgs} />
+));
 
 const meta = {
 	title: "Shared/UI/TreeSelect",
@@ -62,18 +63,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-	render: function Render(args) {
-		return <TreeSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeSelectStory,
 	args: {
 		value: { codeKey: "BRANCH", value: "B0101" }
 	}
 };
 
 export const SelectParent: Story = {
-	render: function Render(args) {
-		return <TreeSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeSelectStory,
 	args: {
 		label: "Выбор родителя",
 		description: "Проверка single-select сценария, когда выбирается не leaf, а промежуточный узел.",
@@ -82,9 +79,7 @@ export const SelectParent: Story = {
 };
 
 export const FirstLevelExpanded: Story = {
-	render: function Render(args) {
-		return <TreeSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeSelectStory,
 	args: {
 		label: "Раскрыт первый уровень",
 		description: "Все узлы уровня REGION раскрыты до первого ручного действия пользователя.",
@@ -93,9 +88,7 @@ export const FirstLevelExpanded: Story = {
 };
 
 export const Empty: Story = {
-	render: function Render(args) {
-		return <TreeSelectStoryCanvas {...args} />;
-	},
+	render: renderTreeSelectStory,
 	args: {
 		nodes: [],
 		description: "Состояние без доступных узлов."

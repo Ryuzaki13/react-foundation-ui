@@ -56,11 +56,16 @@
 
 .triggerContainer {
 	position: relative;
-}
 
-.inputWithSelectedToken {
-	color: transparent;
-	caret-color: transparent;
+	&[data-has-overlay="true"] input {
+		--ui-color: transparent;
+		--ui-color-hover: transparent;
+		--ui-color-active: transparent;
+
+		color: transparent;
+		caret-color: transparent;
+		-webkit-text-fill-color: transparent;
+	}
 }
 
 .selectedToken {

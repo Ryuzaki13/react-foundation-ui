@@ -1,11 +1,11 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import {
 	baseOData,
 	installODataStoryFetchMock,
 	odataStoryOData,
 	storyValues,
 	treeSegments,
+	withODataMetadataErrorStoryBoundary,
 	withODataStoryQueryClient
 } from "../../select/stories/odataStoryFixtures";
 import { ODataTreeMultiSelect, type ODataTreeMultiSelectProps } from "../ODataTreeMultiSelect";
@@ -18,9 +18,13 @@ const largeRootGroupSegments = {
 	OWNER: treeSegments.OWNER
 } satisfies ODataDependentBaseProps["segments"];
 
-function ODataTreeMultiSelectStoryCanvas(args: ODataTreeMultiSelectProps) {
-	const [, updateArgs] = useArgs<ODataTreeMultiSelectProps>();
-
+function ODataTreeMultiSelectStoryCanvas({
+	args,
+	updateArgs
+}: {
+	args: ODataTreeMultiSelectProps;
+	updateArgs: StoryArgsUpdater<ODataTreeMultiSelectProps>;
+}) {
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<ODataTreeMultiSelect
@@ -34,6 +38,10 @@ function ODataTreeMultiSelectStoryCanvas(args: ODataTreeMultiSelectProps) {
 		</div>
 	);
 }
+
+const renderODataTreeMultiSelectStory = createControlledStoryRender<ODataTreeMultiSelectProps>((args, updateArgs) => (
+	<ODataTreeMultiSelectStoryCanvas args={args} updateArgs={updateArgs} />
+));
 
 const meta = {
 	title: "Shared/UI/ODataTreeMultiSelect",
@@ -80,18 +88,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		value: { OWNER: [storyValues.owner] }
 	}
 };
 
 export const ParentCompression: Story = {
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		label: "Компрессия subtree",
 		description: "Пример, когда наружу уходит узел верхнего уровня вместо полного списка потомков.",
@@ -100,9 +104,7 @@ export const ParentCompression: Story = {
 };
 
 export const MixedSelection: Story = {
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		label: "Смешанный выбор",
 		description: "Смешанный frontier по соседним уровням в OData-дереве.",
@@ -111,9 +113,7 @@ export const MixedSelection: Story = {
 };
 
 export const BalancedColumns: Story = {
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		label: "OData tree в столбцах",
 		description: "Режим columns открывает все уровни независимо от пустой настройки defaultExpandedCodeKeys.",
@@ -124,9 +124,7 @@ export const BalancedColumns: Story = {
 };
 
 export const LargeRootGroupsColumns: Story = {
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		label: "Крупные OData-группы",
 		description: "Сокращённая цепочка REGION → OWNER создаёт несколько root-групп для проверки порога из трёх строк.",
@@ -139,9 +137,7 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		odata: odataStoryOData.loading,
 		description: "Сценарий загрузки дерева."
@@ -149,12 +145,11 @@ export const LoadingState: Story = {
 };
 
 export const ErrorState: Story = {
+	decorators: [withODataMetadataErrorStoryBoundary],
 	parameters: {
 		odataMockMode: "metadataError"
 	},
-	render: function Render(args) {
-		return <ODataTreeMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeMultiSelectStory,
 	args: {
 		odata: odataStoryOData.metadataError,
 		description: "Сценарий ошибки metadata дерева."

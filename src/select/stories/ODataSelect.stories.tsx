@@ -1,8 +1,8 @@
 import { type ComponentProps } from "react";
 
 import { flattenODataDependentServices } from "@ryuzaki13/react-foundation-api/odata";
-import { useArgs } from "storybook/preview-api";
 
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { useODataDependentSelection } from "../../odata-dependent";
 import { ODataDependentSegmentSelect } from "../ODataDependentSegmentSelect";
 import { ODataSelect } from "../ODataSelect";
@@ -15,6 +15,7 @@ import {
 	odataStoryOData,
 	storyValues,
 	treeSegments,
+	withODataMetadataErrorStoryBoundary,
 	withODataStoryQueryClient
 } from "./odataStoryFixtures";
 
@@ -31,9 +32,7 @@ const linkedSegmentItems = flattenODataDependentServices([
 ]);
 const linkedSegmentOrder = linkedSegmentItems.map((item) => item.id);
 
-function ODataSelectStoryCanvas(args: ODataSelectStoryArgs) {
-	const [, updateArgs] = useArgs<ODataSelectStoryArgs>();
-
+function ODataSelectStoryCanvas({ args, updateArgs }: { args: ODataSelectStoryArgs; updateArgs: StoryArgsUpdater<ODataSelectStoryArgs> }) {
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<ODataSelect
@@ -47,6 +46,10 @@ function ODataSelectStoryCanvas(args: ODataSelectStoryArgs) {
 		</div>
 	);
 }
+
+const renderODataSelectStory = createControlledStoryRender<ODataSelectStoryArgs>((args, updateArgs) => (
+	<ODataSelectStoryCanvas args={args} updateArgs={updateArgs} />
+));
 
 export function LinkedFiltersDemo() {
 	const selection = useODataDependentSelection({
@@ -119,9 +122,7 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicDivision: Story = {
 	name: "Базовый регион",
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		label: "Регион",
 		description: "Базовая настройка single-select для выбора кода REGION.",
@@ -133,9 +134,7 @@ export const BasicDivision: Story = {
 
 export const HideCode: Story = {
 	name: "Скрытый код",
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		label: "Подразделение",
 		description: "Код скрыт и в выпадающем списке, и в выбранном значении.",
@@ -147,9 +146,7 @@ export const HideCode: Story = {
 
 export const SelectTextValue: Story = {
 	name: "Выбор текста вместо кода",
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		label: "Регион по тексту",
 		description: "Снаружи хранится текстовое значение, а не код.",
@@ -161,9 +158,7 @@ export const SelectTextValue: Story = {
 
 export const StaticDependency: Story = {
 	name: "Зависимость от региона",
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		label: "Подразделение c зависимостью",
 		description: "Фильтрация подразделений по уже выбранному региону через props.dependencies.",
@@ -184,9 +179,7 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		odata: odataStoryOData.loading,
 		label: "Команда",
@@ -198,12 +191,11 @@ export const LoadingState: Story = {
 
 export const MetadataError: Story = {
 	name: "Ошибка metadata",
+	decorators: [withODataMetadataErrorStoryBoundary],
 	parameters: {
 		odataMockMode: "metadataError"
 	},
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		odata: odataStoryOData.metadataError,
 		label: "Регион",
@@ -218,9 +210,7 @@ export const CollectionError: Story = {
 	parameters: {
 		odataMockMode: "collectionError"
 	},
-	render: function Render(args) {
-		return <ODataSelectStoryCanvas {...args} />;
-	},
+	render: renderODataSelectStory,
 	args: {
 		odata: odataStoryOData.collectionError,
 		label: "Ответственный",

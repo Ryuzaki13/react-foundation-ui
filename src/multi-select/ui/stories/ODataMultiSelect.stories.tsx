@@ -1,8 +1,8 @@
 import { type ComponentProps } from "react";
 
 import { flattenODataDependentServices } from "@ryuzaki13/react-foundation-api/odata";
-import { useArgs } from "storybook/preview-api";
 
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../../development/storybook/createControlledStoryRender";
 import { useODataDependentSelection } from "../../../odata-dependent";
 import {
 	baseModel,
@@ -12,6 +12,7 @@ import {
 	odataStoryOData,
 	storyValues,
 	treeSegments,
+	withODataMetadataErrorStoryBoundary,
 	withODataStoryQueryClient
 } from "../../../select/stories/odataStoryFixtures";
 import { ODataDependentSegmentMultiSelect } from "../ODataDependentSegmentMultiSelect";
@@ -30,9 +31,13 @@ const linkedSegmentItems = flattenODataDependentServices([
 ]);
 const linkedSegmentOrder = linkedSegmentItems.map((item) => item.id);
 
-function ODataMultiSelectStoryCanvas(args: ODataMultiSelectStoryArgs) {
-	const [, updateArgs] = useArgs<ODataMultiSelectStoryArgs>();
-
+function ODataMultiSelectStoryCanvas({
+	args,
+	updateArgs
+}: {
+	args: ODataMultiSelectStoryArgs;
+	updateArgs: StoryArgsUpdater<ODataMultiSelectStoryArgs>;
+}) {
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<ODataMultiSelect
@@ -48,6 +53,10 @@ function ODataMultiSelectStoryCanvas(args: ODataMultiSelectStoryArgs) {
 		</div>
 	);
 }
+
+const renderODataMultiSelectStory = createControlledStoryRender<ODataMultiSelectStoryArgs>((args, updateArgs) => (
+	<ODataMultiSelectStoryCanvas args={args} updateArgs={updateArgs} />
+));
 
 function LinkedFiltersDemo() {
 	const selection = useODataDependentSelection({
@@ -118,9 +127,7 @@ type Story = StoryObj<typeof meta>;
 
 export const BasicDivision: Story = {
 	name: "Базовый регион",
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		label: "Регион",
 		description: "Базовая настройка из multiSelectConfig: выбор кодов REGION с текстовым отображением.",
@@ -132,9 +139,7 @@ export const BasicDivision: Story = {
 
 export const HideCode: Story = {
 	name: "Скрытый код",
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		label: "Подразделение",
 		description: "Сценарий segment.hideCode: в списке и токене показывается только текст без кода.",
@@ -146,9 +151,7 @@ export const HideCode: Story = {
 
 export const SelectTextValue: Story = {
 	name: "Выбор текста вместо кода",
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		label: "Регион по тексту",
 		description: "Сценарий segment.selectText: наружу возвращаются текстовые значения, а не коды.",
@@ -160,9 +163,7 @@ export const SelectTextValue: Story = {
 
 export const StaticDependency: Story = {
 	name: "Зависимость от региона",
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		label: "Подразделение c зависимостью",
 		description: "Фильтрация подразделений по уже выбранному региону через props.dependencies.",
@@ -183,9 +184,7 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		odata: odataStoryOData.loading,
 		label: "Команда",
@@ -197,12 +196,11 @@ export const LoadingState: Story = {
 
 export const MetadataError: Story = {
 	name: "Ошибка metadata",
+	decorators: [withODataMetadataErrorStoryBoundary],
 	parameters: {
 		odataMockMode: "metadataError"
 	},
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		odata: odataStoryOData.metadataError,
 		label: "Регион",
@@ -217,9 +215,7 @@ export const CollectionError: Story = {
 	parameters: {
 		odataMockMode: "collectionError"
 	},
-	render: function Render(args) {
-		return <ODataMultiSelectStoryCanvas {...args} />;
-	},
+	render: renderODataMultiSelectStory,
 	args: {
 		odata: odataStoryOData.collectionError,
 		label: "Ответственный",

@@ -1,8 +1,5 @@
 declare const styles: {
   readonly treeRow: "treeRow";
-  readonly treeRowSelected: "treeRowSelected";
-  readonly treeRowActive: "treeRowActive";
-  readonly treeRowDisabled: "treeRowDisabled";
   readonly treeNodeButton: "treeNodeButton";
   readonly treePopupHeader: "treePopupHeader";
   readonly treeColumns: "treeColumns";
@@ -21,10 +18,5 @@ declare const styles: {
   readonly treeSelectionChecked: "treeSelectionChecked";
   readonly treeSelectionPartial: "treeSelectionPartial";
   readonly treeSelectionIcon: "treeSelectionIcon";
-  readonly treeSummary: "treeSummary";
-  readonly inputWithOverlay: "inputWithOverlay";
-  readonly valueOverlay: "valueOverlay";
-  readonly treeActions: "treeActions";
-  readonly treeClearButton: "treeClearButton";
 };
 export default styles;

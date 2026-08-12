@@ -18,8 +18,13 @@ export interface PickerTriggerInputProps extends Omit<ComponentPropsWithoutRef<"
 
 export const PickerTriggerInput = forwardRef<HTMLInputElement, PickerTriggerInputProps>(
 	({ rootRef, endAdornment, overlay, rootClassName, inputClassName, isLoading, ...props }, ref) => {
+		const hasOverlay = overlay !== undefined && overlay !== null;
+
 		return (
-			<div ref={rootRef} className={cn(uiStyles.uiInputContainer, styles.triggerContainer, rootClassName)}>
+			<div
+				ref={rootRef}
+				className={cn(uiStyles.uiInputContainer, styles.triggerContainer, rootClassName)}
+				data-has-overlay={hasOverlay || undefined}>
 				{isLoading ? (
 					<InputLoadingFrame />
 				) : (
@@ -29,7 +34,7 @@ export const PickerTriggerInput = forwardRef<HTMLInputElement, PickerTriggerInpu
 								<input {...props} ref={ref} className={cn(uiStyles.uiInputWithToggle, controlClassName, inputClassName)} />
 							)}
 						</InputControl>
-						{overlay}
+						{hasOverlay ? overlay : null}
 					</>
 				)}
 			</div>

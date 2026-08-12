@@ -1,8 +1,5 @@
 import { type ReactNode, type Ref } from "react";
 
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-
-import styles from "./Picker.module.scss";
 import { PickerClearButton } from "./PickerClearButton";
 import { getPickerPlaceholder } from "./PickerPlaceholder";
 import { PickerSelectedToken } from "./PickerSelectedToken";
@@ -66,7 +63,7 @@ export function PickerTrigger({
 			placeholder={
 				showSelectedValue ? undefined : getPickerPlaceholder({ placeholder, label, optionCount, fallback: placeholderFallback })
 			}
-			inputClassName={cn(showSelectedValue && styles.inputWithSelectedToken, inputClassName)}
+			inputClassName={inputClassName}
 			overlay={showSelectedValue ? <PickerSelectedToken>{selectedValue}</PickerSelectedToken> : undefined}
 			endAdornment={
 				<PickerTriggerActions

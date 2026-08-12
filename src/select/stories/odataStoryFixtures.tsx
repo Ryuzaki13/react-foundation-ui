@@ -1,5 +1,5 @@
 /* eslint-disable react-hooks/rules-of-hooks */
-import { useEffect, useMemo } from "react";
+import { Component, type ReactNode, useEffect, useMemo } from "react";
 
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 
@@ -237,6 +237,50 @@ export const withODataStoryQueryClient: Decorator = (storyRenderer) => {
 		<QueryClientProvider client={queryClient}>
 			<StoryComponent />
 		</QueryClientProvider>
+	);
+};
+
+type ODataMetadataErrorStoryBoundaryProps = {
+	children: ReactNode;
+};
+
+type ODataMetadataErrorStoryBoundaryState = {
+	error?: Error;
+};
+
+/**
+ * Показывает ожидаемую metadata-ошибку как самостоятельное состояние story.
+ * Production-hook намеренно передаёт такую ошибку ближайшему Error Boundary,
+ * поэтому Canvas должен моделировать эту внешнюю application boundary явно.
+ */
+class ODataMetadataErrorStoryBoundary extends Component<ODataMetadataErrorStoryBoundaryProps, ODataMetadataErrorStoryBoundaryState> {
+	public state: ODataMetadataErrorStoryBoundaryState = {};
+
+	public static getDerivedStateFromError(error: Error): ODataMetadataErrorStoryBoundaryState {
+		return { error };
+	}
+
+	public render() {
+		if (this.state.error) {
+			return (
+				<div role="alert" style={{ padding: "var(--space-sm)", color: "var(--status-error-text)" }}>
+					{this.state.error.message}
+				</div>
+			);
+		}
+
+		return this.props.children;
+	}
+}
+
+/** Оборачивает metadata-error story в ту же boundary, которую ожидает публичный OData-hook. */
+export const withODataMetadataErrorStoryBoundary: Decorator = (storyRenderer) => {
+	const StoryComponent = storyRenderer;
+
+	return (
+		<ODataMetadataErrorStoryBoundary>
+			<StoryComponent />
+		</ODataMetadataErrorStoryBoundary>
 	);
 };
 

@@ -1,20 +1,24 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import {
 	baseOData,
 	installODataStoryFetchMock,
 	odataStoryOData,
 	storyValues,
 	treeSegments,
+	withODataMetadataErrorStoryBoundary,
 	withODataStoryQueryClient
 } from "../../select/stories/odataStoryFixtures";
 import { ODataTreeSelect, type ODataTreeSelectProps } from "../ODataTreeSelect";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function ODataTreeSelectStoryCanvas(args: ODataTreeSelectProps) {
-	const [, updateArgs] = useArgs<ODataTreeSelectProps>();
-
+function ODataTreeSelectStoryCanvas({
+	args,
+	updateArgs
+}: {
+	args: ODataTreeSelectProps;
+	updateArgs: StoryArgsUpdater<ODataTreeSelectProps>;
+}) {
 	return (
 		<div style={{ display: "grid", gap: 12, maxWidth: 520 }}>
 			<ODataTreeSelect
@@ -30,6 +34,10 @@ function ODataTreeSelectStoryCanvas(args: ODataTreeSelectProps) {
 		</div>
 	);
 }
+
+const renderODataTreeSelectStory = createControlledStoryRender<ODataTreeSelectProps>((args, updateArgs) => (
+	<ODataTreeSelectStoryCanvas args={args} updateArgs={updateArgs} />
+));
 
 const meta = {
 	title: "Shared/UI/ODataTreeSelect",
@@ -72,18 +80,14 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
-	render: function Render(args) {
-		return <ODataTreeSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeSelectStory,
 	args: {
 		value: { codeKey: "OWNER", value: storyValues.owner }
 	}
 };
 
 export const SelectParent: Story = {
-	render: function Render(args) {
-		return <ODataTreeSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeSelectStory,
 	args: {
 		label: "Выбор родителя",
 		description: "Проверка выбора узла верхнего уровня из OData-дерева.",
@@ -92,9 +96,7 @@ export const SelectParent: Story = {
 };
 
 export const OnlySecondLevelExpanded: Story = {
-	render: function Render(args) {
-		return <ODataTreeSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeSelectStory,
 	args: {
 		label: "Раскрывается только второй уровень",
 		description: "REGION остаётся закрытым. После его ручного открытия узлы BRANCH уже раскрыты по умолчанию.",
@@ -106,9 +108,7 @@ export const LoadingState: Story = {
 	parameters: {
 		odataMockMode: "loading"
 	},
-	render: function Render(args) {
-		return <ODataTreeSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeSelectStory,
 	args: {
 		odata: odataStoryOData.loading,
 		description: "Сценарий загрузки дерева."
@@ -116,12 +116,11 @@ export const LoadingState: Story = {
 };
 
 export const ErrorState: Story = {
+	decorators: [withODataMetadataErrorStoryBoundary],
 	parameters: {
 		odataMockMode: "metadataError"
 	},
-	render: function Render(args) {
-		return <ODataTreeSelectStoryCanvas {...args} />;
-	},
+	render: renderODataTreeSelectStory,
 	args: {
 		odata: odataStoryOData.metadataError,
 		description: "Сценарий ошибки metadata дерева."

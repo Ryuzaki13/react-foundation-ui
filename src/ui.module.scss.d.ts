@@ -36,7 +36,6 @@ declare const styles: {
   readonly uiPopupOption: "uiPopupOption";
   readonly uiOptionText: "uiOptionText";
   readonly uiOptionCode: "uiOptionCode";
-  readonly uiOptionSlot: "uiOptionSlot";
   readonly uiPanelTonePrimary: "uiPanelTonePrimary";
   readonly uiPanelToneSecondary: "uiPanelToneSecondary";
   readonly uiPanelToneTertiary: "uiPanelToneTertiary";
@@ -52,11 +51,11 @@ declare const styles: {
   readonly uiPopupOptionActive: "uiPopupOptionActive";
   readonly uiPopupOptionSeparator: "uiPopupOptionSeparator";
   readonly uiPopupGroupLabel: "uiPopupGroupLabel";
+  readonly uiOptionSlot: "uiOptionSlot";
   readonly uiToggleButtonContainer: "uiToggleButtonContainer";
   readonly uiToggleButton: "uiToggleButton";
   readonly uiToggleIcon: "uiToggleIcon";
   readonly uiToggleIconOpen: "uiToggleIconOpen";
-  readonly "99875em": "99875em";
   readonly uiClearButton: "uiClearButton";
   readonly uiButtonSeparator: "uiButtonSeparator";
 };
