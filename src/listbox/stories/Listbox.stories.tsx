@@ -1,11 +1,10 @@
-import type { ComponentProps, ReactNode } from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Listbox } from "../Listbox";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type StringOption = {
 	id: string;

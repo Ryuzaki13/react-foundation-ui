@@ -16,12 +16,64 @@
 
 :root {
 	font-feature-settings: "locl" 0;
+
+	&[data-contrast="high"] {
+		--hc-surface: #ffffff;
+		--hc-content: #000000;
+
+		--hc-border: #595959;
+		--hc-border-focus: #0044ff;
+
+		--hc-content-accent: #000000;
+		--hc-surface-accent: #ffffff;
+		--hc-border-accent: #595959;
+
+		--hc-status-neutral-text: #595959;
+		--hc-status-neutral-border: #595959;
+		--hc-status-neutral-fill: #595959;
+		--hc-status-neutral-on-fill: #ffffff;
+
+		--hc-status-error-text: #920000;
+		--hc-status-error-border: #920000;
+		--hc-status-error-fill: #920000;
+		--hc-status-error-on-fill: #ffffff;
+
+		--hc-status-success-text: #028d00;
+		--hc-status-success-border: #028d00;
+		--hc-status-success-fill: #028d00;
+		--hc-status-success-on-fill: #ffffff;
+
+		--hc-status-warning-text: #886f00;
+		--hc-status-warning-border: #886f00;
+		--hc-status-warning-fill: #a28400;
+		--hc-status-warning-on-fill: #ffffff;
+
+		--hc-status-info-text: #004672;
+		--hc-status-info-border: #004672;
+		--hc-status-info-fill: #004672;
+		--hc-status-info-on-fill: #ffffff;
+	}
+
+	--interactive-color: inherit;
+	--interactive-hover-color: #000000;
+	--interactive-active-color: #000000;
+	--interactive-selected-color: #000000;
+
+	--interactive-surface: inherit;
+	--interactive-hover-surface: oklch(0.93 0.12 75);
+	--interactive-active-surface: oklch(0.87 0.15 70);
+	--interactive-selected-surface: oklch(0.87 0.12 80);
+
+	--interactive-border: inherit;
+	--interactive-hover-border: oklch(0.76 0.14 59.64);
+	--interactive-active-border: oklch(0.73 0.16 57.5);
+	--interactive-selected-border: oklch(0.81 0.11 61.71);
 }
 
 .lucide {
 	stroke-width: var(--stroke-width);
-	width: 1.25em;
-	height: 1.25em;
+	width: var(--icon-size);
+	height: var(--icon-size);
 	line-height: var(--line-height);
 }
 

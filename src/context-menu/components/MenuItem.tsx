@@ -1,8 +1,8 @@
-import React, { useCallback } from "react";
+import React, { type HTMLAttributeAnchorTarget, useCallback } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import uiStyles from "../../ui.module.scss";
+import { OptionButton, OptionLink, OptionText } from "../../option";
 import styles from "../ContextMenu.module.scss";
 
 import { useMenuContext } from "./MenuContext";
@@ -14,7 +14,7 @@ export interface MenuItemProps {
 	className?: string;
 	disabled?: boolean;
 	href?: string;
-	target?: string;
+	target?: HTMLAttributeAnchorTarget;
 	rel?: string;
 	closeOnSelect?: boolean;
 	onSelect?: (event: React.MouseEvent<HTMLElement>) => void;
@@ -52,11 +52,13 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 		[disabled, onSelect, closeOnSelect, closeMenu]
 	);
 
-	const rootClassName = cn(uiStyles.uiPopupOption, styles.menuItem, className);
+	const rootClassName = cn(styles.menuItem, className);
 
 	if (href) {
 		return (
-			<a
+			<OptionLink
+				icon={icon}
+				hotkey={hotKey}
 				href={href}
 				target={target}
 				rel={rel}
@@ -69,16 +71,15 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 				data-action="select-context-menu-item"
 				className={rootClassName}
 				onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}>
-				{icon && <span className={cn(uiStyles.uiPopupOptionIcon, styles.menuItemIcon)}>{icon}</span>}
-				<span className={cn(uiStyles.uiOptionText, styles.menuItemText)}>{children}</span>
-				{hotKey && <kbd className={cn(uiStyles.keyboard, styles.menuItemHotKey)}>{hotKey}</kbd>}
-			</a>
+				<OptionText className={styles.menuItemText}>{children}</OptionText>
+			</OptionLink>
 		);
 	}
 
 	return (
-		<button
-			type="button"
+		<OptionButton
+			icon={icon}
+			hotkey={hotKey}
 			role="menuitem"
 			tabIndex={-1}
 			disabled={disabled}
@@ -88,9 +89,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 			data-action="select-context-menu-item"
 			className={rootClassName}
 			onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}>
-			{icon && <span className={cn(uiStyles.uiPopupOptionIcon, styles.menuItemIcon)}>{icon}</span>}
-			<span className={cn(uiStyles.uiOptionText, styles.menuItemText)}>{children}</span>
-			{hotKey && <kbd className={cn(uiStyles.keyboard, styles.menuItemHotKey)}>{hotKey}</kbd>}
-		</button>
+			<OptionText className={styles.menuItemText}>{children}</OptionText>
+		</OptionButton>
 	);
 };

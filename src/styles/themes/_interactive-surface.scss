@@ -1,0 +1,67 @@
+.interactiveSurface {
+	--c: var(--interactive-color, inherit);
+	--s: var(--interactive-surface, transparent);
+	--b: var(--interactive-border, transparent);
+
+	--ch: var(--interactive-hover-color, var(--c));
+	--sh: var(--interactive-hover-surface, var(--s));
+	--bh: var(--interactive-hover-border, var(--b));
+
+	--ca: var(--interactive-active-color, var(--ch));
+	--sa: var(--interactive-active-surface, var(--sh));
+	--ba: var(--interactive-active-border, var(--bh));
+
+	--cs: var(--interactive-selected-color, var(--ca));
+	--ss: var(--interactive-selected-surface, var(--sa));
+	--bs: var(--interactive-selected-border, var(--ba));
+
+	// color: var(--c);
+	// background-color: var(--s);
+
+	// &.interactiveSurfaceFrame {
+	// 	border-color: var(--b);
+	// }
+}
+
+@media (any-hover: hover) {
+	.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):hover {
+		color: var(--ch);
+		background-color: var(--sh);
+
+		&.interactiveSurfaceFrame {
+			border-color: var(--bh);
+		}
+	}
+}
+
+.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):active {
+	color: var(--ca);
+	background-color: var(--sa);
+
+	&.interactiveSurfaceFrame {
+		border-color: var(--ba);
+	}
+}
+
+.interactiveSurface[data-selected="true"] {
+	color: var(--cs);
+	background-color: var(--ss);
+
+	&.interactiveSurfaceFrame {
+		border-color: var(--ss);
+	}
+}
+
+.interactiveSurface:disabled,
+.interactiveSurface[aria-disabled="true"],
+.interactiveSurface[data-disabled="true"] {
+	cursor: default;
+	pointer-events: none;
+
+	color: var(--content-2);
+	background-color: var(--surface-2);
+
+	&.interactiveSurfaceFrame {
+		border-color: var(--overlay-backdrop);
+	}
+}

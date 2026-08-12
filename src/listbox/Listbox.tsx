@@ -9,6 +9,7 @@ import {
 } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
+import { OptionButton, OptionText } from "../option";
 import uiStyles from "../ui.module.scss";
 
 type ListboxOption<T> = {
@@ -166,6 +167,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 			ref={listRef}
 			id={listId}
 			role="listbox"
+			// aria-label={}
 			aria-multiselectable={multiple || undefined}
 			aria-activedescendant={activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined}
 			onKeyDown={handleKeyDown}
@@ -178,37 +180,32 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 					? Array.isArray(selectedValues) && selectedValues.includes(option.value)
 					: selectedValues === option.value;
 				const active = index === activeIndex;
+				const optionDisabled = disabled || option.disabled || undefined;
 
 				return (
-					<li
-						key={getKey ? getKey(option, index) : index}
-						id={`${listId}-option-${index}`}
-						role="option"
-						aria-selected={selected}
-						aria-disabled={disabled || option.disabled || undefined}
-						onMouseDown={(e) => {
-							e.preventDefault(); // чтобы не сбрасывался фокус listbox
-							if (disabled || option.disabled) {
-								return;
-							}
-							setFocusedIndex(index);
-							handleSelect(option);
-						}}
-						tabIndex={-1}
-						className={cn(
-							uiStyles.uiPopupOption,
-							(disabled || option.disabled) && uiStyles.disabled,
-							active && uiStyles.uiPopupOptionActive,
-							selected && uiStyles.selected
-						)}>
-						{selected ? (
-							<CheckIcon className={uiStyles.uiPopupOptionIcon} />
-						) : (
-							<span className={uiStyles.uiPopupOptionIcon}></span>
-						)}
-						<div /*className={uiStyles.uiOptionText}*/>
-							{renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
-						</div>
+					<li key={getKey ? getKey(option, index) : index}>
+						<OptionButton
+							id={`${listId}-option-${index}`}
+							role="option"
+							disabled={optionDisabled}
+							aria-selected={selected}
+							aria-disabled={optionDisabled}
+							onMouseDown={(e) => {
+								e.preventDefault(); // чтобы не сбрасывался фокус listbox
+								if (optionDisabled) {
+									return;
+								}
+								setFocusedIndex(index);
+								handleSelect(option);
+							}}
+							tabIndex={-1}
+							icon={selected ? <CheckIcon /> : <span />}
+							active={active}
+							selected={selected}>
+							<OptionText>
+								{renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
+							</OptionText>
+						</OptionButton>
 					</li>
 				);
 			})}

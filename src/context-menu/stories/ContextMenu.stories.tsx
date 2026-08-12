@@ -1,3 +1,4 @@
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { Copy, Eye, PencilLine, Pin, Settings2, Trash2 } from "lucide-react";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
@@ -5,10 +6,8 @@ import { fn } from "storybook/test";
 import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { ContextMenu, type ContextMenuProps } from "../components/ContextMenu";
 import { DropdownMenu, type DropdownMenuProps } from "../components/DropdownMenu";
-
-import type { MenuContentProps } from "../components/MenuContent";
-import type { RadialMenuContentProps } from "../components/RadialMenuContent";
-import type { Meta, StoryObj } from "@storybook/react-vite";
+import { type MenuContentProps } from "../components/MenuContent";
+import { type RadialMenuContentProps } from "../components/RadialMenuContent";
 
 const placements = [
 	"top",
@@ -141,14 +140,14 @@ function DropdownMenuBasicCanvas({
 				disableOutsideClick={args.disableOutsideClick}
 				restoreFocus={args.restoreFocus}>
 				<DropdownMenu.GroupLabel>Файл</DropdownMenu.GroupLabel>
-				<DropdownMenu.Item icon={<PencilLine size={14} />} hotKey="Ctrl+E">
+				<DropdownMenu.Item icon={<PencilLine />} hotKey="Ctrl+E">
 					Редактировать
 				</DropdownMenu.Item>
-				<DropdownMenu.Item icon={<Copy size={14} />} hotKey="Ctrl+C">
+				<DropdownMenu.Item icon={<Copy />} hotKey="Ctrl+C">
 					Копировать
 				</DropdownMenu.Item>
 				<DropdownMenu.Separator />
-				<DropdownMenu.Item icon={<Trash2 size={14} />} hotKey="Del">
+				<DropdownMenu.Item icon={<Trash2 />} hotKey="Del">
 					Удалить
 				</DropdownMenu.Item>
 			</DropdownMenu.Content>

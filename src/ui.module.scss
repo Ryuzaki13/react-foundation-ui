@@ -360,8 +360,9 @@
 	.uiMenuOptionIcon,
 	.uiPopupOptionIcon {
 		flex-shrink: 0;
-		width: var(--space-md);
-		height: var(--space-md);
+		font-size: var(--font-size-sm);
+		width: var(--icon-size);
+		height: var(--icon-size);
 	}
 
 	.uiMenuOptionIcon,
@@ -388,7 +389,7 @@
 	}
 
 	@include hover(true) {
-		background-color: var(--surface-accent);
+		background-color: var(--interactive-hover-surface);
 		cursor: pointer;
 	}
 }
