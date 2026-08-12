@@ -32,7 +32,6 @@ declare const styles: {
   readonly uiSelectionIcon: "uiSelectionIcon";
   readonly uiElement: "uiElement";
   readonly disabled: "disabled";
-  readonly uiSelectOption: "uiSelectOption";
   readonly uiPopupOption: "uiPopupOption";
   readonly uiOptionText: "uiOptionText";
   readonly uiOptionCode: "uiOptionCode";

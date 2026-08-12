@@ -18,6 +18,42 @@ interface CheckBoxProps
 	indeterminate?: boolean;
 }
 
+export interface CheckBoxIndicatorProps {
+	value: boolean;
+	className?: string;
+	tone?: UiTone;
+	/** Показывает частично выбранную группу без добавления отдельного интерактивного элемента. */
+	indeterminate?: boolean;
+}
+
+/**
+ * Неинтерактивное представление checkbox для button/listbox-композиций. Состояние
+ * и доступное имя принадлежат родительскому контролу, поэтому индикатор скрыт от
+ * accessibility tree и не создаёт вложенный input внутри кнопки.
+ */
+export function CheckBoxIndicator({ value, className, tone = "neutral", indeterminate = false }: CheckBoxIndicatorProps) {
+	const state = indeterminate ? "mixed" : value ? "checked" : "unchecked";
+
+	return (
+		<span
+			className={cn(styles.wrapper, styles.indicatorWrapper, getUiToneClassName(tone), className)}
+			data-ui="check-box-indicator"
+			data-state={state}
+			aria-hidden="true">
+			<span
+				className={cn(
+					uiStyles.uiSelectionControl,
+					styles.input,
+					styles.indicator,
+					value && styles.indicatorChecked,
+					indeterminate && styles.inputIndeterminate
+				)}
+			/>
+			<span className={cn(uiStyles.uiSelectionIcon, styles.icon)}>{indeterminate ? <MinusIcon /> : <CheckIcon />}</span>
+		</span>
+	);
+}
+
 /**
  * Компонент флажка для выбора булевого значения в формах и списках.
  * Поддерживает tone + appearance и использует общие selection utility-классы из ui.module.scss.

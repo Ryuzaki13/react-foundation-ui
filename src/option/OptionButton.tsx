@@ -6,7 +6,7 @@ import uiStyles from "../ui.module.scss";
 
 import { OptionContent, type OptionContentProps } from "./OptionContent";
 
-export type OptionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "children"> &
+export type OptionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "children" | "slot"> &
 	OptionContentProps & {
 		ref?: Ref<HTMLButtonElement>;
 		active?: boolean;

@@ -61,7 +61,7 @@ const meta = {
 		isLoading: { description: "Показывает состояние загрузки option.", control: "boolean" },
 		renderToken: { description: "Кастомный рендер выбранных токенов.", control: false },
 		renderToolbar: { description: "Кастомный рендер toolbar popup.", control: false },
-		renderItem: { description: "Кастомный рендер строки option.", control: false },
+		renderItem: { description: "Возвращает text, code и searchText для общей композиции OptionButton.", control: false },
 		disabled: { description: "Блокирует взаимодействие с полем.", control: "boolean" },
 		size: {
 			description: "Размер поля и подписей.",

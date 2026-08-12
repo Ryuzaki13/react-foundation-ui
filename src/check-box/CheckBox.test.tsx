@@ -5,7 +5,7 @@ import { act } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it } from "vitest";
 
-import { CheckBox } from "./CheckBox";
+import { CheckBox, CheckBoxIndicator } from "./CheckBox";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -35,5 +35,20 @@ describe("CheckBox", () => {
 		const input = container.querySelector('input[type="checkbox"]') as HTMLInputElement;
 		expect(input.indeterminate).toBe(true);
 		expect(input.getAttribute("aria-checked")).toBe("mixed");
+	});
+
+	it("предоставляет неинтерактивный индикатор для button-композиций", async () => {
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+
+		await act(async () => {
+			root?.render(<CheckBoxIndicator value />);
+		});
+
+		const indicator = container.querySelector('[data-ui="check-box-indicator"]');
+		expect(indicator?.getAttribute("data-state")).toBe("checked");
+		expect(indicator?.getAttribute("aria-hidden")).toBe("true");
+		expect(indicator?.querySelector("input")).toBeNull();
 	});
 });

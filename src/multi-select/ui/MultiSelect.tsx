@@ -1,7 +1,7 @@
 import React, { forwardRef, type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 
-import { CheckBox } from "../../check-box";
-import { Option } from "../../option";
+import { CheckBoxIndicator } from "../../check-box";
+import { OptionButton } from "../../option";
 import {
 	PickerField,
 	PickerPopup,
@@ -15,7 +15,6 @@ import {
 } from "../../picker";
 import { Separator } from "../../separator";
 import { type UiBaseProps } from "../../types";
-import uiStyles from "../../ui.module.scss";
 
 import { createDefaultMultiSelectItemRenderer, createDefaultMultiSelectTokenRenderer, resolveMultiSelectTextKey } from "./defaultRenderers";
 import styles from "./MultiSelect.module.scss";
@@ -45,6 +44,19 @@ export interface MultiSelectItemState {
 	highlightQuery: string;
 }
 
+/**
+ * Структурированное содержимое опции множественного выбора. `MultiSelect` владеет
+ * интерактивной оболочкой и checkbox-слотом, а renderer отвечает только за данные
+ * текстовой части, поэтому единая композиция `OptionButton` сохраняется и для
+ * произвольного ReactNode.
+ */
+export interface MultiSelectOptionContent {
+	text: React.ReactNode;
+	code?: React.ReactNode;
+	/** Явное текстовое представление произвольного ReactNode для общих picker-механизмов. */
+	searchText?: string;
+}
+
 export interface MultiSelectRenderContext {
 	selectedItems: CollectionItem[];
 	committedSelectedItems: CollectionItem[];
@@ -68,7 +80,7 @@ type MultiSelectOptionalRenderer<TContext> = ((context: TContext) => React.React
 interface MultiSelectRenderers {
 	renderToken?: MultiSelectOptionalRenderer<MultiSelectRenderContext>;
 	renderToolbar?: MultiSelectOptionalRenderer<MultiSelectRenderContext>;
-	renderItem?: (item: CollectionItem, state: MultiSelectItemState) => React.ReactNode;
+	renderItem?: (item: CollectionItem, state: MultiSelectItemState) => MultiSelectOptionContent;
 }
 
 export interface MultiSelectProps<TOption extends Record<string, string> = CollectionItem>
@@ -126,8 +138,7 @@ interface MultiSelectOptionGroupProps {
 	getOptionId: (listId: string, index: number) => string;
 	setOptionRef: (index: number, node: HTMLElement | null) => void;
 	toggleOption: (item: CollectionItem) => void;
-	selectOnlyOption: (item: CollectionItem) => void;
-	renderItem: (item: CollectionItem, state: MultiSelectItemState) => React.ReactNode;
+	renderItem: (item: CollectionItem, state: MultiSelectItemState) => MultiSelectOptionContent;
 }
 
 function MultiSelectOptionGroup({
@@ -142,58 +153,34 @@ function MultiSelectOptionGroup({
 	getOptionId,
 	setOptionRef,
 	toggleOption,
-	selectOnlyOption,
 	renderItem
 }: MultiSelectOptionGroupProps) {
 	return entries.map(({ item, index }) => {
 		const active = index === activeIndex;
 		const selected = selectedKeys.has(getItemKey(item, codeKey));
 		const optionDisabled = getOptionDisabled?.(item) ?? false;
+		const content = renderItem(item, { selected, active, disabled: optionDisabled, query, highlightQuery });
 
 		return (
-			<Option
+			<OptionButton
 				key={`${getItemKey(item, codeKey)}-${index}`}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
 				role="option"
 				aria-selected={selected}
-				disabled={optionDisabled}
+				aria-disabled={optionDisabled || undefined}
 				selected={selected}
 				active={active}
-				className={uiStyles.uiSelectOption}
+				disabled={optionDisabled}
+				slot={<CheckBoxIndicator value={selected} />}
+				text={content.text}
+				searchText={content.searchText}
+				code={content.code}
 				onMouseDown={(event) => {
 					event.preventDefault();
-				}}>
-				<div
-					onClick={(event) => {
-						event.stopPropagation();
-					}}>
-					<CheckBox
-						value={selected}
-						disabled={optionDisabled}
-						onChange={() => {
-							if (!optionDisabled) {
-								toggleOption(item);
-							}
-						}}
-						onClick={(event) => {
-							event.stopPropagation();
-						}}
-						onMouseDown={(event) => {
-							event.stopPropagation();
-						}}
-					/>
-				</div>
-				<div
-					className="overflowHidden"
-					onClick={() => {
-						if (!optionDisabled) {
-							selectOnlyOption(item);
-						}
-					}}>
-					{renderItem(item, { selected, active, disabled: optionDisabled, query, highlightQuery })}
-				</div>
-			</Option>
+				}}
+				onClick={() => toggleOption(item)}
+			/>
 		);
 	});
 }
@@ -402,15 +389,6 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 			setDraftSelectedItems([]);
 		};
 
-		const selectOnlyOption = (item: CollectionItem) => {
-			if (isOptionDisabled(item)) {
-				return;
-			}
-
-			setDraftSelectedItems([item]);
-			close();
-		};
-
 		const currentSelectedItems = open ? draftSelectedItems : committedSelectedItems;
 		const hasSelectedItems = currentSelectedItems.length > 0;
 		const renderContext: MultiSelectRenderContext = {
@@ -557,7 +535,6 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 											getOptionId={getOptionId}
 											setOptionRef={setOptionRef}
 											toggleOption={toggleDraftSelection}
-											selectOnlyOption={selectOnlyOption}
 											renderItem={itemRenderer}
 										/>
 
@@ -575,7 +552,6 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 											getOptionId={getOptionId}
 											setOptionRef={setOptionRef}
 											toggleOption={toggleDraftSelection}
-											selectOnlyOption={selectOnlyOption}
 											renderItem={itemRenderer}
 										/>
 									</div>

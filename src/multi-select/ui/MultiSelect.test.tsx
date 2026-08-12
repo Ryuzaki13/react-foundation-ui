@@ -108,6 +108,37 @@ describe("MultiSelect", () => {
 		expect(document.activeElement).toBe(input);
 	});
 
+	it("собирает checkbox, текст и код внутри единого OptionButton", async () => {
+		await renderNode(<MultiSelectHarness />);
+
+		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
+
+		await act(async () => {
+			openButton.click();
+		});
+
+		const option = document.querySelector('[role="option"]') as HTMLButtonElement;
+		const [slot, text, code] = Array.from(option.children);
+		const checkBox = slot?.querySelector('[data-ui="check-box-indicator"]') as HTMLSpanElement;
+
+		expect(option.tagName).toBe("BUTTON");
+		expect(option.children).toHaveLength(3);
+		expect(checkBox.tagName).toBe("SPAN");
+		expect(checkBox.getAttribute("data-state")).toBe("unchecked");
+		expect(checkBox.getAttribute("aria-hidden")).toBe("true");
+		expect(text?.textContent).toBe("Альфа");
+		expect(text?.getAttribute("data-search-text")).toBe("Альфа");
+		expect(code?.textContent).toBe("01");
+
+		await act(async () => {
+			option.click();
+		});
+
+		expect(option.getAttribute("aria-selected")).toBe("true");
+		expect(checkBox.getAttribute("data-state")).toBe("checked");
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
+	});
+
 	it("фильтрует видимые варианты по введенному запросу", async () => {
 		await renderNode(<MultiSelectHarness />);
 
@@ -156,7 +187,9 @@ describe("MultiSelect", () => {
 		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
 		expect(options).toHaveLength(2);
 		expect(options[1]?.getAttribute("aria-disabled")).toBe("true");
-		expect(options[1]?.querySelector("input")?.disabled).toBe(true);
+		expect(options[1]).toBeInstanceOf(HTMLButtonElement);
+		expect((options[1] as HTMLButtonElement | undefined)?.disabled).toBe(true);
+		expect(options[1]?.querySelector('[data-ui="check-box-indicator"]')).not.toBeNull();
 
 		const selectAllButton = document.querySelector('button[data-action="select-all"]') as HTMLButtonElement;
 
@@ -204,11 +237,11 @@ describe("MultiSelect", () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		const firstCheckbox = document.querySelectorAll<HTMLInputElement>('[role="option"] input')[0];
-		expect(firstCheckbox).toBeDefined();
+		const firstOption = document.querySelectorAll<HTMLButtonElement>('[role="option"]')[0];
+		expect(firstOption).toBeDefined();
 
 		await act(async () => {
-			firstCheckbox?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+			firstOption?.click();
 		});
 
 		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));

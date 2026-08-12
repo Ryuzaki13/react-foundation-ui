@@ -1,8 +1,9 @@
 import { formatRussianPlural, type RussianPluralForms } from "@ryuzaki13/react-foundation-lib/formatters";
 import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
 
+import { HighlightText } from "../../text";
+
 import { type MultiSelectItemState, type MultiSelectRenderContext } from "./MultiSelect";
-import { MultiSelectOption } from "./MultiSelectOption";
 
 interface MultiSelectRendererConfig {
 	codeKey: string;
@@ -55,14 +56,14 @@ export function createDefaultMultiSelectTokenRenderer(config: MultiSelectRendere
 
 export function createDefaultMultiSelectItemRenderer(config: MultiSelectRendererConfig) {
 	return function renderDefaultItem(item: CollectionItem, state: MultiSelectItemState) {
-		return (
-			<MultiSelectOption
-				item={item}
-				selected={state.selected}
-				highlight={state.highlightQuery}
-				textKey={resolveMultiSelectTextKey([item], config.codeKey, config.textKey)}
-				codeKey={config.hideCode ? undefined : config.codeKey}
-			/>
-		);
+		const textKey = resolveMultiSelectTextKey([item], config.codeKey, config.textKey);
+		const text = item[textKey];
+		const code = item[config.codeKey];
+
+		return {
+			text: <HighlightText text={text} highlight={state.highlightQuery} />,
+			searchText: text,
+			code: config.hideCode ? undefined : <HighlightText text={code} highlight={state.highlightQuery} />
+		};
 	};
 }

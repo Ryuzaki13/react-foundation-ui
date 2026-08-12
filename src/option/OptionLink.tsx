@@ -6,7 +6,7 @@ import uiStyles from "../ui.module.scss";
 
 import { OptionContent, type OptionContentProps } from "./OptionContent";
 
-export type OptionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children"> &
+export type OptionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "slot"> &
 	OptionContentProps & { ref?: Ref<HTMLAnchorElement> };
 
 export function OptionLink({ ref, icon, slot, text, searchText, code, hotkey, ...props }: OptionLinkProps) {

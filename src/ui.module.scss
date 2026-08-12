@@ -250,7 +250,6 @@
 }
 
 .uiElement,
-.uiSelectOption,
 .uiPopupOption {
 	&.disabled,
 	&:disabled {
@@ -323,7 +322,6 @@
 	padding: var(--space-xs) var(--space-sm);
 }
 
-.uiSelectOption,
 .uiPopupOption {
 	border-radius: var(--radius-sm);
 	border: none;
@@ -387,14 +385,6 @@
 .uiMenuOptionIcon {
 	display: flex;
 	align-items: center;
-}
-
-.uiSelectOption {
-	display: grid;
-	grid-template-columns: auto 1fr;
-	gap: var(--space-xs);
-
-	padding-right: var(--space-xs);
 }
 
 .uiOptionText {
