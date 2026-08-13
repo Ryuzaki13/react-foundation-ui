@@ -1,1 +1,1 @@
-export { CheckBox, CheckBoxIndicator, type CheckBoxIndicatorProps } from "./CheckBox";
+export { CheckBox } from "./CheckBox";

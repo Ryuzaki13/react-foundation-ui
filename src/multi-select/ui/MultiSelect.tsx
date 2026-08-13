@@ -1,7 +1,7 @@
 import React, { forwardRef, type PropsWithChildren, useCallback, useMemo, useRef, useState } from "react";
 
-import { CheckBoxIndicator } from "../../check-box";
-import { OptionButton } from "../../option";
+import { CheckBox } from "../../check-box";
+import { Option, OptionButton } from "../../option";
 import {
 	PickerField,
 	PickerPopup,
@@ -138,6 +138,7 @@ interface MultiSelectOptionGroupProps {
 	getOptionId: (listId: string, index: number) => string;
 	setOptionRef: (index: number, node: HTMLElement | null) => void;
 	toggleOption: (item: CollectionItem) => void;
+	selectOnlyOption: (item: CollectionItem) => void;
 	renderItem: (item: CollectionItem, state: MultiSelectItemState) => MultiSelectOptionContent;
 }
 
@@ -153,6 +154,7 @@ function MultiSelectOptionGroup({
 	getOptionId,
 	setOptionRef,
 	toggleOption,
+	selectOnlyOption,
 	renderItem
 }: MultiSelectOptionGroupProps) {
 	return entries.map(({ item, index }) => {
@@ -162,7 +164,7 @@ function MultiSelectOptionGroup({
 		const content = renderItem(item, { selected, active, disabled: optionDisabled, query, highlightQuery });
 
 		return (
-			<OptionButton
+			<Option
 				key={`${getItemKey(item, codeKey)}-${index}`}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
@@ -171,16 +173,28 @@ function MultiSelectOptionGroup({
 				aria-disabled={optionDisabled || undefined}
 				selected={selected}
 				active={active}
-				disabled={optionDisabled}
-				slot={<CheckBoxIndicator value={selected} />}
-				text={content.text}
-				searchText={content.searchText}
-				code={content.code}
-				onMouseDown={(event) => {
-					event.preventDefault();
-				}}
-				onClick={() => toggleOption(item)}
-			/>
+				disabled={optionDisabled}>
+				<div
+					className={styles.optionCheckBox}
+					onMouseDown={(event) => event.stopPropagation()}
+					onClick={(event) => event.stopPropagation()}>
+					<CheckBox
+						value={selected}
+						disabled={optionDisabled}
+						aria-label={`Выбрать ${content.searchText ?? getItemKey(item, codeKey)}`}
+						onChange={() => toggleOption(item)}
+					/>
+				</div>
+				<OptionButton
+					tabIndex={-1}
+					disabled={optionDisabled}
+					text={content.text}
+					searchText={content.searchText}
+					code={content.code}
+					onMouseDown={(event) => event.preventDefault()}
+					onClick={() => selectOnlyOption(item)}
+				/>
+			</Option>
 		);
 	});
 }
@@ -389,6 +403,15 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 			setDraftSelectedItems([]);
 		};
 
+		const selectOnlyOption = (item: CollectionItem) => {
+			if (isOptionDisabled(item)) {
+				return;
+			}
+
+			setDraftSelectedItems([item]);
+			close();
+		};
+
 		const currentSelectedItems = open ? draftSelectedItems : committedSelectedItems;
 		const hasSelectedItems = currentSelectedItems.length > 0;
 		const renderContext: MultiSelectRenderContext = {
@@ -535,6 +558,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 											getOptionId={getOptionId}
 											setOptionRef={setOptionRef}
 											toggleOption={toggleDraftSelection}
+											selectOnlyOption={selectOnlyOption}
 											renderItem={itemRenderer}
 										/>
 
@@ -552,6 +576,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 											getOptionId={getOptionId}
 											setOptionRef={setOptionRef}
 											toggleOption={toggleDraftSelection}
+											selectOnlyOption={selectOnlyOption}
 											renderItem={itemRenderer}
 										/>
 									</div>

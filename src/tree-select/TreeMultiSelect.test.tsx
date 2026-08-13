@@ -464,6 +464,24 @@ describe("TreeMultiSelect columns layout", () => {
 		expect(onChange).toHaveBeenLastCalledWith({ BR: ["001"] });
 	});
 
+	it("кнопка текста выбирает только один узел и сразу закрывает popup", async () => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({ initialValue: { DIV: ["02"] }, onChange });
+
+		const branchOption = getOptionByText("Филиал 1");
+		const optionButton = branchOption.querySelector(":scope > button");
+		if (!(optionButton instanceof HTMLButtonElement)) {
+			throw new Error("Не найдена кнопка текста узла «Филиал 1»");
+		}
+
+		await clickElement(optionButton);
+
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+		expect(getCommittedValueText()).toBe('{"BR":["001"]}');
+		expect(onChange).toHaveBeenCalledTimes(1);
+		expect(onChange).toHaveBeenLastCalledWith({ BR: ["001"] });
+	});
+
 	it("держит массовые действия в черновике до закрытия popover", async () => {
 		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
 		await renderHarness({ initialValue: {}, onChange });

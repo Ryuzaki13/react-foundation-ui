@@ -5,7 +5,7 @@ import { InputType } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { OptionButton } from "../option";
+import { Option, OptionButton } from "../option";
 import {
 	extractPickerTextContent,
 	PickerField,
@@ -226,7 +226,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		const optionState = { active, selected, disabled: optionDisabled };
 
 		return (
-			<OptionButton
+			<Option
 				key={optionKey}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
@@ -234,16 +234,20 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 				aria-selected={selected}
 				aria-disabled={optionDisabled || undefined}
 				aria-label={getOptionAriaLabel?.(option)}
-				disabled={optionDisabled}
 				active={active}
 				selected={selected}
-				className={getOptionClassName?.(option, optionState)}
-				icon={renderOption ? undefined : selected ? <CheckIcon /> : <span />}
-				text={renderOption ? renderOption(option, optionState) : getOptionLabel(option)}
-				code={!renderOption && getOptionCode ? getOptionCode(option) : undefined}
-				onMouseDown={(event) => event.preventDefault()}
-				onClick={() => selectOption(option)}
-			/>
+				disabled={optionDisabled}
+				className={getOptionClassName?.(option, optionState)}>
+				<OptionButton
+					tabIndex={-1}
+					disabled={optionDisabled}
+					icon={renderOption ? undefined : selected ? <CheckIcon /> : <span />}
+					text={renderOption ? renderOption(option, optionState) : getOptionLabel(option)}
+					code={!renderOption && getOptionCode ? getOptionCode(option) : undefined}
+					onMouseDown={(event) => event.preventDefault()}
+					onClick={() => selectOption(option)}
+				/>
+			</Option>
 		);
 	};
 

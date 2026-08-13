@@ -55,7 +55,10 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	query?: string;
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
+	/** Основное действие OptionButton выбирает узел и завершает текущий выбор. */
 	onNodeActivate: (node: TreeSelectNode) => void;
+	/** Независимый checkbox меняет черновик, не закрывая popup. */
+	onNodeToggleSelection?: (node: TreeSelectNode) => void;
 	onClearSelection?: () => void;
 	isLoading?: boolean;
 	error?: string;
@@ -84,6 +87,7 @@ export function TreePickerBase({
 	defaultQuery,
 	onQuery,
 	onNodeActivate,
+	onNodeToggleSelection,
 	onClearSelection,
 	isLoading,
 	error
@@ -190,7 +194,8 @@ export function TreePickerBase({
 		onSelect: (entry) => onNodeActivate(entry.node),
 		getOptionDisabled: (entry) => entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true,
 		disabled: disabled || isLoading,
-		closeOnSelect: selectionMode === "single",
+		// selectOption вызывается только основной кнопкой; checkbox обходит его и остаётся в draft-режиме.
+		closeOnSelect: true,
 		allowOpenWithoutOptions: true,
 		triggerMode: resolvedTriggerMode,
 		placementStrategy: optionsLayout === "columns" ? "auto" : "flip",
@@ -412,26 +417,21 @@ export function TreePickerBase({
 																"--tree-option-row": `var(--tree-option-${index}-row, auto)`
 															} as CSSProperties)
 														: undefined
-												}
-												onMouseDown={(event) => {
-													event.preventDefault();
-												}}
-												onClick={() => selectOption(entry)}>
-												<div className={styles.treeNodeButton}>
-													<TreeNodeContent
-														node={optionDisabled ? { ...entry.node, disabled: true } : entry.node}
-														level={entry.level}
-														highlight={currentQuery}
-														hasChildren={entry.hasChildren}
-														isExpanded={entry.isExpanded}
-														selected={selected}
-														partial={partial}
-														selectionMode={selectionMode}
-														optionsLayout={optionsLayout}
-														onToggleExpand={() => toggleExpand(entry)}
-														onToggleSelection={() => selectOption(entry)}
-													/>
-												</div>
+												}>
+												<TreeNodeContent
+													node={optionDisabled ? { ...entry.node, disabled: true } : entry.node}
+													level={entry.level}
+													highlight={currentQuery}
+													hasChildren={entry.hasChildren}
+													isExpanded={entry.isExpanded}
+													selected={selected}
+													partial={partial}
+													selectionMode={selectionMode}
+													optionsLayout={optionsLayout}
+													onToggleExpand={() => toggleExpand(entry)}
+													onToggleSelection={() => onNodeToggleSelection?.(entry.node)}
+													onActivate={() => selectOption(entry)}
+												/>
 											</Option>
 										);
 									})

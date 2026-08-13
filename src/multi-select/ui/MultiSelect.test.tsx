@@ -108,7 +108,7 @@ describe("MultiSelect", () => {
 		expect(document.activeElement).toBe(input);
 	});
 
-	it("собирает checkbox, текст и код внутри единого OptionButton", async () => {
+	it("разделяет draft-checkbox и кнопку немедленного выбора внутри общей Option", async () => {
 		await renderNode(<MultiSelectHarness />);
 
 		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
@@ -117,26 +117,51 @@ describe("MultiSelect", () => {
 			openButton.click();
 		});
 
-		const option = document.querySelector('[role="option"]') as HTMLButtonElement;
-		const [slot, text, code] = Array.from(option.children);
-		const checkBox = slot?.querySelector('[data-ui="check-box-indicator"]') as HTMLSpanElement;
+		const option = document.querySelector('[role="option"]') as HTMLDivElement;
+		const checkBox = option.querySelector('input[type="checkbox"]') as HTMLInputElement;
+		const optionButton = option.querySelector(":scope > button") as HTMLButtonElement;
+		const [text, code] = Array.from(optionButton.children);
 
-		expect(option.tagName).toBe("BUTTON");
-		expect(option.children).toHaveLength(3);
-		expect(checkBox.tagName).toBe("SPAN");
-		expect(checkBox.getAttribute("data-state")).toBe("unchecked");
-		expect(checkBox.getAttribute("aria-hidden")).toBe("true");
+		expect(option.tagName).toBe("DIV");
+		expect(option.children).toHaveLength(2);
+		expect(checkBox.checked).toBe(false);
 		expect(text?.textContent).toBe("Альфа");
 		expect(text?.getAttribute("data-search-text")).toBe("Альфа");
 		expect(code?.textContent).toBe("01");
 
 		await act(async () => {
-			option.click();
+			checkBox.click();
 		});
 
 		expect(option.getAttribute("aria-selected")).toBe("true");
-		expect(checkBox.getAttribute("data-state")).toBe("checked");
+		expect(checkBox.checked).toBe(true);
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
+
+		await act(async () => {
+			optionButton.click();
+		});
+
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+	});
+
+	it("кнопка текста выбирает только одну опцию и сразу закрывает popup", async () => {
+		const onChange = vi.fn<(value: CollectionItem[]) => void>();
+		await renderNode(<MultiSelect label="Справочник" codeKey="code" textKey="text" items={ITEMS} value={[]} onChange={onChange} />);
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+
+		const betaOption = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find((option) =>
+			option.textContent?.includes("Бета")
+		);
+
+		await act(async () => {
+			(betaOption?.querySelector(":scope > button") as HTMLButtonElement).click();
+		});
+
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+		expect(onChange).toHaveBeenCalledWith([{ code: "02", text: "Бета" }]);
 	});
 
 	it("фильтрует видимые варианты по введенному запросу", async () => {
@@ -187,9 +212,9 @@ describe("MultiSelect", () => {
 		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
 		expect(options).toHaveLength(2);
 		expect(options[1]?.getAttribute("aria-disabled")).toBe("true");
-		expect(options[1]).toBeInstanceOf(HTMLButtonElement);
-		expect((options[1] as HTMLButtonElement | undefined)?.disabled).toBe(true);
-		expect(options[1]?.querySelector('[data-ui="check-box-indicator"]')).not.toBeNull();
+		expect(options[1]).toBeInstanceOf(HTMLDivElement);
+		expect(options[1]?.querySelector("button")?.disabled).toBe(true);
+		expect(options[1]?.querySelector('input[type="checkbox"]')?.disabled).toBe(true);
 
 		const selectAllButton = document.querySelector('button[data-action="select-all"]') as HTMLButtonElement;
 
@@ -237,11 +262,11 @@ describe("MultiSelect", () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		const firstOption = document.querySelectorAll<HTMLButtonElement>('[role="option"]')[0];
-		expect(firstOption).toBeDefined();
+		const firstCheckbox = document.querySelectorAll<HTMLInputElement>('[role="option"] input[type="checkbox"]')[0];
+		expect(firstCheckbox).toBeDefined();
 
 		await act(async () => {
-			firstOption?.click();
+			firstCheckbox?.click();
 		});
 
 		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));

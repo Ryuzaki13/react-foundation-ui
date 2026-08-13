@@ -7,14 +7,7 @@
 }
 
 .treeNodeButton {
-	display: flex;
-	align-items: center;
-	gap: var(--space-xs);
-	width: 100%;
-	padding-right: var(--space-xs);
-	background: transparent;
-	text-align: left;
-	border-radius: var(--radius-sm);
+	gap: var(--space-sm);
 }
 
 .treePopupHeader {
@@ -57,13 +50,6 @@
 .treeColumnCheckBox {
 	display: inline-flex;
 	flex-shrink: 0;
-}
-
-// Даёт общему option-content реальную сжимаемую ширину внутри колонки и включает ellipsis вместо выхода за границы.
-.treeNodeOptionContent {
-	flex: 1 1 0;
-	min-width: 0;
-	height: 100%;
 }
 
 .treeIndent {

@@ -1,6 +1,6 @@
 import React, { type HTMLAttributeAnchorTarget, useCallback } from "react";
 
-import { OptionButton, OptionLink } from "../../option";
+import { Option, OptionButton, OptionLink } from "../../option";
 
 import { useMenuContext } from "./MenuContext";
 
@@ -51,40 +51,42 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 
 	if (href) {
 		return (
-			<OptionLink
-				icon={icon}
-				hotkey={hotKey}
-				text={children}
-				href={href}
-				target={target}
-				rel={rel}
-				role="menuitem"
-				tabIndex={-1}
-				aria-disabled={disabled}
-				data-menu-item="true"
-				data-disabled={disabled ? "true" : undefined}
-				data-ui="context-menu-item"
-				data-action="select-context-menu-item"
-				className={className}
-				onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}
-			/>
+			<Option disabled={disabled} className={className}>
+				<OptionLink
+					icon={icon}
+					hotkey={hotKey}
+					text={children}
+					href={href}
+					target={target}
+					rel={rel}
+					role="menuitem"
+					tabIndex={-1}
+					aria-disabled={disabled}
+					data-menu-item="true"
+					data-disabled={disabled ? "true" : undefined}
+					data-ui="context-menu-item"
+					data-action="select-context-menu-item"
+					onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}
+				/>
+			</Option>
 		);
 	}
 
 	return (
-		<OptionButton
-			icon={icon}
-			hotkey={hotKey}
-			text={children}
-			role="menuitem"
-			tabIndex={-1}
-			disabled={disabled}
-			data-menu-item="true"
-			data-disabled={disabled ? "true" : undefined}
-			data-ui="context-menu-item"
-			data-action="select-context-menu-item"
-			className={className}
-			onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}
-		/>
+		<Option disabled={disabled} className={className}>
+			<OptionButton
+				icon={icon}
+				hotkey={hotKey}
+				text={children}
+				role="menuitem"
+				tabIndex={-1}
+				disabled={disabled}
+				data-menu-item="true"
+				data-disabled={disabled ? "true" : undefined}
+				data-ui="context-menu-item"
+				data-action="select-context-menu-item"
+				onClick={handleClick as React.MouseEventHandler<HTMLButtonElement>}
+			/>
+		</Option>
 	);
 };

@@ -8,7 +8,6 @@ declare const styles: {
   readonly treeColumnRootLabel: "treeColumnRootLabel";
   readonly treeColumnRootCode: "treeColumnRootCode";
   readonly treeColumnCheckBox: "treeColumnCheckBox";
-  readonly treeNodeOptionContent: "treeNodeOptionContent";
   readonly treeIndent: "treeIndent";
   readonly treeExpander: "treeExpander";
   readonly treeExpanderPlaceholder: "treeExpanderPlaceholder";

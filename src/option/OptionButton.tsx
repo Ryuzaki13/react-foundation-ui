@@ -6,27 +6,14 @@ import uiStyles from "../ui.module.scss";
 
 import { OptionContent, type OptionContentProps } from "./OptionContent";
 
-export type OptionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "children" | "slot"> &
-	OptionContentProps & {
-		ref?: Ref<HTMLButtonElement>;
-		active?: boolean;
-		selected?: boolean;
-	};
+export type OptionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "type" | "children"> &
+	OptionContentProps & { ref?: Ref<HTMLButtonElement> };
 
-export function OptionButton({ ref, icon, slot, text, searchText, code, hotkey, active, selected, ...props }: OptionButtonProps) {
+/** Основное button-действие внутри внешней оболочки Option. */
+export function OptionButton({ ref, icon, text, searchText, code, hotkey, ...props }: OptionButtonProps) {
 	return (
-		<button
-			{...props}
-			ref={ref}
-			type="button"
-			className={cn(
-				uiStyles.uiPopupOption,
-				active && uiStyles.uiPopupOptionActive,
-				selected && uiStyles.selected,
-				props.disabled && uiStyles.disabled,
-				props.className
-			)}>
-			<OptionContent icon={icon} slot={slot} text={text} searchText={searchText} {...(code !== undefined ? { code } : { hotkey })} />
+		<button {...props} ref={ref} type="button" className={cn(uiStyles.uiOptionButton, props.className)}>
+			<OptionContent icon={icon} text={text} searchText={searchText} {...(code !== undefined ? { code } : { hotkey })} />
 		</button>
 	);
 }

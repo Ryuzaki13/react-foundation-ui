@@ -4,3 +4,8 @@
 	// Общий контейнер
 	padding: 0;
 }
+
+.optionCheckBox {
+	display: inline-flex;
+	flex-shrink: 0;
+}

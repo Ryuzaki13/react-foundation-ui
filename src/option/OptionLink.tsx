@@ -6,13 +6,14 @@ import uiStyles from "../ui.module.scss";
 
 import { OptionContent, type OptionContentProps } from "./OptionContent";
 
-export type OptionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children" | "slot"> &
+export type OptionLinkProps = Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "children"> &
 	OptionContentProps & { ref?: Ref<HTMLAnchorElement> };
 
-export function OptionLink({ ref, icon, slot, text, searchText, code, hotkey, ...props }: OptionLinkProps) {
+/** Основное link-действие внутри внешней оболочки Option. */
+export function OptionLink({ ref, icon, text, searchText, code, hotkey, ...props }: OptionLinkProps) {
 	return (
-		<a {...props} ref={ref} className={cn(uiStyles.uiPopupOption, props.className)}>
-			<OptionContent icon={icon} slot={slot} text={text} searchText={searchText} {...(code !== undefined ? { code } : { hotkey })} />
+		<a {...props} ref={ref} className={cn(uiStyles.uiOptionLink, props.className)}>
+			<OptionContent icon={icon} text={text} searchText={searchText} {...(code !== undefined ? { code } : { hotkey })} />
 		</a>
 	);
 }

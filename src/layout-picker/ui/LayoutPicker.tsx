@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { OptionButton } from "../../option";
+import { Option, OptionButton } from "../../option";
 import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
 import { type UiBaseProps } from "../../types";
 import { DEFAULT_LAYOUT_PICKER_PRESETS, getLayoutCellStyle, getLayoutStyle, type LayoutPickerPreset } from "../lib";
@@ -200,29 +200,32 @@ export function LayoutPicker({
 									const optionId = getOptionId(listId, index);
 
 									return (
-										<OptionButton
+										<Option
 											key={preset.id}
 											id={optionId}
 											ref={(node) => setOptionRef(index, node)}
 											role="option"
-											tabIndex={-1}
-											disabled={presetDisabled}
 											aria-selected={selected}
 											aria-disabled={presetDisabled || undefined}
 											aria-label={preset.description ? `${preset.label}. ${preset.description}` : preset.label}
 											className={styles.option}
 											active={active}
 											selected={selected}
-											text={
-												<span className={styles.optionPreviewWrap}>
-													<LayoutPresetPreview preset={preset} />
-												</span>
-											}
+											disabled={presetDisabled}
 											data-ui="layout-picker-option"
-											data-selected={selected || undefined}
-											onMouseDown={(event) => event.preventDefault()}
-											onClick={() => selectOption(preset)}
-										/>
+											data-selected={selected || undefined}>
+											<OptionButton
+												tabIndex={-1}
+												disabled={presetDisabled}
+												text={
+													<span className={styles.optionPreviewWrap}>
+														<LayoutPresetPreview preset={preset} />
+													</span>
+												}
+												onMouseDown={(event) => event.preventDefault()}
+												onClick={() => selectOption(preset)}
+											/>
+										</Option>
 									);
 								})}
 							</div>

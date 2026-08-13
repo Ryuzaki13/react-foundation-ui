@@ -43,6 +43,8 @@ declare const styles: {
   readonly uiFramedPanel: "uiFramedPanel";
   readonly uiStateFocus: "uiStateFocus";
   readonly uiOptionBase: "uiOptionBase";
+  readonly uiOptionButton: "uiOptionButton";
+  readonly uiOptionLink: "uiOptionLink";
   readonly uiMenuOptionIcon: "uiMenuOptionIcon";
   readonly uiPopupOptionIcon: "uiPopupOptionIcon";
   readonly keyboard: "keyboard";
@@ -50,7 +52,6 @@ declare const styles: {
   readonly uiPopupOptionActive: "uiPopupOptionActive";
   readonly uiPopupOptionSeparator: "uiPopupOptionSeparator";
   readonly uiPopupGroupLabel: "uiPopupGroupLabel";
-  readonly uiOptionSlot: "uiOptionSlot";
   readonly uiToggleButtonContainer: "uiToggleButtonContainer";
   readonly uiToggleButton: "uiToggleButton";
   readonly uiToggleIcon: "uiToggleIcon";

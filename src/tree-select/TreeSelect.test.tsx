@@ -3,7 +3,7 @@
 import React, { act, useState } from "react";
 
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { TreeSelect } from "./TreeSelect";
 import { TreeSelectNode, TreeSelectValue } from "./types";
@@ -161,6 +161,32 @@ afterEach(async () => {
 });
 
 describe("TreeSelect", () => {
+	it("разделяет раскрытие ветки и выбор значения внутри общей Option", async () => {
+		const onChange = vi.fn<(value: TreeSelectValue) => void>();
+		await renderNode(<TreeSelect label="Дерево" nodes={EXPANSION_NODES} value={undefined} onChange={onChange} />);
+		await openPopup();
+
+		const rootOption = getExpansionOption("Дивизион 1");
+		const expander = getExpansionButton("Дивизион 1");
+		const optionButton = Array.from(rootOption.children).find(
+			(element): element is HTMLButtonElement => element instanceof HTMLButtonElement && element !== expander
+		);
+
+		expect(rootOption.tagName).toBe("DIV");
+		expect(optionButton).toBeInstanceOf(HTMLButtonElement);
+		expect(rootOption.querySelector('input[type="checkbox"]')).toBeNull();
+
+		await act(async () => expander.click());
+
+		expect(onChange).not.toHaveBeenCalled();
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
+
+		await act(async () => optionButton?.click());
+
+		expect(onChange).toHaveBeenCalledWith({ codeKey: "DIV", value: "01" });
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+	});
+
 	it.each([
 		{ defaultExpandedCodeKeys: [] as const, expectedLabels: ["Дивизион 1", "Дивизион 2"] },
 		{ defaultExpandedCodeKeys: ["DIV"] as const, expectedLabels: ["Дивизион 1", "Филиал 1", "Дивизион 2"] },

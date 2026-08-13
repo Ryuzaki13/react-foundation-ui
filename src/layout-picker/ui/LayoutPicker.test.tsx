@@ -38,13 +38,24 @@ function getRequiredElement<TElement extends Element>(element: TElement | null |
 }
 
 function findOptionButton(label: string): HTMLButtonElement {
-	const button = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="option"]')).find((option) => {
+	const option = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find((option) => {
 		const accessibleName = option.getAttribute("aria-label");
 
 		return accessibleName === label || accessibleName?.startsWith(`${label}.`);
 	});
+	const button = option?.querySelector("button");
 
 	return getRequiredElement(button, `Не найдена опция layout: ${label}`);
+}
+
+function findOption(label: string): HTMLElement {
+	const option = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find((item) => {
+		const accessibleName = item.getAttribute("aria-label");
+
+		return accessibleName === label || accessibleName?.startsWith(`${label}.`);
+	});
+
+	return getRequiredElement(option, `Не найдена оболочка option layout: ${label}`);
 }
 
 async function renderNode(node: ReactNode) {
@@ -275,7 +286,7 @@ describe("LayoutPicker", () => {
 
 		const disabledOption = findOptionButton("1x2");
 		expect(disabledOption.disabled).toBe(true);
-		expect(disabledOption.getAttribute("aria-disabled")).toBe("true");
+		expect(findOption("1x2").getAttribute("aria-disabled")).toBe("true");
 
 		await act(async () => {
 			disabledOption.click();

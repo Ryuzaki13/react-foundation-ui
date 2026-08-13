@@ -170,7 +170,7 @@ describe("Select", () => {
 		expect(options.map((option) => option.textContent?.trim())).toEqual(["Альфа", "Бета", "Гамма"]);
 
 		await act(async () => {
-			options[1]?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+			options[1]?.querySelector("button")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
 		expect(input.value).toBe("Бета");

@@ -5,5 +5,4 @@ export * from "./OptionContent";
 export * from "./OptionHotkey";
 export * from "./OptionIcon";
 export * from "./OptionLink";
-export * from "./OptionSlot";
 export * from "./OptionText";

@@ -4,7 +4,8 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { ChevronRightIcon } from "lucide-react";
 
 import { CheckBox } from "../check-box";
-import { SelectOptionContent } from "../select/SelectOptionContent";
+import { OptionButton } from "../option";
+import { HighlightText } from "../text";
 
 import styles from "./TreeSelect.module.scss";
 import { TreeMultiSelectOptionsLayout, TreeSelectNode } from "./types";
@@ -21,6 +22,7 @@ type TreeNodeContentProps = {
 	optionsLayout?: TreeMultiSelectOptionsLayout;
 	onToggleExpand?: () => void;
 	onToggleSelection?: () => void;
+	onActivate?: () => void;
 };
 
 export function TreeNodeContent({
@@ -34,7 +36,8 @@ export function TreeNodeContent({
 	selectionMode,
 	optionsLayout = "tree",
 	onToggleExpand,
-	onToggleSelection
+	onToggleSelection,
+	onActivate
 }: TreeNodeContentProps) {
 	const showExpansionControl = optionsLayout === "tree";
 	const emphasizeRootContent = optionsLayout === "columns" && level === 0;
@@ -59,7 +62,7 @@ export function TreeNodeContent({
 				<span className={styles.treeExpanderPlaceholder} aria-hidden="true" />
 			) : null}
 
-			{selectionMode === "multi" || optionsLayout === "columns" ? (
+			{selectionMode === "multi" ? (
 				<span
 					className={styles.treeColumnCheckBox}
 					onMouseDown={(event) => event.stopPropagation()}
@@ -74,15 +77,25 @@ export function TreeNodeContent({
 				</span>
 			) : null}
 
-			<div className={styles.treeNodeOptionContent}>
-				<SelectOptionContent
-					label={node.label}
-					code={node.code}
-					highlight={highlight}
-					labelClassName={emphasizeRootContent ? styles.treeColumnRootLabel : undefined}
-					codeClassName={emphasizeRootContent ? styles.treeColumnRootCode : undefined}
-				/>
-			</div>
+			<OptionButton
+				className={styles.treeNodeButton}
+				tabIndex={-1}
+				disabled={node.disabled}
+				text={
+					<span className={emphasizeRootContent ? styles.treeColumnRootLabel : undefined}>
+						<HighlightText text={node.label} highlight={highlight} />
+					</span>
+				}
+				code={
+					node.code ? (
+						<span className={emphasizeRootContent ? styles.treeColumnRootCode : undefined}>
+							<HighlightText text={node.code} highlight={highlight} />
+						</span>
+					) : undefined
+				}
+				onMouseDown={(event) => event.preventDefault()}
+				onClick={onActivate}
+			/>
 		</>
 	);
 }

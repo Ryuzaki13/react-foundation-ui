@@ -18,12 +18,6 @@
 	position: relative;
 }
 
-.indicatorWrapper {
-	width: var(--check-box-size);
-	height: var(--check-box-size);
-	pointer-events: none;
-}
-
 .input {
 	width: var(--check-box-size);
 	height: var(--check-box-size);
@@ -32,18 +26,6 @@
 
 .inputIndeterminate + .icon {
 	color: var(--ui-tone-fill);
-}
-
-.indicator {
-	cursor: inherit;
-}
-
-.indicatorChecked {
-	border-color: var(--ui-tone-border-active);
-
-	& + .icon {
-		color: var(--ui-tone-fill);
-	}
 }
 
 .icon {

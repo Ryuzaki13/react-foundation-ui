@@ -8,7 +8,7 @@ import {
 } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { OptionButton } from "../option";
+import { Option, OptionButton } from "../option";
 import { PickerOptions } from "../picker";
 
 type ListboxOption<T> = {
@@ -182,27 +182,30 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 				const optionDisabled = disabled || option.disabled || undefined;
 
 				return (
-					<OptionButton
+					<Option
 						key={getKey ? getKey(option, index) : index}
 						id={`${listId}-option-${index}`}
 						role="option"
-						disabled={optionDisabled}
 						aria-selected={selected}
 						aria-disabled={optionDisabled}
-						onMouseDown={(e) => {
-							e.preventDefault(); // чтобы не сбрасывался фокус listbox
-							if (optionDisabled) {
-								return;
-							}
-							setFocusedIndex(index);
-							handleSelect(option);
-						}}
-						tabIndex={-1}
-						icon={selected ? <CheckIcon /> : <span />}
+						disabled={optionDisabled}
 						active={active}
-						selected={selected}
-						text={renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
-					/>
+						selected={selected}>
+						<OptionButton
+							disabled={optionDisabled}
+							onMouseDown={(e) => {
+								e.preventDefault(); // чтобы не сбрасывался фокус listbox
+								if (optionDisabled) {
+									return;
+								}
+								setFocusedIndex(index);
+								handleSelect(option);
+							}}
+							tabIndex={-1}
+							icon={selected ? <CheckIcon /> : <span />}
+							text={renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
+						/>
+					</Option>
 				);
 			})}
 		</PickerOptions>
