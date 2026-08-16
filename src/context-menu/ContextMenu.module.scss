@@ -6,9 +6,9 @@
 }
 
 .menuOptions {
-	--menu-max-height: min(22em, calc(100dvh - var(--space-xl)));
-	--menu-min-width: 13em;
-	--menu-max-width: min(22em, calc(100dvw - var(--space-xl)));
+	--menu-max-height: calc(100dvh - var(--space-xl));
+	--menu-min-width: 14em;
+	--menu-max-width: min(24em, calc(100dvw - var(--space-xl)));
 	--input-width: var(--menu-min-width);
 
 	min-width: var(--menu-min-width);
