@@ -8,4 +8,7 @@
 .optionCheckBox {
 	display: inline-flex;
 	flex-shrink: 0;
+
+	--check-box-control-size: auto;
+	padding-left: var(--space-sm);
 }

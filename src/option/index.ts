@@ -1,3 +1,4 @@
+export * from "./CustomOptionButton";
 export * from "./Option";
 export * from "./OptionButton";
 export * from "./OptionCode";

@@ -10,7 +10,7 @@ import { UiBaseProps } from "../types";
 import styles from "./StateSelect.module.scss";
 
 export type StateMeta = {
-	label?: ReactNode;
+	label?: string;
 	icon?: ReactNode;
 };
 

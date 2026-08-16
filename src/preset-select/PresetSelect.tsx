@@ -9,7 +9,7 @@ import type { UiBaseProps } from "../types";
 export interface PresetSelectProps<TOption extends PresetOption> extends UiBaseProps<TOption["id"] | undefined> {
 	options: readonly TOption[];
 	getOptionDisabled?: (option: TOption) => boolean;
-	getOptionCode?: (option: TOption) => ReactNode;
+	getOptionCode?: (option: TOption) => string;
 	getOptionAriaLabel?: (option: TOption) => string;
 	renderOption?: (option: TOption, state: SelectOptionState) => ReactNode;
 	renderValue?: (option: TOption) => ReactNode;

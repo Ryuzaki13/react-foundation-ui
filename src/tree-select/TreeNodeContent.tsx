@@ -5,7 +5,6 @@ import { ChevronRightIcon } from "lucide-react";
 
 import { CheckBox } from "../check-box";
 import { OptionButton } from "../option";
-import { HighlightText } from "../text";
 
 import styles from "./TreeSelect.module.scss";
 import { TreeMultiSelectOptionsLayout, TreeSelectNode } from "./types";
@@ -44,7 +43,7 @@ export function TreeNodeContent({
 
 	return (
 		<>
-			<span className={styles.treeIndent} style={{ "--tree-level": level } as CSSProperties} aria-hidden="true" />
+			<div className={styles.treeIndent} style={{ "--tree-level": level } as CSSProperties} aria-hidden="true" />
 			{showExpansionControl && hasChildren ? (
 				<button
 					type="button"
@@ -59,11 +58,11 @@ export function TreeNodeContent({
 					<ChevronRightIcon className={cn(styles.treeExpanderIcon, isExpanded && styles.treeExpanderIconExpanded)} />
 				</button>
 			) : showExpansionControl ? (
-				<span className={styles.treeExpanderPlaceholder} aria-hidden="true" />
+				<div className={styles.treeExpanderPlaceholder} aria-hidden="true" />
 			) : null}
 
 			{selectionMode === "multi" ? (
-				<span
+				<div
 					className={styles.treeColumnCheckBox}
 					onMouseDown={(event) => event.stopPropagation()}
 					onClick={(event) => event.stopPropagation()}>
@@ -74,25 +73,17 @@ export function TreeNodeContent({
 						aria-label={`Выбрать ${node.label}`}
 						onChange={() => onToggleSelection?.()}
 					/>
-				</span>
+				</div>
 			) : null}
 
 			<OptionButton
 				className={styles.treeNodeButton}
 				tabIndex={-1}
 				disabled={node.disabled}
-				text={
-					<span className={emphasizeRootContent ? styles.treeColumnRootLabel : undefined}>
-						<HighlightText text={node.label} highlight={highlight} />
-					</span>
-				}
-				code={
-					node.code ? (
-						<span className={emphasizeRootContent ? styles.treeColumnRootCode : undefined}>
-							<HighlightText text={node.code} highlight={highlight} />
-						</span>
-					) : undefined
-				}
+				text={node.label}
+				code={node.code}
+				searchText={highlight}
+				emphasizeContent={emphasizeRootContent}
 				onMouseDown={(event) => event.preventDefault()}
 				onClick={onActivate}
 			/>

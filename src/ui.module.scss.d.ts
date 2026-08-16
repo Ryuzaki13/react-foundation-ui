@@ -52,6 +52,7 @@ declare const styles: {
   readonly uiPopupOptionActive: "uiPopupOptionActive";
   readonly uiPopupOptionSeparator: "uiPopupOptionSeparator";
   readonly uiPopupGroupLabel: "uiPopupGroupLabel";
+  readonly uiOptionContentEmphasize: "uiOptionContentEmphasize";
   readonly uiToggleButtonContainer: "uiToggleButtonContainer";
   readonly uiToggleButton: "uiToggleButton";
   readonly uiToggleIcon: "uiToggleIcon";

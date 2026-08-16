@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-export type SelectOptionKey = string | number;
+export type SelectOptionKey = string;
 
 /**
  * Описывает визуальную группу опций Select.

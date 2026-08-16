@@ -1,21 +1,14 @@
 declare const styles: {
-  readonly treeRow: "treeRow";
   readonly treeNodeButton: "treeNodeButton";
   readonly treePopupHeader: "treePopupHeader";
   readonly treeColumns: "treeColumns";
   readonly treeColumnRow: "treeColumnRow";
   readonly treeColumnsPopupLayout: "treeColumnsPopupLayout";
-  readonly treeColumnRootLabel: "treeColumnRootLabel";
-  readonly treeColumnRootCode: "treeColumnRootCode";
   readonly treeColumnCheckBox: "treeColumnCheckBox";
   readonly treeIndent: "treeIndent";
   readonly treeExpander: "treeExpander";
   readonly treeExpanderPlaceholder: "treeExpanderPlaceholder";
   readonly treeExpanderIcon: "treeExpanderIcon";
   readonly treeExpanderIconExpanded: "treeExpanderIconExpanded";
-  readonly treeSelection: "treeSelection";
-  readonly treeSelectionChecked: "treeSelectionChecked";
-  readonly treeSelectionPartial: "treeSelectionPartial";
-  readonly treeSelectionIcon: "treeSelectionIcon";
 };
 export default styles;

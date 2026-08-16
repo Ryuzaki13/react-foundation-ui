@@ -5,7 +5,7 @@ import { InputType } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { Option, OptionButton } from "../option";
+import { CustomOptionButton, Option, OptionButton } from "../option";
 import {
 	extractPickerTextContent,
 	PickerField,
@@ -35,8 +35,8 @@ export type SelectOptionState = {
 type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TOption | undefined>, "onChange"> & {
 	options: readonly TOption[];
 	getOptionKey: (option: TOption) => SelectOptionKey;
-	getOptionLabel: (option: TOption) => ReactNode;
-	getOptionCode?: (option: TOption) => ReactNode;
+	getOptionLabel: (option: TOption) => string;
+	getOptionCode?: (option: TOption) => string;
 	/** Явный поисковый текст для опции с произвольным ReactNode-render. */
 	getOptionSearchText?: (option: TOption) => string | readonly string[];
 	getOptionDisabled?: (option: TOption) => boolean;
@@ -238,15 +238,25 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 				selected={selected}
 				disabled={optionDisabled}
 				className={getOptionClassName?.(option, optionState)}>
-				<OptionButton
-					tabIndex={-1}
-					disabled={optionDisabled}
-					icon={renderOption ? undefined : selected ? <CheckIcon /> : <span />}
-					text={renderOption ? renderOption(option, optionState) : getOptionLabel(option)}
-					code={!renderOption && getOptionCode ? getOptionCode(option) : undefined}
-					onMouseDown={(event) => event.preventDefault()}
-					onClick={() => selectOption(option)}
-				/>
+				{renderOption ? (
+					<CustomOptionButton
+						tabIndex={-1}
+						disabled={optionDisabled}
+						onMouseDown={(event) => event.preventDefault()}
+						onClick={() => selectOption(option)}>
+						{renderOption(option, optionState)}
+					</CustomOptionButton>
+				) : (
+					<OptionButton
+						tabIndex={-1}
+						disabled={optionDisabled}
+						icon={selected ? <CheckIcon /> : <span />}
+						text={getOptionLabel(option)}
+						code={getOptionCode?.(option)}
+						onMouseDown={(event) => event.preventDefault()}
+						onClick={() => selectOption(option)}
+					/>
+				)}
 			</Option>
 		);
 	};

@@ -32,22 +32,22 @@ function getSerializableOptionKey<TOption extends SerializableOptionRecord, TOpt
 	option: TOption,
 	optionKey: TOptionKey
 ): Extract<TOption[TOptionKey], SelectOptionKey> {
-	return option[optionKey] as Extract<TOption[TOptionKey], SelectOptionKey>;
+	return String(option[optionKey]) as Extract<TOption[TOptionKey], SelectOptionKey>;
 }
 
 function getSerializableOptionLabel<
 	TOption extends SerializableOptionRecord,
 	TOptionKey extends SerializableOptionKeyField<TOption>,
 	TOptionLabel extends keyof TOption
->(option: TOption, optionLabel: TOptionLabel, optionKey: TOptionKey): string | number {
+>(option: TOption, optionLabel: TOptionLabel, optionKey: TOptionKey): string {
 	const label = option[optionLabel];
 
 	if (typeof label === "string" || typeof label === "number") {
-		return label;
+		return String(label);
 	}
 
 	const key = getSerializableOptionKey(option, optionKey);
-	return typeof key === "string" || typeof key === "number" ? key : String(key);
+	return String(key);
 }
 
 export function SerializableSelect<

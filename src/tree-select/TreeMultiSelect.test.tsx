@@ -351,10 +351,6 @@ function getOptionByText(text: string) {
 	return option;
 }
 
-function findElementWithClass(rootElement: HTMLElement, className: string) {
-	return Array.from(rootElement.querySelectorAll<HTMLElement>("*")).find((element) => element.classList.contains(className));
-}
-
 function findInnermostElementWithText(text: string) {
 	return Array.from(container?.querySelectorAll<HTMLElement>("*") ?? []).find(
 		(element) =>
@@ -418,21 +414,6 @@ describe("TreeMultiSelect columns layout", () => {
 
 			expect(occupiedCells.size).toBe(options.length);
 		});
-	});
-
-	it("выделяет в columns отдельно label и видимый code только у root", async () => {
-		await renderHarness({ initialValue: {} });
-
-		const rootOption = getOptionByText("Дивизион 1");
-		const childOption = getOptionByText("Филиал 1");
-		const rootLabel = findElementWithClass(rootOption, styles.treeColumnRootLabel);
-		const rootCode = findElementWithClass(rootOption, styles.treeColumnRootCode);
-
-		expect(rootLabel?.textContent).toBe("Дивизион 1");
-		expect(rootCode?.textContent).toBe("01");
-		expect(findElementWithClass(childOption, styles.treeColumnRootLabel)).toBeUndefined();
-		expect(findElementWithClass(childOption, styles.treeColumnRootCode)).toBeUndefined();
-		expect(rootOption.querySelector('input[type="checkbox"]')?.classList.contains(styles.treeColumnRootLabel)).toBe(false);
 	});
 
 	it("показывает mixed-состояние parent при выборе одного descendant", async () => {
@@ -800,9 +781,6 @@ describe("TreeMultiSelect tree expansion", () => {
 		expect(getOptionOrder().some((optionText) => optionText?.includes("Филиал 1"))).toBe(true);
 		expect(document.querySelector('[data-ui="tree-select-expander"]')).toBeTruthy();
 		const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
-		const rootOption = getOptionByText("Дивизион 1");
 		expect(listbox.firstElementChild?.classList.contains(styles.treeColumnsPopupLayout)).toBe(false);
-		expect(findElementWithClass(rootOption, styles.treeColumnRootLabel)).toBeUndefined();
-		expect(findElementWithClass(rootOption, styles.treeColumnRootCode)).toBeUndefined();
 	});
 });

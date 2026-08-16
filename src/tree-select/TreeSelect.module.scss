@@ -1,11 +1,5 @@
 @use "@/styles/mixins" as *;
 
-// .uiOptionRow
-.treeRow {
-	display: flex;
-	align-items: stretch;
-}
-
 .treeNodeButton {
 	gap: var(--space-sm);
 }
@@ -36,20 +30,11 @@
 	max-height: none;
 }
 
-// Label и code усиливаются отдельно: code имеет собственный variable-font weight.
-.treeColumnRootLabel {
-	font-weight: 600;
-	font-variation-settings: "wght" 600;
-}
-
-.treeColumnRootCode {
-	font-weight: 600;
-	font-variation-settings: "wght" 600;
-}
-
 .treeColumnCheckBox {
 	display: inline-flex;
 	flex-shrink: 0;
+
+	--check-box-control-size: auto;
 }
 
 .treeIndent {
@@ -60,8 +45,8 @@
 .treeExpander,
 .treeExpanderPlaceholder {
 	flex-shrink: 0;
-	width: 1.5em;
-	height: 1.5em;
+	width: var(--text-height);
+	height: var(--text-height);
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
@@ -84,37 +69,4 @@
 
 .treeExpanderIconExpanded {
 	transform: rotate(90deg);
-}
-
-.treeSelection {
-	flex-shrink: 0;
-	width: 1em;
-	height: 1em;
-	border: var(--border);
-	border-radius: var(--radius-xs);
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	background-color: var(--surface-0);
-	color: transparent;
-}
-
-.treeSelectionChecked {
-	background-color: var(--status-info-text);
-	border-color: var(--status-info-text);
-	color: var(--white);
-
-	// outline: 1px dashed rgb(255, 100, 141);
-	// outline-offset: -1px;
-}
-
-.treeSelectionPartial {
-	background-color: var(--surface-1);
-	border-color: var(--status-info-text);
-	color: var(--status-info-text);
-}
-
-.treeSelectionIcon {
-	width: 0.75rem;
-	height: 0.75rem;
 }

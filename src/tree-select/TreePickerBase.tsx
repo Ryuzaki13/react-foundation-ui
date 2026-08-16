@@ -409,7 +409,7 @@ export function TreePickerBase({
 												disabled={optionDisabled}
 												active={active}
 												selected={selected}
-												className={cn(styles.treeRow, optionsLayout === "columns" && styles.treeColumnRow)}
+												className={optionsLayout === "columns" ? styles.treeColumnRow : undefined}
 												style={
 													optionsLayout === "columns"
 														? ({

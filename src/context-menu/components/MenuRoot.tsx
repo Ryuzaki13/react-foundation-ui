@@ -21,14 +21,14 @@ interface MenuRootProps {
 	onOpenChange?: (open: boolean) => void;
 }
 
-export const MenuRoot: React.FC<MenuRootProps> = ({
+export function MenuRoot({
 	children,
 	mode,
 	placement = mode === "click" ? "bottom-start" : "right-start",
 	open: controlledOpen,
 	defaultOpen,
 	onOpenChange
-}) => {
+}: MenuRootProps) {
 	const [menuState, setMenuState] = useState(initialMenuState);
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen ?? false);
 	const isControlled = controlledOpen !== undefined;
@@ -197,4 +197,4 @@ export const MenuRoot: React.FC<MenuRootProps> = ({
 	);
 
 	return <MenuContext.Provider value={value}>{children}</MenuContext.Provider>;
-};
+}

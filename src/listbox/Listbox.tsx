@@ -1,4 +1,16 @@
-import { HTMLAttributes, JSX, KeyboardEvent, ReactNode, useEffect, useId, useLayoutEffect, useMemo, useRef, useState } from "react";
+import {
+	type MouseEvent,
+	HTMLAttributes,
+	JSX,
+	KeyboardEvent,
+	ReactNode,
+	useEffect,
+	useId,
+	useLayoutEffect,
+	useMemo,
+	useRef,
+	useState
+} from "react";
 
 import {
 	findFirstEnabledIndex,
@@ -8,7 +20,7 @@ import {
 } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { Option, OptionButton } from "../option";
+import { CustomOptionButton, Option, OptionButton } from "../option";
 import { PickerOptions } from "../picker";
 
 type ListboxOption<T> = {
@@ -181,6 +193,15 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 				const active = index === activeIndex;
 				const optionDisabled = disabled || option.disabled || undefined;
 
+				const handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+					e.preventDefault(); // чтобы не сбрасывался фокус listbox
+					if (optionDisabled) {
+						return;
+					}
+					setFocusedIndex(index);
+					handleSelect(option);
+				};
+
 				return (
 					<Option
 						key={getKey ? getKey(option, index) : index}
@@ -191,20 +212,19 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 						disabled={optionDisabled}
 						active={active}
 						selected={selected}>
-						<OptionButton
-							disabled={optionDisabled}
-							onMouseDown={(e) => {
-								e.preventDefault(); // чтобы не сбрасывался фокус listbox
-								if (optionDisabled) {
-									return;
-								}
-								setFocusedIndex(index);
-								handleSelect(option);
-							}}
-							tabIndex={-1}
-							icon={selected ? <CheckIcon /> : <span />}
-							text={renderItem ? renderItem(option, selected, active) : (option.label ?? String(option.value))}
-						/>
+						{renderItem ? (
+							<CustomOptionButton tabIndex={-1} disabled={optionDisabled} onMouseDown={handleMouseDown}>
+								{renderItem(option, selected, active)}
+							</CustomOptionButton>
+						) : (
+							<OptionButton
+								tabIndex={-1}
+								disabled={optionDisabled}
+								onMouseDown={handleMouseDown}
+								icon={selected ? <CheckIcon /> : <span />}
+								text={option.label ?? String(option.value)}
+							/>
+						)}
 					</Option>
 				);
 			})}

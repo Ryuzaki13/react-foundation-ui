@@ -126,7 +126,6 @@ describe("MultiSelect", () => {
 		expect(option.children).toHaveLength(2);
 		expect(checkBox.checked).toBe(false);
 		expect(text?.textContent).toBe("Альфа");
-		expect(text?.getAttribute("data-search-text")).toBe("Альфа");
 		expect(code?.textContent).toBe("01");
 
 		await act(async () => {
@@ -214,7 +213,7 @@ describe("MultiSelect", () => {
 		expect(options[1]?.getAttribute("aria-disabled")).toBe("true");
 		expect(options[1]).toBeInstanceOf(HTMLDivElement);
 		expect(options[1]?.querySelector("button")?.disabled).toBe(true);
-		expect(options[1]?.querySelector('input[type="checkbox"]')?.disabled).toBe(true);
+		expect(options[1]?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.disabled).toBe(true);
 
 		const selectAllButton = document.querySelector('button[data-action="select-all"]') as HTMLButtonElement;
 

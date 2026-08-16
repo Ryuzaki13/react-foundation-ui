@@ -51,10 +51,8 @@ export interface MultiSelectItemState {
  * произвольного ReactNode.
  */
 export interface MultiSelectOptionContent {
-	text: React.ReactNode;
-	code?: React.ReactNode;
-	/** Явное текстовое представление произвольного ReactNode для общих picker-механизмов. */
-	searchText?: string;
+	text: string;
+	code: string;
 }
 
 export interface MultiSelectRenderContext {
@@ -159,13 +157,14 @@ function MultiSelectOptionGroup({
 }: MultiSelectOptionGroupProps) {
 	return entries.map(({ item, index }) => {
 		const active = index === activeIndex;
-		const selected = selectedKeys.has(getItemKey(item, codeKey));
+		const itemKey = getItemKey(item, codeKey);
+		const selected = selectedKeys.has(itemKey);
 		const optionDisabled = getOptionDisabled?.(item) ?? false;
 		const content = renderItem(item, { selected, active, disabled: optionDisabled, query, highlightQuery });
 
 		return (
 			<Option
-				key={`${getItemKey(item, codeKey)}-${index}`}
+				key={`${itemKey}-${index}`}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
 				role="option"
@@ -181,7 +180,7 @@ function MultiSelectOptionGroup({
 					<CheckBox
 						value={selected}
 						disabled={optionDisabled}
-						aria-label={`Выбрать ${content.searchText ?? getItemKey(item, codeKey)}`}
+						aria-label={`Выбрать ${highlightQuery ?? itemKey}`}
 						onChange={() => toggleOption(item)}
 					/>
 				</div>
@@ -189,8 +188,8 @@ function MultiSelectOptionGroup({
 					tabIndex={-1}
 					disabled={optionDisabled}
 					text={content.text}
-					searchText={content.searchText}
 					code={content.code}
+					searchText={highlightQuery}
 					onMouseDown={(event) => event.preventDefault()}
 					onClick={() => selectOnlyOption(item)}
 				/>

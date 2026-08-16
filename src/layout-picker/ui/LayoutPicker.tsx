@@ -3,7 +3,7 @@ import { useRef, useState } from "react";
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { Option, OptionButton } from "../../option";
+import { CustomOptionButton, Option } from "../../option";
 import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
 import { type UiBaseProps } from "../../types";
 import { DEFAULT_LAYOUT_PICKER_PRESETS, getLayoutCellStyle, getLayoutStyle, type LayoutPickerPreset } from "../lib";
@@ -214,17 +214,16 @@ export function LayoutPicker({
 											disabled={presetDisabled}
 											data-ui="layout-picker-option"
 											data-selected={selected || undefined}>
-											<OptionButton
+											<CustomOptionButton
 												tabIndex={-1}
 												disabled={presetDisabled}
-												text={
-													<span className={styles.optionPreviewWrap}>
-														<LayoutPresetPreview preset={preset} />
-													</span>
-												}
+
 												onMouseDown={(event) => event.preventDefault()}
-												onClick={() => selectOption(preset)}
-											/>
+												onClick={() => selectOption(preset)}>
+												<span className={styles.optionPreviewWrap}>
+													<LayoutPresetPreview preset={preset} />
+												</span>
+											</CustomOptionButton>
 										</Option>
 									);
 								})}

@@ -68,9 +68,13 @@
 	}
 }
 
+.triggerHasClear {
+	--trigger-count: 2;
+}
+
 .selectedToken {
 	position: absolute;
-	inset: 0 calc(var(--control-height) * 2) 0 var(--space-sm);
+	inset: 0 calc(var(--control-height) * var(--trigger-count, 1) + var(--space-sm)) 0 var(--space-sm);
 	display: flex;
 	align-items: center;
 	justify-content: flex-end;

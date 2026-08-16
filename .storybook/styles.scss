@@ -8,10 +8,40 @@
  */
 :root[data-theme="light:default"] {
 	@include foundationThemes.light-theme;
+
+	--interactive-color: inherit;
+	--interactive-hover-color: #000000;
+	--interactive-active-color: #000000;
+	--interactive-selected-color: #000000;
+
+	--interactive-surface: inherit;
+	--interactive-hover-surface: oklch(0.93 0.12 75);
+	--interactive-active-surface: oklch(0.87 0.15 70);
+	--interactive-selected-surface: oklch(0.87 0.12 80);
+
+	--interactive-border: inherit;
+	--interactive-hover-border: oklch(0.76 0.14 59.64);
+	--interactive-active-border: oklch(0.73 0.16 57.5);
+	--interactive-selected-border: oklch(0.81 0.11 61.71);
 }
 
 :root[data-theme="dark:default"] {
 	@include foundationThemes.dark-theme;
+
+	--interactive-color: inherit;
+	--interactive-hover-color: #ffffff;
+	--interactive-active-color: #ffffff;
+	--interactive-selected-color: #ffffff;
+
+	--interactive-surface: inherit;
+	--interactive-hover-surface: oklch(0.26 0.06 245.92);
+	--interactive-active-surface: oklch(0.26 0.07 247.11);
+	--interactive-selected-surface: oklch(0.23 0.05 245.71);
+
+	--interactive-border: inherit;
+	--interactive-hover-border: oklch(0.74 0.18 229.36);
+	--interactive-active-border: oklch(0.74 0.18 229.36);
+	--interactive-selected-border: oklch(0.74 0.18 229.36);
 }
 
 :root {
@@ -53,21 +83,6 @@
 		--hc-status-info-fill: #004672;
 		--hc-status-info-on-fill: #ffffff;
 	}
-
-	--interactive-color: inherit;
-	--interactive-hover-color: #000000;
-	--interactive-active-color: #000000;
-	--interactive-selected-color: #000000;
-
-	--interactive-surface: inherit;
-	--interactive-hover-surface: oklch(0.93 0.12 75);
-	--interactive-active-surface: oklch(0.87 0.15 70);
-	--interactive-selected-surface: oklch(0.87 0.12 80);
-
-	--interactive-border: inherit;
-	--interactive-hover-border: oklch(0.76 0.14 59.64);
-	--interactive-active-border: oklch(0.73 0.16 57.5);
-	--interactive-selected-border: oklch(0.81 0.11 61.71);
 }
 
 .lucide {

@@ -19,7 +19,6 @@ describe("OptionButton", () => {
 		expect(wrapper.firstElementChild).toBe(option);
 		expect(option.textContent).toBe("ИконкаТекстКод");
 		expect(option.children).toHaveLength(3);
-		expect(screen.getByText("Текст").getAttribute("data-search-text")).toBe("Поиск");
 	});
 
 	it("рендерит hotkey как альтернативу code", () => {

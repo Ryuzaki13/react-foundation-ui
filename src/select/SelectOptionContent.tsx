@@ -19,7 +19,7 @@ interface OptionContentProps {
 export function SelectOptionContent({ label, code, highlight, labelClassName, codeClassName }: OptionContentProps) {
 	return (
 		<>
-			<OptionText className={cn("flexEllipsis", labelClassName)} searchText={label}>
+			<OptionText className={cn("flexEllipsis", labelClassName)}>
 				<HighlightText text={label} highlight={highlight} />
 			</OptionText>
 			{code && (

@@ -319,7 +319,7 @@
 	@extend .uiOptionBase;
 
 	height: auto;
-	padding: var(--space-xs) var(--space-sm);
+	min-height: var(--control-height);
 }
 
 .uiPopupOption {
@@ -346,26 +346,31 @@
 	}
 
 	&.selected {
-		color: var(--content-accent);
+		color: var(--interactive-selected-content);
+		background-color: var(--interactive-selected-surface);
 		cursor: default;
 	}
 
-	&.uiPopupOptionActive {
-		background-color: var(--surface-1);
+	&.uiPopupOptionActive,
+	&:active {
+		color: var(--interactive-active-content);
+		background-color: var(--interactive-active-surface);
+	}
+
+	@include hover(true) {
+		color: var(--interactive-hover-content);
+		background-color: var(--interactive-hover-surface);
+		cursor: pointer;
 	}
 
 	&.disabled {
-		background-color: transparent;
+		// background-color: var(--surface-2);
 		color: var(--content-2);
 	}
 
 	&:focus-within {
-		@extend .uiStateFocus;
-	}
-
-	@include hover(true) {
-		background-color: var(--interactive-hover-surface);
-		cursor: pointer;
+		// @extend .uiStateFocus;
+		@include focusVisible;
 	}
 }
 
@@ -376,7 +381,7 @@
 	flex: 1 1 0;
 	min-width: 0;
 	height: 100%;
-	padding: 0;
+	padding: var(--space-xs) var(--space-sm);
 	border: none;
 	border-radius: inherit;
 	outline: none;
@@ -419,6 +424,11 @@
 	color: var(--content-1);
 	font-weight: 300;
 	font-variation-settings: "wght" 300;
+}
+
+.uiOptionContentEmphasize {
+	font-weight: 600;
+	font-variation-settings: "wght" 600;
 }
 
 .uiToggleButtonContainer {

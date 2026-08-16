@@ -1,12 +1,12 @@
-import React, { type HTMLAttributeAnchorTarget, useCallback } from "react";
+import { type HTMLAttributeAnchorTarget, type MouseEvent, type ReactNode, useCallback } from "react";
 
 import { Option, OptionButton, OptionLink } from "../../option";
 
 import { useMenuContext } from "./MenuContext";
 
 export interface MenuItemProps {
-	children: React.ReactNode;
-	icon?: React.ReactNode;
+	children: string;
+	icon?: ReactNode;
 	hotKey?: string;
 	className?: string;
 	disabled?: boolean;
@@ -14,10 +14,10 @@ export interface MenuItemProps {
 	target?: HTMLAttributeAnchorTarget;
 	rel?: string;
 	closeOnSelect?: boolean;
-	onSelect?: (event: React.MouseEvent<HTMLElement>) => void;
+	onSelect?: (event: MouseEvent<HTMLElement>) => void;
 }
 
-export const MenuItem: React.FC<MenuItemProps> = ({
+export function MenuItem({
 	children,
 	icon,
 	hotKey,
@@ -28,7 +28,7 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 	rel,
 	closeOnSelect = true,
 	onSelect
-}) => {
+}: MenuItemProps) {
 	const { closeMenu } = useMenuContext();
 
 	const handleClick = useCallback(
@@ -89,4 +89,4 @@ export const MenuItem: React.FC<MenuItemProps> = ({
 			/>
 		</Option>
 	);
-};
+}

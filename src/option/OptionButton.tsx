@@ -10,10 +10,16 @@ export type OptionButtonProps = Omit<ButtonHTMLAttributes<HTMLButtonElement>, "t
 	OptionContentProps & { ref?: Ref<HTMLButtonElement> };
 
 /** Основное button-действие внутри внешней оболочки Option. */
-export function OptionButton({ ref, icon, text, searchText, code, hotkey, ...props }: OptionButtonProps) {
+export function OptionButton({ ref, icon, text, searchText, code, hotkey, emphasizeContent, ...props }: OptionButtonProps) {
 	return (
 		<button {...props} ref={ref} type="button" className={cn(uiStyles.uiOptionButton, props.className)}>
-			<OptionContent icon={icon} text={text} searchText={searchText} {...(code !== undefined ? { code } : { hotkey })} />
+			<OptionContent
+				icon={icon}
+				text={text}
+				searchText={searchText}
+				emphasizeContent={emphasizeContent}
+				{...(code !== undefined ? { code } : { hotkey })}
+			/>
 		</button>
 	);
 }
