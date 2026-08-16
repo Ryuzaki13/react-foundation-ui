@@ -158,11 +158,11 @@ export function TreeMultiSelect({
 			query={query}
 			defaultQuery={defaultQuery}
 			onQuery={onQuery}
-			onNodeActivate={(node) => {
-				setDraftValue(toggleTreeMultiSelection({}, node.id, treeIndex));
+			onNodeActivate={(node, selectionScopeIndex) => {
+				setDraftValue(toggleTreeMultiSelection({}, node.id, treeIndex, selectionScopeIndex));
 			}}
-			onNodeToggleSelection={(node) => {
-				setDraftValue((currentDraftValue) => toggleTreeMultiSelection(currentDraftValue, node.id, treeIndex));
+			onNodeToggleSelection={(node, selectionScopeIndex) => {
+				setDraftValue((currentDraftValue) => toggleTreeMultiSelection(currentDraftValue, node.id, treeIndex, selectionScopeIndex));
 			}}
 			onClearSelection={clearSelection}
 			isLoading={isLoading}

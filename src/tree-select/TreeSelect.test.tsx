@@ -147,6 +147,12 @@ async function setInputValue(input: HTMLInputElement, value: string) {
 	});
 }
 
+async function pressKey(element: HTMLElement, key: string) {
+	await act(async () => {
+		element.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
+	});
+}
+
 afterEach(async () => {
 	if (root) {
 		await act(async () => {
@@ -183,6 +189,34 @@ describe("TreeSelect", () => {
 
 		await act(async () => optionButton?.click());
 
+		expect(onChange).toHaveBeenCalledWith({ codeKey: "DIV", value: "01" });
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+	});
+
+	it("управляет веткой стрелками и выбирает активную строку по Enter", async () => {
+		const onChange = vi.fn<(value: TreeSelectValue) => void>();
+		await renderNode(<TreeSelect label="Дерево" nodes={EXPANSION_NODES} value={undefined} onChange={onChange} />);
+		await openPopup();
+
+		const rootOption = getExpansionOption("Дивизион 1");
+		const rootExpander = getExpansionButton("Дивизион 1");
+		rootExpander.focus();
+
+		await pressKey(rootExpander, "ArrowRight");
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Дивизион 2"]);
+		expect(rootExpander.dataset.action).toBe("collapse-tree-select-node");
+
+		await pressKey(rootExpander, "ArrowRight");
+		const branchOption = getExpansionOption("Филиал 1");
+		expect(document.activeElement).toBe(branchOption);
+
+		await pressKey(branchOption, "ArrowLeft");
+		expect(document.activeElement).toBe(rootOption);
+
+		await pressKey(rootOption, "ArrowLeft");
+		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
+
+		await pressKey(rootOption, "Enter");
 		expect(onChange).toHaveBeenCalledWith({ codeKey: "DIV", value: "01" });
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
 	});

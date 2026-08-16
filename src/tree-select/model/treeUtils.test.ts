@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import {
 	createTreeNodeIndex,
+	filterTreeNodes,
 	getConfiguredTreeExpandedIds,
 	getSelectableTreeNodeIds,
 	getTreeNodeSelectionState,
@@ -179,6 +180,24 @@ describe("tree selection utils", () => {
 
 		expect(toggleTreeMultiSelection({}, "ZDIV:04/ZCFO1:0202", index)).toEqual({
 			ZCFO1: ["0202"]
+		});
+	});
+
+	it("ограничивает выбор parent найденными descendants", () => {
+		const index = createTreeNodeIndex(nodes);
+		const selectionScopeIndex = createTreeNodeIndex(filterTreeNodes(nodes, "Склад 1").nodes);
+
+		expect(toggleTreeMultiSelection({}, "ZDIV:04/ZCFO1:0202", index, selectionScopeIndex)).toEqual({
+			VSTEL: ["0601"]
+		});
+	});
+
+	it("снимает только найденных descendants из полностью выбранного parent", () => {
+		const index = createTreeNodeIndex(nodes);
+		const selectionScopeIndex = createTreeNodeIndex(filterTreeNodes(nodes, "Склад 1").nodes);
+
+		expect(toggleTreeMultiSelection({ ZCFO1: ["0202"] }, "ZDIV:04/ZCFO1:0202", index, selectionScopeIndex)).toEqual({
+			VSTEL: ["0604"]
 		});
 	});
 

@@ -331,6 +331,12 @@ async function setInputValue(input: HTMLInputElement, value: string) {
 	});
 }
 
+async function pressKey(element: HTMLElement, key: string) {
+	await act(async () => {
+		element.dispatchEvent(new KeyboardEvent("keydown", { key, bubbles: true, cancelable: true }));
+	});
+}
+
 function getCommittedValueText() {
 	return container?.querySelector('[data-testid="value"]')?.textContent;
 }
@@ -782,5 +788,58 @@ describe("TreeMultiSelect tree expansion", () => {
 		expect(document.querySelector('[data-ui="tree-select-expander"]')).toBeTruthy();
 		const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
 		expect(listbox.firstElementChild?.classList.contains(styles.treeColumnsPopupLayout)).toBe(false);
+	});
+
+	it("сохраняет клавиатурную навигацию из expander и checkbox и разделяет Space с Enter", async () => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({
+			initialValue: {},
+			onChange,
+			optionsLayout: "tree",
+			defaultExpandedCodeKeys: ["DIV"]
+		});
+
+		const rootOption = getOptionByText("Дивизион 1");
+		const branchOption = getOptionByText("Филиал 1");
+		const rootExpander = rootOption.querySelector('[data-ui="tree-select-expander"]') as HTMLButtonElement;
+		const rootCheckBox = getCheckBox("Дивизион 1");
+
+		rootExpander.focus();
+		await pressKey(rootExpander, "ArrowDown");
+		expect(document.activeElement).toBe(branchOption);
+
+		rootCheckBox.focus();
+		await pressKey(rootCheckBox, "ArrowDown");
+		expect(document.activeElement).toBe(branchOption);
+
+		rootExpander.focus();
+		await pressKey(rootExpander, " ");
+		expect(rootCheckBox.checked).toBe(true);
+		expect(rootExpander.dataset.action).toBe("collapse-tree-select-node");
+		expect(document.querySelector('[role="listbox"]')).toBeTruthy();
+
+		const branchCheckBox = getCheckBox("Филиал 1");
+		branchCheckBox.focus();
+		await pressKey(branchCheckBox, "Enter");
+
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+		expect(getCommittedValueText()).toBe('{"BR":["001"]}');
+		expect(onChange).toHaveBeenLastCalledWith({ BR: ["001"] });
+	});
+
+	it.each([
+		{ initialValue: {} as TreeMultiSelectValue, expectedValue: { BR: ["001"] } },
+		{ initialValue: { DIV: ["01"] }, expectedValue: { BR: ["002"] } }
+	])("переключает через найденный parent только видимых descendants", async ({ initialValue, expectedValue }) => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({ initialValue, onChange, optionsLayout: "tree" });
+		const searchInput = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+
+		await setInputValue(searchInput, "Филиал 1");
+		await clickElement(getCheckBox("Дивизион 1"));
+		await closePopup();
+
+		expect(getCommittedValueText()).toBe(JSON.stringify(expectedValue));
+		expect(onChange).toHaveBeenLastCalledWith(expectedValue);
 	});
 });

@@ -248,6 +248,29 @@ function isNodeFullySelected(nodeId: string, selectedIds: Set<string>, index: Tr
 	return children.every((childId) => isNodeFullySelected(childId, selectedIds, index));
 }
 
+/**
+ * Проверяет, что отфильтрованное представление содержит поддерево целиком.
+ * Совпавший parent возвращается поиском со всеми потомками, а parent совпавших
+ * descendants содержит только видимые ветви и потому не может сериализоваться
+ * собственным predicate без расширения выбора на скрытые узлы.
+ */
+function isTreeSelectionScopeComplete(nodeId: string, index: TreeNodeIndex, selectionScopeIndex: TreeNodeIndex): boolean {
+	if (!selectionScopeIndex.nodeById.has(nodeId)) {
+		return false;
+	}
+
+	const childIds = index.childrenById.get(nodeId) ?? [];
+	const scopedChildIds = selectionScopeIndex.childrenById.get(nodeId) ?? [];
+
+	return (
+		childIds.length === scopedChildIds.length &&
+		childIds.every(
+			(childId, childIndex) =>
+				scopedChildIds[childIndex] === childId && isTreeSelectionScopeComplete(childId, index, selectionScopeIndex)
+		)
+	);
+}
+
 export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeNodeIndex) {
 	const nextSelectedIds = new Set(selectedIds);
 
@@ -424,15 +447,22 @@ export function getSelectableTreeNodeIds(index: TreeNodeIndex, rootIds: readonly
 	return new Set(rootIds.flatMap((rootId) => collectSubtree(rootId).selectedIds));
 }
 
-export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | undefined, targetNodeId: string, index: TreeNodeIndex) {
+export function toggleTreeMultiSelection(
+	currentValue: TreeMultiSelectValue | undefined,
+	targetNodeId: string,
+	index: TreeNodeIndex,
+	selectionScopeIndex?: TreeNodeIndex
+) {
 	const selectedIds = treeMultiValueToSelectedIds(currentValue, index);
+	const hasRestrictedSelectionScope =
+		selectionScopeIndex !== undefined && !isTreeSelectionScopeComplete(targetNodeId, index, selectionScopeIndex);
 
 	/*
 	 * Derived-full ветка может содержать одновременно safe и unsafe predicates.
 	 * При повторном клике снимаем всё её фактическое покрытие до расчёта набора,
 	 * доступного для нового выбора: иначе safe subset оставил бы ветку partial.
 	 */
-	if (isNodeFullySelected(targetNodeId, selectedIds, index)) {
+	if (!hasRestrictedSelectionScope && isNodeFullySelected(targetNodeId, selectedIds, index)) {
 		removeSelectedSubtreePredicates(selectedIds, targetNodeId, index);
 		return treeSelectedIdsToMultiValue(canonicalizeTreeSelection(selectedIds, index), index);
 	}
@@ -471,7 +501,26 @@ export function toggleTreeMultiSelection(currentValue: TreeMultiSelectValue | un
 		}
 	};
 
-	const resolvedSelectableTargetIds = [...getSelectableTreeNodeIds(index, [targetNodeId])];
+	const collectScopedSelectableTargetIds = (nodeId: string): string[] => {
+		if (!selectionScopeIndex?.nodeById.has(nodeId)) {
+			return [];
+		}
+
+		if (isTreeSelectionScopeComplete(nodeId, index, selectionScopeIndex)) {
+			const selectableNodeIds = [...getSelectableTreeNodeIds(index, [nodeId])];
+			if (selectableNodeIds.length > 0) {
+				return selectableNodeIds;
+			}
+
+			/* Небезопасный сохранённый predicate должен оставаться доступен для снятия. */
+			return isTreeNodeSelected(nodeId, selectedIds, index) || isNodeFullySelected(nodeId, selectedIds, index) ? [nodeId] : [];
+		}
+
+		return (selectionScopeIndex.childrenById.get(nodeId) ?? []).flatMap(collectScopedSelectableTargetIds);
+	};
+	const resolvedSelectableTargetIds = hasRestrictedSelectionScope
+		? collectScopedSelectableTargetIds(targetNodeId)
+		: [...getSelectableTreeNodeIds(index, [targetNodeId])];
 	/* Небезопасный сохранённый predicate остаётся доступен для явного снятия. */
 	const selectableTargetIds =
 		resolvedSelectableTargetIds.length === 0 &&

@@ -1,7 +1,7 @@
-import { type CSSProperties, ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
+import { type CSSProperties, type KeyboardEvent, ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import { type FloatingListboxSizeResolver } from "@ryuzaki13/react-foundation-lib/hooks";
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
+import { cn, findFirstEnabledIndex, findLastEnabledIndex, findNextEnabledIndex } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { InputText } from "../input";
 import { Option } from "../option";
@@ -26,6 +26,7 @@ import {
 	getConfiguredTreeExpandedIds,
 	getSelectionExpandedIds,
 	isTreeNodeSelected,
+	type TreeNodeIndex,
 	TreeVisibleEntry
 } from "./model/treeUtils";
 import { TreeNodeContent } from "./TreeNodeContent";
@@ -56,9 +57,9 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
 	/** Основное действие OptionButton выбирает узел и завершает текущий выбор. */
-	onNodeActivate: (node: TreeSelectNode) => void;
+	onNodeActivate: (node: TreeSelectNode, selectionScopeIndex?: TreeNodeIndex) => void;
 	/** Независимый checkbox меняет черновик, не закрывая popup. */
-	onNodeToggleSelection?: (node: TreeSelectNode) => void;
+	onNodeToggleSelection?: (node: TreeSelectNode, selectionScopeIndex?: TreeNodeIndex) => void;
 	onClearSelection?: () => void;
 	isLoading?: boolean;
 	error?: string;
@@ -94,8 +95,15 @@ export function TreePickerBase({
 }: TreePickerBaseProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const selectAllButtonRef = useRef<HTMLButtonElement | null>(null);
+	const optionRefs = useRef<Array<HTMLDivElement | null>>([]);
 	/** Явный owner open-state позволяет сбрасывать query непосредственно в close-событии. */
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
+	/**
+	 * Сохраняет строку, в которую фокус вошёл через независимый expander или
+	 * checkbox. Это синхронизирует видимый active-state, не превращая строку в
+	 * единственный tab-stop и не меняя доступность вложенных контролов.
+	 */
+	const [focusedNodeId, setFocusedNodeId] = useState<string>();
 	const isOpenControlled = controlledOpen !== undefined;
 	const open = isOpenControlled ? controlledOpen : uncontrolledOpen;
 	const [manualExpansionById, setManualExpansionById] = useState<ReadonlyMap<string, boolean>>(() => new Map());
@@ -116,6 +124,9 @@ export function TreePickerBase({
 		if (open && !nextOpen && resetQueryOnClose) {
 			setQuery("");
 		}
+		if (!nextOpen) {
+			setFocusedNodeId(undefined);
+		}
 
 		if (!isOpenControlled) {
 			setUncontrolledOpen(nextOpen);
@@ -127,6 +138,8 @@ export function TreePickerBase({
 		() => filterTreeNodes(nodes, currentQuery),
 		[nodes, currentQuery]
 	);
+	const filteredTreeIndex = useMemo(() => createTreeNodeIndex(filteredNodes), [filteredNodes]);
+	const selectionScopeIndex = currentQuery.trim().length > 0 ? filteredTreeIndex : undefined;
 	const selectedExpandedIds = useMemo(() => getSelectionExpandedIds(selectedIds, treeIndex), [selectedIds, treeIndex]);
 	const configuredExpandedIds = useMemo(
 		() => getConfiguredTreeExpandedIds(treeIndex, defaultExpandedCodeKeySet, manualExpansionById),
@@ -145,6 +158,10 @@ export function TreePickerBase({
 	);
 	const visibleEntries = useMemo(() => flattenVisibleTreeNodes(filteredNodes, resolvedExpandedIds), [filteredNodes, resolvedExpandedIds]);
 	const selectedIndex = useMemo(() => visibleEntries.findIndex((entry) => selectedIds.has(entry.node.id)), [selectedIds, visibleEntries]);
+	const isEntryDisabled = useCallback(
+		(entry: TreeVisibleEntry) => entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true,
+		[unavailableNodeIds]
+	);
 	const columnsLayoutDescriptor = useMemo(() => buildTreeColumnsLayoutDescriptor(visibleEntries), [visibleEntries]);
 	const resolveColumnsFloatingSize = useCallback<FloatingListboxSizeResolver>(
 		(context) => {
@@ -171,7 +188,7 @@ export function TreePickerBase({
 		[columnsLayoutDescriptor]
 	);
 	const {
-		activeIndex,
+		activeIndex: listboxActiveIndex,
 		context,
 		floatingStyles,
 		getFloatingProps,
@@ -191,8 +208,8 @@ export function TreePickerBase({
 		selectedIndex,
 		open,
 		onOpenChange: handleOpenChange,
-		onSelect: (entry) => onNodeActivate(entry.node),
-		getOptionDisabled: (entry) => entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true,
+		onSelect: (entry) => onNodeActivate(entry.node, selectionScopeIndex),
+		getOptionDisabled: isEntryDisabled,
 		disabled: disabled || isLoading,
 		// selectOption вызывается только основной кнопкой; checkbox обходит его и остаётся в draft-режиме.
 		closeOnSelect: true,
@@ -201,6 +218,8 @@ export function TreePickerBase({
 		placementStrategy: optionsLayout === "columns" ? "auto" : "flip",
 		resolveFloatingSize: optionsLayout === "columns" ? resolveColumnsFloatingSize : undefined
 	});
+	const focusedOptionIndex = focusedNodeId ? visibleEntries.findIndex((entry) => entry.node.id === focusedNodeId) : -1;
+	const renderedActiveIndex = focusedOptionIndex >= 0 ? focusedOptionIndex : listboxActiveIndex;
 	const updateFloatingLayout = context.update;
 	const hasSelection = selectedIds.size > 0;
 	const showTriggerQuery = triggerMode === "search" && (open || currentQuery.length > 0);
@@ -279,6 +298,70 @@ export function TreePickerBase({
 			return nextExpansionById;
 		});
 	};
+	const focusOptionAtIndex = (optionIndex: number) => {
+		optionRefs.current[optionIndex]?.focus();
+	};
+	/**
+	 * Объединяет клавиатурную модель строки для внешней Option и её независимых
+	 * контролов: вертикальные клавиши перемещают строковый фокус, горизонтальные
+	 * управляют веткой, Space меняет checkbox, а Enter выполняет основное действие.
+	 */
+	const handleTreeOptionKeyDown = (event: KeyboardEvent<HTMLElement>, entry: TreeVisibleEntry, optionIndex: number) => {
+		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+			event.preventDefault();
+			const direction = event.key === "ArrowDown" ? 1 : -1;
+			focusOptionAtIndex(findNextEnabledIndex(visibleEntries, optionIndex, direction, isEntryDisabled));
+			return;
+		}
+
+		if (event.key === "Home" || event.key === "End") {
+			event.preventDefault();
+			const boundaryIndex =
+				event.key === "Home"
+					? findFirstEnabledIndex(visibleEntries, isEntryDisabled)
+					: findLastEnabledIndex(visibleEntries, isEntryDisabled);
+			focusOptionAtIndex(boundaryIndex);
+			return;
+		}
+
+		if (optionsLayout === "tree" && event.key === "ArrowRight") {
+			event.preventDefault();
+			if (entry.hasChildren && !entry.isExpanded) {
+				toggleExpand(entry);
+				return;
+			}
+
+			const firstChildEntry = visibleEntries[optionIndex + 1];
+			if (entry.isExpanded && firstChildEntry?.parentId === entry.node.id) {
+				focusOptionAtIndex(optionIndex + 1);
+			}
+			return;
+		}
+
+		if (optionsLayout === "tree" && event.key === "ArrowLeft") {
+			event.preventDefault();
+			if (entry.hasChildren && entry.isExpanded) {
+				toggleExpand(entry);
+				return;
+			}
+
+			if (entry.parentId) {
+				focusOptionAtIndex(visibleEntries.findIndex((candidate) => candidate.node.id === entry.parentId));
+			}
+			return;
+		}
+
+		if (event.key === " " && selectionMode === "multi" && !isEntryDisabled(entry)) {
+			event.preventDefault();
+			onNodeToggleSelection?.(entry.node, selectionScopeIndex);
+			return;
+		}
+
+		if (event.key === "Enter" && !isEntryDisabled(entry)) {
+			event.preventDefault();
+			selectOption(entry);
+		}
+	};
 
 	return (
 		<PickerField label={label} description={description} disabled={disabled} size={size}>
@@ -331,6 +414,7 @@ export function TreePickerBase({
 							}}
 							onClick={triggerController.handleTriggerClick}
 							onFocus={(event) => {
+								setFocusedNodeId(undefined);
 								triggerController.handleTriggerFocus(event.currentTarget);
 							}}
 							onKeyDown={(event) => {
@@ -355,7 +439,7 @@ export function TreePickerBase({
 								triggerController.handleTriggerKeyDown({
 									event,
 									onActivateWhenOpen: () => {
-										const activeEntry = activeIndex >= 0 ? visibleEntries[activeIndex] : undefined;
+										const activeEntry = listboxActiveIndex >= 0 ? visibleEntries[listboxActiveIndex] : undefined;
 										if (activeEntry) {
 											selectOption(activeEntry);
 										}
@@ -394,7 +478,7 @@ export function TreePickerBase({
 												? isTreeNodeSelected(entry.node.id, selectedIds, treeIndex)
 												: selectedIds.has(entry.node.id);
 										const partial = selectionMode === "multi" && !selected && partialIds.has(entry.node.id);
-										const active = index === activeIndex;
+										const active = index === renderedActiveIndex;
 										const optionDisabled =
 											entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true;
 
@@ -403,12 +487,18 @@ export function TreePickerBase({
 												key={entry.node.id}
 												data-ui="tree-select-option"
 												id={getOptionId(listId, index)}
-												ref={(node) => setOptionRef(index, node)}
+												ref={(node) => {
+													optionRefs.current[index] = node;
+													setOptionRef(index, node);
+												}}
+												tabIndex={-1}
 												role={optionsLayout === "columns" ? undefined : "option"}
 												aria-selected={optionsLayout === "columns" ? undefined : selected}
 												disabled={optionDisabled}
 												active={active}
 												selected={selected}
+												onFocus={() => setFocusedNodeId(entry.node.id)}
+												onKeyDown={(event) => handleTreeOptionKeyDown(event, entry, index)}
 												className={optionsLayout === "columns" ? styles.treeColumnRow : undefined}
 												style={
 													optionsLayout === "columns"
@@ -429,7 +519,7 @@ export function TreePickerBase({
 													selectionMode={selectionMode}
 													optionsLayout={optionsLayout}
 													onToggleExpand={() => toggleExpand(entry)}
-													onToggleSelection={() => onNodeToggleSelection?.(entry.node)}
+													onToggleSelection={() => onNodeToggleSelection?.(entry.node, selectionScopeIndex)}
 													onActivate={() => selectOption(entry)}
 												/>
 											</Option>
