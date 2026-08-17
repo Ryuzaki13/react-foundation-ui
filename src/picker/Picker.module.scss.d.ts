@@ -8,6 +8,7 @@ declare const styles: {
   readonly triggerContainer: "triggerContainer";
   readonly triggerHasClear: "triggerHasClear";
   readonly selectedToken: "selectedToken";
+  readonly selectedTokenText: "selectedTokenText";
   readonly "99875em": "99875em";
   readonly selectionActionButton: "selectionActionButton";
 };

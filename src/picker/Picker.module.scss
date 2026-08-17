@@ -79,10 +79,13 @@
 	align-items: center;
 	justify-content: flex-end;
 	min-width: 0;
+	pointer-events: none;
+}
+
+.selectedTokenText {
 	overflow: hidden;
 	white-space: nowrap;
 	text-overflow: ellipsis;
-	pointer-events: none;
 }
 
 @include mobile {

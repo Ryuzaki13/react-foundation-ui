@@ -12,7 +12,7 @@ export interface PickerSelectedTokenProps extends Omit<HTMLAttributes<HTMLSpanEl
 export function PickerSelectedToken({ children, className, ...props }: PickerSelectedTokenProps) {
 	return (
 		<span {...props} className={cn(styles.selectedToken, className)} data-ui="picker-selected-token">
-			{children}
+			<span className={styles.selectedTokenText}>{children}</span>
 		</span>
 	);
 }
