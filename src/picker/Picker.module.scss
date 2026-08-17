@@ -17,9 +17,7 @@
 	background-color: var(--surface-0);
 	border: var(--border);
 	border-radius: var(--radius-sm);
-	box-shadow: var(--shadow-md);
 	transform-origin: top;
-	z-index: var(--z-dropdown);
 
 	&:empty {
 		visibility: hidden;
@@ -33,6 +31,7 @@
 .popupPositioner {
 	min-width: 0;
 	z-index: var(--z-dropdown);
+	box-shadow: var(--shadow-md);
 }
 
 .optionsToolbar {
