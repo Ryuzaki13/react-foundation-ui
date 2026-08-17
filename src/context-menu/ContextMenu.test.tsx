@@ -2,7 +2,7 @@
 
 import React, { act } from "react";
 
-import { fireEvent } from "@testing-library/dom";
+import { fireEvent, waitForElementToBeRemoved } from "@testing-library/dom";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -24,9 +24,9 @@ async function renderNode(node: React.ReactNode) {
 }
 
 async function waitForMotionExit() {
-	await act(async () => {
-		await new Promise((resolve) => window.setTimeout(resolve, 220));
-	});
+	const menu = document.body.querySelector('[role="menu"]');
+	if (!menu) return;
+	await waitForElementToBeRemoved(menu);
 }
 
 function setTriggerRect(trigger: Element, rect: Partial<DOMRect>) {
