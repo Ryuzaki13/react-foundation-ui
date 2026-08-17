@@ -1,9 +1,16 @@
 @use "@/styles/mixins" as *;
 
-.options {
+.popupPositioner {
 	--anchor-gap: var(--space-xs);
 	--anchor-padding: var(--space-xs);
 	--anchor-offset: 0;
+
+	min-width: 0;
+	z-index: var(--z-dropdown);
+	box-shadow: var(--shadow-md);
+}
+
+.options {
 	--input-width: min(100vw, var(--base-width, 15em));
 
 	display: grid;
@@ -12,12 +19,13 @@
 	min-width: var(--input-width);
 	min-height: 0;
 	max-height: 75vh;
-	padding: var(--space-sm);
+
 	overflow: hidden;
+
+	padding: var(--space-sm);
 	background-color: var(--surface-0);
 	border: var(--border);
 	border-radius: var(--radius-sm);
-	transform-origin: top;
 
 	&:empty {
 		visibility: hidden;
@@ -26,12 +34,6 @@
 	&[data-has-toolbar="true"] {
 		grid-template-rows: auto minmax(0, 1fr);
 	}
-}
-
-.popupPositioner {
-	min-width: 0;
-	z-index: var(--z-dropdown);
-	box-shadow: var(--shadow-md);
 }
 
 .optionsToolbar {

@@ -1,6 +1,6 @@
 declare const styles: {
-  readonly options: "options";
   readonly popupPositioner: "popupPositioner";
+  readonly options: "options";
   readonly optionsToolbar: "optionsToolbar";
   readonly optionsBody: "optionsBody";
   readonly status: "status";
