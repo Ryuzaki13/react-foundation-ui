@@ -285,7 +285,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							value={inputValue}
 							selectedValue={displayContent ?? displayText}
 							hasSelection={selectedOption !== undefined}
-							showSelectedValue={selectedOption !== undefined && !showSearchValue}
+							showSelectedValue={false /*selectedOption !== undefined && !showSearchValue*/}
 							clearable={Boolean(clearable)}
 							onClear={handleClear}
 							onToggleMouseDown={triggerController.handleToggleMouseDown}
