@@ -52,7 +52,7 @@ export interface MultiSelectItemState {
  */
 export interface MultiSelectOptionContent {
 	text: string;
-	code: string;
+	code: string | undefined;
 }
 
 export interface MultiSelectRenderContext {

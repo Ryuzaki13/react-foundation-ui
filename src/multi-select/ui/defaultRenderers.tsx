@@ -56,7 +56,7 @@ export function createDefaultMultiSelectItemRenderer(config: MultiSelectRenderer
 	return function renderDefaultItem(item: CollectionItem /*, state: MultiSelectItemState*/) {
 		const textKey = resolveMultiSelectTextKey([item], config.codeKey, config.textKey);
 		const text = item[textKey] ?? "";
-		const code = item[config.codeKey] ?? "";
+		const code = config.hideCode ? undefined : (item[config.codeKey] ?? "");
 
 		return { text, code };
 	};
