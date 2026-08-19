@@ -8,6 +8,9 @@
 	min-width: 0;
 	z-index: var(--z-dropdown);
 	box-shadow: var(--shadow-md);
+	overflow: hidden;
+	display: grid;
+	grid-template-rows: minmax(0, 1fr);
 }
 
 .options {
