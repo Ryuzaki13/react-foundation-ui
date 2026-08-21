@@ -2,7 +2,7 @@ import { useEffect, useMemo, useState } from "react";
 
 import { ODataCollectionModel, ODataSelectBaseProps, useODataCollection } from "@ryuzaki13/react-foundation-api/odata";
 import { startsWithIgnoringZeros } from "@ryuzaki13/react-foundation-lib/formatters";
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 interface UseODataSelectBaseOptions extends Omit<ODataSelectBaseProps, "model" | "value"> {
 	model: Required<ODataCollectionModel>;

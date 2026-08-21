@@ -20,7 +20,7 @@ import { createDefaultMultiSelectItemRenderer, createDefaultMultiSelectTokenRend
 import styles from "./MultiSelect.module.scss";
 import { MultiSelectOptionSkeleton } from "./MultiSelectOptionSkeleton";
 
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 interface MultiSelectOptionsProps extends PropsWithChildren {
 	isNoData?: boolean;

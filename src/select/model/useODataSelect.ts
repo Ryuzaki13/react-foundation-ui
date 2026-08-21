@@ -1,7 +1,7 @@
 import { useMemo } from "react";
 
 import { ODataCollectionModel, ODataSingleSelectProps } from "@ryuzaki13/react-foundation-api/odata";
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 import { useODataSelectBase } from "./useODataSelectBase";
 

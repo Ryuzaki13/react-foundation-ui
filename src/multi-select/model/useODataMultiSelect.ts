@@ -1,5 +1,5 @@
 import { ODataCollectionModel, ODataSelectBaseProps } from "@ryuzaki13/react-foundation-api/odata";
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 import { mapSelectedItemsToValues, useODataSelectBase } from "../../select/model/useODataSelectBase";
 

@@ -2,7 +2,7 @@ import { useState, type CSSProperties, type ReactNode } from "react";
 
 import { type ReadFileAsDataUrlResult, type ReadFileResult, type ReadImageResult } from "@ryuzaki13/react-foundation-lib/file";
 import { type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
-import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 import { type State } from "@ryuzaki13/react-foundation-lib/types";
 import { type Meta, type StoryObj } from "@storybook/react-vite";
 

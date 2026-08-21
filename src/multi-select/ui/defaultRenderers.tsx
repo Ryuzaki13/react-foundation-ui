@@ -1,5 +1,5 @@
 import { formatRussianPlural, type RussianPluralForms } from "@ryuzaki13/react-foundation-lib/formatters";
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 import { type MultiSelectRenderContext } from "./MultiSelect";
 

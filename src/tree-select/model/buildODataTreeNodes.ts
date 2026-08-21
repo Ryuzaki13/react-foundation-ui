@@ -1,4 +1,4 @@
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 import { compareStrings } from "@ryuzaki13/react-foundation-lib/string-comparison";
 
 import { TreeSelectNode } from "../types";

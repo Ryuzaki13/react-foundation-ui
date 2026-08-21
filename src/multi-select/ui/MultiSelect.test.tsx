@@ -7,7 +7,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MultiSelect } from "./MultiSelect";
 
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 window.matchMedia ??= () =>

@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata";
+import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
