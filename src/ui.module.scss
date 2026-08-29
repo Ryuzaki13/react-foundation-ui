@@ -346,19 +346,19 @@
 	}
 
 	&.selected {
-		color: var(--interactive-selected-content);
+		color: var(--interactive-selected-color);
 		background-color: var(--interactive-selected-surface);
 		cursor: default;
 	}
 
 	&.uiPopupOptionActive,
 	&:active {
-		color: var(--interactive-active-content);
+		color: var(--interactive-active-color);
 		background-color: var(--interactive-active-surface);
 	}
 
 	@include hover(true) {
-		color: var(--interactive-hover-content);
+		color: var(--interactive-hover-color);
 		background-color: var(--interactive-hover-surface);
 		cursor: pointer;
 	}
