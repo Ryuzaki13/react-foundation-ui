@@ -104,6 +104,7 @@ export function InputUI({
 	return (
 		<div
 			className={cn(
+				styles.inputUI,
 				uiStyles.uiElement,
 				uiStyles.uiSizable,
 				size && uiStyles[size as UiSize],

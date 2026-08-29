@@ -5,6 +5,10 @@
 	width: 100%;
 }
 
+.inputUI {
+	--button-size: calc(var(--control-height) - var(--border-width) * 4);
+}
+
 .input {
 	height: var(--control-height);
 	width: 100%;
@@ -14,8 +18,6 @@
 	--ui-color: var(--content-0);
 	--ui-color-hover: var(--content-0);
 	--ui-color-active: var(--content-0);
-
-	--button-size: cacl(var(--control-height) - var(--border-width) * 2);
 }
 
 .inputNumber {
