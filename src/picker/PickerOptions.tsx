@@ -54,7 +54,7 @@ export function PickerOptions({
 					<Separator />
 				</div>
 			) : null}
-			<div className={cn(styles.optionsBody, scrollable && "scrollable", bodyClassName)}>{children}</div>
+			<div className={cn(styles.optionsBody, scrollable ? "scrollable" : "overflowHidden", bodyClassName)}>{children}</div>
 		</div>
 	);
 }
