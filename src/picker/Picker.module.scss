@@ -74,6 +74,8 @@
 
 .triggerHasClear {
 	--trigger-count: 2;
+	// Резервирует в input место для кнопок очистки и открытия списка.
+	--input-end-adornment-width: calc(var(--control-height) * var(--trigger-count) + var(--space-sm));
 }
 
 .selectedToken {
