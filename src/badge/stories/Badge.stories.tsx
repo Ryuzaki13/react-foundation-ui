@@ -10,7 +10,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 type BadgeStoryArgs = ComponentProps<typeof Badge>;
 
 const meta = {
-	title: "Shared/UI/Badge",
+	title: "UI/Badge",
 	component: Badge,
 	args: {
 		children: "Новый",

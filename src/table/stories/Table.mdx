@@ -24,7 +24,7 @@ import * as TableStories from "./Table.stories";
 <Controls of={TableStories.Basic} />
 
 ```tsx
-import { Table, type TableColumnDef } from "@/shared/ui";
+import { Table, type TableColumnDef } from "@ryuzaki13/react-foundation-ui";
 
 interface DealRow {
 	id: string;
@@ -135,7 +135,7 @@ const columns: TableColumnDef<Row>[] = [
 
 ```tsx
 import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
-import { Table } from "@/shared/ui";
+import { Table } from "@ryuzaki13/react-foundation-ui";
 
 function DealsTable({ rows }: { rows: DealRow[] }) {
 	const { columns, metadata, isLoading } = useODataTableColumns<DealRow>({
@@ -161,7 +161,7 @@ function DealsTable({ rows }: { rows: DealRow[] }) {
 
 ```tsx
 import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
-import { Table } from "@/shared/ui";
+import { Table } from "@ryuzaki13/react-foundation-ui";
 
 const manualColumns: TableColumnDef<DealRow>[] = [
 	{ id: "product", accessorKey: "product", header: "Позиция" },

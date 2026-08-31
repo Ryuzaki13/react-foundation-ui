@@ -1,7 +1,7 @@
 import { useMemo, useState, type ComponentType } from "react";
 
 import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
-import { type EntityColumnProperty, EntityMetadata, ServiceMetadata } from "@ryuzaki13/react-foundation-lib/odata-service";
+import { EntityMetadata, ServiceMetadata, type EntityColumnProperty } from "@ryuzaki13/react-foundation-lib/odata-service";
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
 import { createTableColumnsFromODataMetadata, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 import { QueryClientProvider } from "@tanstack/react-query";
@@ -544,7 +544,7 @@ function HookEnrichTreeTableStory({ args }: { args: TreeTableProps<FinancialForm
 }
 
 const meta = {
-	title: "Shared/UI/TreeTable",
+	title: "UI/TreeTable",
 	component: TreeTable as unknown as ComponentType<TreeTableProps<FinancialRow>>,
 	args: {
 		title: "Финансовые показатели",

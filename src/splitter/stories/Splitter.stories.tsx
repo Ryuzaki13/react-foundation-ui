@@ -120,7 +120,7 @@ function ConstrainedLayout(args: ComponentProps<typeof Splitter>) {
 }
 
 const meta = {
-	title: "Shared/UI/Splitter",
+	title: "UI/Splitter",
 	component: Splitter,
 	parameters: {
 		atomicCanvas: true,

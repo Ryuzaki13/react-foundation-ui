@@ -6,7 +6,7 @@ import { RangeDateInput, SingleDateInput, type DateRangeInputProps, type DateSin
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/DateInput",
+	title: "UI/DateInput",
 	component: SingleDateInput,
 	args: {
 		value: null,

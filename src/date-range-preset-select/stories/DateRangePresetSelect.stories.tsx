@@ -13,7 +13,7 @@ import {
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/DateRangePresetSelect",
+	title: "UI/DateRangePresetSelect",
 	component: DateRangePresetSelect,
 	args: {
 		label: "Пресет диапазона",

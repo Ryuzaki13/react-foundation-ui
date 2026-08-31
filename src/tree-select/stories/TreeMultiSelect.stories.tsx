@@ -58,7 +58,7 @@ const renderRightEdgeTreeMultiSelectStory = createControlledStoryRender<TreeMult
 ));
 
 const meta = {
-	title: "Shared/UI/TreeMultiSelect",
+	title: "UI/TreeMultiSelect",
 	component: TreeMultiSelect,
 	parameters: {
 		atomicCanvas: true,

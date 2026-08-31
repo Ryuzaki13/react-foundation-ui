@@ -6,7 +6,7 @@ import { TimePanel, type TimePanelProps } from "../ui/TimePanel";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/Internal/DateTime/TimePanel",
+	title: "UI/Internal/DateTime/TimePanel",
 	component: TimePanel,
 	args: {
 		value: new Date(2026, 2, 10, 12, 30, 0, 0),

@@ -13,7 +13,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 type NotificationsHostStoryArgs = Record<string, never>;
 
 const meta = {
-	title: "Shared/UI/Notifications",
+	title: "UI/Notifications",
 	component: NotificationsHost,
 	args: {},
 	argTypes: {},

@@ -536,7 +536,7 @@ function HookEnrichTableStory({ args }: { args: TableProps<DealFormattingRow> })
 }
 
 const meta = {
-	title: "Shared/UI/Table",
+	title: "UI/Table",
 	component: Table as unknown as ComponentType<TableProps<DealRow>>,
 	args: {
 		title: "Сделки",

@@ -8,7 +8,7 @@ import type { State } from "@ryuzaki13/react-foundation-lib/types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/StateSelect",
+	title: "UI/StateSelect",
 	component: StateSelect,
 	args: {
 		label: "Состояние",

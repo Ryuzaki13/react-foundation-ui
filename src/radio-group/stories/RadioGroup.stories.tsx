@@ -79,7 +79,7 @@ function createRadioGroupStoryRender(options: readonly RadioGroupOption[], showV
 }
 
 const meta = {
-	title: "Shared/UI/RadioGroup",
+	title: "UI/RadioGroup",
 	component: StringRadioGroup,
 	args: {
 		value: "email",

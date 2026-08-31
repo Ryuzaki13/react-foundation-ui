@@ -38,7 +38,7 @@ const CUSTOM_STYLE = {
 } satisfies ImageViewerStyle;
 
 const meta = {
-	title: "Shared/UI/Image/ImageViewer",
+	title: "UI/Image/ImageViewer",
 	component: ImageViewer,
 	args: {
 		open: false,

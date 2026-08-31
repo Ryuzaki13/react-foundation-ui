@@ -8,10 +8,10 @@ import { createControlledStoryRender } from "../../development/storybook/createC
 import { Input } from "../../input/Input";
 import { Popover, type PopoverProps } from "../components/Popover";
 
-import type { PopoverContentProps } from "../components/PopoverContent";
-import type { PopoverTriggerProps } from "../components/PopoverTrigger";
 import type { Placement } from "@floating-ui/react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { PopoverContentProps } from "../components/PopoverContent";
+import type { PopoverTriggerProps } from "../components/PopoverTrigger";
 
 const placements = [
 	"top",
@@ -33,7 +33,7 @@ type PopoverStoryArgs = PopoverProps &
 	Pick<PopoverTriggerProps, "passive">;
 
 const meta = {
-	title: "Shared/UI/Popover",
+	title: "UI/Popover",
 	component: Popover,
 	args: {
 		children: null,

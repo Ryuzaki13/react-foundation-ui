@@ -19,7 +19,7 @@ const renderTextareaStory = createControlledStoryRender<TextareaProps>((args, up
 ));
 
 const meta = {
-	title: "Shared/UI/Textarea",
+	title: "UI/Textarea",
 	component: Textarea,
 	args: {
 		label: "Комментарий",

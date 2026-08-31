@@ -25,7 +25,7 @@ const createMockReadFileResult = (name: string, mime: string = "application/pdf"
 type DataUrlInputFilesProps = Extract<InputFilesProps, { readMode?: "data-url" }>;
 
 const meta = {
-	title: "Shared/UI/InputFiles",
+	title: "UI/InputFiles",
 	component: InputFiles,
 	args: {
 		value: [] as ReadFileAsDataUrlResult[],

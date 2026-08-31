@@ -31,7 +31,7 @@ type DropdownMenuStoryArgs = DropdownMenuProps & MenuContentStoryProps;
 type RadialContextMenuStoryArgs = ContextMenuStoryArgs;
 
 const meta = {
-	title: "Shared/UI/ContextMenu",
+	title: "UI/ContextMenu",
 	component: ContextMenu,
 	args: {
 		children: null,

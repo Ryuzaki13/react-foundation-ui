@@ -9,7 +9,7 @@ import { DropZone, type DropZoneProps } from "../DropZone";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/DropZone",
+	title: "UI/DropZone",
 	component: DropZone,
 	args: {
 		value: [],

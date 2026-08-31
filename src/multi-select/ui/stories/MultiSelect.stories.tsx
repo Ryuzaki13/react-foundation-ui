@@ -17,7 +17,7 @@ const catalog: CollectionItem[] = [
 ];
 
 const meta = {
-	title: "Shared/UI/MultiSelect",
+	title: "UI/MultiSelect",
 	component: MultiSelect,
 	args: {
 		label: "Города",

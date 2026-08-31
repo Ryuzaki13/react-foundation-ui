@@ -26,7 +26,7 @@ import * as LayoutPickerStories from "./LayoutPicker.stories";
 ```tsx
 import { useState } from "react";
 
-import { LayoutPicker } from "@/shared/ui";
+import { LayoutPicker } from "@ryuzaki13/react-foundation-ui";
 
 export function Example() {
 	const [layoutId, setLayoutId] = useState("two-columns");
@@ -40,7 +40,7 @@ export function Example() {
 Пресет описывает размер сетки и расположение ячеек внутри CSS Grid. `LayoutPicker` использует эти данные только для превью и не применяет раскладку к пользовательскому контенту. Публичный `onChange` остаётся совместимым с `UiBaseProps<string>` и отдаёт только `preset.id`.
 
 ```tsx
-import { type LayoutPickerPreset } from "@/shared/ui";
+import { type LayoutPickerPreset } from "@ryuzaki13/react-foundation-ui";
 
 const dashboardPreset: LayoutPickerPreset = {
 	id: "dashboard-main-aside",

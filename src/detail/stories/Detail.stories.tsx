@@ -5,7 +5,7 @@ import { Detail, type DetailProps } from "../Detail";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/Detail",
+	title: "UI/Detail",
 	component: Detail,
 	args: {
 		columnCount: 1,

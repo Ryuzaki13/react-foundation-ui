@@ -27,7 +27,7 @@ const renderTreeSelectStory = createControlledStoryRender<TreeSelectProps>((args
 ));
 
 const meta = {
-	title: "Shared/UI/TreeSelect",
+	title: "UI/TreeSelect",
 	component: TreeSelect,
 	parameters: {
 		atomicCanvas: true,

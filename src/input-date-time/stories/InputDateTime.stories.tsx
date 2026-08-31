@@ -8,7 +8,7 @@ import { InputDate, InputDateTime, InputTime, type InputDateProps } from "../Inp
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/InputDateTime",
+	title: "UI/InputDateTime",
 	component: InputDate,
 	args: {
 		value: undefined,

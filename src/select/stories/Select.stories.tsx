@@ -26,7 +26,7 @@ const departmentOptions: DepartmentOption[] = [
 const primitiveOptions = ["Новый", "В работе", "Завершён", "Архив"] as const;
 
 const meta = {
-	title: "Shared/UI/Select",
+	title: "UI/Select",
 	component: Select<DepartmentOption>,
 	args: {
 		label: "Подразделение",

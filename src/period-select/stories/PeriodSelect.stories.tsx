@@ -13,7 +13,7 @@ const defaultDateRange = [new Date(2026, 2, 1, 0, 0, 0), new Date(2026, 2, 14, 2
 const longDateRange = [new Date(2026, 0, 1, 0, 0, 0), new Date(2026, 4, 20, 23, 59, 59)] as const satisfies NullableDateRange;
 
 const meta = {
-	title: "Shared/UI/PeriodSelect",
+	title: "UI/PeriodSelect",
 	component: PeriodSelect,
 	args: {
 		label: "Период детализации",

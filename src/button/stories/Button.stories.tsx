@@ -6,7 +6,7 @@ import { Button, type ButtonProps } from "../Button";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/Button",
+	title: "UI/Button",
 	component: Button,
 	args: {
 		children: "Действие",

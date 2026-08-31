@@ -48,7 +48,7 @@ function DemoFormContent() {
 }
 
 const meta = {
-	title: "Shared/UI/Modal",
+	title: "UI/Modal",
 	component: Modal,
 	parameters: {
 		atomicCanvas: true,

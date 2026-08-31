@@ -7,7 +7,7 @@ import { SingleDateTimeInput, type SingleDateTimeInputProps } from "../ui/Single
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/SingleDateTimeInput",
+	title: "UI/SingleDateTimeInput",
 	component: SingleDateTimeInput,
 	args: {
 		value: null,

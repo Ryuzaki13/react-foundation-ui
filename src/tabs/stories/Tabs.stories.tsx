@@ -82,7 +82,7 @@ const disabledItems: TabsBoxItem[] = [
 const longLines = Array.from({ length: 12 }, (_, index) => `Элемент ${index + 1}`);
 
 const meta = {
-	title: "Shared/UI/Tabs",
+	title: "UI/Tabs",
 	component: TabsBox,
 	args: {
 		items: demoItems,

@@ -19,7 +19,7 @@ const renderTagInputStory = createControlledStoryRender<TagInputProps>((args, up
 ));
 
 const meta = {
-	title: "Shared/UI/TagInput",
+	title: "UI/TagInput",
 	component: TagInput,
 	args: {
 		value: [],

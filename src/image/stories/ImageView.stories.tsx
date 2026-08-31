@@ -8,7 +8,7 @@ const buildDemoUrl = (width: number, format: "avif" | "webp" | "jpg") =>
 	`https://images.unsplash.com/${IMAGE_ID}?auto=format&fit=crop&w=${width}&fm=${format}&q=80`;
 
 const meta = {
-	title: "Shared/UI/Image/ImageView",
+	title: "UI/Image/ImageView",
 	component: ImageView,
 	args: {
 		layout: "intrinsic",

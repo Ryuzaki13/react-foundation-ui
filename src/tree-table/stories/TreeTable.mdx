@@ -24,7 +24,7 @@ import * as TreeTableStories from "./TreeTable.stories";
 <Controls of={TreeTableStories.Basic} />
 
 ```tsx
-import { TreeTable, type TableColumnDef } from "@/shared/ui";
+import { TreeTable, type TableColumnDef } from "@ryuzaki13/react-foundation-ui";
 
 interface MetricRow {
 	id: string;
@@ -120,7 +120,7 @@ const columns = createTableColumnsFromODataMetadata(metadata.columns);
 
 ```tsx
 import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
-import { TreeTable } from "@/shared/ui";
+import { TreeTable } from "@ryuzaki13/react-foundation-ui";
 
 function FinanceTree({ rows }: { rows: MetricRow[] }) {
 	const { columns, metadata, isLoading } = useODataTableColumns<MetricRow>({

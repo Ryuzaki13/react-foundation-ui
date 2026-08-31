@@ -83,7 +83,7 @@ export function LinkedFiltersDemo() {
 }
 
 const meta = {
-	title: "Shared/UI/ODataSelect",
+	title: "UI/ODataSelect",
 	component: ODataSelect,
 	decorators: [withODataStoryQueryClient],
 	beforeEach: installODataStoryFetchMock,

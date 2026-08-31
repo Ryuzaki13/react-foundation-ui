@@ -26,7 +26,7 @@ type DataUrlInputFileProps = Extract<InputFileProps, { readMode?: "data-url" }>;
 type ArrayBufferInputFileProps = Extract<InputFileProps, { readMode: "array-buffer" }>;
 
 const meta = {
-	title: "Shared/UI/InputFile",
+	title: "UI/InputFile",
 	component: InputFile,
 	args: {
 		value: undefined,

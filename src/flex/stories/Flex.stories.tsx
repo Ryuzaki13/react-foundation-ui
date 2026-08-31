@@ -5,8 +5,8 @@ import { useArgs } from "storybook/preview-api";
 
 import { Flex } from "../Flex";
 
-import type { FlexContainerProps } from "../types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { FlexContainerProps } from "../types";
 
 // Стили для демонстрационных блоков
 const demoStyles = {
@@ -42,7 +42,7 @@ const DemoItem = ({ children, index = 0 }: { children: React.ReactNode; index?: 
 );
 
 const meta = {
-	title: "Shared/Layout/Flex",
+	title: "Layout/Flex",
 	component: Flex.Container,
 	args: {
 		row: true,

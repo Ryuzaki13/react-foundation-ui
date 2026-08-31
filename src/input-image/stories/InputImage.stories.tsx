@@ -28,7 +28,7 @@ const createMockReadImageResult = (name: string = "avatar.png"): ReadImageResult
 };
 
 const meta = {
-	title: "Shared/UI/InputImage",
+	title: "UI/InputImage",
 	component: InputImage,
 	args: {
 		value: undefined,

@@ -54,7 +54,7 @@ const openMonthToDayMarks = [
 ] as const;
 
 const meta = {
-	title: "Shared/UI/Slider",
+	title: "UI/Slider",
 	component: Slider,
 	args: {
 		label: "Слайдер",

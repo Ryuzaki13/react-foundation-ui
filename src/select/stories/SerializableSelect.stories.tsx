@@ -22,7 +22,7 @@ const departmentOptions: DepartmentOption[] = [
 ];
 
 const meta = {
-	title: "Shared/UI/SerializableSelect",
+	title: "UI/SerializableSelect",
 	component: SerializableSelect<DepartmentOption, "id", "name">,
 	args: {
 		label: "Подразделение",

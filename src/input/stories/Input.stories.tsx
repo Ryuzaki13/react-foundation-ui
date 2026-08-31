@@ -52,7 +52,7 @@ const renderInputNumberStory = createControlledStoryRender<InputNumberStoryArgs>
 ));
 
 const meta = {
-	title: "Shared/UI/Input",
+	title: "UI/Input",
 	component: InputText,
 	args: {
 		value: "",

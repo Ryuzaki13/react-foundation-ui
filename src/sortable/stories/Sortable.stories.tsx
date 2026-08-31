@@ -94,7 +94,7 @@ export function SortablePreview(props: SortablePreviewProps) {
 }
 
 const meta = {
-	title: "Shared/UI/Sortable",
+	title: "UI/Sortable",
 	component: SortablePreview,
 	args: {
 		containerId: "sortable-demo",

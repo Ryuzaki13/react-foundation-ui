@@ -42,7 +42,7 @@ const options: StringOption[] = [
 ];
 
 const meta = {
-	title: "Shared/UI/Listbox",
+	title: "UI/Listbox",
 	component: StringListbox,
 	args: {
 		options,

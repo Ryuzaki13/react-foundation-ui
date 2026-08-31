@@ -10,7 +10,7 @@ import { PresetRangeDateInput, type PresetRangeDateInputProps } from "../PresetR
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/PresetRangeDateInput",
+	title: "UI/PresetRangeDateInput",
 	component: PresetRangeDateInput,
 	args: {
 		label: "Диапазон дат",

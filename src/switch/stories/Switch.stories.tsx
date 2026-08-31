@@ -37,7 +37,7 @@ const renderTriStateSwitchStory = createControlledStoryRender<TriStateSwitchStor
 ));
 
 const meta = {
-	title: "Shared/UI/Switch",
+	title: "UI/Switch",
 	component: Switch,
 	args: {
 		label: "Режим обработки",

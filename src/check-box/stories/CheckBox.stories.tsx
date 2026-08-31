@@ -19,7 +19,7 @@ const renderCheckBoxStory = createControlledStoryRender<CheckBoxStoryArgs>((args
 ));
 
 const meta = {
-	title: "Shared/UI/CheckBox",
+	title: "UI/CheckBox",
 	component: CheckBox,
 	args: {
 		value: false,

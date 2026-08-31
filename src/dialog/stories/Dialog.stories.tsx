@@ -9,7 +9,7 @@ import type { Meta, StoryObj } from "@storybook/react-vite";
 type DialogStoryArgs = React.ComponentProps<typeof Dialog>;
 
 const meta = {
-	title: "Shared/UI/Dialog",
+	title: "UI/Dialog",
 	component: Dialog,
 	args: {
 		title: "Подтверждение операции",

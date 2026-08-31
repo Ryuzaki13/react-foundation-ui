@@ -19,7 +19,7 @@ function StringToggleStoryCanvas({ args }: { args: StringToggleProps }) {
 }
 
 const meta = {
-	title: "Shared/UI/Toggle/StringToggle",
+	title: "UI/Toggle/StringToggle",
 	component: StringToggle,
 	args: {
 		value: "ZBP_MANAGER",

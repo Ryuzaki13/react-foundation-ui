@@ -44,7 +44,7 @@ const renderODataTreeMultiSelectStory = createControlledStoryRender<ODataTreeMul
 ));
 
 const meta = {
-	title: "Shared/UI/ODataTreeMultiSelect",
+	title: "UI/ODataTreeMultiSelect",
 	component: ODataTreeMultiSelect,
 	decorators: [withODataStoryQueryClient],
 	beforeEach: installODataStoryFetchMock,

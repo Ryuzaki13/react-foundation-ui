@@ -19,7 +19,7 @@ const renderRadioButtonStory = createControlledStoryRender<RadioButtonStoryArgs>
 ));
 
 const meta = {
-	title: "Shared/UI/RadioButton",
+	title: "UI/RadioButton",
 	component: RadioButton,
 	args: {
 		value: false,

@@ -6,7 +6,7 @@ import { DisclosureGroup } from "../DisclosureGroup";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
-	title: "Shared/UI/Disclosure",
+	title: "UI/Disclosure",
 	component: Disclosure,
 	args: {
 		label: "Раздел",

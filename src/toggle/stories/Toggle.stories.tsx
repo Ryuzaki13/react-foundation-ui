@@ -15,7 +15,7 @@ const renderToggleStory = createControlledStoryRender<ToggleProps>((args, update
 ));
 
 const meta = {
-	title: "Shared/UI/Toggle",
+	title: "UI/Toggle",
 	component: Toggle,
 	args: {
 		value: false,

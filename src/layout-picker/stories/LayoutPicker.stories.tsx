@@ -128,7 +128,7 @@ function ControlledExample() {
 }
 
 const meta = {
-	title: "Shared/UI/LayoutPicker",
+	title: "UI/LayoutPicker",
 	component: LayoutPicker,
 	args: {
 		label: "Layout панели",

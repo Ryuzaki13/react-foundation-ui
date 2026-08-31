@@ -5,8 +5,8 @@ import { useArgs } from "storybook/preview-api";
 
 import { Grid } from "../Grid";
 
-import type { GridContainerProps } from "../types";
 import type { Meta, StoryObj } from "@storybook/react-vite";
+import type { GridContainerProps } from "../types";
 
 // Стили для демонстрационных блоков (аналогично Flex)
 const demoStyles = {
@@ -42,7 +42,7 @@ const DemoItem = ({ children, index = 0, style }: { children: React.ReactNode; i
 );
 
 const meta = {
-	title: "Shared/Layout/Grid",
+	title: "Layout/Grid",
 	component: Grid.Container,
 	args: {
 		gap: "md"

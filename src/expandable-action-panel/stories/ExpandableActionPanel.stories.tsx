@@ -17,7 +17,7 @@ type LabeledPanelStoryArgs = LabeledExpandableActionPanelProps;
 type BasePanelStoryArgs = ExpandableActionPanelProps;
 
 const meta = {
-	title: "Shared/UI/ExpandableActionPanel",
+	title: "UI/ExpandableActionPanel",
 	component: LabeledExpandableActionPanel,
 	args: {
 		label: "Длинное название строки с результатами расчёта и параметрами отбора",
