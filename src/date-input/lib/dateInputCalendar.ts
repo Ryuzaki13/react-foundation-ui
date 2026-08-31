@@ -10,7 +10,6 @@ import {
 import type { DateInputSelectionMode, DateInputWeekEndDay, DatePickerLevel } from "./types";
 
 export const DATE_PICKER_LEVELS = ["day", "month", "year"] as const satisfies readonly DatePickerLevel[];
-export const DATE_INPUT_SELECTION_MODES = ["day", "week", "month", "year"] as const satisfies readonly DateInputSelectionMode[];
 export const DATE_INPUT_WEEK_END_DAYS = ["friday", "saturday", "sunday"] as const satisfies readonly DateInputWeekEndDay[];
 
 /**

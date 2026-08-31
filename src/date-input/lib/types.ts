@@ -9,6 +9,11 @@ export type CalendarType = DatePickerLevel;
 export type DateInputSelectionMode = CalendarPeriodSelectionMode;
 export type DateInputWeekEndDay = CalendarWeekEndDay;
 
+/**
+ * Имена пресетов форматирования, применяемые к отдельным режимам выбора даты.
+ */
+export type DateInputSelectionModeDatePresets = Readonly<Partial<Record<DateInputSelectionMode, string>>>;
+
 // Базовые свойства для всех компонентов с единым интерфейсом
 interface BaseUiProps<T = unknown> {
 	value: T | undefined;

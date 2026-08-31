@@ -126,9 +126,13 @@ const meta = {
 			control: "boolean"
 		},
 		selectionModeOptions: {
-			description: "Ограничивает доступные режимы в runtime-переключателе.",
+			description: "Ограничивает доступные режимы и задаёт их порядок в runtime-переключателе.",
 			control: "check",
 			options: DATE_INPUT_SELECTION_MODES
+		},
+		selectionModeDatePresets: {
+			description: "Задаёт имя datePreset отдельно для каждого runtime-режима выбора.",
+			control: "object"
 		},
 		onSelectionModeChange: {
 			description: "Вызывается при runtime-смене размера периода.",

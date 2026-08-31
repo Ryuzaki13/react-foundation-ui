@@ -69,9 +69,13 @@ const meta = {
 			control: "boolean"
 		},
 		selectionModeOptions: {
-			description: "Ограничивает режимы в runtime-переключателе.",
+			description: "Ограничивает режимы и задаёт их порядок в runtime-переключателе.",
 			control: "check",
 			options: DATE_INPUT_SELECTION_MODES
+		},
+		selectionModeDatePresets: {
+			description: "Задаёт имя datePreset отдельно для каждого runtime-режима выбора.",
+			control: "object"
 		},
 		onSelectionModeChange: {
 			description: "Вызывается при runtime-смене режима выбора.",
@@ -269,7 +273,13 @@ export const RuntimeSelectionMode: RangeStory = {
 		placeholder: "дд.мм.гггг - дд.мм.гггг",
 		value: [new Date(2026, 2, 5, 0, 0, 0), new Date(2026, 2, 15, 23, 59, 59)],
 		selectionMode: "day",
-		allowSelectionModeChange: true
+		allowSelectionModeChange: true,
+		selectionModeDatePresets: {
+			day: "date",
+			week: "date-long",
+			month: "month-year-long",
+			year: "date-long"
+		}
 	}
 };
 

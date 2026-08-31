@@ -5,7 +5,7 @@ import { act, type ReactNode, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SingleDateInput } from "./DateInput";
+import { RangeDateInput, SingleDateInput } from "./DateInput";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -136,5 +136,40 @@ describe("SingleDateInput", () => {
 
 		expect(handleCommit).toHaveBeenCalledTimes(1);
 		expect(handleCommit).toHaveBeenCalledWith(new Date(2026, 5, 25, 0, 0, 0));
+	});
+});
+
+describe("RangeDateInput", () => {
+	it("сохраняет порядок runtime-режимов и применяет отдельный формат каждого режима", async () => {
+		await renderNode(
+			<RangeDateInput
+				label="Период"
+				value={[new Date(2026, 2, 3), new Date(2026, 4, 5)]}
+				onChange={() => {}}
+				allowSelectionModeChange
+				selectionModeOptions={["year", "month"]}
+				selectionModeDatePresets={{
+					year: "date",
+					month: "month-year-long"
+				}}
+			/>
+		);
+
+		const input = container?.querySelector("input[type='text']") as HTMLInputElement;
+		expect(input.value).toBe("2026 - 2026");
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть календарь"]') as HTMLButtonElement).click();
+		});
+
+		const modeOptions = Array.from(document.querySelectorAll<HTMLButtonElement>('[role="radio"]'));
+		expect(modeOptions.map((option) => option.textContent?.trim())).toEqual(["Год", "Месяц"]);
+		expect(modeOptions[0]?.getAttribute("aria-checked")).toBe("true");
+
+		await act(async () => {
+			modeOptions[1]?.click();
+		});
+
+		expect(input.value).toBe("март 2026 - май 2026");
 	});
 });

@@ -13,8 +13,12 @@ import {
 	areSingleDateValuesEqual,
 	DATE_INPUT_SELECTION_MODES,
 	isDatePickerLevelAvailable,
+	normalizeDateInputSelectionModes,
 	resolveAvailableDatePickerLevel,
+	resolveDateInputSelectionModeOptionsByModes,
 	type DateInputSelectionMode,
+	type DateInputSelectionModeDatePresets,
+	type DateInputSelectionModeOption,
 	type DateInputWeekEndDay,
 	type DatePickerLevel
 } from "../lib";
@@ -53,6 +57,11 @@ interface BaseDateInputProps {
 	 */
 	selectionModeOptions?: readonly DateInputSelectionMode[];
 	/**
+	 * Задаёт отдельный пресет форматирования для каждого runtime-режима выбора.
+	 * Общий `datePreset` используется как fallback для отсутствующих значений.
+	 */
+	selectionModeDatePresets?: DateInputSelectionModeDatePresets;
+	/**
 	 * Сообщает наружу о runtime-смене режима выбора.
 	 */
 	onSelectionModeChange?: (selectionMode: DateInputSelectionMode) => void;
@@ -73,21 +82,14 @@ interface CalendarTypeState {
 	readonly minDatePickerLevel: DatePickerLevel;
 }
 
-const selectionModeLabels: Record<DateInputSelectionMode, string> = {
-	day: "День",
-	week: "Неделя",
-	month: "Месяц",
-	year: "Год"
-};
-
 function resolveSelectionModeOptions(
 	selectionModeOptions: readonly DateInputSelectionMode[] | undefined,
 	selectionMode: DateInputSelectionMode
-): readonly DateInputSelectionMode[] {
-	const enabledModes = new Set(selectionModeOptions?.length ? selectionModeOptions : DATE_INPUT_SELECTION_MODES);
-	enabledModes.add(selectionMode);
+): readonly DateInputSelectionModeOption[] {
+	const configuredModes = normalizeDateInputSelectionModes(selectionModeOptions, DATE_INPUT_SELECTION_MODES);
+	const availableModes = configuredModes.includes(selectionMode) ? configuredModes : [...configuredModes, selectionMode];
 
-	return DATE_INPUT_SELECTION_MODES.filter((mode) => enabledModes.has(mode));
+	return resolveDateInputSelectionModeOptionsByModes(availableModes);
 }
 
 function DateInput(props: DateSingleInputProps): JSX.Element;
@@ -99,17 +101,23 @@ function DateInput({
 	onClearError,
 	minDate,
 	maxDate,
+	datePreset,
 	datePickerLevel,
 	selectionMode: controlledSelectionMode,
 	weekEndDay = "sunday",
 	allowSelectionModeChange,
 	selectionModeOptions,
+	selectionModeDatePresets,
 	onSelectionModeChange,
 	...props
 }: DateInputProps) {
 	const [open, setOpen] = useState(false);
-	const [uncontrolledSelectionMode, setUncontrolledSelectionMode] = useState<DateInputSelectionMode>(controlledSelectionMode ?? "day");
+	const configuredSelectionModes = normalizeDateInputSelectionModes(selectionModeOptions, DATE_INPUT_SELECTION_MODES);
+	const [uncontrolledSelectionMode, setUncontrolledSelectionMode] = useState<DateInputSelectionMode>(
+		() => controlledSelectionMode ?? configuredSelectionModes[0] ?? "day"
+	);
 	const selectionMode = controlledSelectionMode ?? uncontrolledSelectionMode;
+	const activeDatePreset = allowSelectionModeChange ? (selectionModeDatePresets?.[selectionMode] ?? datePreset) : datePreset;
 	const minDatePickerLevel = datePickerLevel ?? "day";
 	const preferredCalendarType = resolveAvailableDatePickerLevel(selectionMode, minDatePickerLevel);
 	const [calendarTypeState, setCalendarTypeState] = useState<CalendarTypeState>(() => ({
@@ -132,6 +140,7 @@ function DateInput({
 
 	const { inputValue, setInputValue, selectedDate, setSelectedDate, handleSelect, formatDate, parseDate } = useDateInput({
 		...props,
+		datePreset: activeDatePreset,
 		datePickerLevel: minDatePickerLevel,
 		selectionMode,
 		weekEndDay
@@ -241,8 +250,8 @@ function DateInput({
 		}
 	}, [rangeOnChange, selectedDate, setSelectedDate, setInputValue, formatDate]);
 
-	const availableSelectionModes = resolveSelectionModeOptions(selectionModeOptions, selectionMode);
-	const showSelectionModeControl = allowSelectionModeChange && availableSelectionModes.length > 1;
+	const availableSelectionModeOptions = resolveSelectionModeOptions(selectionModeOptions, selectionMode);
+	const showSelectionModeControl = allowSelectionModeChange && availableSelectionModeOptions.length > 1;
 
 	return (
 		<Popover
@@ -297,8 +306,8 @@ function DateInput({
 							onChange={handleSelectionModeChange}
 							noWrap
 							aria-label="Режим выбора даты">
-							{availableSelectionModes.map((mode) => (
-								<RadioGroup.Option key={mode} value={mode} label={selectionModeLabels[mode]} />
+							{availableSelectionModeOptions.map((option) => (
+								<RadioGroup.Option key={option.id} value={option.id} label={option.label} />
 							))}
 						</RadioGroup>
 					</div>
