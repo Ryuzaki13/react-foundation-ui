@@ -1,22 +1,17 @@
-import { useArgs } from "storybook/preview-api";
-
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { StringToggle, type StringToggleProps } from "../StringToggle";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-function StringToggleStoryCanvas({ args }: { args: StringToggleProps }) {
-	const [, updateArgs] = useArgs<StringToggleProps>();
-
-	return (
-		<StringToggle
-			{...args}
-			onChange={(value) => {
-				args.onChange(value);
-				updateArgs({ value });
-			}}
-		/>
-	);
-}
+const renderStringToggleStory = createControlledStoryRender<StringToggleProps>((args, updateArgs) => (
+	<StringToggle
+		{...args}
+		onChange={(value) => {
+			args.onChange(value);
+			updateArgs({ value });
+		}}
+	/>
+));
 
 const meta = {
 	title: "UI/Toggle/StringToggle",
@@ -91,7 +86,5 @@ export default meta;
 type Story = StoryObj<StringToggleProps>;
 
 export const ManagerScope: Story = {
-	render: function Render(args) {
-		return <StringToggleStoryCanvas args={args} />;
-	}
+	render: renderStringToggleStory
 };

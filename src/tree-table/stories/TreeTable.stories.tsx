@@ -1,12 +1,12 @@
 import { useMemo, useState, type ComponentType } from "react";
 
-import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
+import { odataMetadataQueryOptions, useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
 import { EntityMetadata, ServiceMetadata, type EntityColumnProperty } from "@ryuzaki13/react-foundation-lib/odata-service";
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
 import { createTableColumnsFromODataMetadata, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { useArgs } from "storybook/preview-api";
 
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { TreeTable, type TreeTableProps } from "../TreeTable";
 
 import type { Decorator, Meta, StoryObj } from "@storybook/react-vite";
@@ -417,13 +417,6 @@ const hookMetadata: EntityMetadata = {
 };
 
 /**
- * Собирает query key metadata в том же виде, что и production hook.
- */
-function createODataMetadataQueryKey(service: string) {
-	return ["odata", "metadata", { service }] as const;
-}
-
-/**
  * Подкладывает статическое metadata в react-query cache, чтобы TreeTable stories использовали реальный hook без fetch.
  */
 const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
@@ -434,7 +427,7 @@ const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
 		const metadata = context.parameters.odataMetadata as EntityMetadata | undefined;
 
 		if (service && entity && metadata) {
-			client.setQueryData<ServiceMetadata>(createODataMetadataQueryKey(service), {
+			client.setQueryData<ServiceMetadata>(odataMetadataQueryOptions({ service }).queryKey, {
 				entities: {
 					[entity]: metadata
 				},
@@ -448,9 +441,13 @@ const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
 	return <QueryClientProvider client={queryClient}>{storyRenderer()}</QueryClientProvider>;
 };
 
-function TreeTableStoryCanvas<TData extends object>({ args }: { args: TreeTableProps<TData> }) {
-	const [, updateArgs] = useArgs<TreeTableProps<TData>>();
-
+function TreeTableStoryCanvas<TData extends object>({
+	args,
+	updateArgs
+}: {
+	args: TreeTableProps<TData>;
+	updateArgs: StoryArgsUpdater<TreeTableProps<TData>>;
+}) {
 	return (
 		<TreeTable
 			{...args}
@@ -477,7 +474,13 @@ function TreeTableStoryCanvas<TData extends object>({ args }: { args: TreeTableP
 /**
  * Демонстрирует режим `build`, когда hook сам создаёт колонки для дерева по metadata.
  */
-function HookBuildTreeTableStory({ args }: { args: TreeTableProps<FinancialFormattingRow> }) {
+function HookBuildTreeTableStory({
+	args,
+	updateArgs
+}: {
+	args: TreeTableProps<FinancialFormattingRow>;
+	updateArgs: StoryArgsUpdater<TreeTableProps<FinancialFormattingRow>>;
+}) {
 	const { columns, metadata, isLoading } = useODataTableColumns<FinancialFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -490,7 +493,7 @@ function HookBuildTreeTableStory({ args }: { args: TreeTableProps<FinancialForma
 				Режим build: hook собрал {columns.length} колонки из metadata
 				{metadata ? ` для сущности «${metadata.title}».` : "."}
 			</div>
-			<TreeTableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
+			<TreeTableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} updateArgs={updateArgs} />
 		</div>
 	);
 }
@@ -498,7 +501,13 @@ function HookBuildTreeTableStory({ args }: { args: TreeTableProps<FinancialForma
 /**
  * Демонстрирует режим `enrich`, когда hook сохраняет ручные колонки дерева и дозаполняет их metadata-контекстом.
  */
-function HookEnrichTreeTableStory({ args }: { args: TreeTableProps<FinancialFormattingRow> }) {
+function HookEnrichTreeTableStory({
+	args,
+	updateArgs
+}: {
+	args: TreeTableProps<FinancialFormattingRow>;
+	updateArgs: StoryArgsUpdater<TreeTableProps<FinancialFormattingRow>>;
+}) {
 	const { columns, metadata, isLoading } = useODataTableColumns<FinancialFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -538,7 +547,7 @@ function HookEnrichTreeTableStory({ args }: { args: TreeTableProps<FinancialForm
 				Режим enrich: hook сохранил ручные tree-колонки и дополнил их formatting-контекстом
 				{metadata ? ` из metadata «${metadata.title}».` : "."}
 			</div>
-			<TreeTableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
+			<TreeTableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} updateArgs={updateArgs} />
 		</div>
 	);
 }
@@ -705,16 +714,32 @@ type FinancialStory = StoryObj<TreeTableProps<FinancialRow>>;
 type FormattingStory = StoryObj<TreeTableProps<FinancialFormattingRow>>;
 type DivisionStory = StoryObj<TreeTableProps<DivisionTreeRow>>;
 
+const renderFinancialTreeTableStory = createControlledStoryRender<TreeTableProps<FinancialRow>>((args, updateArgs) => (
+	<TreeTableStoryCanvas args={args} updateArgs={updateArgs} />
+));
+const renderFormattingTreeTableStory = createControlledStoryRender<TreeTableProps<FinancialFormattingRow>>((args, updateArgs) => (
+	<TreeTableStoryCanvas args={args} updateArgs={updateArgs} />
+));
+const renderDivisionTreeTableStory = createControlledStoryRender<TreeTableProps<DivisionTreeRow>>((args, updateArgs) => (
+	<TreeTableStoryCanvas args={args} updateArgs={updateArgs} />
+));
+
 /**
  * Базовый сценарий дерева с раскрытием первого уровня.
  */
 export const Basic: FinancialStory = {
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFinancialTreeTableStory
 };
 
-function SelectionTreeTableCanvas({ args, intro }: { args: TreeTableProps<FinancialRow>; intro?: string }) {
+function SelectionTreeTableCanvas({
+	args,
+	updateArgs,
+	intro
+}: {
+	args: TreeTableProps<FinancialRow>;
+	updateArgs: StoryArgsUpdater<TreeTableProps<FinancialRow>>;
+	intro?: string;
+}) {
 	const [selectedLabels, setSelectedLabels] = useState<string[]>([]);
 
 	return (
@@ -729,6 +754,7 @@ function SelectionTreeTableCanvas({ args, intro }: { args: TreeTableProps<Financ
 						setSelectedLabels(rows.map((row) => row.label));
 					}
 				}}
+				updateArgs={updateArgs}
 			/>
 		</div>
 	);
@@ -741,9 +767,9 @@ export const MultiSelect: FinancialStory = {
 	args: {
 		selectionMode: "multi"
 	},
-	render: function Render(args) {
-		return <SelectionTreeTableCanvas args={args} />;
-	}
+	render: createControlledStoryRender<TreeTableProps<FinancialRow>>((args, updateArgs) => (
+		<SelectionTreeTableCanvas args={args} updateArgs={updateArgs} />
+	))
 };
 
 /**
@@ -753,9 +779,7 @@ export const CollapsedByDefault: FinancialStory = {
 	args: {
 		expandFirstLevel: false
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFinancialTreeTableStory
 };
 
 /**
@@ -766,9 +790,7 @@ export const WithDefaultExpandedBranch: FinancialStory = {
 		expandFirstLevel: false,
 		defaultExpandedRowIds: ["margin", "margin_logistics"]
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFinancialTreeTableStory
 };
 
 /**
@@ -779,9 +801,13 @@ export const WithDisabledRows: FinancialStory = {
 		selectionMode: "multi",
 		getRowCanSelect: (row) => !row.isLocked
 	},
-	render: function Render(args) {
-		return <SelectionTreeTableCanvas args={args} intro="Строка «Экспортная логистика» остаётся в дереве, но не участвует в выборе." />;
-	}
+	render: createControlledStoryRender<TreeTableProps<FinancialRow>>((args, updateArgs) => (
+		<SelectionTreeTableCanvas
+			args={args}
+			updateArgs={updateArgs}
+			intro="Строка «Экспортная логистика» остаётся в дереве, но не участвует в выборе."
+		/>
+	))
 };
 
 /**
@@ -791,9 +817,7 @@ export const Fetching: FinancialStory = {
 	args: {
 		isFetching: true
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFinancialTreeTableStory
 };
 
 /**
@@ -803,9 +827,7 @@ export const Empty: FinancialStory = {
 	args: {
 		data: []
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFinancialTreeTableStory
 };
 
 /**
@@ -815,9 +837,7 @@ export const Loading: FinancialStory = {
 	args: {
 		isLoading: true
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFinancialTreeTableStory
 };
 
 /**
@@ -833,9 +853,7 @@ export const WithFormulaColumn: FormattingStory = {
 		expandFirstLevel: true,
 		indentSize: 1
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTreeTableStory
 };
 
 /**
@@ -852,9 +870,7 @@ export const WithFormattedTreeColumn: FormattingStory = {
 		expandFirstLevel: true,
 		indentSize: 1
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTreeTableStory
 };
 
 /**
@@ -870,9 +886,7 @@ export const WithHiddenZero: FormattingStory = {
 		expandFirstLevel: true,
 		indentSize: 1
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTreeTableStory
 };
 
 /**
@@ -888,9 +902,7 @@ export const WithMergedDuplicates: DivisionStory = {
 		expandFirstLevel: true,
 		indentSize: 1
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderDivisionTreeTableStory
 };
 
 /**
@@ -906,9 +918,7 @@ export const WithODataMetadataAdapter: FormattingStory = {
 		expandFirstLevel: true,
 		indentSize: 1
 	},
-	render: function Render(args) {
-		return <TreeTableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTreeTableStory
 };
 
 /**
@@ -930,9 +940,9 @@ export const WithUseODataTableColumnsBuildHook: FormattingStory = {
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: function Render(args) {
-		return <HookBuildTreeTableStory args={args} />;
-	}
+	render: createControlledStoryRender<TreeTableProps<FinancialFormattingRow>>((args, updateArgs) => (
+		<HookBuildTreeTableStory args={args} updateArgs={updateArgs} />
+	))
 };
 
 /**
@@ -954,7 +964,7 @@ export const WithUseODataTableColumnsEnrichHook: FormattingStory = {
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: function Render(args) {
-		return <HookEnrichTreeTableStory args={args} />;
-	}
+	render: createControlledStoryRender<TreeTableProps<FinancialFormattingRow>>((args, updateArgs) => (
+		<HookEnrichTreeTableStory args={args} updateArgs={updateArgs} />
+	))
 };

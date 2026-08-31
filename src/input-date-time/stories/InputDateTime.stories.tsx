@@ -1,8 +1,8 @@
 import type { ComponentType } from "react";
 
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { InputDate, InputDateTime, InputTime, type InputDateProps } from "../InputDateTime";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -74,16 +74,15 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-type InputDateTimeStoryCanvasProps = InputDateProps & {
-	component: ComponentType<InputDateProps>;
-};
+/**
+ * Создаёт story function для конкретного варианта сегментного поля. Storybook
+ * args обновляются на верхней render-границе, а React-компонент получает только props.
+ */
+function createInputDateTimeStoryRender(component: ComponentType<InputDateProps>) {
+	const StoryComponent = component;
 
-function InputDateTimeStoryCanvas({ component, ...args }: InputDateTimeStoryCanvasProps) {
-	const [, updateArgs] = useArgs<InputDateProps>();
-	const Component = component;
-
-	return (
-		<Component
+	return createControlledStoryRender<InputDateProps>((args, updateArgs) => (
+		<StoryComponent
 			{...args}
 			onChange={(value) => {
 				args.onChange(value);
@@ -98,13 +97,15 @@ function InputDateTimeStoryCanvas({ component, ...args }: InputDateTimeStoryCanv
 				updateArgs({ error: undefined });
 			}}
 		/>
-	);
+	));
 }
 
+const renderInputDateStory = createInputDateTimeStoryRender(InputDate);
+const renderInputTimeStory = createInputDateTimeStoryRender(InputTime);
+const renderInputDateTimeStory = createInputDateTimeStoryRender(InputDateTime);
+
 export const DateOnly: Story = {
-	render: function Render(args) {
-		return <InputDateTimeStoryCanvas {...args} component={InputDate} />;
-	},
+	render: renderInputDateStory,
 	args: {
 		label: "Дата",
 		description: "Формат по умолчанию: YYYY.MM.DD",
@@ -113,9 +114,7 @@ export const DateOnly: Story = {
 };
 
 export const TimeOnly: Story = {
-	render: function Render(args) {
-		return <InputDateTimeStoryCanvas {...args} component={InputTime} />;
-	},
+	render: renderInputTimeStory,
 	args: {
 		label: "Время",
 		description: "Формат по умолчанию: hh:mm",
@@ -124,9 +123,7 @@ export const TimeOnly: Story = {
 };
 
 export const DateAndTime: Story = {
-	render: function Render(args) {
-		return <InputDateTimeStoryCanvas {...args} component={InputDateTime} />;
-	},
+	render: renderInputDateTimeStory,
 	args: {
 		label: "Дата и время",
 		description: "Комбинированный ввод даты и времени.",
@@ -135,9 +132,7 @@ export const DateAndTime: Story = {
 };
 
 export const CustomMask: Story = {
-	render: function Render(args) {
-		return <InputDateTimeStoryCanvas {...args} component={InputDateTime} />;
-	},
+	render: renderInputDateTimeStory,
 	args: {
 		label: "Кастомная маска",
 		description: "Добавлены секунды: YYYY.MM.DD hh:mm:ss",

@@ -1,8 +1,7 @@
-import type { CSSProperties, PropsWithChildren } from "react";
+import type { ComponentProps, CSSProperties, PropsWithChildren } from "react";
 import { useEffect, useRef, useState } from "react";
 
 import { BellRingIcon, CheckIcon, InfoIcon, RefreshCwIcon, TimerResetIcon, Trash2Icon, TriangleAlertIcon, XCircleIcon } from "lucide-react";
-import { useArgs } from "storybook/preview-api";
 
 import { Button } from "../../../button";
 import { NotificationsProvider, useNotify } from "../../model";
@@ -10,7 +9,7 @@ import { NotificationsHost } from "../NotificationsHost";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
-type NotificationsHostStoryArgs = Record<string, never>;
+type NotificationsHostStoryArgs = ComponentProps<typeof NotificationsHost>;
 
 const meta = {
 	title: "UI/Notifications",
@@ -114,12 +113,6 @@ function NotificationsStoryShell({ children, hostProps }: PropsWithChildren<{ ho
 			<NotificationsHost {...hostProps} />
 		</NotificationsProvider>
 	);
-}
-
-function NotificationsStoryCanvas({ children }: PropsWithChildren) {
-	const [args] = useArgs<NotificationsHostStoryArgs>();
-
-	return <NotificationsStoryShell hostProps={args}>{children}</NotificationsStoryShell>;
 }
 
 function ShowcaseSeed() {
@@ -369,11 +362,11 @@ function PlaygroundPanel() {
 }
 
 export const Showcase: Story = {
-	render: function Render() {
+	render: function Render(args) {
 		return (
-			<NotificationsStoryCanvas>
+			<NotificationsStoryShell hostProps={args}>
 				<ShowcaseSeed />
-			</NotificationsStoryCanvas>
+			</NotificationsStoryShell>
 		);
 	},
 	parameters: {
@@ -386,11 +379,11 @@ export const Showcase: Story = {
 };
 
 export const InteractivePlayground: Story = {
-	render: function Render() {
+	render: function Render(args) {
 		return (
-			<NotificationsStoryCanvas>
+			<NotificationsStoryShell hostProps={args}>
 				<PlaygroundPanel />
-			</NotificationsStoryCanvas>
+			</NotificationsStoryShell>
 		);
 	},
 	parameters: {

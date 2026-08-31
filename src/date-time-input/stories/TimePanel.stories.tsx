@@ -1,6 +1,6 @@
-import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { TimePanel, type TimePanelProps } from "../ui/TimePanel";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -50,8 +50,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-function TimePanelStoryCanvas(args: TimePanelProps) {
-	const [, updateArgs] = useArgs<TimePanelProps>();
+const renderTimePanelStory = createControlledStoryRender<TimePanelProps>((args, updateArgs) => {
 	const value = args.value;
 
 	return (
@@ -66,24 +65,20 @@ function TimePanelStoryCanvas(args: TimePanelProps) {
 			/>
 		</div>
 	);
-}
+});
 
 /**
  * Демонстрирует базовую wheel-панель времени.
  */
 export const Default: Story = {
-	render: function Render(args) {
-		return <TimePanelStoryCanvas {...args} />;
-	}
+	render: renderTimePanelStory
 };
 
 /**
  * Показывает ограничение диапазона на том же календарном дне.
  */
 export const WithLimits: Story = {
-	render: function Render(args) {
-		return <TimePanelStoryCanvas {...args} />;
-	},
+	render: renderTimePanelStory,
 	args: {
 		value: new Date(2026, 2, 10, 9, 30, 0, 0),
 		minDate: new Date(2026, 2, 10, 9, 15, 0, 0),

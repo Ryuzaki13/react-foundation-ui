@@ -31,6 +31,10 @@ export interface SortablePreviewProps {
 	disabledIds?: string[];
 }
 
+interface SortablePreviewCanvasProps extends SortablePreviewProps {
+	onItemsChange: (items: string[]) => void;
+}
+
 function reorderItems(items: readonly UniqueIdentifier[], fromIndex: number, toIndex: number) {
 	const next = [...items];
 	const [moved] = next.splice(fromIndex, 1);
@@ -50,8 +54,12 @@ function getContainerStyle(layout: SortableLayout): CSSProperties {
 	}
 }
 
-export function SortablePreview(props: SortablePreviewProps) {
-	const [, updateArgs] = useArgs<SortablePreviewProps>();
+/**
+ * Рендерит DnD-сценарий без зависимости от контекста Storybook. Обновление
+ * порядка передаётся наружу, чтобы story function могла безопасно вызвать
+ * `useArgs`, а обычный React-preview — сохранить состояние локально.
+ */
+function SortablePreviewCanvas(props: SortablePreviewCanvasProps) {
 	const items = props.initialItems;
 	const disabledIdSet = new Set(props.disabledIds ?? []);
 
@@ -67,7 +75,7 @@ export function SortablePreview(props: SortablePreviewProps) {
 					});
 					if (!reorder) return;
 
-					updateArgs({ initialItems: reorderItems(items, reorder.fromIndex, reorder.toIndex) as string[] });
+					props.onItemsChange(reorderItems(items, reorder.fromIndex, reorder.toIndex) as string[]);
 				}}>
 				<Sortable.Container containerId={props.containerId} items={items} layout={props.layout}>
 					<div style={getContainerStyle(props.layout)}>
@@ -93,6 +101,16 @@ export function SortablePreview(props: SortablePreviewProps) {
 	);
 }
 
+/**
+ * Предоставляет самостоятельный React-preview компонента вне Storybook.
+ * Storybook использует отдельный render ниже, чтобы синхронизировать порядок с args.
+ */
+export function SortablePreview(props: SortablePreviewProps) {
+	const [items, setItems] = useState(props.initialItems);
+
+	return <SortablePreviewCanvas {...props} initialItems={items} onItemsChange={setItems} />;
+}
+
 const meta = {
 	title: "UI/Sortable",
 	component: SortablePreview,
@@ -106,6 +124,13 @@ const meta = {
 	parameters: {
 		atomicCanvas: true,
 		layout: "padded"
+	},
+	// Storybook hook должен выполняться непосредственно внутри story function:
+	// docs-режим рендерит `component` как обычный React-компонент вне hook-контекста preview API.
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SortablePreviewProps>();
+
+		return <SortablePreviewCanvas {...args} onItemsChange={(initialItems) => updateArgs({ initialItems })} />;
 	},
 	argTypes: {
 		containerId: {

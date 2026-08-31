@@ -1,11 +1,11 @@
 import { useMemo, useState, type ComponentType } from "react";
 
-import { useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
+import { odataMetadataQueryOptions, useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
 import { enrichTableColumnsWithODataFormatting, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
 import { QueryClientProvider } from "@tanstack/react-query";
-import { useArgs } from "storybook/preview-api";
 
+import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
 import { Table, type TableProps } from "../Table";
 
 import type { EntityColumnProperty, EntityMetadata, ServiceMetadata } from "@ryuzaki13/react-foundation-lib/odata-service";
@@ -422,13 +422,6 @@ const hookMetadata: EntityMetadata = {
 };
 
 /**
- * Собирает query key metadata в том же виде, что и production hook.
- */
-function createODataMetadataQueryKey(service: string) {
-	return ["odata", "metadata", { service }] as const;
-}
-
-/**
  * Подкладывает статическое metadata в react-query cache, чтобы story использовала реальный hook без fetch.
  */
 const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
@@ -439,7 +432,7 @@ const withMockedHookODataMetadata: Decorator = (storyRenderer, context) => {
 		const metadata = context.parameters.odataMetadata as EntityMetadata | undefined;
 
 		if (service && entity && metadata) {
-			client.setQueryData<ServiceMetadata>(createODataMetadataQueryKey(service), {
+			client.setQueryData<ServiceMetadata>(odataMetadataQueryOptions({ service }).queryKey, {
 				entities: {
 					[entity]: metadata
 				},
@@ -462,9 +455,13 @@ function getStorySelectedRowIds<TData extends object>(args: TableProps<TData>, r
 	});
 }
 
-function TableStoryCanvas<TData extends object>({ args }: { args: TableProps<TData> }) {
-	const [, updateArgs] = useArgs<TableProps<TData>>();
-
+function TableStoryCanvas<TData extends object>({
+	args,
+	updateArgs
+}: {
+	args: TableProps<TData>;
+	updateArgs: StoryArgsUpdater<TableProps<TData>>;
+}) {
 	return (
 		<Table
 			{...args}
@@ -495,7 +492,13 @@ function TableStoryCanvas<TData extends object>({ args }: { args: TableProps<TDa
 /**
  * Демонстрирует режим `build`, когда hook сам строит колонки только по OData metadata.
  */
-function HookBuildTableStory({ args }: { args: TableProps<DealFormattingRow> }) {
+function HookBuildTableStory({
+	args,
+	updateArgs
+}: {
+	args: TableProps<DealFormattingRow>;
+	updateArgs: StoryArgsUpdater<TableProps<DealFormattingRow>>;
+}) {
 	const { columns, metadata, isLoading } = useODataTableColumns<DealFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -508,7 +511,7 @@ function HookBuildTableStory({ args }: { args: TableProps<DealFormattingRow> }) 
 				Режим build: hook собрал {columns.length} колонки из metadata
 				{metadata ? ` для сущности «${metadata.title}».` : "."}
 			</div>
-			<TableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
+			<TableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} updateArgs={updateArgs} />
 		</div>
 	);
 }
@@ -516,7 +519,13 @@ function HookBuildTableStory({ args }: { args: TableProps<DealFormattingRow> }) 
 /**
  * Демонстрирует режим `enrich`, когда hook дозаполняет вручную описанные колонки metadata-контекстом.
  */
-function HookEnrichTableStory({ args }: { args: TableProps<DealFormattingRow> }) {
+function HookEnrichTableStory({
+	args,
+	updateArgs
+}: {
+	args: TableProps<DealFormattingRow>;
+	updateArgs: StoryArgsUpdater<TableProps<DealFormattingRow>>;
+}) {
 	const { columns, metadata, isLoading } = useODataTableColumns<DealFormattingRow>({
 		service: HOOK_ODATA_SERVICE,
 		target: HOOK_ODATA_ENTITY,
@@ -530,7 +539,7 @@ function HookEnrichTableStory({ args }: { args: TableProps<DealFormattingRow> })
 				Режим enrich: hook сохранил ручные заголовки и дополнил formatting-контекст
 				{metadata ? ` из metadata «${metadata.title}».` : "."}
 			</div>
-			<TableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} />
+			<TableStoryCanvas args={{ ...args, columns, isLoading: args.isLoading ?? isLoading }} updateArgs={updateArgs} />
 		</div>
 	);
 }
@@ -683,13 +692,21 @@ type DealStory = StoryObj<TableProps<DealRow>>;
 type FormattingStory = StoryObj<TableProps<DealFormattingRow>>;
 type DivisionMergeStory = StoryObj<TableProps<DivisionMergeRow>>;
 
+const renderDealTableStory = createControlledStoryRender<TableProps<DealRow>>((args, updateArgs) => (
+	<TableStoryCanvas args={args} updateArgs={updateArgs} />
+));
+const renderFormattingTableStory = createControlledStoryRender<TableProps<DealFormattingRow>>((args, updateArgs) => (
+	<TableStoryCanvas args={args} updateArgs={updateArgs} />
+));
+const renderDivisionMergeTableStory = createControlledStoryRender<TableProps<DivisionMergeRow>>((args, updateArgs) => (
+	<TableStoryCanvas args={args} updateArgs={updateArgs} />
+));
+
 /**
  * Базовый сценарий плоской таблицы с одиночным выбором.
  */
 export const Basic: DealStory = {
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderDealTableStory
 };
 
 /**
@@ -699,8 +716,7 @@ export const WithColumnPinning: DealStory = {
 	args: {
 		columnPinning: { start: ["number"] }
 	},
-	render: function Render(args) {
-		const [, updateArgs] = useArgs<TableProps<DealRow>>();
+	render: createControlledStoryRender<TableProps<DealRow>>((args, updateArgs) => {
 		const columnPinning = args.columnPinning ?? { start: [] };
 
 		return (
@@ -717,10 +733,10 @@ export const WithColumnPinning: DealStory = {
 					</button>
 				</div>
 				<div>Закреплено в начале: {columnPinning.start?.length ? columnPinning.start.join(", ") : "ничего"}</div>
-				<TableStoryCanvas args={{ ...args, columnPinning }} />
+				<TableStoryCanvas args={{ ...args, columnPinning }} updateArgs={updateArgs} />
 			</div>
 		);
-	}
+	})
 };
 
 /**
@@ -731,14 +747,12 @@ export const MultiSelect: DealStory = {
 		selectionMode: "multi",
 		selectedRowIds: []
 	},
-	render: function Render(args) {
-		return (
-			<div style={{ display: "grid", gap: "0.75em" }}>
-				<div>Выбрано: {args.selectedRowIds?.length ? args.selectedRowIds.join(", ") : "ничего"}</div>
-				<TableStoryCanvas args={args} />
-			</div>
-		);
-	}
+	render: createControlledStoryRender<TableProps<DealRow>>((args, updateArgs) => (
+		<div style={{ display: "grid", gap: "0.75em" }}>
+			<div>Выбрано: {args.selectedRowIds?.length ? args.selectedRowIds.join(", ") : "ничего"}</div>
+			<TableStoryCanvas args={args} updateArgs={updateArgs} />
+		</div>
+	))
 };
 
 /**
@@ -751,15 +765,13 @@ export const WithDisabledRows: DealStory = {
 		selectedRowIds: [],
 		getRowCanSelect: (row) => !row.isLocked
 	},
-	render: function Render(args) {
-		return (
-			<div style={{ display: "grid", gap: "0.75em" }}>
-				<div>Строка со статусом «Архив» остаётся видимой, но не участвует в выборе.</div>
-				<div>Выбрано: {args.selectedRowIds?.length ? args.selectedRowIds.join(", ") : "ничего"}</div>
-				<TableStoryCanvas args={args} />
-			</div>
-		);
-	}
+	render: createControlledStoryRender<TableProps<DealRow>>((args, updateArgs) => (
+		<div style={{ display: "grid", gap: "0.75em" }}>
+			<div>Строка со статусом «Архив» остаётся видимой, но не участвует в выборе.</div>
+			<div>Выбрано: {args.selectedRowIds?.length ? args.selectedRowIds.join(", ") : "ничего"}</div>
+			<TableStoryCanvas args={args} updateArgs={updateArgs} />
+		</div>
+	))
 };
 
 /**
@@ -769,9 +781,7 @@ export const Fetching: DealStory = {
 	args: {
 		isFetching: true
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderDealTableStory
 };
 
 /**
@@ -781,12 +791,10 @@ export const Empty: DealStory = {
 	args: {
 		data: []
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderDealTableStory
 };
 
-function ReachEndTableCanvas({ args }: { args: TableProps<DealRow> }) {
+function ReachEndTableCanvas({ args, updateArgs }: { args: TableProps<DealRow>; updateArgs: StoryArgsUpdater<TableProps<DealRow>> }) {
 	const [reachEndCount, setReachEndCount] = useState(0);
 
 	return (
@@ -800,6 +808,7 @@ function ReachEndTableCanvas({ args }: { args: TableProps<DealRow> }) {
 						setReachEndCount((current) => current + 1);
 					}
 				}}
+				updateArgs={updateArgs}
 			/>
 		</div>
 	);
@@ -812,9 +821,9 @@ export const ReachEnd: DealStory = {
 	args: {
 		data: reachEndRows
 	},
-	render: function Render(args) {
-		return <ReachEndTableCanvas args={args} />;
-	}
+	render: createControlledStoryRender<TableProps<DealRow>>((args, updateArgs) => (
+		<ReachEndTableCanvas args={args} updateArgs={updateArgs} />
+	))
 };
 
 /**
@@ -824,9 +833,7 @@ export const Loading: DealStory = {
 	args: {
 		isLoading: true
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderDealTableStory
 };
 
 /**
@@ -840,9 +847,7 @@ export const WithFormulaColumn: FormattingStory = {
 		selectionMode: "none",
 		getRowId: (row) => row.id
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTableStory
 };
 
 /**
@@ -856,9 +861,7 @@ export const WithFormattingPipeline: FormattingStory = {
 		selectionMode: "none",
 		getRowId: (row) => row.id
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTableStory
 };
 
 /**
@@ -872,9 +875,7 @@ export const WithHiddenZero: FormattingStory = {
 		selectionMode: "none",
 		getRowId: (row) => row.id
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTableStory
 };
 
 /**
@@ -888,9 +889,7 @@ export const WithMergedDuplicates: DivisionMergeStory = {
 		selectionMode: "none",
 		getRowId: (row) => row.id
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderDivisionMergeTableStory
 };
 
 /**
@@ -904,9 +903,7 @@ export const WithODataMetadataAdapter: FormattingStory = {
 		selectionMode: "none",
 		getRowId: (row) => row.id
 	},
-	render: function Render(args) {
-		return <TableStoryCanvas args={args} />;
-	}
+	render: renderFormattingTableStory
 };
 
 /**
@@ -926,9 +923,9 @@ export const WithUseODataTableColumnsBuildHook: FormattingStory = {
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: function Render(args) {
-		return <HookBuildTableStory args={args} />;
-	}
+	render: createControlledStoryRender<TableProps<DealFormattingRow>>((args, updateArgs) => (
+		<HookBuildTableStory args={args} updateArgs={updateArgs} />
+	))
 };
 
 /**
@@ -948,7 +945,7 @@ export const WithUseODataTableColumnsEnrichHook: FormattingStory = {
 		odataEntity: HOOK_ODATA_ENTITY,
 		odataMetadata: hookMetadata
 	},
-	render: function Render(args) {
-		return <HookEnrichTableStory args={args} />;
-	}
+	render: createControlledStoryRender<TableProps<DealFormattingRow>>((args, updateArgs) => (
+		<HookEnrichTableStory args={args} updateArgs={updateArgs} />
+	))
 };
