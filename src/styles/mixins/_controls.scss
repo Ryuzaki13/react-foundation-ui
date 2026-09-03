@@ -80,7 +80,9 @@
 	transition-duration: var(--transition-fast);
 	transition-timing-function: ease;
 
-	&:hover {
+	// Hover-схема применяется только там, где устройство действительно поддерживает наведение.
+	// На touch-экранах это не даёт браузеру удерживать визуальное состояние после касания.
+	@include hover(false, false) {
 		color: var(--ui-color-hover);
 		background-color: var(--ui-background-hover);
 		border-color: var(--ui-border-hover);
