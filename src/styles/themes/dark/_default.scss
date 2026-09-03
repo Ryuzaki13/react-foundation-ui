@@ -1,7 +1,5 @@
-@use "../../config" as stylesConfig;
 @use "../theme" as theme;
 
 @mixin dark-theme {
-	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens(stylesConfig.$dark-theme));
-	@include theme.generated-theme-palette(stylesConfig.$dark-theme, dark);
+	@include theme.theme(dark);
 }

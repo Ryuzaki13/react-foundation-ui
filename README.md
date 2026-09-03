@@ -106,6 +106,49 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 Обычно в host-проекте это оформляется отдельным entrypoint, например `src/app/styles/shared.scss`, который сначала настраивает foundation config, затем подключает foundation styles, темы и доменные CSS-переменные приложения.
 
+### Точные палитры host-приложения
+
+Если одной OKLCH-точки недостаточно для воспроизведения брендовой палитры, публичный mixin `theme` принимает точные accent/status scales. Неуказанные значения наследуются из настроенного baseline схемы; границы статуса по умолчанию повторяют text scale, а `soft` вычисляется из точного fill. Карта `tokens` выводится последней и предназначена для точечных semantic-token overrides. Для custom theme без отдельных `brand` и `neutral` scales эти тона связываются с её accent и базовыми content/surface/border tokens; недостающие border/soft tokens остальных статусов также следуют за их точными text/fill значениями.
+
+```scss
+@use "@ryuzaki13/react-foundation-ui/styles/themes" as foundationThemes;
+
+:root[data-theme="light:brand"] {
+	@include foundationThemes.theme(
+		light,
+		(
+			tokens: (
+				"--surface-0": #fffaf2,
+				"--surface-1": #f8ecd9,
+				"--focus-ring": #c2410c
+			),
+			accent: (
+				content: #9a3412,
+				surface: #ffedd5,
+				border: #ea580c
+			),
+			status: (
+				error: (
+					text: (
+						base: #b91c1c,
+						hover: #991b1b,
+						active: #7f1d1d
+					),
+					fill: (
+						base: #dc2626,
+						hover: #b91c1c,
+						active: #991b1b,
+						on-fill: #ffffff
+					)
+				)
+			)
+		)
+	);
+}
+```
+
+Для `accent` точная форма содержит `content`, `surface` и `border`. Для статуса обязательна карта `text` с `base`; `hover` и `active` имеют последовательные fallback. Карта `fill` и её поля опциональны, а `border` может отдельно задать `base`, `hover`, `active` и `focus`. Такой контракт позволяет переносить существующие темы без аппроксимации цветов и при этом сохраняет все новые semantic-токены foundation UI.
+
 ## Просмотр изображений
 
 `ImageViewer` из точечного entrypoint `@ryuzaki13/react-foundation-ui/image` предоставляет controlled lightbox для одного изображения или галереи. Реализация использует Yet Another React Lightbox как внутренний runtime, но наружу публикует только foundation-контракты `ImageViewerImage`, `ImageViewerFeatures`, `ImageViewerLabels` и `ImageViewerStyle`.

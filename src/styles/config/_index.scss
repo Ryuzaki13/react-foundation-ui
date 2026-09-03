@@ -203,7 +203,19 @@ $light-theme-defaults: (
 		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
 		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
 		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
-		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25)
+		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25),
+		"--interactive-color": inherit,
+		"--interactive-hover-color": var(--content-0),
+		"--interactive-active-color": var(--content-0),
+		"--interactive-selected-color": var(--content-0),
+		"--interactive-surface": transparent,
+		"--interactive-hover-surface": var(--surface-accent),
+		"--interactive-active-surface": var(--surface-accent),
+		"--interactive-selected-surface": var(--surface-accent),
+		"--interactive-border": transparent,
+		"--interactive-hover-border": var(--border-accent),
+		"--interactive-active-border": var(--border-accent),
+		"--interactive-selected-border": var(--border-accent)
 	),
 	accent: (
 		l: 0.55,
@@ -301,7 +313,19 @@ $dark-theme-defaults: (
 		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
 		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
 		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
-		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25)
+		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25),
+		"--interactive-color": inherit,
+		"--interactive-hover-color": var(--content-0),
+		"--interactive-active-color": var(--content-0),
+		"--interactive-selected-color": var(--content-0),
+		"--interactive-surface": transparent,
+		"--interactive-hover-surface": var(--surface-accent),
+		"--interactive-active-surface": var(--surface-accent),
+		"--interactive-selected-surface": var(--surface-accent),
+		"--interactive-border": transparent,
+		"--interactive-hover-border": var(--border-accent),
+		"--interactive-active-border": var(--border-accent),
+		"--interactive-selected-border": var(--border-accent)
 	),
 	accent: (
 		l: 0.7,

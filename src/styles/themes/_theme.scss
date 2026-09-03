@@ -1,17 +1,184 @@
 @use "sass:map";
+@use "sass:meta";
 
+@use "../config" as stylesConfig;
 @use "../mixins/" as *;
 
-@mixin generated-theme-palette($theme, $mode) {
+@function _theme-base($mode) {
+	@if $mode == light {
+		@return stylesConfig.$light-theme;
+	}
+
+	@if $mode == dark {
+		@return stylesConfig.$dark-theme;
+	}
+
+	@error "Цветовая схема темы должна иметь значение light или dark, получено: #{$mode}.";
+}
+
+@function _scale-value($scale, $name, $fallback) {
+	@if meta.type-of($scale) == map and map.has-key($scale, $name) {
+		@return map.get($scale, $name);
+	}
+
+	@return $fallback;
+}
+
+@mixin _exact-accent-palette($accent) {
+	--content-accent: var(--hc-content-accent, #{map.get($accent, content)});
+	--surface-accent: var(--hc-surface-accent, #{map.get($accent, surface)});
+	--border-accent: var(--hc-border-accent, #{map.get($accent, border)});
+}
+
+@mixin _exact-status-palette($name, $status) {
+	$text: map.get($status, text);
+	$fill: map.get($status, fill);
+	$border: map.get($status, border);
+	$text-base: map.get($text, base);
+	$text-hover: _scale-value($text, hover, $text-base);
+	$text-active: _scale-value($text, active, $text-hover);
+	$fill-base: _scale-value($fill, base, $text-base);
+	$fill-hover: _scale-value($fill, hover, $fill-base);
+	$fill-active: _scale-value($fill, active, $fill-hover);
+	$fill-on: _scale-value($fill, on-fill, var(--surface-0));
+	$border-base: _scale-value($border, base, $text-base);
+	$border-hover: _scale-value($border, hover, $text-hover);
+	$border-active: _scale-value($border, active, $text-active);
+	$border-focus: _scale-value($border, focus, $border-active);
+
+	--status-#{$name}-text: var(--hc-status-#{$name}-text, #{$text-base});
+	--status-#{$name}-text-hover: var(--hc-status-#{$name}-text, #{$text-hover});
+	--status-#{$name}-text-active: var(--hc-status-#{$name}-text, #{$text-active});
+
+	--status-#{$name}-fill: var(--hc-status-#{$name}-fill, #{$fill-base});
+	--status-#{$name}-fill-hover: var(--hc-status-#{$name}-fill, #{$fill-hover});
+	--status-#{$name}-fill-active: var(--hc-status-#{$name}-fill, #{$fill-active});
+	--status-#{$name}-on-fill: var(--hc-status-#{$name}-on-fill, #{$fill-on});
+
+	@if map.has-key($fill, soft) {
+		--status-#{$name}-soft: var(--hc-status-#{$name}-soft, #{map.get($fill, soft)});
+	} @else {
+		--status-#{$name}-soft: var(--hc-status-#{$name}-soft, color-mix(in srgb, var(--status-#{$name}-fill) 12%, var(--surface-0)));
+	}
+
+	--status-#{$name}-border: var(--hc-status-#{$name}-border, #{$border-base});
+	--status-#{$name}-border-hover: var(--hc-status-#{$name}-border, #{$border-hover});
+	--status-#{$name}-border-active: var(--hc-status-#{$name}-border, #{$border-active});
+	--status-#{$name}-border-focus: var(--hc-status-#{$name}-border, #{$border-focus});
+
+	@if $name == neutral {
+		--border-0: var(--hc-border, #{$border-base});
+		--border-1: var(--hc-border, #{$border-hover});
+		--border-2: var(--hc-border, #{$border-active});
+		--border-focus: var(--hc-border-focus, #{$border-focus});
+	}
+}
+
+@function _status-overridden($status-overrides, $name) {
+	@return meta.type-of($status-overrides) == map and map.has-key($status-overrides, $name);
+}
+
+@mixin _adaptive-custom-statuses($mode, $status-overrides) {
+	@if not _status-overridden($status-overrides, brand) {
+		$brand-on-fill: var(--surface-0);
+
+		@if $mode == light {
+			$brand-on-fill: var(--content-0);
+		}
+
+		@include _exact-status-palette(
+			brand,
+			(
+				text: (
+					base: var(--content-accent)
+				),
+				fill: (
+					base: var(--content-accent),
+					hover: var(--border-accent),
+					active: var(--border-accent),
+					on-fill: $brand-on-fill,
+					soft: var(--surface-accent)
+				),
+				border: (
+					base: var(--border-accent)
+				)
+			)
+		);
+	}
+
+	@if not _status-overridden($status-overrides, neutral) {
+		@include _exact-status-palette(
+			neutral,
+			(
+				text: (
+					base: var(--content-0),
+					hover: var(--content-1),
+					active: var(--content-0)
+				),
+				fill: (
+					base: var(--content-0),
+					hover: var(--content-1),
+					active: var(--content-0),
+					on-fill: var(--surface-0),
+					soft: var(--surface-1)
+				),
+				border: (
+					base: var(--border-0),
+					hover: var(--border-1),
+					active: var(--border-2),
+					focus: var(--focus-ring)
+				)
+			)
+		);
+	}
+
+	@each $name in error, warning, success, info {
+		@if not _status-overridden($status-overrides, $name) {
+			// Плоские exact-token overrides меняют text/fill ниже по каскаду,
+			// поэтому производные значения связываются через CSS variables, а не копируют baseline.
+			--status-#{$name}-soft: var(--hc-status-#{$name}-soft, color-mix(in srgb, var(--status-#{$name}-fill) 12%, var(--surface-0)));
+			--status-#{$name}-border: var(--hc-status-#{$name}-border, var(--status-#{$name}-text));
+			--status-#{$name}-border-hover: var(--hc-status-#{$name}-border, var(--status-#{$name}-text-hover));
+			--status-#{$name}-border-active: var(--hc-status-#{$name}-border, var(--status-#{$name}-text-active));
+			--status-#{$name}-border-focus: var(--hc-status-#{$name}-border, var(--status-#{$name}-text-active));
+		}
+	}
+}
+
+@mixin _theme-palette($theme, $mode) {
 	$accent: map.get($theme, accent);
 
-	@include generate-accent(map.get($accent, l), map.get($accent, c), map.get($accent, h), $mode);
+	@if map.has-key($accent, content) {
+		@include _exact-accent-palette($accent);
+	} @else {
+		@include generate-accent(map.get($accent, l), map.get($accent, c), map.get($accent, h), $mode);
+	}
 
 	@each $name, $status in map.get($theme, status) {
-		$fill: map.get($status, fill);
-		$border: map.get($status, border);
+		@if map.has-key($status, text) {
+			@include _exact-status-palette($name, $status);
+		} @else {
+			$fill: map.get($status, fill);
+			$border: map.get($status, border);
 
-		@include generate-status-fill($name, map.get($fill, l), map.get($fill, c), map.get($fill, h), $mode);
-		@include generate-status-border($name, map.get($border, l), map.get($border, c), map.get($border, h), $mode);
+			@include generate-status-fill($name, map.get($fill, l), map.get($fill, c), map.get($fill, h), $mode);
+			@include generate-status-border($name, map.get($border, l), map.get($border, c), map.get($border, h), $mode);
+		}
 	}
+}
+
+/// Формирует полную тему из настроенного baseline выбранной схемы и точечных переопределений.
+/// `accent` и элементы `status` принимают либо OKLCH seed `l/c/h`, либо точные semantic scales;
+/// плоская карта `tokens` выводится последней и остаётся escape hatch для любого CSS custom property.
+@mixin theme($mode, $overrides: ()) {
+	$resolved-theme: map.deep-merge(_theme-base($mode), $overrides);
+	$status-overrides: map.get($overrides, status);
+
+	@include _theme-palette($resolved-theme, $mode);
+
+	@if $overrides != () {
+		@include _adaptive-custom-statuses($mode, $status-overrides);
+	}
+
+	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens($resolved-theme));
 }
