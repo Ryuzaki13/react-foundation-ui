@@ -17,6 +17,8 @@ declare const styles: {
   readonly uiInputControlFake: "uiInputControlFake";
   readonly uiInputWithToggle: "uiInputWithToggle";
   readonly required: "required";
+  readonly uiSelectionControl: "uiSelectionControl";
+  readonly uiPopupOption: "uiPopupOption";
   readonly invalid: "invalid";
   readonly uiToneNeutral: "uiToneNeutral";
   readonly uiToneBrand: "uiToneBrand";
@@ -28,11 +30,9 @@ declare const styles: {
   readonly uiAppearanceOutline: "uiAppearanceOutline";
   readonly uiAppearanceGhost: "uiAppearanceGhost";
   readonly uiAppearanceTransparent: "uiAppearanceTransparent";
-  readonly uiSelectionControl: "uiSelectionControl";
   readonly uiSelectionIcon: "uiSelectionIcon";
   readonly uiElement: "uiElement";
   readonly disabled: "disabled";
-  readonly uiPopupOption: "uiPopupOption";
   readonly uiOptionText: "uiOptionText";
   readonly uiOptionCode: "uiOptionCode";
   readonly uiPanelTonePrimary: "uiPanelTonePrimary";

@@ -96,7 +96,8 @@
 
 	&:focus,
 	&:focus-within {
-		background-color: var(--ui-background-active);
+		// Фокус обозначается границей и focus-ring, но не подменяет фон active-состоянием.
+		// Иначе сохранённый Safari focus после touch-события перекрывает selected/open фон consumer-компонента.
 		border-color: var(--ui-border-focus);
 	}
 
