@@ -1,5 +1,13 @@
 @use "@/styles/mixins" as *;
 
+.popupPositioner,
+.options {
+	overflow: hidden;
+	display: grid;
+	grid-template-rows: minmax(0, 1fr);
+	border-radius: var(--radius-sm);
+}
+
 .popupPositioner {
 	--anchor-gap: var(--space-xs);
 	--anchor-padding: var(--space-xs);
@@ -8,27 +16,19 @@
 	min-width: 0;
 	z-index: var(--z-dropdown);
 	box-shadow: var(--shadow-md);
-	overflow: hidden;
-	display: grid;
-	grid-template-rows: minmax(0, 1fr);
 }
 
 .options {
 	--input-width: min(100vw, var(--base-width, 15em));
 
-	display: grid;
-	grid-template-rows: minmax(0, 1fr);
 	width: 100%;
 	min-width: var(--input-width);
 	min-height: 0;
 	max-height: 75vh;
 
-	overflow: hidden;
-
 	padding: var(--space-sm);
 	background-color: var(--surface-0);
 	border: var(--border);
-	border-radius: var(--radius-sm);
 
 	&:empty {
 		visibility: hidden;

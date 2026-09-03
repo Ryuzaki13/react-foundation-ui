@@ -1,14 +1,17 @@
-import { PropsWithChildren } from "react";
+import { AriaRole, PropsWithChildren } from "react";
 
 import { Message } from "./Message";
 
 interface NoticeProps extends PropsWithChildren {
 	isError?: boolean;
 	className?: string;
+	role?: AriaRole;
 }
 
-export const Notice: React.FC<NoticeProps> = ({ className, isError, children }) => (
-	<Message className={className} color={isError ? "error" : "secondary"}>
-		{children}
-	</Message>
-);
+export function Notice({ className, isError, role, children }: NoticeProps) {
+	return (
+		<Message className={className} color={isError ? "error" : "secondary"} role={role}>
+			{children}
+		</Message>
+	);
+}

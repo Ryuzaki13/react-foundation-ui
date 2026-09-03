@@ -1,4 +1,4 @@
-import React, { CSSProperties, useMemo } from "react";
+import React, { AriaRole, CSSProperties, useMemo } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
@@ -50,6 +50,7 @@ interface BaseTextProps {
 	wrap?: TextWrap;
 	className?: string;
 	style?: CSSProperties;
+	role?: AriaRole;
 }
 
 interface TextProps extends BaseTextProps {
@@ -57,7 +58,7 @@ interface TextProps extends BaseTextProps {
 	as?: "code" | "span" | "p" | "div" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
-const useTextStyles = ({ size, color, weight, italic, uppercase, wrap, className }: BaseTextProps) => {
+function useTextStyles({ size, color, weight, italic, uppercase, wrap, className }: BaseTextProps) {
 	return useMemo(() => {
 		const classes: string[] = [];
 
@@ -82,15 +83,15 @@ const useTextStyles = ({ size, color, weight, italic, uppercase, wrap, className
 
 		return cn(...classes, className);
 	}, [size, weight, color, italic, uppercase, wrap, className]);
-};
+}
 
-export const Text: React.FC<TextProps> = ({ children, as, style, ...props }) => {
+export function Text({ children, as, style, role, ...props }: TextProps) {
 	const classes = useTextStyles(props);
 	const Component = as || "span";
 
 	return (
-		<Component className={classes} style={style}>
+		<Component role={role} className={classes} style={style}>
 			{children}
 		</Component>
 	);
-};
+}
