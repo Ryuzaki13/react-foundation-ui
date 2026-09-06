@@ -9,6 +9,7 @@ import {
 	Placement,
 	shift,
 	useDismiss,
+	useFocus,
 	useFloating,
 	useHover,
 	useInteractions,
@@ -87,10 +88,14 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 			close: closeDelay
 		}
 	});
+	// Hover-подсказка обязана иметь ту же пассивную точку входа с клавиатуры.
+	// Связываем focus с тем же флагом, чтобы `openOnHover={false}` не менял
+	// управляемые сценарии, которые не запрашивали автоматическое открытие.
+	const focus = useFocus(context, { enabled: openOnHover });
 	const dismiss = useDismiss(context);
 	const role = useRole(context);
 
-	const { getReferenceProps, getFloatingProps } = useInteractions([hover, dismiss, role]);
+	const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss, role]);
 
 	return (
 		<>
