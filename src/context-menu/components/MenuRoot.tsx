@@ -34,6 +34,7 @@ export function MenuRoot({
 	const isControlled = controlledOpen !== undefined;
 	const open = isControlled ? controlledOpen : uncontrolledOpen;
 	const triggerElementRef = useRef<HTMLElement | null>(null);
+	const registeredTriggerElementRef = useRef<HTMLElement | null>(null);
 
 	const { refs, floatingStyles, update } = useFloating({
 		placement,
@@ -98,7 +99,13 @@ export function MenuRoot({
 
 	const registerTriggerElement = useCallback(
 		(node: HTMLElement | null) => {
-			triggerElementRef.current = node;
+			const previous = registeredTriggerElementRef.current;
+			registeredTriggerElementRef.current = node;
+			// Повторный ref-callback общего контейнера не должен заменить делегированную цель,
+			// иначе после закрытия фокус вернётся на всю таблицу вместо исходной ячейки.
+			if (triggerElementRef.current === null || triggerElementRef.current === previous) {
+				triggerElementRef.current = node;
+			}
 			if (mode === "click") {
 				refs.setReference(node);
 			}
@@ -122,32 +129,32 @@ export function MenuRoot({
 	);
 
 	const onTriggerContextMenu = useCallback(
-		(event: React.MouseEvent<HTMLElement>) => {
+		(event: React.MouseEvent<HTMLElement>, triggerElement = event.currentTarget) => {
 			if (mode !== "contextmenu") return;
 			event.preventDefault();
 
-			const element = event.currentTarget;
 			const point = getMenuPointFromEvent(event);
-			openAtPoint(point, "contextmenu", element);
+			triggerElementRef.current = triggerElement;
+			openAtPoint(point, "contextmenu", triggerElement);
 		},
 		[mode, openAtPoint]
 	);
 
 	const onTriggerKeyDown = useCallback(
-		(event: React.KeyboardEvent<HTMLElement>) => {
+		(event: React.KeyboardEvent<HTMLElement>, triggerElement = event.currentTarget) => {
 			const isContextMenuKeyboardOpen = event.key === "ContextMenu" || (event.shiftKey && event.key === "F10");
 			if (!isContextMenuKeyboardOpen) return;
 
 			event.preventDefault();
-			const element = event.currentTarget;
+			triggerElementRef.current = triggerElement;
 
 			if (mode === "click") {
-				openAtElement(element, "keyboard");
+				openAtElement(triggerElement, "keyboard");
 				return;
 			}
 
-			const point = getMenuPointFromRect(element.getBoundingClientRect());
-			openAtPoint(point, "keyboard", element);
+			const point = getMenuPointFromRect(triggerElement.getBoundingClientRect());
+			openAtPoint(point, "keyboard", triggerElement);
 		},
 		[mode, openAtElement, openAtPoint]
 	);

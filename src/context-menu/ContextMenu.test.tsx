@@ -67,6 +67,25 @@ function RadialMenuHarness({ onPrimary = vi.fn(), onDisabled = vi.fn() } = {}) {
 	);
 }
 
+function DelegatedRadialMenuHarness() {
+	return (
+		<ContextMenu>
+			<ContextMenu.Trigger
+				resolveTrigger={(eventTarget) =>
+					eventTarget instanceof Element ? (eventTarget.closest<HTMLElement>('[data-context-menu-target="true"]') ?? null) : null
+				}>
+				<div data-testid="delegated-surface">
+					<button type="button" data-testid="delegated-target" data-context-menu-target="true" />
+					<span data-testid="delegated-outside" />
+				</div>
+			</ContextMenu.Trigger>
+			<ContextMenu.RadialContent>
+				<ContextMenu.RadialItem>Команда</ContextMenu.RadialItem>
+			</ContextMenu.RadialContent>
+		</ContextMenu>
+	);
+}
+
 async function openByContextMenu(trigger: HTMLElement, point = { x: 320, y: 260 }) {
 	await act(async () => {
 		fireEvent.contextMenu(trigger, { clientX: point.x, clientY: point.y });
@@ -231,5 +250,35 @@ describe("ContextMenu radial", () => {
 		expect(menu).not.toBeNull();
 		expect(menu.style.left).toBe("192px");
 		expect(menu.style.top).toBe("142px");
+	});
+
+	it("делегирует открытие и возврат фокуса конкретной вложенной цели", async () => {
+		await renderNode(<DelegatedRadialMenuHarness />);
+
+		const target = container?.querySelector('[data-testid="delegated-target"]') as HTMLButtonElement;
+		setTriggerRect(target, { left: 200, top: 200, width: 100, height: 60, right: 300, bottom: 260, x: 200, y: 200 });
+		target.focus();
+
+		await act(async () => {
+			fireEvent.keyDown(target, { key: "F10", shiftKey: true });
+			await new Promise((resolve) => window.requestAnimationFrame(resolve));
+		});
+
+		expect(document.body.querySelector('[role="menu"]')).not.toBeNull();
+
+		await act(async () => {
+			fireEvent.keyDown(document.activeElement as HTMLElement, { key: "Escape" });
+		});
+		await waitForMotionExit();
+		expect(document.activeElement).toBe(target);
+	});
+
+	it("не открывает меню вне делегированной цели", async () => {
+		await renderNode(<DelegatedRadialMenuHarness />);
+
+		const outside = container?.querySelector('[data-testid="delegated-outside"]') as HTMLElement;
+		await openByContextMenu(outside);
+
+		expect(document.body.querySelector('[role="menu"]')).toBeNull();
 	});
 });

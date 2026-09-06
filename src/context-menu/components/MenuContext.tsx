@@ -17,8 +17,8 @@ interface MenuContextValue {
 	setFloating: (node: HTMLElement | null) => void;
 	registerTriggerElement: (node: HTMLElement | null) => void;
 	onTriggerClick: (event: React.MouseEvent<HTMLElement>) => void;
-	onTriggerContextMenu: (event: React.MouseEvent<HTMLElement>) => void;
-	onTriggerKeyDown: (event: React.KeyboardEvent<HTMLElement>) => void;
+	onTriggerContextMenu: (event: React.MouseEvent<HTMLElement>, triggerElement?: HTMLElement) => void;
+	onTriggerKeyDown: (event: React.KeyboardEvent<HTMLElement>, triggerElement?: HTMLElement) => void;
 	closeMenu: () => void;
 }
 
