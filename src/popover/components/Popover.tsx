@@ -1,11 +1,15 @@
 /* eslint-disable react-refresh/only-export-components */
 import React, { useCallback, useRef, useState } from "react";
 
-import { arrow, autoUpdate, flip, offset, Placement, shift, useFloating } from "@floating-ui/react";
+import { arrow, autoUpdate, flip, offset, Placement, shift, size as floatingSize, useFloating } from "@floating-ui/react";
+
+import { applyPopoverAvailableSize } from "../lib/applyPopoverAvailableSize";
 
 import { PopoverContent } from "./PopoverContent";
 import { PopoverContext } from "./PopoverContext";
 import { PopoverTrigger } from "./PopoverTrigger";
+
+const POPOVER_VIEWPORT_PADDING = 16;
 
 export interface PopoverProps {
 	children: React.ReactNode;
@@ -44,8 +48,19 @@ const PopoverRoot: React.FC<PopoverProps> = ({ children, open: controlledOpen, d
 		open,
 		onOpenChange: setOpen,
 		placement,
-		// eslint-disable-next-line react-hooks/refs
-		middleware: [offset(8), flip(), shift({ padding: 16 }), arrow({ element: arrowRef.current })],
+		middleware: [
+			offset(8),
+			flip({ padding: POPOVER_VIEWPORT_PADDING }),
+			shift({ padding: POPOVER_VIEWPORT_PADDING }),
+			floatingSize({
+				padding: POPOVER_VIEWPORT_PADDING,
+				apply({ availableWidth, availableHeight, elements }) {
+					applyPopoverAvailableSize({ availableWidth, availableHeight, floating: elements.floating });
+				}
+			}),
+			// eslint-disable-next-line react-hooks/refs
+			arrow({ element: arrowRef.current })
+		],
 		whileElementsMounted: autoUpdate
 	});
 
