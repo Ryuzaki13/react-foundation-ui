@@ -544,7 +544,7 @@ export const MultiSelect = forwardRef<HTMLInputElement, MultiSelectProps>(
 									renderToolbar === undefined ? { onSelectAll: selectAll, onDeselectAll: deselectAll } : undefined
 								}>
 								<MultiSelectOptionsWrapper isNoData={isNoData} error={error}>
-									<div className="scrollable h100">
+									<div className="scrollable overscroll h100">
 										<MultiSelectOptionGroup
 											entries={selectedEntries}
 											listId={listId}

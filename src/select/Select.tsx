@@ -338,7 +338,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							className={optionsClassName}
 							maxWidth={optionsMaxWidth}
 							toolbar={renderPopupHeader}>
-							<div className={cn(optionsContentClassName, "h100 scrollable")}>
+							<div className={cn(optionsContentClassName, "h100 scrollable overscroll")}>
 								{hasOptions ? (
 									optionSections ? (
 										optionSections.map((section, sectionIndex) => {
