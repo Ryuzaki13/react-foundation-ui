@@ -11,22 +11,25 @@ const require = createRequire(import.meta.url);
 type PackageJson = {
 	readonly name: string;
 	readonly version: string;
+	readonly dependencies?: Record<string, string>;
 	readonly peerDependencies?: Record<string, string>;
 	readonly devDependencies?: Record<string, string>;
 };
 
 const packageJson = require("./package.json") as PackageJson;
 
-const externalPackages = Object.keys(packageJson.peerDependencies ?? {});
-const missingPeerDevDependencies = externalPackages.filter((packageName) => packageJson.devDependencies?.[packageName] === undefined);
+const peerPackages = Object.keys(packageJson.peerDependencies ?? {});
+const externalPackages = [...peerPackages, ...Object.keys(packageJson.dependencies ?? {})];
+const missingPeerDevDependencies = peerPackages.filter((packageName) => packageJson.devDependencies?.[packageName] === undefined);
 
 if (missingPeerDevDependencies.length > 0) {
 	throw new Error("Peer dependencies must also be present in devDependencies for local build: " + missingPeerDevDependencies.join(", "));
 }
 
 function isExternalPackage(id: string): boolean {
-	// CSS-файлы implementation-зависимостей входят в общий styles.css пакета,
-	// а JavaScript peer-зависимостей остаётся внешним и разрешается host-приложением.
+	// CSS-файлы implementation-зависимостей входят в общий styles.css пакета.
+	// Остальные peer/runtime-зависимости разрешает host-сборщик: это сохраняет
+	// file-loader imports вроде WASM и не встраивает бинарник в JavaScript.
 	if (id.endsWith(".css")) return false;
 
 	return externalPackages.some((packageName) => id === packageName || id.startsWith(packageName + "/"));

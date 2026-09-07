@@ -149,6 +149,42 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 Для `accent` точная форма содержит `content`, `surface` и `border`. Для статуса обязательна карта `text` с `base`; `hover` и `active` имеют последовательные fallback. Карта `fill` и её поля опциональны, а `border` может отдельно задать `base`, `hover`, `active` и `focus`. Такой контракт позволяет переносить существующие темы без аппроксимации цветов и при этом сохраняет все новые semantic-токены foundation UI.
 
+## Сканирование штрихкодов
+
+Subpath `@ryuzaki13/react-foundation-ui/barcode-scanner` предоставляет одноразовый модальный сканер для browser-only React-приложений. Он запрашивает камеру только после монтирования, отдаёт первый распознанный код, освобождает `MediaStream` перед закрытием и показывает локализованные ошибки с повторным запуском.
+
+```tsx
+import { useState } from "react";
+
+import {
+	BarcodeScannerDialog,
+	type BarcodeScanResult
+} from "@ryuzaki13/react-foundation-ui/barcode-scanner";
+
+export function BarcodeField() {
+	const [opened, setOpened] = useState(false);
+	const [result, setResult] = useState<BarcodeScanResult | null>(null);
+
+	return (
+		<>
+			<button type="button" onClick={() => setOpened(true)}>
+				Сканировать
+			</button>
+			{opened ? (
+				<BarcodeScannerDialog
+					formats={["ean_13", "ean_8", "upc_a", "upc_e", "code_128", "qr_code"]}
+					onDetected={setResult}
+					onClose={() => setOpened(false)}
+				/>
+			) : null}
+			{result ? <output>{result.value}</output> : null}
+		</>
+	);
+}
+```
+
+Пакет сам устанавливает `@yudiel/react-qr-scanner` и согласованную с ним версию `zxing_reader.wasm`. `prepareZXingModule` автоматически направляет полифилл на asset host-сборки, поэтому сканер не обращается к CDN. Host-сборка PWA должна добавлять `wasm` в precache. Камера доступна только в secure context: HTTPS либо `localhost`.
+
 ## Просмотр изображений
 
 `ImageViewer` из точечного entrypoint `@ryuzaki13/react-foundation-ui/image` предоставляет controlled lightbox для одного изображения или галереи. Реализация использует Yet Another React Lightbox как внутренний runtime, но наружу публикует только foundation-контракты `ImageViewerImage`, `ImageViewerFeatures`, `ImageViewerLabels` и `ImageViewerStyle`.

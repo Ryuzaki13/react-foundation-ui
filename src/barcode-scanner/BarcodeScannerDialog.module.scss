@@ -1,0 +1,48 @@
+.root {
+	display: grid;
+	gap: var(--space-md);
+	min-inline-size: 0;
+}
+
+.viewport {
+	position: relative;
+	overflow: hidden;
+	inline-size: 100%;
+	aspect-ratio: 4 / 3;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	background: #000;
+}
+
+.scanner,
+.video {
+	inline-size: 100%;
+	block-size: 100%;
+}
+
+.video {
+	object-fit: cover;
+}
+
+.error {
+	display: grid;
+	place-content: center;
+	justify-items: center;
+	gap: var(--space-md);
+	min-block-size: 100%;
+	padding: var(--space-lg);
+	background: var(--surface-0);
+	color: var(--content-0);
+	text-align: center;
+
+	p {
+		margin: 0;
+	}
+}
+
+.hint {
+	margin: 0;
+	color: var(--content-1);
+	font-size: var(--font-size-sm);
+	text-align: center;
+}
