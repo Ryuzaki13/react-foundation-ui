@@ -865,4 +865,33 @@ describe("Table formatting integration", () => {
 		expect(html).toContain("bodyCellMergedWithNext");
 		expect(html.match(/ДВД/g)?.length).toBe(1);
 	});
+
+	it("растягивает заголовок группы на все вложенные колонки", () => {
+		const columns: TableColumnDef<DemoRow>[] = [
+			{
+				id: "metrics",
+				header: "Показатели",
+				columns: [
+					{
+						id: "amount",
+						accessorKey: "amount",
+						header: "Сумма"
+					},
+					{
+						id: "status",
+						accessorKey: "status",
+						header: "Статус"
+					}
+				]
+			}
+		];
+
+		const renderedContainer = document.createElement("div");
+		renderedContainer.innerHTML = renderToStaticMarkup(
+			<Table data={[{ id: "1", amount: 100, status: "Готово" }]} columns={columns} getRowId={(row) => row.id} />
+		);
+
+		const groupHeader = [...renderedContainer.querySelectorAll("thead th")].find((header) => header.textContent === "Показатели");
+		expect(groupHeader?.colSpan).toBe(2);
+	});
 });

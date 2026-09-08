@@ -37,6 +37,7 @@ export function BaseTableHeaderCell<TData extends object>({
 	return (
 		<TableHeaderInteractionCell
 			columnId={header.column.id}
+			colSpan={header.colSpan}
 			dragDisabled={!enableColumnReordering || isDragDisabled}
 			draggingClassName={styles.headerCellDragging}
 			className={cn(styles.headerCell, isPinnedStart && styles.headerCellPinnedStart, isPinnedBoundary && styles.pinnedStartBoundary)}
