@@ -207,7 +207,6 @@ export const ScrollableContent: Story = {
 	name: "Длинный контент",
 	args: {
 		size: "lg",
-		height: "min(38rem, 75dvh)",
 		title: "Журнал изменений"
 	},
 	render: function Render() {
@@ -217,7 +216,7 @@ export const ScrollableContent: Story = {
 			<>
 				<Button onClick={() => updateArgs({ isOpen: true })}>Открыть длинный контент</Button>
 				<Modal {...args} isOpen={args.isOpen} onClose={close}>
-					<ModalContent>
+					<ModalContent scrollable>
 						<div style={{ display: "grid", gap: 12 }}>
 							{Array.from({ length: 18 }, (_, index) => (
 								<div

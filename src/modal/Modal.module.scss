@@ -55,7 +55,7 @@
 
 @include mobile-above {
 	.modal {
-		height: var(--modal-height, auto);
+		height: var(--modal-height, fit-content);
 		max-height: calc(100dvh - var(--space-lg));
 		--modal-border-radius: var(--radius-md);
 

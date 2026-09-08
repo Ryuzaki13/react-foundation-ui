@@ -56,6 +56,18 @@ describe("Modal", () => {
 		expect(dialog.style.getPropertyValue("--modal-height")).toBe("min(34rem, 70dvh)");
 	});
 
+	it("создает внутреннюю область прокрутки для scrollable content", async () => {
+		render(
+			<Modal isOpen title="Прокручиваемая модалка" onClose={vi.fn()}>
+				<ModalContent scrollable>Длинное содержимое</ModalContent>
+			</Modal>
+		);
+
+		const dialog = await screen.findByRole("dialog", { name: "Прокручиваемая модалка" });
+
+		expect(dialog.querySelector(".scrollable")).not.toBeNull();
+	});
+
 	it("сохраняет dialog до завершения exit-анимации и возвращает фокус", async () => {
 		const appRoot = document.createElement("div");
 		appRoot.id = "app-root";
