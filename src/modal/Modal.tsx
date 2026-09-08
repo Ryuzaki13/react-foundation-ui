@@ -54,6 +54,10 @@ type FooterElement = React.ReactElement<ModalCompositionProps, typeof ModalFoote
 type ModalChildren =
 	[ToolbarElement, ContentElement, FooterElement] | [ToolbarElement, ContentElement] | [ContentElement, FooterElement] | ContentElement;
 
+type ModalStyle = React.CSSProperties & {
+	"--modal-height"?: string;
+};
+
 export interface ModalProps {
 	/** Открыто ли модальное окно */
 	isOpen?: boolean;
@@ -61,6 +65,7 @@ export interface ModalProps {
 	title?: string;
 	/** Размер модального окна */
 	size?: keyof typeof ModalSize;
+	/** Явная высота модального окна выше мобильного breakpoint */
 	height?: string;
 	/** Обработчик закрытия */
 	onClose: () => void;
@@ -75,6 +80,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 	const shouldReduceMotion = useReducedMotion();
 	const restoreFocusTargetRef = useRef<HTMLElement | null>(null);
 	const restoreFocusAnimationFrameRef = useRef(0);
+	const modalStyle: ModalStyle = { "--modal-height": height };
 
 	/**
 	 * Если provider менеджера не подключен, считаем одиночную модалку активной,
@@ -162,7 +168,7 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 				<motion.div
 					ref={modalRef}
 					className={cn(styles.modal, styles[size])}
-					style={{ height }}
+					style={modalStyle}
 					role="dialog"
 					aria-modal="true"
 					aria-labelledby={titleId}

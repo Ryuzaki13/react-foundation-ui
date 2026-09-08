@@ -97,10 +97,10 @@ const meta = {
 		size: {
 			description: "Предустановленный размер модального окна.",
 			control: "inline-radio",
-			options: ["sm", "md", "lg", "xl", "inside"]
+			options: ["sm", "md", "lg", "xl", "xxl", "inside"]
 		},
 		height: {
-			description: "Явная высота body-области модалки.",
+			description: "Явная высота модалки выше мобильного breakpoint. На мобильном модалка всегда занимает весь экран.",
 			control: "text"
 		},
 		onClose: {
@@ -257,7 +257,7 @@ export const Sizes: Story = {
 		return (
 			<>
 				<div style={{ display: "flex", flexWrap: "wrap", gap: 12, justifyContent: "center" }}>
-					{(["sm", "md", "lg", "xl", "inside"] as const).map((size) => (
+					{(["sm", "md", "lg", "xl", "xxl", "inside"] as const).map((size) => (
 						<Button
 							key={size}
 							variant="transparent"

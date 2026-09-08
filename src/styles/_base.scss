@@ -28,6 +28,12 @@ input:autofill {
 
 #modal-root {
 	&:not(:empty) {
+		/*
+		 * Portal центрирует modal как обычный grid-item. Так desktop-высота может оставаться auto,
+		 * не попадая под WebKit-дефект intrinsic height у position-fixed grid-контейнеров.
+		 */
+		display: grid;
+		place-items: center;
 		position: fixed;
 		z-index: var(--z-modal-root);
 		left: 0;

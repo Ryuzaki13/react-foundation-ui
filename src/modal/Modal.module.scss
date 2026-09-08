@@ -5,12 +5,9 @@
 
 	display: grid;
 	grid-auto-rows: auto 1fr;
-
-	position: fixed;
-	inset: 0;
-	margin: auto;
+	grid-area: 1 / 1;
 	z-index: var(--z-modal);
-	
+
 	border: var(--border);
 	border-radius: var(--modal-border-radius);
 	background-color: var(--surface-1);
@@ -58,10 +55,9 @@
 
 @include mobile-above {
 	.modal {
-		height: fit-content;
+		height: var(--modal-height, auto);
 		max-height: calc(100dvh - var(--space-lg));
 		--modal-border-radius: var(--radius-md);
-		
 
 		&.sm {
 			max-width: min(30em, 93dvw);

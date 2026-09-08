@@ -43,6 +43,19 @@ function ControlledModal() {
 }
 
 describe("Modal", () => {
+	it("передает пользовательскую высоту только в desktop CSS-переменную", async () => {
+		render(
+			<Modal isOpen title="Проверка высоты" height="min(34rem, 70dvh)" onClose={() => undefined}>
+				<ModalContent>Содержимое</ModalContent>
+			</Modal>
+		);
+
+		const dialog = await screen.findByRole("dialog", { name: "Проверка высоты" });
+
+		expect(dialog.style.height).toBe("");
+		expect(dialog.style.getPropertyValue("--modal-height")).toBe("min(34rem, 70dvh)");
+	});
+
 	it("сохраняет dialog до завершения exit-анимации и возвращает фокус", async () => {
 		const appRoot = document.createElement("div");
 		appRoot.id = "app-root";
