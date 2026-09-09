@@ -17,6 +17,8 @@ function StringListbox(props: {
 	multiple?: boolean;
 	value?: string | string[];
 	defaultValue?: string | string[];
+	label?: ReactNode;
+	description?: string;
 	disabled?: boolean;
 	focusOnMount?: boolean;
 	onChange?: (value: string | string[], option: StringOption) => void;
@@ -47,6 +49,8 @@ const meta = {
 	args: {
 		options,
 		multiple: false,
+		label: "Приоритет",
+		description: "Выберите приоритет задачи.",
 		value: "medium",
 		onChange: fn<(value: string | string[], option: StringOption) => void>()
 	},
@@ -55,6 +59,12 @@ const meta = {
 		layout: "padded"
 	},
 	argTypes: {
+		label: {
+			description: "Заголовок поля, оформленный так же, как у Input."
+		},
+		description: {
+			description: "Описание под заголовком, связанное со списком через ARIA."
+		},
 		options: {
 			description: "Массив доступных опций списка.",
 			control: false

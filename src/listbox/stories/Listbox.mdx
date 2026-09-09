@@ -25,14 +25,26 @@ Listbox уже имеет живые stories, а эта страница соб�
 ```tsx
 import { useState } from "react";
 
-import { Listbox } from "@ryuzaki13/react-foundation-ui";
+import { Listbox } from "@ryuzaki13/react-foundation-ui/listbox";
 
-const items = ["Черновик", "В работе", "Завершен"];
+const options = [
+	{ value: "draft", label: "Черновик" },
+	{ value: "active", label: "В работе" },
+	{ value: "done", label: "Завершен" }
+];
 
 export function Example() {
 	const [value, setValue] = useState(undefined);
 
-	return <Listbox items={items} value={value} onChange={setValue} />;
+	return (
+		<Listbox
+			label="Статус"
+			description="Выберите текущий статус задачи."
+			options={options}
+			value={value}
+			onChange={setValue}
+		/>
+	);
 }
 ```
 

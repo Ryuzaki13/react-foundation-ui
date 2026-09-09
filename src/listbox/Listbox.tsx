@@ -1,11 +1,10 @@
 import {
+	type HTMLAttributes,
+	type JSX,
+	type KeyboardEvent,
 	type MouseEvent,
-	HTMLAttributes,
-	JSX,
-	KeyboardEvent,
-	ReactNode,
+	type ReactNode,
 	useEffect,
-	useId,
 	useLayoutEffect,
 	useMemo,
 	useRef,
@@ -21,7 +20,7 @@ import {
 import { CheckIcon } from "lucide-react";
 
 import { CustomOptionButton, Option, OptionButton } from "../option";
-import { PickerOptions } from "../picker";
+import { PickerField, PickerOptions } from "../picker";
 
 type ListboxOption<T> = {
 	value: T;
@@ -31,6 +30,8 @@ type ListboxOption<T> = {
 
 interface ListboxBaseProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "value"> {
 	options: ListboxOption<T>[];
+	label?: ReactNode;
+	description?: string;
 	disabled?: boolean;
 	focusOnMount?: boolean;
 	renderItem?: (option: ListboxOption<T>, selected: boolean, active: boolean) => ReactNode;
@@ -85,12 +86,23 @@ function getInitialFocusIndex<T>(options: ListboxOption<T>[], value: T | T[] | u
 export function Listbox<T>(props: ListboxSingleProps<T>): JSX.Element;
 export function Listbox<T>(props: ListboxMultiProps<T>): JSX.Element;
 export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
-	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const { value, defaultValue, multiple, disabled, focusOnMount, renderItem, getKey, options, onChange, id: externalId, ...rest } = props;
+	const {
+		value,
+		defaultValue,
+		multiple,
+		label,
+		description,
+		disabled,
+		focusOnMount,
+		renderItem,
+		getKey,
+		options,
+		onChange,
+		id: externalId,
+		...rest
+	} = props;
 
 	const isControlled = value !== undefined;
-	const autoId = useId();
-	const listId = externalId ?? `${autoId}-listbox`;
 	const [internalValue, setInternalValue] = useState<T | T[] | undefined>(defaultValue);
 	const listRef = useRef<HTMLDivElement>(null);
 	const [focusedIndex, setFocusedIndex] = useState(() => getInitialFocusIndex(options, value ?? defaultValue, multiple));
@@ -109,19 +121,18 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	const handleSelect = (option: ListboxOption<T>) => {
 		if (disabled || option.disabled) return;
 
-		let newValue: T | T[];
-		if (props.multiple) {
+		if (multiple) {
 			const arr = Array.isArray(selectedValues) ? selectedValues : [];
-			newValue = arr.includes(option.value) ? arr.filter((v) => v !== option.value) : [...arr, option.value];
+			const newValue = arr.includes(option.value) ? arr.filter((v) => v !== option.value) : [...arr, option.value];
 
-			props.onChange?.(newValue, option);
-		} else {
-			newValue = option.value;
-
-			props.onChange?.(newValue, option);
+			onChange?.(newValue, option);
+			if (!isControlled) setInternalValue(newValue);
+			return;
 		}
 
-		if (!isControlled) setInternalValue(newValue);
+		onChange?.(option.value, option);
+
+		if (!isControlled) setInternalValue(option.value);
 	};
 
 	const handleKeyDown = (e: KeyboardEvent<HTMLDivElement>) => {
@@ -174,60 +185,65 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	}, [focusOnMount]);
 
 	return (
-		<PickerOptions
-			rootRef={listRef}
-			id={listId}
-			role="listbox"
-			// aria-label={}
-			aria-multiselectable={multiple || undefined}
-			aria-activedescendant={activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined}
-			onKeyDown={handleKeyDown}
-			{...rest}
-			aria-disabled={disabled || undefined}
-			tabIndex={disabled ? -1 : 0}
-			className={rest.className}>
-			{options.map((option, index) => {
-				const selected = multiple
-					? Array.isArray(selectedValues) && selectedValues.includes(option.value)
-					: selectedValues === option.value;
-				const active = index === activeIndex;
-				const optionDisabled = disabled || option.disabled || undefined;
+		<PickerField id={externalId} label={label} description={description} disabled={disabled}>
+			{({ controlId: listId, labelId, describedBy }) => (
+				<PickerOptions
+					rootRef={listRef}
+					id={listId}
+					role="listbox"
+					aria-multiselectable={multiple || undefined}
+					aria-activedescendant={activeIndex >= 0 ? `${listId}-option-${activeIndex}` : undefined}
+					onKeyDown={handleKeyDown}
+					{...rest}
+					aria-labelledby={labelId ?? rest["aria-labelledby"]}
+					aria-describedby={describedBy ?? rest["aria-describedby"]}
+					aria-disabled={disabled || undefined}
+					tabIndex={disabled ? -1 : 0}
+					className={rest.className}>
+					{options.map((option, index) => {
+						const selected = multiple
+							? Array.isArray(selectedValues) && selectedValues.includes(option.value)
+							: selectedValues === option.value;
+						const active = index === activeIndex;
+						const optionDisabled = disabled || option.disabled || undefined;
 
-				const handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
-					e.preventDefault(); // чтобы не сбрасывался фокус listbox
-					if (optionDisabled) {
-						return;
-					}
-					setFocusedIndex(index);
-					handleSelect(option);
-				};
+						const handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+							e.preventDefault(); // чтобы не сбрасывался фокус listbox
+							if (optionDisabled) {
+								return;
+							}
+							setFocusedIndex(index);
+							handleSelect(option);
+						};
 
-				return (
-					<Option
-						key={getKey ? getKey(option, index) : index}
-						id={`${listId}-option-${index}`}
-						role="option"
-						aria-selected={selected}
-						aria-disabled={optionDisabled}
-						disabled={optionDisabled}
-						active={active}
-						selected={selected}>
-						{renderItem ? (
-							<CustomOptionButton tabIndex={-1} disabled={optionDisabled} onMouseDown={handleMouseDown}>
-								{renderItem(option, selected, active)}
-							</CustomOptionButton>
-						) : (
-							<OptionButton
-								tabIndex={-1}
+						return (
+							<Option
+								key={getKey ? getKey(option, index) : index}
+								id={`${listId}-option-${index}`}
+								role="option"
+								aria-selected={selected}
+								aria-disabled={optionDisabled}
 								disabled={optionDisabled}
-								onMouseDown={handleMouseDown}
-								icon={selected ? <CheckIcon /> : <span />}
-								text={option.label ?? String(option.value)}
-							/>
-						)}
-					</Option>
-				);
-			})}
-		</PickerOptions>
+								active={active}
+								selected={selected}>
+								{renderItem ? (
+									<CustomOptionButton tabIndex={-1} disabled={optionDisabled} onMouseDown={handleMouseDown}>
+										{renderItem(option, selected, active)}
+									</CustomOptionButton>
+								) : (
+									<OptionButton
+										tabIndex={-1}
+										disabled={optionDisabled}
+										onMouseDown={handleMouseDown}
+										icon={selected ? <CheckIcon /> : <span />}
+										text={option.label ?? String(option.value)}
+									/>
+								)}
+							</Option>
+						);
+					})}
+				</PickerOptions>
+			)}
+		</PickerField>
 	);
 }

@@ -58,6 +58,33 @@ afterEach(async () => {
 });
 
 describe("Listbox", () => {
+	it("переиспользует подпись и описание Input и связывает их со списком через ARIA", async () => {
+		await renderNode(
+			<Listbox
+				id="schedule-period"
+				label="Период расписания"
+				description="Можно выбрать только один период."
+				options={OPTIONS}
+				value="week"
+				onChange={() => undefined}
+			/>
+		);
+
+		const label = getRequiredElement(container?.querySelector<HTMLLabelElement>("label") ?? null, "Не найдена подпись Listbox");
+		const description = getRequiredElement(
+			container?.querySelector<HTMLParagraphElement>("#schedule-period-description") ?? null,
+			"Не найдено описание Listbox"
+		);
+		const listbox = getRequiredElement(container?.querySelector<HTMLElement>('[role="listbox"]') ?? null, "Не найден Listbox");
+
+		expect(label.textContent).toBe("Период расписания");
+		expect(label.htmlFor).toBe("schedule-period");
+		expect(label.id).toBe("schedule-period-label");
+		expect(description.textContent).toBe("Можно выбрать только один период.");
+		expect(listbox.getAttribute("aria-labelledby")).toBe(label.id);
+		expect(listbox.getAttribute("aria-describedby")).toBe(description.id);
+	});
+
 	it("не прокручивает внешнюю страницу при монтировании и прокручивает активную опцию только после клавиатурной навигации", async () => {
 		await renderNode(<Listbox options={OPTIONS} value="week" onChange={() => undefined} />);
 
