@@ -29,10 +29,13 @@ input:autofill {
 #modal-root {
 	&:not(:empty) {
 		/*
-		 * Portal центрирует modal как обычный grid-item. Так desktop-высота может оставаться auto,
-		 * не попадая под WebKit-дефект intrinsic height у position-fixed grid-контейнеров.
+		 * Явно ограничиваем grid-track высотой portal-root. Без minmax(0, 1fr) мобильный WebKit
+		 * растягивает track по всему контенту modal, и внутренний Scrollable перестает иметь overflow.
+		 * Modal остаётся обычным grid-item: на desktop он центрируется с fit-content-высотой,
+		 * а на мобильном height: 100% получает определённую высоту viewport.
 		 */
 		display: grid;
+		grid-template-rows: minmax(0, 1fr);
 		place-items: center;
 		position: fixed;
 		z-index: var(--z-modal-root);
