@@ -1,0 +1,68 @@
+.statusIndicator {
+	--status-indicator-fill: var(--status-neutral-fill);
+	--status-indicator-size: 0.5em;
+
+	display: inline-block;
+	flex: 0 0 auto;
+	width: var(--status-indicator-size);
+	height: var(--status-indicator-size);
+	border-radius: 50%;
+	vertical-align: middle;
+	background-color: var(--status-indicator-fill);
+}
+
+.neutral {
+	--status-indicator-fill: var(--status-neutral-fill);
+}
+
+.info {
+	--status-indicator-fill: var(--status-info-fill);
+}
+
+.success {
+	--status-indicator-fill: var(--status-success-fill);
+}
+
+.warning {
+	--status-indicator-fill: var(--status-warning-fill);
+}
+
+.error {
+	--status-indicator-fill: var(--status-error-fill);
+}
+
+.sizeSm {
+	--status-indicator-size: 0.375em;
+}
+
+.sizeMd {
+	--status-indicator-size: 0.5em;
+}
+
+.sizeLg {
+	--status-indicator-size: 0.75em;
+}
+
+.animated {
+	transform-origin: center;
+	animation: statusIndicatorPulse var(--animation-2s) ease-in-out infinite;
+}
+
+@keyframes statusIndicatorPulse {
+	0%,
+	100% {
+		opacity: 0.7;
+		transform: scale(0.9);
+	}
+
+	50% {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	.animated {
+		animation: none;
+	}
+}

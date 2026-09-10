@@ -1,0 +1,73 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as StatusIndicatorStories from "./StatusIndicator.stories";
+
+<Meta
+	of={StatusIndicatorStories}
+	parameters={{
+		atomicCanvas: true,
+		layout: "padded",
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>StatusIndicator</Title>
+<Subtitle>Компактный цветовой маркер состояния</Subtitle>
+
+StatusIndicator помогает быстро считать состояние строки, карточки или процесса. Компонент использует семантические status-токены темы и сохраняет цветовую схему во всех host-проектах.
+
+## Основной сценарий
+
+<Primary />
+
+```tsx
+import { StatusIndicator } from "@ryuzaki13/react-foundation-ui/status-indicator";
+
+export function SyncStatus() {
+	return (
+		<span>
+			<StatusIndicator tone="info" /> В работе
+		</span>
+	);
+}
+```
+
+<Controls of={StatusIndicatorStories.Basic} />
+
+## Тоны
+
+Доступны только статусные тоны: `neutral`, `info`, `success`, `warning` и `error`. Фирменный `brand` намеренно не входит в API компонента.
+
+<Canvas of={StatusIndicatorStories.Tones} />
+
+## Размеры
+
+Размеры заданы относительно текущего размера шрифта: `sm` — `0.375em`, `md` — `0.5em`, `lg` — `0.75em`. По умолчанию используется `md`.
+
+<Canvas of={StatusIndicatorStories.Sizes} />
+
+## Анимация
+
+Проп `animated` включает мягкую пульсацию. Используйте её для активного процесса или состояния, которое ожидаемо изменится, а не для каждого статуса на странице. При системной настройке `prefers-reduced-motion: reduce` анимация отключается.
+
+<Canvas of={StatusIndicatorStories.Animated} />
+
+```tsx
+<span role="status">
+	<StatusIndicator tone="info" animated />
+	Синхронизация
+</span>
+```
+
+## Доступность
+
+Без ARIA-атрибутов индикатор считается декоративным и автоматически скрывается от accessibility tree через `aria-hidden`. Не передавайте состояние только цветом: добавляйте видимый текст рядом. Если изменение должно быть озвучено, назначьте `role="status"` контейнеру с текстом, как в примере выше. Для самостоятельного индикатора можно явно передать `role="img"` и `aria-label`.
+
+## API
+
+<ArgTypes of={StatusIndicatorStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

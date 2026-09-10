@@ -274,6 +274,10 @@
 			"types": "./dist/state-select/index.d.ts",
 			"import": "./dist/state-select/index.js"
 		},
+		"./status-indicator": {
+			"types": "./dist/status-indicator/index.d.ts",
+			"import": "./dist/status-indicator/index.js"
+		},
 		"./switch": {
 			"types": "./dist/switch/index.d.ts",
 			"import": "./dist/switch/index.js"
