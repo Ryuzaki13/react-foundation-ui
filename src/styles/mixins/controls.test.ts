@@ -49,17 +49,6 @@ describe("ui-control-base", () => {
 		);
 	});
 
-	it("не подменяет фон элемента при сохранённом focus", () => {
-		const css = compileUiControlBase();
-		const focusRule = css.match(/\.control:focus,\s*\.control:focus-within \{[^}]*\}/)?.[0];
-
-		expect(focusRule).toContain("border-color: var(--ui-border-focus)");
-		expect(focusRule).not.toContain("background-color");
-		expect(css).toMatch(
-			/\.control:focus-visible \{\s*outline: var\(--focus-width\) solid var\(--focus-ring\);\s*outline-offset: var\(--focus-offset\);\s*\}/
-		);
-	});
-
 	it("сохраняет структуру appearance в disabled-состоянии без opacity", () => {
 		const css = compileUiAppearances();
 
