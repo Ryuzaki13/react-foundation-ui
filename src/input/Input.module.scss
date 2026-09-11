@@ -69,7 +69,7 @@
 		background-color var(--transition-fast) ease;
 
 	&:hover {
-		color: var(--content-accent);
+		color: var(--accent-text);
 	}
 
 	&:focus-visible {
@@ -90,8 +90,8 @@
 	right: 0;
 	transform: translateY(100%);
 	// font-size: var(--font-size-sm);
-	color: var(--status-error-on-fill);
-	background: var(--status-error-fill);
+	color: var(--error-on-fill);
+	background: var(--error-fill);
 	border-radius: var(--radius-sm);
 	padding: var(--space-xs) var(--space-sm);
 	box-shadow: var(--shadow-sm);

@@ -57,7 +57,7 @@ export function ImageSelectionFields({
 									onClick={() => state.setActiveIndex(index)}
 									style={{
 										padding: 0,
-										border: index === state.activeIndex ? "2px solid var(--border-accent)" : "2px solid transparent",
+										border: index === state.activeIndex ? "2px solid var(--accent-border)" : "2px solid transparent",
 										background: "transparent",
 										cursor: disabled ? "default" : "pointer"
 									}}>

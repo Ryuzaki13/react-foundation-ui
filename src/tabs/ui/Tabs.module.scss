@@ -108,16 +108,16 @@
 
 	&:hover {
 		cursor: pointer;
-		color: var(--content-accent);
-		// background-color: var(--surface-accent);
-		--decoration-color: var(--border-accent);
+		color: var(--accent-text);
+		// background-color: var(--accent-fill);
+		--decoration-color: var(--accent-border);
 	}
 
 	&.selected {
-		color: var(--status-brand-text);
+		color: var(--brand-text);
 		// color: var(--content-0);
-		// background-color: var(--status-brand-fill);
-		--decoration-color: var(--status-brand-border);
+		// background-color: var(--brand-fill);
+		--decoration-color: var(--brand-border);
 	}
 
 	&:disabled {

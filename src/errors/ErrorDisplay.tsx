@@ -59,7 +59,7 @@ export const ErrorDisplay: React.FC<{ error: Error; componentStack?: string; dra
 					style={{
 						zIndex: 1,
 						position: "relative",
-						textShadow: "1px -1px 1px var(--status-warning-border-focus), -1px 1px 1px var(--status-info-border-focus)"
+						textShadow: "1px -1px 1px var(--warning-border), -1px 1px 1px var(--info-border)"
 					}}>
 					{ERROR_BOOM_MESSAGES[Math.floor(randomValue * ERROR_BOOM_MESSAGES.length)]}
 				</div>

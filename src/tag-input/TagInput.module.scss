@@ -72,8 +72,8 @@
 		background-color var(--transition-fast) ease;
 
 	&:hover {
-		background-color: var(--status-error-soft);
-		color: var(--status-error-text);
+		background-color: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0));
+		color: var(--error-text);
 	}
 
 	&:focus-visible {

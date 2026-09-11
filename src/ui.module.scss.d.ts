@@ -21,6 +21,7 @@ declare const styles: {
   readonly uiPopupOption: "uiPopupOption";
   readonly invalid: "invalid";
   readonly uiToneNeutral: "uiToneNeutral";
+  readonly uiToneAccent: "uiToneAccent";
   readonly uiToneBrand: "uiToneBrand";
   readonly uiToneError: "uiToneError";
   readonly uiToneWarning: "uiToneWarning";

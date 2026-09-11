@@ -19,6 +19,7 @@ const itemStyle: CSSProperties = {
 };
 
 const tones: readonly { tone: StatusIndicatorTone; label: string }[] = [
+	{ tone: "accent", label: "Текущий" },
 	{ tone: "neutral", label: "Неизвестно" },
 	{ tone: "info", label: "В работе" },
 	{ tone: "success", label: "Готово" },
@@ -48,7 +49,7 @@ const meta = {
 		tone: {
 			description: "Семантический цвет индикатора.",
 			control: "inline-radio",
-			options: ["neutral", "info", "success", "warning", "error"]
+			options: ["accent", "neutral", "info", "success", "warning", "error"]
 		},
 		size: {
 			description: "Размер индикатора.",

@@ -33,6 +33,7 @@
 		"styles",
 		"styles.scss",
 		"src/styles",
+		"COLOR_TOKENS_MIGRATION.md",
 		"README.md",
 		"LICENSE"
 	],

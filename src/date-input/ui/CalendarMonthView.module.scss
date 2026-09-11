@@ -21,19 +21,19 @@
 	background-color: var(--surface-1);
 
 	&:hover:not(.disabled) {
-		background-color: var(--surface-accent);
+		background-color: var(--accent-fill);
 	}
 
 	&.range {
-		background-color: var(--surface-accent);
+		background-color: var(--accent-fill);
 		color: var(--content-0);
 	}
 
 	&.selected,
 	&.rangeStart,
 	&.rangeEnd {
-		background-color: var(--surface-accent);
-		color: var(--content-accent);
+		background-color: var(--accent-fill);
+		color: var(--accent-text);
 		font-weight: 600;
 		font-variation-settings: "wght" 600;
 	}

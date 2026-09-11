@@ -70,13 +70,13 @@
 
 // TODO: unused
 .outlineSolid {
-	outline: var(--border-width) solid var(--content-accent);
+	outline: var(--border-width) solid var(--accent-text);
 	outline-offset: var(--focus-offset);
 }
 
 // TODO: unused
 .outlineDashed {
-	outline: var(--border-width) dashed var(--content-accent);
+	outline: var(--border-width) dashed var(--accent-text);
 	outline-offset: var(--focus-offset);
 }
 

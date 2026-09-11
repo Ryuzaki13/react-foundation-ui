@@ -65,7 +65,7 @@
 	}
 
 	&:hover:not(:disabled) {
-		background: color-mix(in srgb, var(--surface-accent) 40%, transparent);
+		background: color-mix(in srgb, var(--accent-fill) 40%, transparent);
 	}
 
 	&:disabled {
@@ -83,6 +83,6 @@
 	border-top: var(--border);
 	border-bottom: var(--border);
 	// border-radius: var(--radius-xs);
-	background: color-mix(in srgb, var(--surface-accent) 28%, transparent);
+	background: color-mix(in srgb, var(--accent-fill) 28%, transparent);
 	pointer-events: none;
 }

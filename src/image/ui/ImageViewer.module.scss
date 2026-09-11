@@ -16,7 +16,7 @@
 	--yarl__icon_size: var(--image-viewer-icon-size, 1.75rem);
 	--yarl__toolbar_padding: var(--image-viewer-toolbar-padding, var(--space-md, 0.625rem));
 	--yarl__slide_icon_loading_color: var(--image-viewer-loading-color, var(--image-viewer-control-color, rgb(255 255 255 / 82%)));
-	--yarl__slide_icon_error_color: var(--image-viewer-error-color, var(--status-error-fill, #d32f2f));
+	--yarl__slide_icon_error_color: var(--image-viewer-error-color, var(--error-fill, #d32f2f));
 	--yarl__slide_captions_container_background: var(--image-viewer-caption-background, rgb(0 0 0 / 62%));
 	--yarl__slide_title_color: var(--image-viewer-caption-color, var(--white, #fff));
 	--yarl__slide_description_color: var(--image-viewer-caption-color, var(--white, #fff));

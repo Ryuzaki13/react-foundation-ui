@@ -15,7 +15,7 @@
 .card {
 	--notify-accent: var(--border-1);
 	--notify-accent-surface: var(--surface-1);
-	--notify-accent-text: var(--content-accent);
+	--notify-accent-text: var(--accent-text);
 
 	position: relative;
 	overflow: hidden;
@@ -31,27 +31,27 @@
 }
 
 .info {
-	--notify-accent: var(--status-info-border);
-	--notify-accent-surface: var(--status-info-soft);
-	--notify-accent-text: var(--status-info-text);
+	--notify-accent: var(--info-border);
+	--notify-accent-surface: color-mix(in srgb, var(--info-fill) 12%, var(--surface-0));
+	--notify-accent-text: var(--info-text);
 }
 
 .success {
-	--notify-accent: var(--status-success-border);
-	--notify-accent-surface: var(--status-success-soft);
-	--notify-accent-text: var(--status-success-text);
+	--notify-accent: var(--success-border);
+	--notify-accent-surface: color-mix(in srgb, var(--success-fill) 12%, var(--surface-0));
+	--notify-accent-text: var(--success-text);
 }
 
 .warning {
-	--notify-accent: var(--status-warning-border);
-	--notify-accent-surface: var(--status-warning-soft);
-	--notify-accent-text: var(--status-warning-text);
+	--notify-accent: var(--warning-border);
+	--notify-accent-surface: color-mix(in srgb, var(--warning-fill) 12%, var(--surface-0));
+	--notify-accent-text: var(--warning-text);
 }
 
 .error {
-	--notify-accent: var(--status-error-border);
-	--notify-accent-surface: var(--status-error-soft);
-	--notify-accent-text: var(--status-error-text);
+	--notify-accent: var(--error-border);
+	--notify-accent-surface: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0));
+	--notify-accent-text: var(--error-text);
 }
 
 .header,

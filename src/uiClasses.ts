@@ -13,11 +13,13 @@ const variantSchemeMap: Record<UiVariant, UiScheme> = {
 	neutral: { tone: "neutral", appearance: "solid" },
 	neutralOutline: { tone: "neutral", appearance: "outline" },
 	ghost: { tone: "neutral", appearance: "ghost" },
+	accent: { tone: "accent", appearance: "solid" },
 	brand: { tone: "brand", appearance: "solid" },
 	error: { tone: "error", appearance: "solid" },
 	warning: { tone: "warning", appearance: "solid" },
 	success: { tone: "success", appearance: "solid" },
 	info: { tone: "info", appearance: "solid" },
+	accentOutline: { tone: "accent", appearance: "outline" },
 	brandOutline: { tone: "brand", appearance: "outline" },
 	errorOutline: { tone: "error", appearance: "outline" },
 	warningOutline: { tone: "warning", appearance: "outline" },
@@ -27,6 +29,7 @@ const variantSchemeMap: Record<UiVariant, UiScheme> = {
 };
 
 const toneClassNameMap: Record<UiTone, string> = {
+	accent: uiStyles.uiToneAccent,
 	neutral: uiStyles.uiToneNeutral,
 	brand: uiStyles.uiToneBrand,
 	error: uiStyles.uiToneError,

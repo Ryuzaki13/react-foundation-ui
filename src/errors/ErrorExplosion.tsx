@@ -19,7 +19,7 @@ export const ErrorExplosion: React.FC<ErrorExplosionProps> = ({ header, descript
 					style={{
 						zIndex: 1,
 						position: "relative",
-						textShadow: "1px 0 1px var(--status-error-fill), -1px 0 1px var(--status-info-fill)"
+						textShadow: "1px 0 1px var(--error-fill), -1px 0 1px var(--info-fill)"
 					}}>
 					{ERROR_BOOM_MESSAGES[Math.floor(randomValue * ERROR_BOOM_MESSAGES.length)]}
 				</div>

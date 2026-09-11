@@ -1,5 +1,5 @@
 .statusIndicator {
-	--status-indicator-fill: var(--status-neutral-fill);
+	--status-indicator-fill: var(--neutral-fill);
 	--status-indicator-size: 0.5em;
 
 	display: inline-block;
@@ -12,23 +12,27 @@
 }
 
 .neutral {
-	--status-indicator-fill: var(--status-neutral-fill);
+	--status-indicator-fill: var(--neutral-fill);
+}
+
+.accent {
+	--status-indicator-fill: var(--accent-border);
 }
 
 .info {
-	--status-indicator-fill: var(--status-info-fill);
+	--status-indicator-fill: var(--info-fill);
 }
 
 .success {
-	--status-indicator-fill: var(--status-success-fill);
+	--status-indicator-fill: var(--success-fill);
 }
 
 .warning {
-	--status-indicator-fill: var(--status-warning-fill);
+	--status-indicator-fill: var(--warning-fill);
 }
 
 .error {
-	--status-indicator-fill: var(--status-error-fill);
+	--status-indicator-fill: var(--error-fill);
 }
 
 .sizeSm {

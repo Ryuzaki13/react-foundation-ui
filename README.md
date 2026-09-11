@@ -108,7 +108,9 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 ### Точные палитры host-приложения
 
-Если одной OKLCH-точки недостаточно для воспроизведения брендовой палитры, публичный mixin `theme` принимает точные accent/status scales. Неуказанные значения наследуются из настроенного baseline схемы; границы статуса по умолчанию повторяют text scale, а `soft` вычисляется из точного fill. Карта `tokens` выводится последней и предназначена для точечных semantic-token overrides. Для custom theme без отдельных `brand` и `neutral` scales эти тона связываются с её accent и базовыми content/surface/border tokens; недостающие border/soft tokens остальных статусов также следуют за их точными text/fill значениями.
+Публичный mixin `theme` принимает обычные hex-цвета для семантических схем `accent`, `brand`, `neutral`, `error`, `warning`, `success` и `info`. У каждой схемы четыре обязательные роли: `text`, `border`, `fill` и `on-fill`. Неуказанные значения наследуются из baseline выбранного light/dark-режима, поэтому host может переопределить одну роль без копирования всей палитры. Hover, active и мягкие заливки вычисляются внутри компонентов и не расширяют публичный контракт темы.
+
+Каждый первичный цветовой токен использует одноимённый high-contrast token перед hex fallback: например, `--error-text: var(--hc-error-text, #b91c1c)`. Цветовые значения из карты `tokens` получают такой wrapper автоматически. Это позволяет будущему contrast-режиму заменить палитру без повторной компиляции темы. Карта `tokens` выводится последней и остаётся escape hatch для точечных semantic-token overrides.
 
 ```scss
 @use "@ryuzaki13/react-foundation-ui/styles/themes" as foundationThemes;
@@ -122,24 +124,18 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 				"--surface-1": #f8ecd9,
 				"--focus-ring": #c2410c
 			),
-			accent: (
-				content: #9a3412,
-				surface: #ffedd5,
-				border: #ea580c
-			),
 			status: (
+				accent: (
+					text: #9a3412,
+					border: #ea580c,
+					fill: #ffedd5,
+					on-fill: #431407
+				),
 				error: (
-					text: (
-						base: #b91c1c,
-						hover: #991b1b,
-						active: #7f1d1d
-					),
-					fill: (
-						base: #dc2626,
-						hover: #b91c1c,
-						active: #991b1b,
-						on-fill: #ffffff
-					)
+					text: #b91c1c,
+					border: #b91c1c,
+					fill: #dc2626,
+					on-fill: #ffffff
 				)
 			)
 		)
@@ -147,7 +143,7 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 }
 ```
 
-Для `accent` точная форма содержит `content`, `surface` и `border`. Для статуса обязательна карта `text` с `base`; `hover` и `active` имеют последовательные fallback. Карта `fill` и её поля опциональны, а `border` может отдельно задать `base`, `hover`, `active` и `focus`. Такой контракт позволяет переносить существующие темы без аппроксимации цветов и при этом сохраняет все новые semantic-токены foundation UI.
+`accent` больше не является отдельной экспериментальной системой `--interactive-*`: это полноценная семантическая схема с теми же четырьмя ролями. Компоненты используют её для текущего, выбранного и наведённого состояния. Полная карта переименований вынесена в `COLOR_TOKENS_MIGRATION.md`.
 
 ## Сканирование штрихкодов
 

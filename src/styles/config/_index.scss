@@ -1,5 +1,6 @@
 @use "sass:map";
 @use "sass:meta";
+@use "sass:string";
 
 $root-token-defaults: (
 	"--font-family": (
@@ -72,8 +73,8 @@ $root-token-defaults: (
 	"--z-tooltip": 200,
 	"--z-image-viewer": 300,
 	"--z-notify": 400,
-	"--white": oklch(1 0 0),
-	"--black": oklch(0 0 0)
+	"--white": #ffffff,
+	"--black": #000000
 );
 
 $retina-token-defaults: (
@@ -191,110 +192,62 @@ $paragraph-spacing-preset-defaults: (
 
 $light-theme-defaults: (
 	tokens: (
-		"--surface-0": var(--hc-surface, #ffffff),
-		"--surface-1": var(--hc-surface, #f8f8f9),
-		"--surface-2": var(--hc-surface, #f1f1f3),
-		"--content-0": var(--hc-content, oklch(0.26 0.01 244)),
-		"--content-1": var(--hc-content, oklch(0.52 0.02 268)),
-		"--content-2": var(--hc-content, oklch(0.66 0.01 258)),
-		"--focus-ring": var(--hc-focus-ring, oklch(0.5 0.3 270)),
-		"--overlay-backdrop": var(--hc-overlay-backdrop, rgba(0, 0, 0, 0.1)),
-		"--overlay-glass": var(--hc-overlay-glass, rgba(255, 255, 255, 0.8)),
-		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
-		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
-		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
-		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25),
-		"--interactive-color": inherit,
-		"--interactive-hover-color": var(--content-0),
-		"--interactive-active-color": var(--content-0),
-		"--interactive-selected-color": var(--content-0),
-		"--interactive-surface": transparent,
-		"--interactive-hover-surface": var(--surface-accent),
-		"--interactive-active-surface": var(--surface-accent),
-		"--interactive-selected-surface": var(--surface-accent),
-		"--interactive-border": transparent,
-		"--interactive-hover-border": var(--border-accent),
-		"--interactive-active-border": var(--border-accent),
-		"--interactive-selected-border": var(--border-accent)
-	),
-	accent: (
-		l: 0.55,
-		c: 0.22,
-		h: 245
+		"--surface-0": #ffffff,
+		"--surface-1": #f8f8f9,
+		"--surface-2": #f1f1f3,
+		"--content-0": #202529,
+		"--content-1": #646975,
+		"--content-2": #8e9298,
+		"--focus-ring": #3429ff,
+		"--overlay-backdrop": string.unquote("var(--hc-overlay-backdrop, #0000001a)"),
+		"--overlay-glass": string.unquote("var(--hc-overlay-glass, #ffffffcc)"),
+		"--shadow-xs": string.unquote("var(--hc-shadow-xs, 0 0 0.25em #00000026)"),
+		"--shadow-sm": string.unquote("var(--hc-shadow-sm, 0 0 0.25em #00000040)"),
+		"--shadow-md": string.unquote("var(--hc-shadow-md, 0 0 0.5em #00000040)"),
+		"--shadow-lg": string.unquote("var(--hc-shadow-lg, 0 0 1em #00000040)")
 	),
 	status: (
-		// Brand использует общий генератор состояний, но остаётся не статусом, а фирменным тоном UI.
+		accent: (
+			text: #0073e6,
+			border: #006eb3,
+			fill: #e2f1fa,
+			on-fill: #202529
+		),
 		brand: (
-				fill: (
-					l: 0.4,
-					c: 0.2,
-					h: 262
-				),
-				border: (
-					l: 0.5,
-					c: 0.2,
-					h: 262
-				)
-			),
+			text: #0036b0,
+			border: #1957d2,
+			fill: #1842d2,
+			on-fill: #ffffff
+		),
 		neutral: (
-			fill: (
-				l: 0.26,
-				c: 0.01,
-				h: 244
-			),
-			border: (
-				l: 0.86,
-				c: 0.016,
-				h: 245
-			)
+			text: #202529,
+			border: #c9d2db,
+			fill: #2e3338,
+			on-fill: #ffffff
 		),
 		error: (
-			fill: (
-				l: 0.52,
-				c: 0.19,
-				h: 15
-			),
-			border: (
-				l: 0.52,
-				c: 0.19,
-				h: 15
-			)
+			text: #bd1f44,
+			border: #bd1f44,
+			fill: #dc2447,
+			on-fill: #ffffff
 		),
 		warning: (
-			fill: (
-				l: 0.55,
-				c: 0.16,
-				h: 80
-			),
-			border: (
-				l: 0.55,
-				c: 0.16,
-				h: 80
-			)
+			text: #a16200,
+			border: #a16200,
+			fill: #b67400,
+			on-fill: #ffffff
 		),
 		success: (
-			fill: (
-				l: 0.5,
-				c: 0.14,
-				h: 170
-			),
-			border: (
-				l: 0.5,
-				c: 0.14,
-				h: 170
-			)
+			text: #007b57,
+			border: #007b57,
+			fill: #00906b,
+			on-fill: #ffffff
 		),
 		info: (
-			fill: (
-				l: 0.52,
-				c: 0.15,
-				h: 245
-			),
-			border: (
-				l: 0.52,
-				c: 0.15,
-				h: 245
-			)
+			text: #006eb8,
+			border: #006eb8,
+			fill: #007ed8,
+			on-fill: #ffffff
 		)
 	)
 );
@@ -304,106 +257,59 @@ $dark-theme-defaults: (
 		"--surface-0": #222a35,
 		"--surface-1": #27313f,
 		"--surface-2": #2d3646,
-		"--content-0": oklch(0.9 0.01 256),
-		"--content-1": oklch(0.8 0.02 256),
-		"--content-2": oklch(0.7 0.02 256),
-		"--focus-ring": oklch(0.88 0.2 94),
-		"--overlay-backdrop": rgba(30, 37, 47, 0.18),
-		"--overlay-glass": rgba(30, 37, 47, 0.8),
-		"--shadow-xs": 0 0 0.25em rgba(0, 0, 0, 0.15),
-		"--shadow-sm": 0 0 0.25em rgba(0, 0, 0, 0.25),
-		"--shadow-md": 0 0 0.5em rgba(0, 0, 0, 0.25),
-		"--shadow-lg": 0 0 1em rgba(0, 0, 0, 0.25),
-		"--interactive-color": inherit,
-		"--interactive-hover-color": var(--content-0),
-		"--interactive-active-color": var(--content-0),
-		"--interactive-selected-color": var(--content-0),
-		"--interactive-surface": transparent,
-		"--interactive-hover-surface": var(--surface-accent),
-		"--interactive-active-surface": var(--surface-accent),
-		"--interactive-selected-surface": var(--surface-accent),
-		"--interactive-border": transparent,
-		"--interactive-hover-border": var(--border-accent),
-		"--interactive-active-border": var(--border-accent),
-		"--interactive-selected-border": var(--border-accent)
-	),
-	accent: (
-		l: 0.7,
-		c: 0.2,
-		h: 245
+		"--content-0": #dadee5,
+		"--content-1": #b6bfcb,
+		"--content-2": #969fab,
+		"--focus-ring": #ffd300,
+		"--overlay-backdrop": string.unquote("var(--hc-overlay-backdrop, #1e252f2e)"),
+		"--overlay-glass": string.unquote("var(--hc-overlay-glass, #1e252fcc)"),
+		"--shadow-xs": string.unquote("var(--hc-shadow-xs, 0 0 0.25em #00000026)"),
+		"--shadow-sm": string.unquote("var(--hc-shadow-sm, 0 0 0.25em #00000040)"),
+		"--shadow-md": string.unquote("var(--hc-shadow-md, 0 0 0.5em #00000040)"),
+		"--shadow-lg": string.unquote("var(--hc-shadow-lg, 0 0 1em #00000040)")
 	),
 	status: (
+		accent: (
+			text: #00a5ff,
+			border: #4e8cbe,
+			fill: #103243,
+			on-fill: #dadee5
+		),
 		brand: (
-			fill: (
-				l: 0.75,
-				c: 0.2,
-				h: 272
-			),
-			border: (
-				l: 0.7,
-				c: 0.18,
-				h: 266
-			)
+			text: #84a0ff,
+			border: #6997ff,
+			fill: #97b5ff,
+			on-fill: #192045
 		),
 		neutral: (
-			fill: (
-				l: 0.75,
-				c: 0.02,
-				h: 256
-			),
-			border: (
-				l: 0.45,
-				c: 0.02,
-				h: 256
-			)
+			text: #a6afbb,
+			border: #4e5661,
+			fill: #b9c2cd,
+			on-fill: #222427
 		),
 		error: (
-			fill: (
-				l: 0.75,
-				c: 0.18,
-				h: 22
-			),
-			border: (
-				l: 0.75,
-				c: 0.18,
-				h: 22
-			)
+			text: #ff7879,
+			border: #ff7879,
+			fill: #ff8f8e,
+			on-fill: #3d1516
 		),
 		warning: (
-			fill: (
-				l: 0.77,
-				c: 0.14,
-				h: 75
-			),
-			border: (
-				l: 0.77,
-				c: 0.14,
-				h: 75
-			)
+			text: #e8a63d,
+			border: #e8a63d,
+			fill: #faba5b,
+			on-fill: #322004
 		),
 		success: (
-			fill: (
-				l: 0.75,
-				c: 0.14,
-				h: 165
-			),
-			border: (
-				l: 0.75,
-				c: 0.14,
-				h: 165
-			)
+			text: #3cc998,
+			border: #3cc998,
+			fill: #5edcab,
+			on-fill: #062b1e
 		),
 		info: (
-			fill: (
-				l: 0.75,
-				c: 0.16,
-				h: 258
-			),
-			border: (
-				l: 0.75,
-				c: 0.16,
-				h: 258
-			)
+			text: #6baeff,
+			border: #6baeff,
+			fill: #81c2ff,
+			on-fill: #12243f
 		)
 	)
 );
@@ -430,7 +336,14 @@ $dark-theme: map.deep-merge($dark-theme-defaults, $dark-theme-overrides);
 
 @mixin emit-declarations($tokens) {
 	@each $name, $value in $tokens {
-		#{$name}: #{meta.inspect($value)};
+		@if string.slice($name, 1, 2) == "--" and meta.type-of($value) == color {
+			$high-contrast-name: --hc-#{string.slice($name, 3)};
+
+			// Цвет остаётся fallback, а одноимённый --hc-* можно включить runtime-режимом контрастности.
+			#{$name}: var(#{$high-contrast-name}, #{meta.inspect($value)});
+		} @else {
+			#{$name}: #{meta.inspect($value)};
+		}
 	}
 }
 

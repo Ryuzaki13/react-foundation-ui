@@ -3,12 +3,12 @@
 
 	&:hover:not(.selected) {
 		// filter: contrast(0.9);
-		background-color: var(--surface-accent);
+		background-color: var(--accent-fill);
 	}
 
 	&.selected {
 		cursor: default;
-		// color: var(--content-accent);
+		// color: var(--accent-text);
 		background-color: var(--surface-1);
 	}
 }

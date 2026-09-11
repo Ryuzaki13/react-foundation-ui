@@ -33,7 +33,7 @@
 
 // TODO: unused
 .surfaceAccent {
-	background-color: var(--surface-accent);
+	background-color: var(--accent-fill);
 }
 
 .surfaceBackdrop {
@@ -62,31 +62,31 @@
 }
 
 .contentAccent {
-	color: var(--content-accent);
+	color: var(--accent-text);
 }
 
 .statusSuccess {
-	color: var(--status-success-text);
+	color: var(--success-text);
 }
 
 .statusError {
-	color: var(--status-error-text);
+	color: var(--error-text);
 }
 
 .textColorDanger {
-	color: var(--status-error-text);
+	color: var(--error-text);
 }
 
 .statusWarning {
-	color: var(--status-warning-text);
+	color: var(--warning-text);
 }
 
 .statusInfo {
-	color: var(--status-info-text);
+	color: var(--info-text);
 }
 
 .statusBrand {
-	color: var(--status-brand-text);
+	color: var(--brand-text);
 }
 
 .statusNone {

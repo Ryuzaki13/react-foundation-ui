@@ -23,9 +23,9 @@ export type UiBaseProps<C, V = C> = {
 
 /**
  * Цветовой тон задаёт смысл цвета, а `UiAppearance` — визуальную иерархию действия.
- * `brand` предназначен для фирменных действий и не заменяет статусные тоны.
+ * `accent` отмечает текущий или выбранный элемент, а `brand` — фирменное действие.
  */
-export type UiTone = "neutral" | "brand" | "error" | "warning" | "success" | "info";
+export type UiTone = "accent" | "neutral" | "brand" | "error" | "warning" | "success" | "info";
 
 export type UiAppearance = "solid" | "outline" | "ghost" | "transparent";
 
@@ -33,12 +33,14 @@ export type UiVariant =
 	| "transparent"
 	| "ghost"
 	| "neutral"
+	| "accent"
 	| "brand"
 	| "error"
 	| "warning"
 	| "success"
 	| "info"
 	| "neutralOutline"
+	| "accentOutline"
 	| "brandOutline"
 	| "errorOutline"
 	| "warningOutline"

@@ -30,6 +30,8 @@ const meta = {
 				"neutral",
 				"neutralOutline",
 				"ghost",
+				"accent",
+				"accentOutline",
 				"brand",
 				"error",
 				"warning",
@@ -46,7 +48,7 @@ const meta = {
 		tone: {
 			description: "Цветовой тон кнопки.",
 			control: "inline-radio",
-			options: ["neutral", "brand", "error", "warning", "success", "info"]
+			options: ["neutral", "accent", "brand", "error", "warning", "success", "info"]
 		},
 		appearance: {
 			description: "Визуальная форма кнопки.",
@@ -76,6 +78,41 @@ const meta = {
 export default meta;
 type Story = StoryObj<ButtonProps>;
 
+const variantExamples = [
+	["neutral", "Neutral Solid"],
+	["neutralOutline", "Neutral Outline"],
+	["ghost", "Ghost"],
+	["accent", "Accent Solid"],
+	["accentOutline", "Accent Outline"],
+	["brand", "Brand Solid"],
+	["brandOutline", "Brand Outline"],
+	["info", "Info Solid"],
+	["success", "Success Solid"],
+	["warning", "Warning Solid"],
+	["error", "Error Solid"],
+	["infoOutline", "Info Outline"],
+	["successOutline", "Success Outline"],
+	["warningOutline", "Warning Outline"],
+	["errorOutline", "Error Outline"],
+	["transparent", "Transparent"]
+] as const satisfies ReadonlyArray<readonly [NonNullable<ButtonProps["variant"]>, string]>;
+
+/**
+ * Один набор данных гарантирует, что в Storybook обычные и disabled-кнопки
+ * всегда содержат одинаковый полный набор готовых вариантов.
+ */
+function ButtonVariantGrid({ disabled = false }: { disabled?: boolean }) {
+	return (
+		<div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
+			{variantExamples.map(([variant, label]) => (
+				<Button key={variant} variant={variant} disabled={disabled}>
+					{label}
+				</Button>
+			))}
+		</div>
+	);
+}
+
 export const Basic: Story = {
 	render: function Render() {
 		const [args] = useArgs<ButtonProps>();
@@ -94,21 +131,16 @@ export const Basic: Story = {
 
 export const Variants: Story = {
 	render: () => (
-		<div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-			<Button variant="neutral">Neutral Solid</Button>
-			<Button variant="neutralOutline">Neutral Outline</Button>
-			<Button variant="ghost">Ghost</Button>
-			<Button variant="brand">Brand Solid</Button>
-			<Button variant="brandOutline">Brand Outline</Button>
-			<Button variant="info">Info Solid</Button>
-			<Button variant="success">Success Solid</Button>
-			<Button variant="warning">Warning Solid</Button>
-			<Button variant="error">Error Solid</Button>
-			<Button variant="infoOutline">Info Outline</Button>
-			<Button variant="successOutline">Success Outline</Button>
-			<Button variant="warningOutline">Warning Outline</Button>
-			<Button variant="errorOutline">Error Outline</Button>
-			<Button variant="transparent">Transparent</Button>
+		<div style={{ display: "grid", gap: 24 }}>
+			<section style={{ display: "grid", gap: 12 }}>
+				<h3 style={{ margin: 0 }}>Обычное состояние</h3>
+				<ButtonVariantGrid />
+			</section>
+
+			<section style={{ display: "grid", gap: 12 }}>
+				<h3 style={{ margin: 0 }}>Отключённое состояние</h3>
+				<ButtonVariantGrid disabled />
+			</section>
 		</div>
 	),
 	args: {
@@ -127,6 +159,15 @@ export const ComposableScheme: Story = {
 			</Button>
 			<Button tone="neutral" appearance="ghost">
 				Neutral Ghost
+			</Button>
+			<Button tone="accent" appearance="solid">
+				Accent Solid
+			</Button>
+			<Button tone="accent" appearance="outline">
+				Accent Outline
+			</Button>
+			<Button tone="accent" appearance="ghost">
+				Accent Ghost
 			</Button>
 			<Button tone="brand" appearance="solid">
 				Brand Solid

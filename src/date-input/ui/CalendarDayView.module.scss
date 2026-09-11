@@ -36,7 +36,7 @@
 	background-color: var(--surface-1);
 
 	&:hover:not(.disabled) {
-		background-color: var(--surface-accent);
+		background-color: var(--accent-fill);
 	}
 
 	&.outsideMonth {
@@ -53,12 +53,12 @@
 	}
 
 	&.periodPreview {
-		background-color: var(--surface-accent);
+		background-color: var(--accent-fill);
 		color: var(--content-0);
 	}
 
 	&.range {
-		background-color: var(--surface-accent);
+		background-color: var(--accent-fill);
 		color: var(--content-0);
 	}
 
@@ -75,14 +75,14 @@
 	&.selected,
 	&.rangeStart,
 	&.rangeEnd {
-		background-color: var(--surface-accent);
-		color: var(--content-accent);
+		background-color: var(--accent-fill);
+		color: var(--accent-text);
 		font-weight: 600;
 		font-variation-settings: "wght" 600;
 	}
 
 	&.weekend:not(.selected):not(.range):not(.rangeStart):not(.rangeEnd) {
-		color: var(--status-error-fill);
+		color: var(--error-fill);
 	}
 
 	&.disabled {
@@ -96,7 +96,7 @@
 
 	&.now {
 		border: var(--border);
-		color: var(--status-info-text);
-		border-color: var(--status-info-text);
+		color: var(--info-text);
+		border-color: var(--info-text);
 	}
 }

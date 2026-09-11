@@ -19,7 +19,7 @@
 	transition-duration: var(--transition-fast);
 
 	&.dragOver {
-		border-color: var(--content-accent);
+		border-color: var(--accent-text);
 		background-color: var(--surface-1);
 	}
 

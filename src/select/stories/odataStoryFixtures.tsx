@@ -263,7 +263,7 @@ class ODataMetadataErrorStoryBoundary extends Component<ODataMetadataErrorStoryB
 	public render() {
 		if (this.state.error) {
 			return (
-				<div role="alert" style={{ padding: "var(--space-sm)", color: "var(--status-error-text)" }}>
+				<div role="alert" style={{ padding: "var(--space-sm)", color: "var(--error-text)" }}>
 					{this.state.error.message}
 				</div>
 			);

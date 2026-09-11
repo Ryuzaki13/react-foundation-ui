@@ -7,81 +7,91 @@
  * пользовательскую тему при встраивании опубликованного Storybook в host.
  */
 :root[data-theme="light:default"] {
-	@include foundationThemes.light-theme;
-
-	--interactive-color: inherit;
-	--interactive-hover-color: #000000;
-	--interactive-active-color: #000000;
-	--interactive-selected-color: #000000;
-
-	--interactive-surface: inherit;
-	--interactive-hover-surface: oklch(0.93 0.12 75);
-	--interactive-active-surface: oklch(0.87 0.15 70);
-	--interactive-selected-surface: oklch(0.87 0.12 80);
-
-	--interactive-border: inherit;
-	--interactive-hover-border: oklch(0.76 0.14 59.64);
-	--interactive-active-border: oklch(0.73 0.16 57.5);
-	--interactive-selected-border: oklch(0.81 0.11 61.71);
+	@include foundationThemes.theme(
+		light,
+		(
+			status: (
+				accent: (
+					text: #a16200,
+					border: #f19a4c,
+					fill: #ffdc8a,
+					on-fill: #000000
+				)
+			)
+		)
+	);
 }
 
 :root[data-theme="dark:default"] {
-	@include foundationThemes.dark-theme;
-
-	--interactive-color: inherit;
-	--interactive-hover-color: #ffffff;
-	--interactive-active-color: #ffffff;
-	--interactive-selected-color: #ffffff;
-
-	--interactive-surface: inherit;
-	--interactive-hover-surface: oklch(0.26 0.06 245.92);
-	--interactive-active-surface: oklch(0.26 0.07 247.11);
-	--interactive-selected-surface: oklch(0.23 0.05 245.71);
-
-	--interactive-border: inherit;
-	--interactive-hover-border: oklch(0.74 0.18 229.36);
-	--interactive-active-border: oklch(0.74 0.18 229.36);
-	--interactive-selected-border: oklch(0.74 0.18 229.36);
+	@include foundationThemes.theme(
+		dark,
+		(
+			status: (
+				accent: (
+					text: #00bdff,
+					border: #00bdff,
+					fill: #05263f,
+					on-fill: #ffffff
+				)
+			)
+		)
+	);
 }
 
 :root {
 	font-feature-settings: "locl" 0;
 
 	&[data-contrast="high"] {
-		--hc-surface: #ffffff;
-		--hc-content: #000000;
+		--hc-white: #ffffff;
+		--hc-black: #000000;
 
-		--hc-border: #595959;
+		--hc-surface-0: #ffffff;
+		--hc-surface-1: #ffffff;
+		--hc-surface-2: #ffffff;
+		--hc-content-0: #000000;
+		--hc-content-1: #000000;
+		--hc-content-2: #000000;
+
+		--hc-border-0: #595959;
+		--hc-border-1: #595959;
+		--hc-border-2: #595959;
 		--hc-border-focus: #0044ff;
+		--hc-focus-ring: #0044ff;
 
-		--hc-content-accent: #000000;
-		--hc-surface-accent: #ffffff;
-		--hc-border-accent: #595959;
+		--hc-accent-text: #000000;
+		--hc-accent-border: #595959;
+		--hc-accent-fill: #ffffff;
+		--hc-accent-on-fill: #000000;
 
-		--hc-status-neutral-text: #595959;
-		--hc-status-neutral-border: #595959;
-		--hc-status-neutral-fill: #595959;
-		--hc-status-neutral-on-fill: #ffffff;
+		--hc-brand-text: #0044ff;
+		--hc-brand-border: #0044ff;
+		--hc-brand-fill: #0044ff;
+		--hc-brand-on-fill: #ffffff;
 
-		--hc-status-error-text: #920000;
-		--hc-status-error-border: #920000;
-		--hc-status-error-fill: #920000;
-		--hc-status-error-on-fill: #ffffff;
+		--hc-neutral-text: #595959;
+		--hc-neutral-border: #595959;
+		--hc-neutral-fill: #595959;
+		--hc-neutral-on-fill: #ffffff;
 
-		--hc-status-success-text: #028d00;
-		--hc-status-success-border: #028d00;
-		--hc-status-success-fill: #028d00;
-		--hc-status-success-on-fill: #ffffff;
+		--hc-error-text: #920000;
+		--hc-error-border: #920000;
+		--hc-error-fill: #920000;
+		--hc-error-on-fill: #ffffff;
 
-		--hc-status-warning-text: #886f00;
-		--hc-status-warning-border: #886f00;
-		--hc-status-warning-fill: #a28400;
-		--hc-status-warning-on-fill: #ffffff;
+		--hc-success-text: #028d00;
+		--hc-success-border: #028d00;
+		--hc-success-fill: #028d00;
+		--hc-success-on-fill: #ffffff;
 
-		--hc-status-info-text: #004672;
-		--hc-status-info-border: #004672;
-		--hc-status-info-fill: #004672;
-		--hc-status-info-on-fill: #ffffff;
+		--hc-warning-text: #886f00;
+		--hc-warning-border: #886f00;
+		--hc-warning-fill: #a28400;
+		--hc-warning-on-fill: #ffffff;
+
+		--hc-info-text: #004672;
+		--hc-info-border: #004672;
+		--hc-info-fill: #004672;
+		--hc-info-on-fill: #ffffff;
 	}
 }
 
@@ -93,18 +103,21 @@
 }
 
 .debug {
-	outline: 1px dashed oklch(65.6% 0.241 354.308);
+	outline: 1px dashed #f6339a;
 	outline-offset: -1px;
 }
+
 .debug1 {
-	outline: 1px dashed oklch(79.5% 0.184 86.047);
+	outline: 1px dashed #f0b100;
 	outline-offset: -1px;
 }
+
 .debug2 {
-	outline: 1px dashed oklch(71.5% 0.143 215.221);
+	outline: 1px dashed #00b8db;
 	outline-offset: -1px;
 }
+
 .debug3 {
-	outline: 1px dashed oklch(76.8% 0.233 130.85);
+	outline: 1px dashed #7ccf00;
 	outline-offset: -1px;
 }

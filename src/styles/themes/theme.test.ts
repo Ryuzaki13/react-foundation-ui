@@ -3,10 +3,7 @@ import { describe, expect, it } from "vitest";
 
 import { resolve } from "node:path";
 
-/**
- * Компилирует публичный themes entrypoint с точной палитрой host-приложения.
- * Тест защищает порядок слоёв: baseline обязан заполнить контракт, а exact values — победить генератор.
- */
+/** Компилирует публичный themes entrypoint с точной hex-палитрой host-приложения. */
 function compileExactTheme(): string {
 	return compileString(
 		`@use "themes" as foundationThemes;
@@ -15,26 +12,20 @@ function compileExactTheme(): string {
 	@include foundationThemes.theme(light, (
 		tokens: (
 			"--surface-0": #fefefe,
-			"--status-error-text": #990011
-		),
-		accent: (
-			content: #123456,
-			surface: #ddeeff,
-			border: #345678
+			"--error-text": #990011
 		),
 		status: (
+			accent: (
+				text: #123456,
+				border: #345678,
+				fill: #ddeeff,
+				on-fill: #102030
+			),
 			error: (
-				text: (
-					base: #aa0011,
-					hover: #bb1122,
-					active: #880000
-				),
-				fill: (
-					base: #cc2233,
-					hover: #dd3344,
-					active: #aa1122,
-					on-fill: #ffffff
-				)
+				text: #aa0011,
+				border: #bb1122,
+				fill: #cc2233,
+				on-fill: #ffffff
 			)
 		)
 	));
@@ -47,42 +38,61 @@ function compileExactTheme(): string {
 }
 
 describe("theme", () => {
-	it("наследует полный baseline и принимает точные accent/status scales", () => {
+	it("наследует baseline и принимает четыре роли каждой hex-схемы", () => {
 		const css = compileExactTheme();
+		const tones = ["accent", "brand", "neutral", "error", "warning", "success", "info"] as const;
+		const roles = ["text", "border", "fill", "on-fill"] as const;
 
-		expect(css).toContain("--surface-1: var(--hc-surface, #f8f8f9)");
-		expect(css).toContain("--content-accent: var(--hc-content-accent, #123456)");
-		expect(css).toContain("--status-error-text-hover: var(--hc-status-error-text, #bb1122)");
-		expect(css).toContain("--status-error-border-hover: var(--hc-status-error-border, #bb1122)");
-		expect(css).toMatch(
-			/--status-error-soft:\s*var\(\s*--hc-status-error-soft,\s*color-mix\(in srgb, var\(--status-error-fill\) 12%, var\(--surface-0\)\)\s*\)/
-		);
+		expect(css).toContain("--surface-1: var(--hc-surface-1, #f8f8f9)");
+
+		for (const tone of tones) {
+			for (const role of roles) {
+				expect(css).toContain(`--${tone}-${role}: var(--hc-${tone}-${role},`);
+			}
+		}
+
+		expect(css).toContain("--accent-text: var(--hc-accent-text, #123456)");
+		expect(css).toContain("--accent-border: var(--hc-accent-border, #345678)");
+		expect(css).toContain("--accent-fill: var(--hc-accent-fill, #ddeeff)");
+		expect(css).toContain("--accent-on-fill: var(--hc-accent-on-fill, #102030)");
+		expect(css).toContain("--error-text: var(--hc-error-text, #aa0011)");
+		expect(css).toContain("--error-border: var(--hc-error-border, #bb1122)");
+		expect(css).toContain("--error-fill: var(--hc-error-fill, #cc2233)");
+		expect(css).toContain("--error-on-fill: var(--hc-error-on-fill, #ffffff)");
+		expect(css).toContain("--overlay-backdrop: var(--hc-overlay-backdrop, #0000001a)");
+		expect(css).toContain("--shadow-xs: var(--hc-shadow-xs, 0 0 0.25em #00000026)");
 	});
 
-	it("выводит плоские token overrides после сгенерированной палитры", () => {
-		const css = compileExactTheme();
-		const generatedTextIndex = css.indexOf("--status-error-text: var(--hc-status-error-text, #aa0011)");
-		const exactTokenIndex = css.lastIndexOf("--status-error-text: #990011");
+	it("оборачивает первичные root-цвета одноимёнными high-contrast токенами", () => {
+		const css = compileString('@use "root-tokens";', {
+			loadPaths: [resolve("src/styles")],
+			style: "expanded"
+		}).css;
 
-		expect(generatedTextIndex).toBeGreaterThanOrEqual(0);
-		expect(exactTokenIndex).toBeGreaterThan(generatedTextIndex);
-		expect(css).toContain("--surface-0: #fefefe");
+		expect(css).toContain("--white: var(--hc-white, #ffffff)");
+		expect(css).toContain("--black: var(--hc-black, #000000)");
 	});
 
-	it("связывает brand, neutral и недостающие status tokens с точной палитрой", () => {
+	it("выводит плоские token overrides после палитры", () => {
+		const css = compileExactTheme();
+		const paletteTextIndex = css.indexOf("--error-text: var(--hc-error-text, #aa0011)");
+		const exactTokenIndex = css.lastIndexOf("--error-text: var(--hc-error-text, #990011)");
+
+		expect(paletteTextIndex).toBeGreaterThanOrEqual(0);
+		expect(exactTokenIndex).toBeGreaterThan(paletteTextIndex);
+		expect(css).toContain("--surface-0: var(--hc-surface-0, #fefefe)");
+	});
+
+	it("наследует неуказанные роли схемы и не выводит прежние color contracts", () => {
 		const css = compileString(
 			`@use "themes" as foundationThemes;
 
 .custom-theme {
 	@include foundationThemes.theme(dark, (
-		tokens: (
-			"--content-accent": #00ffaa,
-			"--surface-accent": #003322,
-			"--border-accent": #00cc88,
-			"--status-error-text": #ff6677,
-			"--status-error-text-hover": #ff8899,
-			"--status-error-text-active": #dd4455,
-			"--status-error-fill": #991122
+		status: (
+			error: (
+				text: #ff6677
+			)
 		)
 	));
 }`,
@@ -92,19 +102,27 @@ describe("theme", () => {
 			}
 		).css;
 
-		expect(css).toContain("--status-brand-fill: var(--hc-status-brand-fill, var(--content-accent))");
-		expect(css).toContain("--status-neutral-border-focus: var(--hc-status-neutral-border, var(--focus-ring))");
-		expect(css).toContain("--status-error-border-hover: var(--hc-status-error-border, var(--status-error-text-hover))");
+		expect(css).toContain("--error-text: var(--hc-error-text, #ff6677)");
+		expect(css).toContain("--error-border: var(--hc-error-border, #ff7879)");
+		expect(css).toContain("--brand-fill: var(--hc-brand-fill, #97b5ff)");
+		expect(css).toContain("--neutral-border: var(--hc-neutral-border, #4e5661)");
+		expect(css).not.toContain("oklch(");
+		expect(css).not.toContain("--interactive-");
+		expect(css).not.toContain("--status-");
 	});
 });
 
 describe("interactive surface", () => {
-	it("применяет отдельный border token выбранного состояния", () => {
+	it("использует accent-схему для hover, active и selected", () => {
 		const css = compileString('@use "interactive-surface";', {
 			loadPaths: [resolve("src/styles/themes")],
 			style: "expanded"
 		}).css;
 
+		expect(css).toContain("--ch: var(--accent-on-fill)");
+		expect(css).toContain("--sh: var(--accent-fill)");
+		expect(css).toContain("--bh: var(--accent-border)");
 		expect(css).toMatch(/\.interactiveSurface\[data-selected=true\]\.interactiveSurfaceFrame\s*\{\s*border-color: var\(--bs\);\s*\}/);
+		expect(css).not.toContain("--interactive-");
 	});
 });

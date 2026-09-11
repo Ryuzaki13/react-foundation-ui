@@ -55,8 +55,8 @@
 	background-color: var(--surface-1);
 
 	.previewCell {
-		background-color: var(--surface-accent);
-		border: var(--border-width) solid var(--border-accent);
+		background-color: var(--accent-fill);
+		border: var(--border-width) solid var(--accent-border);
 	}
 }
 
@@ -95,7 +95,7 @@
 
 .previewCompact {
 	.previewCell {
-		background-color: var(--status-brand-fill);
+		background-color: var(--brand-fill);
 		border: none;
 	}
 }

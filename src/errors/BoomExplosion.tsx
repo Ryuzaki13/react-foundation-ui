@@ -24,8 +24,8 @@ export function BoomExplosion() {
 				points="
 150,10 170,60 230,40 200,100 270,110 210,150 270,190 200,200 230,260 170,240 150,290 130,240
 70,260 100,200 30,190 90,150 30,110 100,100 70,40 130,60"
-				fill="var(--status-error-on-fill)"
-				stroke="var(--status-error-fill)"
+				fill="var(--error-on-fill)"
+				stroke="var(--error-fill)"
 				strokeWidth="5"
 				strokeLinejoin="round"
 			/>

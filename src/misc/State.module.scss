@@ -14,50 +14,50 @@
 		padding-left: 0;
 
 		&.information {
-			border-left-color: var(--status-info-fill);
+			border-left-color: var(--info-fill);
 		}
 
 		&.success {
-			border-left-color: var(--status-success-fill);
+			border-left-color: var(--success-fill);
 		}
 
 		&.warning {
-			border-left-color: var(--status-warning-fill);
+			border-left-color: var(--warning-fill);
 		}
 
 		&.error {
-			border-left-color: var(--status-error-fill);
+			border-left-color: var(--error-fill);
 		}
 	}
 }
 
 .state {
 	&.information {
-		color: var(--status-info-text);
+		color: var(--info-text);
 
-		fill: var(--status-info-fill);
-		stroke: var(--status-info-on-fill);
+		fill: var(--info-fill);
+		stroke: var(--info-on-fill);
 	}
 
 	&.success {
-		color: var(--status-success-text);
+		color: var(--success-text);
 
-		fill: var(--status-success-fill);
-		stroke: var(--status-success-on-fill);
+		fill: var(--success-fill);
+		stroke: var(--success-on-fill);
 	}
 
 	&.warning {
-		color: var(--status-warning-text);
+		color: var(--warning-text);
 
-		fill: var(--status-warning-fill);
-		stroke: var(--status-warning-on-fill);
+		fill: var(--warning-fill);
+		stroke: var(--warning-on-fill);
 		stroke-width: 2px;
 	}
 
 	&.error {
-		color: var(--status-error-text);
+		color: var(--error-text);
 
-		fill: var(--status-error-fill);
-		stroke: var(--status-error-on-fill);
+		fill: var(--error-fill);
+		stroke: var(--error-on-fill);
 	}
 }

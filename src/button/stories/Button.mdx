@@ -46,11 +46,14 @@ export function Example() {
 
 Если нужна более гибкая настройка, можно передать `tone` и `appearance`. У них приоритет выше, чем у `variant`, поэтому они подходят для точной донастройки без создания нового варианта.
 
-`brand` выделяет фирменное действие. Для главного действия используйте `brand + solid` (или `variant="brand"`), а для вторичного — `brand + outline` (или `variant="brandOutline"`). Отдельные `primary` и `secondary` тоны не нужны: эту иерархию уже задаёт `appearance`.
+`accent` обозначает выбранное или текущее интерактивное действие, а `brand` выделяет фирменное действие. Для главного действия используйте `brand + solid` (или `variant="brand"`), а для вторичного — `brand + outline` (или `variant="brandOutline"`). Отдельные `primary` и `secondary` тоны не нужны: эту иерархию уже задаёт `appearance`.
 
 ### Готовые варианты
 
 <Canvas of={ButtonStories.Variants} />
+
+Вторая группа в примере повторяет все варианты с `disabled`. Отключённое состояние не использует `opacity` и сохраняет структуру
+`appearance`: у `solid` нет видимой рамки, а у `ghost` и `transparent` не появляется фон.
 
 ```tsx
 import { Button } from "@ryuzaki13/react-foundation-ui";
@@ -61,6 +64,8 @@ export function ActionVariants() {
 			<Button variant="neutral">Основное действие</Button>
 			<Button variant="neutralOutline">Вторичное действие</Button>
 			<Button variant="ghost">Легкое действие</Button>
+			<Button variant="accent">Выбранное действие</Button>
+			<Button variant="accentOutline">Акцентный контур</Button>
 			<Button variant="brand">Сохранить</Button>
 			<Button variant="brandOutline">Предпросмотр</Button>
 			<Button variant="success">Подтвердить</Button>
@@ -86,6 +91,12 @@ export function CustomScheme() {
 			</Button>
 			<Button tone="neutral" appearance="outline">
 				Neutral Outline
+			</Button>
+			<Button tone="accent" appearance="solid">
+				Accent Solid
+			</Button>
+			<Button tone="accent" appearance="ghost">
+				Accent Ghost
 			</Button>
 			<Button tone="brand" appearance="solid">
 				Сохранить

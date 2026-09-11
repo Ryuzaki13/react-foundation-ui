@@ -1,19 +1,19 @@
 .interactiveSurface {
-	--c: var(--interactive-color, inherit);
-	--s: var(--interactive-surface, transparent);
-	--b: var(--interactive-border, transparent);
+	--c: inherit;
+	--s: transparent;
+	--b: transparent;
 
-	--ch: var(--interactive-hover-color, var(--c));
-	--sh: var(--interactive-hover-surface, var(--s));
-	--bh: var(--interactive-hover-border, var(--b));
+	--ch: var(--accent-on-fill);
+	--sh: var(--accent-fill);
+	--bh: var(--accent-border);
 
-	--ca: var(--interactive-active-color, var(--ch));
-	--sa: var(--interactive-active-surface, var(--sh));
-	--ba: var(--interactive-active-border, var(--bh));
+	--ca: var(--accent-on-fill);
+	--sa: var(--accent-fill);
+	--ba: var(--accent-border);
 
-	--cs: var(--interactive-selected-color, var(--ca));
-	--ss: var(--interactive-selected-surface, var(--sa));
-	--bs: var(--interactive-selected-border, var(--ba));
+	--cs: var(--accent-on-fill);
+	--ss: var(--accent-fill);
+	--bs: var(--accent-border);
 
 	// color: var(--c);
 	// background-color: var(--s);

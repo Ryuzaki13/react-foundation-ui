@@ -46,7 +46,7 @@ export function Example() {
 
 В компоненте есть два уровня настройки:
 
-- `tone` задает семантику: `neutral`, `success`, `warning`, `error`, `info`;
+- `tone` задаёт семантику: `neutral`, `accent`, `brand`, `success`, `warning`, `error`, `info`;
 - `appearance` задает форму отображения: `solid`, `outline`, `ghost`, `transparent`.
 
 Если схема не передана полностью, компонент достраивает ее сам:
@@ -67,6 +67,12 @@ export function StatusBadges() {
 		<BadgeList>
 			<Badge tone="neutral" appearance="outline">
 				Черновик
+			</Badge>
+			<Badge tone="accent" appearance="solid">
+				Акцент
+			</Badge>
+			<Badge tone="brand" appearance="solid">
+				Бренд
 			</Badge>
 			<Badge tone="success" appearance="solid">
 				Успешно

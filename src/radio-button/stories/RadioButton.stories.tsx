@@ -62,7 +62,7 @@ const meta = {
 		tone: {
 			description: "Цветовой тон радиокнопки.",
 			control: "inline-radio",
-			options: ["neutral", "brand", "error", "warning", "success", "info"]
+			options: ["neutral", "accent", "brand", "error", "warning", "success", "info"]
 		}
 	}
 } satisfies Meta<RadioButtonStoryArgs>;

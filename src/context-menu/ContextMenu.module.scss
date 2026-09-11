@@ -66,8 +66,8 @@
 	}
 
 	@include hover(true) {
-		background-color: var(--surface-accent);
-		color: var(--content-accent);
+		background-color: var(--accent-fill);
+		color: var(--accent-text);
 		cursor: pointer;
 		transform: translate(-50%, -50%) scale(1.06);
 	}
@@ -135,8 +135,8 @@
 	}
 
 	@include hover(true) {
-		background-color: var(--surface-accent);
-		color: var(--content-accent);
+		background-color: var(--accent-fill);
+		color: var(--accent-text);
 		cursor: pointer;
 		transform: scale(1.06);
 	}

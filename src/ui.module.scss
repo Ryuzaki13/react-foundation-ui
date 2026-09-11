@@ -30,7 +30,7 @@
 .uiErrorElement {
 	--grid-size: var(--space-sm);
 	--grid-line-size: var(--border-width);
-	--grid-line-color: var(--status-error-soft);
+	--grid-line-color: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0));
 
 	height: var(--control-height);
 	width: 100%; // calc(10em - var(--width-add));
@@ -40,14 +40,14 @@
 	align-items: center;
 	justify-content: center;
 
-	border: var(--focus-width) solid var(--status-error-border);
+	border: var(--focus-width) solid var(--error-border);
 	border-radius: var(--radius-sm);
 	outline: none;
 
 	font-weight: 700;
 	font-variation-settings: "wght" 700;
 
-	color: var(--status-error-text);
+	color: var(--error-text);
 	background-color: var(--surface-0);
 	background-image:
 		repeating-linear-gradient(
@@ -113,7 +113,7 @@
 .required {
 	.uiLabelBase::after {
 		content: " *";
-		color: var(--status-error-text);
+		color: var(--error-text);
 	}
 }
 
@@ -137,6 +137,10 @@
 
 .uiToneNeutral {
 	@include ui-tone("neutral");
+}
+
+.uiToneAccent {
+	@include ui-tone("accent");
 }
 
 .uiToneBrand {
@@ -253,8 +257,6 @@
 .uiPopupOption {
 	&.disabled,
 	&:disabled {
-		cursor: default;
-		pointer-events: none;
 		user-select: none;
 
 		.uiLabel,
@@ -267,6 +269,17 @@
 		.uiOptionCode {
 			opacity: 0.25;
 		}
+	}
+
+	// Класс disabled используется у составных ненативных элементов: им нужно явно запретить события.
+	&.disabled {
+		cursor: default;
+		pointer-events: none;
+	}
+
+	// Нативный disabled уже блокирует активацию, а pointer-events остаются для курсора и tooltip.
+	&:disabled {
+		cursor: not-allowed;
 	}
 }
 
@@ -346,20 +359,20 @@
 	}
 
 	&.selected {
-		color: var(--interactive-selected-color);
-		background-color: var(--interactive-selected-surface);
+		color: var(--accent-on-fill);
+		background-color: var(--accent-fill);
 		cursor: default;
 	}
 
 	&.uiPopupOptionActive,
 	&:active {
-		color: var(--interactive-active-color);
-		background-color: var(--interactive-active-surface);
+		color: var(--accent-on-fill);
+		background-color: var(--accent-fill);
 	}
 
 	@include hover(true) {
-		color: var(--interactive-hover-color);
-		background-color: var(--interactive-hover-surface);
+		color: var(--accent-on-fill);
+		background-color: var(--accent-fill);
 		cursor: pointer;
 	}
 
@@ -466,7 +479,7 @@
 	color: var(--content-0);
 
 	&:hover {
-		color: var(--content-accent);
+		color: var(--accent-text);
 	}
 }
 
@@ -495,7 +508,7 @@
 }
 
 .uiClearButton {
-	color: var(--status-error-text);
+	color: var(--error-text);
 
 	&:disabled {
 		opacity: 0;

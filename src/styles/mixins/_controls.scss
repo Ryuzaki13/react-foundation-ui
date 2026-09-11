@@ -1,20 +1,20 @@
 @use "./mixin" as *;
 
 @mixin ui-tone($tone) {
-	--ui-tone-text: var(--status-#{$tone}-text);
-	--ui-tone-text-hover: var(--status-#{$tone}-text-hover);
-	--ui-tone-text-active: var(--status-#{$tone}-text-active);
-	--ui-tone-fill: var(--status-#{$tone}-fill);
-	--ui-tone-fill-hover: var(--status-#{$tone}-fill-hover);
-	--ui-tone-fill-active: var(--status-#{$tone}-fill-active);
-	--ui-tone-on-fill: var(--status-#{$tone}-on-fill);
-	--ui-tone-soft: var(--status-#{$tone}-soft);
-	--ui-tone-border: var(--status-#{$tone}-border);
-	--ui-tone-border-hover: var(--status-#{$tone}-border-hover);
-	--ui-tone-border-active: var(--status-#{$tone}-border-active);
-	--ui-tone-border-focus: var(--status-#{$tone}-border-focus);
-	--ui-tone-ghost-hover: color-mix(in srgb, var(--status-#{$tone}-fill-hover) 10%, var(--surface-0));
-	--ui-tone-ghost-active: color-mix(in srgb, var(--status-#{$tone}-fill-active) 20%, var(--surface-0));
+	--ui-tone-text: var(--#{$tone}-text);
+	--ui-tone-text-hover: color-mix(in srgb, var(--#{$tone}-text) 88%, var(--content-0));
+	--ui-tone-text-active: color-mix(in srgb, var(--#{$tone}-text) 76%, var(--content-0));
+	--ui-tone-fill: var(--#{$tone}-fill);
+	--ui-tone-fill-hover: color-mix(in srgb, var(--#{$tone}-fill) 88%, var(--content-0));
+	--ui-tone-fill-active: color-mix(in srgb, var(--#{$tone}-fill) 76%, var(--content-0));
+	--ui-tone-on-fill: var(--#{$tone}-on-fill);
+	--ui-tone-soft: color-mix(in srgb, var(--#{$tone}-fill) 12%, var(--surface-0));
+	--ui-tone-border: var(--#{$tone}-border);
+	--ui-tone-border-hover: color-mix(in srgb, var(--#{$tone}-border) 88%, var(--content-0));
+	--ui-tone-border-active: color-mix(in srgb, var(--#{$tone}-border) 76%, var(--content-0));
+	--ui-tone-border-focus: var(--focus-ring);
+	--ui-tone-ghost-hover: color-mix(in srgb, var(--#{$tone}-fill) 10%, var(--surface-0));
+	--ui-tone-ghost-active: color-mix(in srgb, var(--#{$tone}-fill) 20%, var(--surface-0));
 }
 
 @mixin ui-appearance-solid {
@@ -28,6 +28,9 @@
 	--ui-border-hover: transparent;
 	--ui-border-active: transparent;
 	--ui-border-focus: transparent;
+	--ui-disabled-color: var(--content-1);
+	--ui-disabled-background: color-mix(in srgb, var(--ui-tone-fill) 14%, var(--surface-2));
+	--ui-disabled-border: transparent;
 }
 
 @mixin ui-appearance-outline {
@@ -41,6 +44,9 @@
 	--ui-border-hover: var(--ui-tone-border-hover);
 	--ui-border-active: var(--ui-tone-border-active);
 	--ui-border-focus: var(--ui-tone-border-focus);
+	--ui-disabled-color: color-mix(in srgb, var(--ui-tone-text) 32%, var(--content-2));
+	--ui-disabled-background: var(--surface-0);
+	--ui-disabled-border: color-mix(in srgb, var(--ui-tone-border) 28%, var(--border-0));
 }
 
 @mixin ui-appearance-ghost {
@@ -54,6 +60,9 @@
 	--ui-border-hover: transparent;
 	--ui-border-active: transparent;
 	--ui-border-focus: transparent;
+	--ui-disabled-color: color-mix(in srgb, var(--ui-tone-text) 32%, var(--content-2));
+	--ui-disabled-background: transparent;
+	--ui-disabled-border: transparent;
 }
 
 @mixin ui-appearance-transparent {
@@ -67,6 +76,9 @@
 	--ui-border-hover: transparent;
 	--ui-border-active: transparent;
 	--ui-border-focus: transparent;
+	--ui-disabled-color: color-mix(in srgb, var(--ui-tone-text) 32%, var(--content-2));
+	--ui-disabled-background: transparent;
+	--ui-disabled-border: transparent;
 }
 
 @mixin ui-control-base {
@@ -94,27 +106,32 @@
 		background-color: var(--ui-background-active);
 	}
 
-	&:focus,
-	&:focus-within {
-		// Фокус обозначается границей и focus-ring, но не подменяет фон active-состоянием.
-		// Иначе сохранённый Safari focus после touch-события перекрывает selected/open фон consumer-компонента.
-		border-color: var(--ui-border-focus);
-	}
+	// &:focus,
+	// &:focus-within {
+	// 	border-color: var(--ui-border-focus);
+	// }
 
 	&:focus-visible {
 		@include focusVisible;
 	}
 
-	// Для нормальных компонентов с реальным input/button элементов
+	// Disabled-состояние берёт структуру из appearance: solid остаётся без рамки,
+	// а ghost/transparent — без фона. Цвета задаются явно, чтобы не накапливать opacity родителей.
 	&:disabled,
-	// Для специфичных компонентов, которые выдают внешне за input/button и имеют класс .uiInputControlFake
+	&[data-disabled] {
+		color: var(--ui-disabled-color, var(--content-2));
+		background-color: var(--ui-disabled-background, var(--surface-2));
+		border-color: var(--ui-disabled-border, var(--overlay-backdrop));
+	}
+
+	&:disabled {
+		cursor: not-allowed;
+	}
+
+	// Ненативные контролы не блокируют события сами, поэтому их отключаем явно.
 	&[data-disabled] {
 		cursor: default;
 		pointer-events: none;
-		// opacity: var(--disabled-opacity);
-		color: var(--content-2);
-		background-color: var(--surface-2);
-		border-color: var(--overlay-backdrop);
 	}
 }
 

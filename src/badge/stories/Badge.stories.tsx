@@ -35,7 +35,7 @@ const meta = {
 		tone: {
 			description: "Цветовой тон бейджа.",
 			control: "inline-radio",
-			options: ["neutral", "brand", "success", "warning", "error", "info"]
+			options: ["neutral", "accent", "brand", "success", "warning", "error", "info"]
 		},
 		appearance: {
 			description: "Форма бейджа.",
@@ -65,6 +65,12 @@ export const Tones: Story = {
 		<BadgeList>
 			<Badge tone="neutral" appearance="outline">
 				Neutral
+			</Badge>
+			<Badge tone="accent" appearance="solid">
+				Акцент
+			</Badge>
+			<Badge tone="brand" appearance="solid">
+				Бренд
 			</Badge>
 			<Badge tone="success" appearance="solid">
 				Успешно
