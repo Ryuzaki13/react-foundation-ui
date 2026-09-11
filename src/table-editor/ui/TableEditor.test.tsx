@@ -28,6 +28,7 @@ describe("редактор таблицы", () => {
 		render(<TableEditorDemo />);
 		const first = screen.getAllByRole("columnheader")[0];
 		expect(first.getAttribute("aria-label")).toBe("Строка 1, столбец 1: Раздел");
+		expect(first.querySelector("span:not([inert])")?.textContent).toBe("Раздел");
 		first.focus();
 		fireEvent.keyDown(first, { key: "ArrowRight", shiftKey: true });
 		expect(document.activeElement).toBe(screen.getAllByRole("columnheader")[1]);
@@ -37,11 +38,11 @@ describe("редактор таблицы", () => {
 	it("изменение содержимого можно отменить и повторить", () => {
 		render(<TableEditorDemo />);
 		fireEvent.change(screen.getByRole("textbox", { name: "Содержимое ячейки" }), { target: { value: "Новое название" } });
-		expect(within(screen.getByRole("grid")).getByText("Новое название")).toBeTruthy();
+		expect(within(screen.getByRole("grid")).getByRole("columnheader", { name: "Строка 1, столбец 1: Новое название" })).toBeTruthy();
 		fireEvent.click(screen.getByRole("button", { name: "Отменить" }));
-		expect(within(screen.getByRole("grid")).getByText("Раздел")).toBeTruthy();
+		expect(within(screen.getByRole("grid")).getByRole("columnheader", { name: "Строка 1, столбец 1: Раздел" })).toBeTruthy();
 		fireEvent.click(screen.getByRole("button", { name: "Повторить" }));
-		expect(within(screen.getByRole("grid")).getByText("Новое название")).toBeTruthy();
+		expect(within(screen.getByRole("grid")).getByRole("columnheader", { name: "Строка 1, столбец 1: Новое название" })).toBeTruthy();
 	});
 	it("удаление требует подтверждения, отмена диалога сохраняет таблицу", () => {
 		render(<TableEditorDemo />);

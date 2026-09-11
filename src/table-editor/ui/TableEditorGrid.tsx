@@ -120,6 +120,9 @@ export function TableEditorGrid<T>({ editor, extendSelection, disabled, renderCe
 												nodes.current.get(document.rows[range.row].cells[range.column].id)?.focus();
 											}}>
 											{/* Preview не должен создавать вложенные tab stops или открывать ссылки вместо выделения. */}
+											{row.index < document.headerRowCount ? (
+												<span className="visuallyHidden">{getCellText(original) || "Пустой заголовок"}</span>
+											) : null}
 											<div inert className={styles.cellContent}>
 												{renderCell(original)}
 											</div>
