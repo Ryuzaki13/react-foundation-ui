@@ -1,0 +1,78 @@
+.editor {
+	display: grid;
+	gap: var(--space-md);
+	min-width: 0;
+	color: var(--content-0);
+}
+.toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: var(--space-sm);
+}
+.help {
+	margin: 0;
+	color: var(--content-1);
+}
+.scroll {
+	max-height: 34rem;
+	overflow: auto;
+	border: var(--border);
+	border-radius: var(--radius-sm);
+}
+.table {
+	width: max-content;
+	min-width: 100%;
+	table-layout: fixed;
+	border-collapse: collapse;
+
+	td,
+	th {
+		padding: var(--space-sm);
+		min-width: 6rem;
+		border: var(--border);
+		vertical-align: top;
+		text-align: start;
+		background: var(--surface-0);
+		cursor: cell;
+		&[aria-selected="true"] {
+			background: var(--surface-2);
+			box-shadow: inset 0 0 0 2px var(--content-1);
+		}
+		&:focus {
+			outline: 3px solid var(--content-0);
+			outline-offset: -3px;
+		}
+	}
+	tr[data-header] th {
+		font-weight: 600;
+		&:not([aria-selected="true"]) {
+			background: var(--surface-1);
+		}
+	}
+}
+.cellContent {
+	min-height: 2rem;
+	overflow-wrap: anywhere;
+	pointer-events: none;
+	user-select: none;
+}
+.inspector {
+	display: grid;
+	gap: var(--space-sm);
+	padding: var(--space-md);
+	border: var(--border);
+	background: var(--surface-1);
+}
+.structure {
+	display: grid;
+	padding: var(--space-sm);
+	border: var(--border);
+	summary {
+		cursor: pointer;
+		margin-bottom: var(--space-sm);
+	}
+	.toolbar {
+		margin-bottom: var(--space-sm);
+	}
+}
