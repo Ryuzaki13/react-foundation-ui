@@ -16,8 +16,9 @@ type ToolbarControlProps = {
  */
 export function ToolbarControl({ isActive, disabled, style, title, icon, onClick }: ToolbarControlProps) {
 	const handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+		// Не отдаём фокус кнопке раньше сохранения Lexical selection. Само действие
+		// выполняется native click: одинаково для мыши, Enter и пробела.
 		e.preventDefault();
-		onClick?.(style || "");
 	};
 
 	return (
@@ -27,6 +28,7 @@ export function ToolbarControl({ isActive, disabled, style, title, icon, onClick
 			appearance="outline"
 			tone={isActive ? "info" : undefined}
 			onMouseDown={handleMouseDown}
+			onClick={() => onClick?.(style || "")}
 			icon={icon}
 		/>
 	);

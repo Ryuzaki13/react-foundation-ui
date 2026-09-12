@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useRef } from "react";
 
 import { $isLinkNode } from "@lexical/link";
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "@lexical/list";
@@ -13,12 +13,17 @@ import {
 	ElementFormatType,
 	FORMAT_ELEMENT_COMMAND,
 	FORMAT_TEXT_COMMAND,
+	HISTORY_MERGE_TAG,
+	HISTORY_PUSH_TAG,
 	type LexicalEditor,
 	type LexicalNode,
+	type RangeSelection,
 	REDO_COMMAND,
+	SKIP_DOM_SELECTION_TAG,
 	UNDO_COMMAND
 } from "lexical";
 
+import { $restoreLinkDialogSelection } from "../../lib/selection/restoreLinkDialogSelection";
 import { getSemanticTagDepth } from "../../lib/semantic/getSemanticTagDepth";
 import { getHeadingTagByStyle, getLexicalInlineStyle } from "../../lib/toolbar/styleMappers";
 import { $createAccessibleLinkNode, $isAccessibleLinkNode } from "../../nodes/AccessibleLinkNode";
@@ -49,6 +54,9 @@ export function useTextEditorLexicalActions({
 	onOpenLinkDialog,
 	onOpenTagDialog
 }: UseTextEditorLexicalActionsParams) {
+	// Snapshot принадлежит одной сессии ссылки и конкретному editor, не внешнему
+	// каталогу. Каждое открытие заменяет его, в том числе после отмены диалога.
+	const linkSelectionRef = useRef<{ editor: LexicalEditor; selection: RangeSelection | null } | null>(null);
 	const handleBlockStyleToggle = useCallback(
 		(style: string) => {
 			if (!editor) return;
@@ -141,27 +149,40 @@ export function useTextEditorLexicalActions({
 		(payload: InsertLinkPayload) => {
 			if (!editor) return;
 
-			editor.update(() => {
-				const selection = $getSelection();
-				if (!$isRangeSelection(selection)) return;
+			// Отдельный selection-only commit создаёт baseline HistoryPlugin даже
+			// до первого ввода. Вставка затем отменяется одним undo и не сливается
+			// с предыдущим набором текста; фокус передаём только после закрытия диалога.
+			editor.update(
+				() => {
+					const snapshot = linkSelectionRef.current;
+					$restoreLinkDialogSelection(snapshot?.editor === editor ? snapshot.selection : null);
+					linkSelectionRef.current = null;
+				},
+				{ discrete: true, tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG] }
+			);
+			editor.update(
+				() => {
+					const selection = $getSelection();
+					if (!$isRangeSelection(selection)) return;
+					const selectionText = selection.getTextContent();
+					const finalText = payload.text.length > 0 ? payload.text : selectionText;
+					if (!finalText.trim()) return;
 
-				const selectionText = selection.getTextContent();
-				const finalText = payload.text.length > 0 ? payload.text : selectionText;
-				if (!finalText.trim()) return;
+					const linkNode = $createAccessibleLinkNode(payload.url, {
+						target: "_blank",
+						rel: "noopener noreferrer",
+						ariaLabel: payload.ariaLabel || selectionText || finalText,
+						qrCode: payload.qrCode,
+						add: payload.add || null,
+						text: finalText
+					});
 
-				const linkNode = $createAccessibleLinkNode(payload.url, {
-					target: "_blank",
-					rel: "noopener noreferrer",
-					ariaLabel: payload.ariaLabel || selectionText || finalText,
-					qrCode: payload.qrCode,
-					add: payload.add || null,
-					text: finalText
-				});
-
-				const textNode = $createTextNode(finalText);
-				linkNode.append(textNode);
-				selection.insertNodes([linkNode]);
-			});
+					const textNode = $createTextNode(finalText);
+					linkNode.append(textNode);
+					selection.insertNodes([linkNode]);
+				},
+				{ tag: HISTORY_PUSH_TAG }
+			);
 
 			requestAnimationFrame(() => {
 				editor.focus();
@@ -244,10 +265,14 @@ export function useTextEditorLexicalActions({
 			if (type === LinkTypes.LOCAL_LINK && !hasLocalLinkDialog) {
 				return;
 			}
-
+			if (!editor) return;
+			editor.getEditorState().read(() => {
+				const selection = $getSelection();
+				linkSelectionRef.current = { editor, selection: $isRangeSelection(selection) ? selection.clone() : null };
+			});
 			onOpenLinkDialog(type);
 		},
-		[hasLocalLinkDialog, onOpenLinkDialog]
+		[editor, hasLocalLinkDialog, onOpenLinkDialog]
 	);
 
 	const insertSemanticTagAtSelection = useCallback(

@@ -25,7 +25,7 @@ describe("TextEditorLexical businessAdapters", () => {
 		);
 
 		const localLinkButton = screen.getByRole("button", { name: "Добавить ссылку на статью" });
-		fireEvent.mouseDown(localLinkButton);
+		fireEvent.click(localLinkButton);
 
 		await waitFor(() => {
 			expect(screen.queryByTestId("local-link-adapter")).not.toBeNull();
@@ -36,7 +36,7 @@ describe("TextEditorLexical businessAdapters", () => {
 		render(<TextEditorLexical initialData={{ html: "", raw: {} }} onChange={vi.fn()} toolbarComponents={{ links: true }} />);
 
 		const localLinkButton = screen.getByRole("button", { name: "Добавить ссылку на статью" });
-		fireEvent.mouseDown(localLinkButton);
+		fireEvent.click(localLinkButton);
 
 		expect(screen.queryByTestId("local-link-adapter")).toBeNull();
 	});
