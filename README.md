@@ -108,9 +108,13 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 ### Точные палитры host-приложения
 
-Публичный mixin `theme` принимает обычные hex-цвета для семантических схем `accent`, `brand`, `neutral`, `error`, `warning`, `success` и `info`. У каждой схемы четыре обязательные роли: `text`, `border`, `fill` и `on-fill`. Неуказанные значения наследуются из baseline выбранного light/dark-режима, поэтому host может переопределить одну роль без копирования всей палитры. Hover, active и мягкие заливки вычисляются внутри компонентов и не расширяют публичный контракт темы.
+Публичный mixin `theme` принимает обычные hex-цвета для семантических схем `accent`, `brand`, `neutral`, `error`, `warning`, `success` и `info`. У каждой схемы четыре обязательные настраиваемые роли: `text`, `border`, `fill` и `on-fill`. Неуказанные значения наследуются из baseline выбранного light/dark-режима, поэтому host может переопределить одну роль без копирования всей палитры.
 
-Каждый первичный цветовой токен использует одноимённый high-contrast token перед hex fallback: например, `--error-text: var(--hc-error-text, #b91c1c)`. Цветовые значения из карты `tokens` получают такой wrapper автоматически. Это позволяет будущему contrast-режиму заменить палитру без повторной компиляции темы. Карта `tokens` выводится последней и остаётся escape hatch для точечных semantic-token overrides.
+Из четырёх ролей тема автоматически выводит переиспользуемые токены `--<tone>-text-hover`, `--<tone>-text-active`, `--<tone>-border-hover`, `--<tone>-border-active`, `--<tone>-fill-hover`, `--<tone>-fill-active` и `--<tone>-soft`. Host не передаёт их в карту `status`: единые формулы остаются владельцем UI-пакета, а прикладные стили используют готовые переменные без локального повторения `color-mix(...)`. Appearance-specific состояния вроде ghost и disabled остаются внутри соответствующих UI-компонентов.
+
+Mixin `ui-tone()` применяет те же формулы локально, а не ссылается на унаследованное вычисленное значение. Благодаря этому component-scoped переопределение базовой роли, например `--brand-fill`, продолжает влиять на состояния конкретного контрола.
+
+Каждый первичный цветовой токен использует одноимённый high-contrast token перед hex fallback: например, `--error-text: var(--hc-error-text, #b91c1c)`. Цветовые значения из карты `tokens` получают такой wrapper автоматически. Это позволяет будущему contrast-режиму заменить палитру без повторной компиляции темы. Производные состояния ссылаются на базовые CSS-переменные, поэтому учитывают их переопределения в том же theme selector. Карта `tokens` выводится последней и остаётся escape hatch для редкого точного override любого токена.
 
 ```scss
 @use "@ryuzaki13/react-foundation-ui/styles/themes" as foundationThemes;
@@ -152,10 +156,7 @@ Subpath `@ryuzaki13/react-foundation-ui/barcode-scanner` предоставля�
 ```tsx
 import { useState } from "react";
 
-import {
-	BarcodeScannerDialog,
-	type BarcodeScanResult
-} from "@ryuzaki13/react-foundation-ui/barcode-scanner";
+import { BarcodeScannerDialog, type BarcodeScanResult } from "@ryuzaki13/react-foundation-ui/barcode-scanner";
 
 export function BarcodeField() {
 	const [opened, setOpened] = useState(false);
@@ -221,13 +222,7 @@ export function MaterialGallery() {
 			<button type="button" onClick={() => setOpen(true)}>
 				Открыть галерею
 			</button>
-			<ImageViewer
-				open={open}
-				images={images}
-				index={index}
-				onIndexChange={setIndex}
-				onClose={() => setOpen(false)}
-			/>
+			<ImageViewer open={open} images={images} index={index} onIndexChange={setIndex} onClose={() => setOpen(false)} />
 		</>
 	);
 }

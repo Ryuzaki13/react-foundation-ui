@@ -1,17 +1,13 @@
 @use "./mixin" as *;
+@use "../tone-derived" as toneDerived;
 
 @mixin ui-tone($tone) {
 	--ui-tone-text: var(--#{$tone}-text);
-	--ui-tone-text-hover: color-mix(in srgb, var(--#{$tone}-text) 88%, var(--content-0));
-	--ui-tone-text-active: color-mix(in srgb, var(--#{$tone}-text) 76%, var(--content-0));
 	--ui-tone-fill: var(--#{$tone}-fill);
-	--ui-tone-fill-hover: color-mix(in srgb, var(--#{$tone}-fill) 88%, var(--content-0));
-	--ui-tone-fill-active: color-mix(in srgb, var(--#{$tone}-fill) 76%, var(--content-0));
 	--ui-tone-on-fill: var(--#{$tone}-on-fill);
-	--ui-tone-soft: color-mix(in srgb, var(--#{$tone}-fill) 12%, var(--surface-0));
 	--ui-tone-border: var(--#{$tone}-border);
-	--ui-tone-border-hover: color-mix(in srgb, var(--#{$tone}-border) 88%, var(--content-0));
-	--ui-tone-border-active: color-mix(in srgb, var(--#{$tone}-border) 76%, var(--content-0));
+	// Локальный вывод сохраняет реакцию компонента на subtree overrides базовых ролей.
+	@include toneDerived.derived-tone-declarations("ui-tone", $tone);
 	--ui-tone-border-focus: var(--focus-ring);
 	--ui-tone-ghost-hover: color-mix(in srgb, var(--#{$tone}-fill) 10%, var(--surface-0));
 	--ui-tone-ghost-active: color-mix(in srgb, var(--#{$tone}-fill) 20%, var(--surface-0));

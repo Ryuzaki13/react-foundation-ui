@@ -1,6 +1,6 @@
 # Замена цветовых токенов
 
-Новый контракт темы содержит семь схем: `accent`, `brand`, `neutral`, `error`, `warning`, `success`, `info`. Каждая схема имеет четыре роли:
+Новый контракт темы содержит семь схем: `accent`, `brand`, `neutral`, `error`, `warning`, `success`, `info`. Каждая схема принимает четыре настраиваемые роли:
 
 - `--<tone>-text` — текст и иконка на обычной поверхности;
 - `--<tone>-border` — рамка;
@@ -40,57 +40,57 @@
 
 ## Производные состояния
 
-Hover, active и soft больше не являются токенами темы. UI-компоненты вычисляют их через `color-mix(in srgb, ...)` из четырёх основных ролей.
+Hover, active и soft не входят в карту `status`, но снова доступны как публичные генерируемые CSS-токены. UI-пакет вычисляет их через единые `color-mix(in srgb, ...)` из четырёх основных ролей. Карта `tokens` остаётся последним escape hatch, если приложению действительно требуется точное переопределение.
 
 ```text
---status-brand-text-hover: удалён; вычисляется из --brand-text
---status-brand-text-active: удалён; вычисляется из --brand-text
---status-brand-border-hover: удалён; вычисляется из --brand-border
---status-brand-border-active: удалён; вычисляется из --brand-border
+--status-brand-text-hover: --brand-text-hover
+--status-brand-text-active: --brand-text-active
+--status-brand-border-hover: --brand-border-hover
+--status-brand-border-active: --brand-border-active
 --status-brand-border-focus: --focus-ring
---status-brand-fill-hover: удалён; вычисляется из --brand-fill
---status-brand-fill-active: удалён; вычисляется из --brand-fill
---status-brand-soft: удалён; вычисляется из --brand-fill
---status-neutral-text-hover: удалён; вычисляется из --neutral-text
---status-neutral-text-active: удалён; вычисляется из --neutral-text
---status-neutral-border-hover: удалён; вычисляется из --neutral-border
---status-neutral-border-active: удалён; вычисляется из --neutral-border
+--status-brand-fill-hover: --brand-fill-hover
+--status-brand-fill-active: --brand-fill-active
+--status-brand-soft: --brand-soft
+--status-neutral-text-hover: --neutral-text-hover
+--status-neutral-text-active: --neutral-text-active
+--status-neutral-border-hover: --neutral-border-hover
+--status-neutral-border-active: --neutral-border-active
 --status-neutral-border-focus: --focus-ring
---status-neutral-fill-hover: удалён; вычисляется из --neutral-fill
---status-neutral-fill-active: удалён; вычисляется из --neutral-fill
---status-neutral-soft: удалён; вычисляется из --neutral-fill
---status-error-text-hover: удалён; вычисляется из --error-text
---status-error-text-active: удалён; вычисляется из --error-text
---status-error-border-hover: удалён; вычисляется из --error-border
---status-error-border-active: удалён; вычисляется из --error-border
+--status-neutral-fill-hover: --neutral-fill-hover
+--status-neutral-fill-active: --neutral-fill-active
+--status-neutral-soft: --neutral-soft
+--status-error-text-hover: --error-text-hover
+--status-error-text-active: --error-text-active
+--status-error-border-hover: --error-border-hover
+--status-error-border-active: --error-border-active
 --status-error-border-focus: --focus-ring
---status-error-fill-hover: удалён; вычисляется из --error-fill
---status-error-fill-active: удалён; вычисляется из --error-fill
---status-error-soft: удалён; вычисляется из --error-fill
---status-warning-text-hover: удалён; вычисляется из --warning-text
---status-warning-text-active: удалён; вычисляется из --warning-text
---status-warning-border-hover: удалён; вычисляется из --warning-border
---status-warning-border-active: удалён; вычисляется из --warning-border
+--status-error-fill-hover: --error-fill-hover
+--status-error-fill-active: --error-fill-active
+--status-error-soft: --error-soft
+--status-warning-text-hover: --warning-text-hover
+--status-warning-text-active: --warning-text-active
+--status-warning-border-hover: --warning-border-hover
+--status-warning-border-active: --warning-border-active
 --status-warning-border-focus: --focus-ring
---status-warning-fill-hover: удалён; вычисляется из --warning-fill
---status-warning-fill-active: удалён; вычисляется из --warning-fill
---status-warning-soft: удалён; вычисляется из --warning-fill
---status-success-text-hover: удалён; вычисляется из --success-text
---status-success-text-active: удалён; вычисляется из --success-text
---status-success-border-hover: удалён; вычисляется из --success-border
---status-success-border-active: удалён; вычисляется из --success-border
+--status-warning-fill-hover: --warning-fill-hover
+--status-warning-fill-active: --warning-fill-active
+--status-warning-soft: --warning-soft
+--status-success-text-hover: --success-text-hover
+--status-success-text-active: --success-text-active
+--status-success-border-hover: --success-border-hover
+--status-success-border-active: --success-border-active
 --status-success-border-focus: --focus-ring
---status-success-fill-hover: удалён; вычисляется из --success-fill
---status-success-fill-active: удалён; вычисляется из --success-fill
---status-success-soft: удалён; вычисляется из --success-fill
---status-info-text-hover: удалён; вычисляется из --info-text
---status-info-text-active: удалён; вычисляется из --info-text
---status-info-border-hover: удалён; вычисляется из --info-border
---status-info-border-active: удалён; вычисляется из --info-border
+--status-success-fill-hover: --success-fill-hover
+--status-success-fill-active: --success-fill-active
+--status-success-soft: --success-soft
+--status-info-text-hover: --info-text-hover
+--status-info-text-active: --info-text-active
+--status-info-border-hover: --info-border-hover
+--status-info-border-active: --info-border-active
 --status-info-border-focus: --focus-ring
---status-info-fill-hover: удалён; вычисляется из --info-fill
---status-info-fill-active: удалён; вычисляется из --info-fill
---status-info-soft: удалён; вычисляется из --info-fill
+--status-info-fill-hover: --info-fill-hover
+--status-info-fill-active: --info-fill-active
+--status-info-soft: --info-soft
 ```
 
 ## Accent и прежние interactive-токены
@@ -114,6 +114,8 @@ Hover, active и soft больше не являются токенами тем
 отсутствовал: --accent-on-fill
 ```
 
+`interactiveSurface` намеренно использует базовые `--accent-fill`, `--accent-border` и `--accent-on-fill` для hover, active и selected: это единое заполненное состояние выбора. Производные `--accent-*-hover` и `--accent-*-active` предназначены для компонентов, которые меняют уже заданный tone между состояниями.
+
 ## High contrast
 
 ```text
@@ -121,32 +123,32 @@ Hover, active и soft больше не являются токенами тем
 --hc-status-brand-border: --hc-brand-border
 --hc-status-brand-fill: --hc-brand-fill
 --hc-status-brand-on-fill: --hc-brand-on-fill
---hc-status-brand-soft: удалён; мягкая заливка вычисляется из --brand-fill
+--hc-status-brand-soft: удалён; --brand-soft вычисляется из high-contrast-aware --brand-fill
 --hc-status-neutral-text: --hc-neutral-text
 --hc-status-neutral-border: --hc-neutral-border
 --hc-status-neutral-fill: --hc-neutral-fill
 --hc-status-neutral-on-fill: --hc-neutral-on-fill
---hc-status-neutral-soft: удалён; мягкая заливка вычисляется из --neutral-fill
+--hc-status-neutral-soft: удалён; --neutral-soft вычисляется из high-contrast-aware --neutral-fill
 --hc-status-error-text: --hc-error-text
 --hc-status-error-border: --hc-error-border
 --hc-status-error-fill: --hc-error-fill
 --hc-status-error-on-fill: --hc-error-on-fill
---hc-status-error-soft: удалён; мягкая заливка вычисляется из --error-fill
+--hc-status-error-soft: удалён; --error-soft вычисляется из high-contrast-aware --error-fill
 --hc-status-warning-text: --hc-warning-text
 --hc-status-warning-border: --hc-warning-border
 --hc-status-warning-fill: --hc-warning-fill
 --hc-status-warning-on-fill: --hc-warning-on-fill
---hc-status-warning-soft: удалён; мягкая заливка вычисляется из --warning-fill
+--hc-status-warning-soft: удалён; --warning-soft вычисляется из high-contrast-aware --warning-fill
 --hc-status-success-text: --hc-success-text
 --hc-status-success-border: --hc-success-border
 --hc-status-success-fill: --hc-success-fill
 --hc-status-success-on-fill: --hc-success-on-fill
---hc-status-success-soft: удалён; мягкая заливка вычисляется из --success-fill
+--hc-status-success-soft: удалён; --success-soft вычисляется из high-contrast-aware --success-fill
 --hc-status-info-text: --hc-info-text
 --hc-status-info-border: --hc-info-border
 --hc-status-info-fill: --hc-info-fill
 --hc-status-info-on-fill: --hc-info-on-fill
---hc-status-info-soft: удалён; мягкая заливка вычисляется из --info-fill
+--hc-status-info-soft: удалён; --info-soft вычисляется из high-contrast-aware --info-fill
 
 --hc-content-accent: --hc-accent-text
 --hc-border-accent: --hc-accent-border
@@ -199,6 +201,20 @@ Hover, active и soft больше не являются токенами тем
 --info-fill
 --info-on-fill
 ```
+
+Для каждой из семи схем `--<tone>-*` дополнительно выводятся производные токены:
+
+```text
+--<tone>-text-hover
+--<tone>-text-active
+--<tone>-border-hover
+--<tone>-border-active
+--<tone>-fill-hover
+--<tone>-fill-active
+--<tone>-soft
+```
+
+Эти 49 значений не являются входом Sass-карты `status`. Отдельные `--hc-<tone>-*` для них не нужны: формулы используют первичные токены, которые уже учитывают high-contrast overrides.
 
 Первичное объявление каждого цвета имеет форму `--token: var(--hc-token, #hex)`. Это правило автоматически применяется к цветовым значениям в картах `tokens` и `status`. Contrast-режим задаёт только `--hc-*`, а обычная тема продолжает использовать hex fallback.
 

@@ -12,7 +12,8 @@ function compileExactTheme(): string {
 	@include foundationThemes.theme(light, (
 		tokens: (
 			"--surface-0": #fefefe,
-			"--error-text": #990011
+			"--error-text": #990011,
+			"--error-soft": var(--surface-2)
 		),
 		status: (
 			accent: (
@@ -38,7 +39,7 @@ function compileExactTheme(): string {
 }
 
 describe("theme", () => {
-	it("наследует baseline и принимает четыре роли каждой hex-схемы", () => {
+	it("наследует baseline и принимает четыре настраиваемые роли каждой hex-схемы", () => {
 		const css = compileExactTheme();
 		const tones = ["accent", "brand", "neutral", "error", "warning", "success", "info"] as const;
 		const roles = ["text", "border", "fill", "on-fill"] as const;
@@ -63,6 +64,26 @@ describe("theme", () => {
 		expect(css).toContain("--shadow-xs: var(--hc-shadow-xs, 0 0 0.25em #00000026)");
 	});
 
+	it("выводит переиспользуемые производные состояния для каждой схемы", () => {
+		const css = compileExactTheme();
+		const tones = ["accent", "brand", "neutral", "error", "warning", "success", "info"] as const;
+		const derivedRoles = ["text-hover", "text-active", "border-hover", "border-active", "fill-hover", "fill-active", "soft"] as const;
+
+		for (const tone of tones) {
+			for (const role of derivedRoles) {
+				expect(css).toContain(`--${tone}-${role}:`);
+			}
+
+			expect(css).toContain(`--${tone}-text-hover: color-mix(in srgb, var(--${tone}-text) 88%, var(--content-0))`);
+			expect(css).toContain(`--${tone}-text-active: color-mix(in srgb, var(--${tone}-text) 76%, var(--content-0))`);
+			expect(css).toContain(`--${tone}-border-hover: color-mix(in srgb, var(--${tone}-border) 88%, var(--content-0))`);
+			expect(css).toContain(`--${tone}-border-active: color-mix(in srgb, var(--${tone}-border) 76%, var(--content-0))`);
+			expect(css).toContain(`--${tone}-fill-hover: color-mix(in srgb, var(--${tone}-fill) 88%, var(--content-0))`);
+			expect(css).toContain(`--${tone}-fill-active: color-mix(in srgb, var(--${tone}-fill) 76%, var(--content-0))`);
+			expect(css).toContain(`--${tone}-soft: color-mix(in srgb, var(--${tone}-fill) 12%, var(--surface-0))`);
+		}
+	});
+
 	it("оборачивает первичные root-цвета одноимёнными high-contrast токенами", () => {
 		const css = compileString('@use "root-tokens";', {
 			loadPaths: [resolve("src/styles")],
@@ -73,13 +94,18 @@ describe("theme", () => {
 		expect(css).toContain("--black: var(--hc-black, #000000)");
 	});
 
-	it("выводит плоские token overrides после палитры", () => {
+	it("выводит плоские token overrides последним escape hatch темы", () => {
 		const css = compileExactTheme();
 		const paletteTextIndex = css.indexOf("--error-text: var(--hc-error-text, #aa0011)");
 		const exactTokenIndex = css.lastIndexOf("--error-text: var(--hc-error-text, #990011)");
+		const derivedTextIndex = css.indexOf("--error-text-hover: color-mix(in srgb, var(--error-text) 88%, var(--content-0))");
+		const generatedSoftIndex = css.indexOf("--error-soft: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0))");
+		const exactSoftIndex = css.lastIndexOf("--error-soft: var(--surface-2)");
 
 		expect(paletteTextIndex).toBeGreaterThanOrEqual(0);
-		expect(exactTokenIndex).toBeGreaterThan(paletteTextIndex);
+		expect(derivedTextIndex).toBeGreaterThan(paletteTextIndex);
+		expect(exactTokenIndex).toBeGreaterThan(derivedTextIndex);
+		expect(exactSoftIndex).toBeGreaterThan(generatedSoftIndex);
 		expect(css).toContain("--surface-0: var(--hc-surface-0, #fefefe)");
 	});
 

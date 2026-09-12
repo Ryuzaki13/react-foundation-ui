@@ -1,4 +1,5 @@
 @use "@/styles/mixins" as *;
+@use "@/styles/tone-derived" as toneDerived;
 
 .container {
 	position: fixed;
@@ -32,25 +33,25 @@
 
 .info {
 	--notify-accent: var(--info-border);
-	--notify-accent-surface: color-mix(in srgb, var(--info-fill) 12%, var(--surface-0));
+	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "info");
 	--notify-accent-text: var(--info-text);
 }
 
 .success {
 	--notify-accent: var(--success-border);
-	--notify-accent-surface: color-mix(in srgb, var(--success-fill) 12%, var(--surface-0));
+	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "success");
 	--notify-accent-text: var(--success-text);
 }
 
 .warning {
 	--notify-accent: var(--warning-border);
-	--notify-accent-surface: color-mix(in srgb, var(--warning-fill) 12%, var(--surface-0));
+	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "warning");
 	--notify-accent-text: var(--warning-text);
 }
 
 .error {
 	--notify-accent: var(--error-border);
-	--notify-accent-surface: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0));
+	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "error");
 	--notify-accent-text: var(--error-text);
 }
 

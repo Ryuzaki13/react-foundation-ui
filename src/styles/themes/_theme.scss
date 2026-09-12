@@ -1,6 +1,7 @@
 @use "sass:map";
 
 @use "../config" as stylesConfig;
+@use "../tone-derived" as toneDerived;
 
 @function _theme-base($mode) {
 	@if $mode == light {
@@ -14,14 +15,19 @@
 	@error "Цветовая схема темы должна иметь значение light или dark, получено: #{$mode}.";
 }
 
-/// Выводит четыре публичные роли цветовой схемы.
-/// Состояния hover/active и мягкая заливка вычисляются внутри UI-компонентов,
-/// поэтому host настраивает только устойчивый минимальный контракт.
+/// Выводит четыре настраиваемые роли цветовой схемы.
 @mixin _status-palette($name, $status) {
 	--#{$name}-text: var(--hc-#{$name}-text, #{map.get($status, text)});
 	--#{$name}-border: var(--hc-#{$name}-border, #{map.get($status, border)});
 	--#{$name}-fill: var(--hc-#{$name}-fill, #{map.get($status, fill)});
 	--#{$name}-on-fill: var(--hc-#{$name}-on-fill, #{map.get($status, on-fill)});
+}
+
+/// Выводит переиспользуемые состояния из уже разрешённых базовых ролей.
+/// Host не настраивает эти токены через карту status: их единые формулы автоматически
+/// учитывают обычные, переопределённые и high-contrast значения базовой схемы.
+@mixin _status-derived-palette($name) {
+	@include toneDerived.derived-tone-declarations($name, $name);
 }
 
 @mixin _theme-palette($theme) {
@@ -36,13 +42,21 @@
 	--border-focus: var(--hc-border-focus, var(--focus-ring));
 }
 
+@mixin _theme-derived-palettes($theme) {
+	@each $name in map.keys(map.get($theme, status)) {
+		@include _status-derived-palette($name);
+	}
+}
+
 /// Формирует полную тему из baseline выбранной схемы и точечных переопределений.
 /// Карта `status` содержит `accent`, `brand`, `neutral`, `error`, `warning`,
-/// `success` и `info`; у каждой схемы ровно четыре роли: `text`, `border`,
-/// `fill` и `on-fill`. Карта `tokens` выводится последней как escape hatch.
+/// `success` и `info`; у каждой схемы ровно четыре настраиваемые роли: `text`,
+/// `border`, `fill` и `on-fill`. Производные состояния выводятся из базовых
+/// переменных, а карта `tokens` остаётся последним escape hatch темы.
 @mixin theme($mode, $overrides: ()) {
 	$resolved-theme: map.deep-merge(_theme-base($mode), $overrides);
 
 	@include _theme-palette($resolved-theme);
+	@include _theme-derived-palettes($resolved-theme);
 	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens($resolved-theme));
 }
