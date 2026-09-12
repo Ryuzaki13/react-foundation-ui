@@ -1,18 +1,36 @@
+@use "sass:string";
+
+/// Возвращает формулу мягкой заливки для указанной tone-схемы.
+@function tone-soft-value($source) {
+	@return string.unquote("color-mix(in srgb, var(--#{$source}-fill) 12%, var(--surface-0))");
+}
+
+/// Формирует карту единых производных состояний tone-схемы.
+/// Раздельные target и source позволяют использовать те же формулы как для
+/// глобальных токенов темы, так и для локальных переменных UI-компонента.
+@function derived-tone-tokens($target, $source) {
+	@return (
+		"--#{$target}-text-hover": string.unquote("color-mix(in srgb, var(--#{$source}-text) 88%, var(--content-0))"),
+		"--#{$target}-text-active": string.unquote("color-mix(in srgb, var(--#{$source}-text) 76%, var(--content-0))"),
+		"--#{$target}-border-hover": string.unquote("color-mix(in srgb, var(--#{$source}-border) 88%, var(--content-0))"),
+		"--#{$target}-border-active": string.unquote("color-mix(in srgb, var(--#{$source}-border) 76%, var(--content-0))"),
+		"--#{$target}-fill-hover": string.unquote("color-mix(in srgb, var(--#{$source}-fill) 88%, var(--content-0))"),
+		"--#{$target}-fill-active": string.unquote("color-mix(in srgb, var(--#{$source}-fill) 76%, var(--content-0))"),
+		"--#{$target}-soft": tone-soft-value($source)
+	);
+}
+
 /// Выводит мягкую заливку как указанное свойство в текущем CSS-контексте.
 /// Это сохраняет реакцию значения на локальные overrides базовой роли и поверхности.
 @mixin tone-soft-declaration($property, $source) {
-	#{$property}: color-mix(in srgb, var(--#{$source}-fill) 12%, var(--surface-0));
+	#{$property}: #{tone-soft-value($source)};
 }
 
 /// Выводит единые производные состояния tone-схемы.
-/// Раздельные target и source позволяют использовать те же формулы как для
-/// глобальных токенов темы, так и для локальных переменных UI-компонента.
+/// Mixin остаётся локальным адаптером для component-scoped overrides, а карта
+/// позволяет теме объединить все значения до единственного вывода declarations.
 @mixin derived-tone-declarations($target, $source) {
-	--#{$target}-text-hover: color-mix(in srgb, var(--#{$source}-text) 88%, var(--content-0));
-	--#{$target}-text-active: color-mix(in srgb, var(--#{$source}-text) 76%, var(--content-0));
-	--#{$target}-border-hover: color-mix(in srgb, var(--#{$source}-border) 88%, var(--content-0));
-	--#{$target}-border-active: color-mix(in srgb, var(--#{$source}-border) 76%, var(--content-0));
-	--#{$target}-fill-hover: color-mix(in srgb, var(--#{$source}-fill) 88%, var(--content-0));
-	--#{$target}-fill-active: color-mix(in srgb, var(--#{$source}-fill) 76%, var(--content-0));
-	@include tone-soft-declaration("--#{$target}-soft", $source);
+	@each $property, $value in derived-tone-tokens($target, $source) {
+		#{$property}: #{$value};
+	}
 }

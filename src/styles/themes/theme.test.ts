@@ -13,6 +13,7 @@ function compileExactTheme(): string {
 		tokens: (
 			"--surface-0": #fefefe,
 			"--error-text": #990011,
+			"--border-0": #abcdef,
 			"--error-soft": var(--surface-2)
 		),
 		status: (
@@ -56,7 +57,7 @@ describe("theme", () => {
 		expect(css).toContain("--accent-border: var(--hc-accent-border, #345678)");
 		expect(css).toContain("--accent-fill: var(--hc-accent-fill, #ddeeff)");
 		expect(css).toContain("--accent-on-fill: var(--hc-accent-on-fill, #102030)");
-		expect(css).toContain("--error-text: var(--hc-error-text, #aa0011)");
+		expect(css).toContain("--error-text: var(--hc-error-text, #990011)");
 		expect(css).toContain("--error-border: var(--hc-error-border, #bb1122)");
 		expect(css).toContain("--error-fill: var(--hc-error-fill, #cc2233)");
 		expect(css).toContain("--error-on-fill: var(--hc-error-on-fill, #ffffff)");
@@ -80,7 +81,12 @@ describe("theme", () => {
 			expect(css).toContain(`--${tone}-border-active: color-mix(in srgb, var(--${tone}-border) 76%, var(--content-0))`);
 			expect(css).toContain(`--${tone}-fill-hover: color-mix(in srgb, var(--${tone}-fill) 88%, var(--content-0))`);
 			expect(css).toContain(`--${tone}-fill-active: color-mix(in srgb, var(--${tone}-fill) 76%, var(--content-0))`);
-			expect(css).toContain(`--${tone}-soft: color-mix(in srgb, var(--${tone}-fill) 12%, var(--surface-0))`);
+
+			if (tone === "error") {
+				expect(css).toContain("--error-soft: var(--surface-2)");
+			} else {
+				expect(css).toContain(`--${tone}-soft: color-mix(in srgb, var(--${tone}-fill) 12%, var(--surface-0))`);
+			}
 		}
 	});
 
@@ -94,18 +100,19 @@ describe("theme", () => {
 		expect(css).toContain("--black: var(--hc-black, #000000)");
 	});
 
-	it("выводит плоские token overrides последним escape hatch темы", () => {
+	it("разрешает token overrides на этапе сборки и выводит каждое свойство один раз", () => {
 		const css = compileExactTheme();
-		const paletteTextIndex = css.indexOf("--error-text: var(--hc-error-text, #aa0011)");
-		const exactTokenIndex = css.lastIndexOf("--error-text: var(--hc-error-text, #990011)");
-		const derivedTextIndex = css.indexOf("--error-text-hover: color-mix(in srgb, var(--error-text) 88%, var(--content-0))");
-		const generatedSoftIndex = css.indexOf("--error-soft: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0))");
-		const exactSoftIndex = css.lastIndexOf("--error-soft: var(--surface-2)");
+		const declarationNames = Array.from(css.matchAll(/^\s*(--[\w-]+):/gm), ([, name]) => name);
+		const duplicateNames = declarationNames.filter((name, index) => declarationNames.indexOf(name) !== index);
 
-		expect(paletteTextIndex).toBeGreaterThanOrEqual(0);
-		expect(derivedTextIndex).toBeGreaterThan(paletteTextIndex);
-		expect(exactTokenIndex).toBeGreaterThan(derivedTextIndex);
-		expect(exactSoftIndex).toBeGreaterThan(generatedSoftIndex);
+		expect(declarationNames).toHaveLength(94);
+		expect(duplicateNames).toEqual([]);
+		expect(css).toContain("--error-text: var(--hc-error-text, #990011)");
+		expect(css).not.toContain("--error-text: var(--hc-error-text, #aa0011)");
+		expect(css).toContain("--border-0: var(--hc-border-0, #abcdef)");
+		expect(css).not.toContain("--border-0: var(--hc-border-0, var(--neutral-border))");
+		expect(css).toContain("--error-soft: var(--surface-2)");
+		expect(css).not.toContain("--error-soft: color-mix(in srgb, var(--error-fill) 12%, var(--surface-0))");
 		expect(css).toContain("--surface-0: var(--hc-surface-0, #fefefe)");
 	});
 

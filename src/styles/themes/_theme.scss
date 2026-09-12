@@ -1,4 +1,5 @@
 @use "sass:map";
+@use "sass:string";
 
 @use "../config" as stylesConfig;
 @use "../tone-derived" as toneDerived;
@@ -15,48 +16,65 @@
 	@error "Цветовая схема темы должна иметь значение light или dark, получено: #{$mode}.";
 }
 
-/// Выводит четыре настраиваемые роли цветовой схемы.
-@mixin _status-palette($name, $status) {
-	--#{$name}-text: var(--hc-#{$name}-text, #{map.get($status, text)});
-	--#{$name}-border: var(--hc-#{$name}-border, #{map.get($status, border)});
-	--#{$name}-fill: var(--hc-#{$name}-fill, #{map.get($status, fill)});
-	--#{$name}-on-fill: var(--hc-#{$name}-on-fill, #{map.get($status, on-fill)});
+/// Формирует четыре настраиваемые роли цветовой схемы.
+@function _status-palette-tokens($name, $status) {
+	@return (
+		"--#{$name}-text": map.get($status, text),
+		"--#{$name}-border": map.get($status, border),
+		"--#{$name}-fill": map.get($status, fill),
+		"--#{$name}-on-fill": map.get($status, on-fill)
+	);
 }
 
-/// Выводит переиспользуемые состояния из уже разрешённых базовых ролей.
-/// Host не настраивает эти токены через карту status: их единые формулы автоматически
-/// учитывают обычные, переопределённые и high-contrast значения базовой схемы.
-@mixin _status-derived-palette($name) {
-	@include toneDerived.derived-tone-declarations($name, $name);
-}
+/// Формирует базовые роли и общие границы темы.
+@function _theme-palette-tokens($theme) {
+	$tokens: ();
 
-@mixin _theme-palette($theme) {
 	@each $name, $status in map.get($theme, status) {
-		@include _status-palette($name, $status);
+		$tokens: map.merge($tokens, _status-palette-tokens($name, $status));
 	}
 
 	// Базовые границы остаются общими layout-токенами, но получают цвет из neutral-схемы.
-	--border-0: var(--hc-border-0, var(--neutral-border));
-	--border-1: var(--hc-border-1, color-mix(in srgb, var(--neutral-border) 82%, var(--content-0)));
-	--border-2: var(--hc-border-2, color-mix(in srgb, var(--neutral-border) 64%, var(--content-0)));
-	--border-focus: var(--hc-border-focus, var(--focus-ring));
+	@return map.merge(
+		$tokens,
+		(
+			"--border-0": string.unquote("var(--hc-border-0, var(--neutral-border))"),
+			"--border-1": string.unquote("var(--hc-border-1, color-mix(in srgb, var(--neutral-border) 82%, var(--content-0)))"),
+			"--border-2": string.unquote("var(--hc-border-2, color-mix(in srgb, var(--neutral-border) 64%, var(--content-0)))"),
+			"--border-focus": string.unquote("var(--hc-border-focus, var(--focus-ring))")
+		)
+	);
 }
 
-@mixin _theme-derived-palettes($theme) {
+/// Формирует переиспользуемые состояния из уже разрешённых базовых ролей.
+/// Host не настраивает эти токены через карту status: их единые формулы автоматически
+/// учитывают обычные, переопределённые и high-contrast значения базовой схемы.
+@function _theme-derived-tokens($theme) {
+	$tokens: ();
+
 	@each $name in map.keys(map.get($theme, status)) {
-		@include _status-derived-palette($name);
+		$tokens: map.merge($tokens, toneDerived.derived-tone-tokens($name, $name));
 	}
+
+	@return $tokens;
+}
+
+/// Собирает итоговую карту до вывода CSS. Карта tokens получает наивысший
+/// compile-time приоритет и заменяет совпадающие status, border и derived ключи.
+@function _theme-declarations($theme) {
+	$declarations: map.merge(_theme-palette-tokens($theme), _theme-derived-tokens($theme));
+
+	@return map.merge($declarations, stylesConfig.theme-tokens($theme));
 }
 
 /// Формирует полную тему из baseline выбранной схемы и точечных переопределений.
 /// Карта `status` содержит `accent`, `brand`, `neutral`, `error`, `warning`,
 /// `success` и `info`; у каждой схемы ровно четыре настраиваемые роли: `text`,
 /// `border`, `fill` и `on-fill`. Производные состояния выводятся из базовых
-/// переменных, а карта `tokens` остаётся последним escape hatch темы.
+/// переменных. Карта `tokens` имеет наивысший compile-time приоритет, после
+/// чего каждое итоговое CSS-свойство выводится ровно один раз.
 @mixin theme($mode, $overrides: ()) {
 	$resolved-theme: map.deep-merge(_theme-base($mode), $overrides);
 
-	@include _theme-palette($resolved-theme);
-	@include _theme-derived-palettes($resolved-theme);
-	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens($resolved-theme));
+	@include stylesConfig.emit-declarations(_theme-declarations($resolved-theme));
 }
