@@ -3,13 +3,13 @@
 	--s: transparent;
 	--b: transparent;
 
-	--ch: var(--accent-on-fill);
-	--sh: var(--accent-fill);
-	--bh: var(--accent-border);
+	--ch: var(--accent-text-hover);
+	--sh: var(--accent-fill-hover);
+	--bh: var(--accent-border-hover);
 
-	--ca: var(--accent-on-fill);
-	--sa: var(--accent-fill);
-	--ba: var(--accent-border);
+	--ca: var(--accent-text-active);
+	--sa: var(--accent-fill-active);
+	--ba: var(--accent-border-active);
 
 	--cs: var(--accent-on-fill);
 	--ss: var(--accent-fill);

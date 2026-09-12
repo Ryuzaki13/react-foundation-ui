@@ -102,19 +102,19 @@ Hover, active и soft не входят в карту `status`, но снова 
 --interactive-color: удалён; обычное свойство color самого компонента
 --interactive-surface: удалён; обычное свойство background-color самого компонента
 --interactive-border: удалён; обычное свойство border-color самого компонента
---interactive-hover-color: --accent-on-fill
---interactive-active-color: --accent-on-fill
+--interactive-hover-color: --accent-text-hover
+--interactive-active-color: --accent-text-active
 --interactive-selected-color: --accent-on-fill
---interactive-hover-surface: --accent-fill
---interactive-active-surface: --accent-fill
+--interactive-hover-surface: --accent-fill-hover
+--interactive-active-surface: --accent-fill-active
 --interactive-selected-surface: --accent-fill
---interactive-hover-border: --accent-border
---interactive-active-border: --accent-border
+--interactive-hover-border: --accent-border-hover
+--interactive-active-border: --accent-border-active
 --interactive-selected-border: --accent-border
 отсутствовал: --accent-on-fill
 ```
 
-`interactiveSurface` намеренно использует базовые `--accent-fill`, `--accent-border` и `--accent-on-fill` для hover, active и selected: это единое заполненное состояние выбора. Производные `--accent-*-hover` и `--accent-*-active` предназначены для компонентов, которые меняют уже заданный tone между состояниями.
+`interactiveSurface` использует производные `--accent-*-hover` и `--accent-*-active` для одноимённых интерактивных состояний. Выбранное состояние остаётся устойчивым заполненным состоянием и использует базовые `--accent-fill`, `--accent-border` и `--accent-on-fill`.
 
 ## High contrast
 

@@ -365,16 +365,17 @@
 		cursor: default;
 	}
 
-	&.uiPopupOptionActive,
-	&:active {
-		color: var(--accent-on-fill);
-		background-color: var(--accent-fill);
+	@include hover(true, false) {
+		color: var(--accent-text-hover);
+		background-color: var(--accent-fill-hover);
+		cursor: pointer;
 	}
 
-	@include hover(true) {
-		color: var(--accent-on-fill);
-		background-color: var(--accent-fill);
-		cursor: pointer;
+	// Active идёт после hover, чтобы нажатие не теряло своё состояние у мыши и touch-устройств.
+	&.uiPopupOptionActive,
+	&:active {
+		color: var(--accent-text-active);
+		background-color: var(--accent-fill-active);
 	}
 
 	&.disabled {

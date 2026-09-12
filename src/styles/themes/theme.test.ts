@@ -1,7 +1,8 @@
-import { compileString } from "sass-embedded";
+import { compile, compileString } from "sass-embedded";
 import { describe, expect, it } from "vitest";
 
 import { resolve } from "node:path";
+import { pathToFileURL } from "node:url";
 
 /** Компилирует публичный themes entrypoint с точной hex-палитрой host-приложения. */
 function compileExactTheme(): string {
@@ -37,6 +38,20 @@ function compileExactTheme(): string {
 			style: "expanded"
 		}
 	).css;
+}
+
+/** Компилирует общий CSS Module с тем же `@/` alias, который использует Vite-сборка пакета. */
+function compileUiModule(): string {
+	return compile(resolve("src/ui.module.scss"), {
+		importers: [
+			{
+				findFileUrl(url) {
+					return url.startsWith("@/") ? pathToFileURL(resolve("src", url.slice(2))) : null;
+				}
+			}
+		],
+		style: "expanded"
+	}).css;
 }
 
 describe("theme", () => {
@@ -146,16 +161,35 @@ describe("theme", () => {
 });
 
 describe("interactive surface", () => {
-	it("использует accent-схему для hover, active и selected", () => {
+	it("использует соответствующие состояния accent-схемы для hover, active и selected", () => {
 		const css = compileString('@use "interactive-surface";', {
 			loadPaths: [resolve("src/styles/themes")],
 			style: "expanded"
 		}).css;
 
-		expect(css).toContain("--ch: var(--accent-on-fill)");
-		expect(css).toContain("--sh: var(--accent-fill)");
-		expect(css).toContain("--bh: var(--accent-border)");
+		expect(css).toContain("--ch: var(--accent-text-hover)");
+		expect(css).toContain("--sh: var(--accent-fill-hover)");
+		expect(css).toContain("--bh: var(--accent-border-hover)");
+		expect(css).toContain("--ca: var(--accent-text-active)");
+		expect(css).toContain("--sa: var(--accent-fill-active)");
+		expect(css).toContain("--ba: var(--accent-border-active)");
+		expect(css).toContain("--cs: var(--accent-on-fill)");
+		expect(css).toContain("--ss: var(--accent-fill)");
+		expect(css).toContain("--bs: var(--accent-border)");
 		expect(css).toMatch(/\.interactiveSurface\[data-selected=true\]\.interactiveSurfaceFrame\s*\{\s*border-color: var\(--bs\);\s*\}/);
 		expect(css).not.toContain("--interactive-");
+	});
+
+	it("сохраняет ту же карту состояний в используемом popup option", () => {
+		const css = compileUiModule();
+
+		expect(css).toMatch(/\.uiPopupOption\.selected\s*\{\s*color: var\(--accent-on-fill\);\s*background-color: var\(--accent-fill\);/);
+		expect(css).toMatch(
+			/\.uiPopupOption\.uiPopupOptionActive,\s*\.uiPopupOption:active\s*\{\s*color: var\(--accent-text-active\);\s*background-color: var\(--accent-fill-active\);/
+		);
+		expect(css).toMatch(
+			/@media \(any-hover: hover\)\s*\{\s*\.uiPopupOption:hover\s*\{\s*color: var\(--accent-text-hover\);\s*background-color: var\(--accent-fill-hover\);/
+		);
+		expect(css).not.toMatch(/@media \(any-hover: none\)\s*\{\s*\.uiPopupOption:active/);
 	});
 });
