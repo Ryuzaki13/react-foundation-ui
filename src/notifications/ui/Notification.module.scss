@@ -117,6 +117,7 @@
 @include mobile {
 	.container {
 		padding: var(--space-md);
-		width: min(100dvw, calc(100dvw - var(--space-md) * 2));
+		// Контейнер занимает viewport целиком, а padding задаёт карточкам симметричные отступы от его краёв.
+		width: 100dvw;
 	}
 }
