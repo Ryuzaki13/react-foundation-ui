@@ -1,7 +1,6 @@
 import React, { createContext, KeyboardEvent, ReactNode, useCallback, useContext, useId, useLayoutEffect, useMemo, useState } from "react";
 
 import { cn, getRovingFocusTargetIndex, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
-import { CheckCircleIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 
@@ -211,9 +210,9 @@ export function Option<T>({ value, label, description, className }: OptionProps<
 				<span className="textNoWrap">{label}</span>
 				{description && <span className="fontSizeSm">{description}</span>}
 			</span>
-			<span className={styles.radioItemIcon}>
+			{/* <span className={styles.radioItemIcon}>
 				<CheckCircleIcon style={{ display: "block", visibility: isChecked ? "visible" : "hidden" }} />
-			</span>
+			</span> */}
 		</button>
 	);
 }
