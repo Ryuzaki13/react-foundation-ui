@@ -41,7 +41,7 @@ const meta = {
 			control: false
 		},
 		minWidth: {
-			description: "Минимальная ширина контейнера окна в CSS-единицах или пикселях.",
+			description: "Желаемая минимальная ширина панели в CSS-единицах или пикселях; ограничивается доступной шириной viewport.",
 			control: "text"
 		},
 		children: {
@@ -105,4 +105,22 @@ export const Opened: Story = {
 		open: true
 	},
 	render: createDialogStoryRender(() => <div>Диалог изначально открыт для демонстрации верстки.</div>)
+};
+
+export const LongContent: Story = {
+	args: {
+		open: true,
+		minWidth: 640
+	},
+	render: createDialogStoryRender((close) => (
+		<div>
+			{Array.from({ length: 24 }, (_, index) => (
+				<p key={index}>
+					Строка {index + 1}. Большой контент остаётся внутри доступной области экрана, а диалог прокручивается независимо от
+					страницы.
+				</p>
+			))}
+			<Button onClick={close}>Закрыть диалог</Button>
+		</div>
+	))
 };

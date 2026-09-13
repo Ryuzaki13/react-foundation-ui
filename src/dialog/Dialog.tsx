@@ -1,27 +1,37 @@
-import React, { PropsWithChildren, useId } from "react";
+import { type CSSProperties, type PropsWithChildren, type ReactNode, useId } from "react";
 
 import { getOrCreatePortalRoot, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
 import { createPortal } from "react-dom";
 
-interface DialogProps extends PropsWithChildren {
-	title: React.ReactNode;
+import styles from "./Dialog.module.scss";
+
+type DialogProps = PropsWithChildren<{
+	title: ReactNode;
 	description: string;
 	open: boolean;
 	onClose: () => void;
 	minWidth?: string | number;
-}
+}>;
+
+type DialogStyle = CSSProperties & {
+	"--dialog-min-width"?: string;
+};
 
 /**
- * Модальное диалоговое окно для важных подтверждений и коротких пользовательских сценариев.
+ * Модальное диалоговое окно для важных подтверждений и пользовательских сценариев.
+ * Ограничивает панель доступной областью viewport и прокручивает большое содержимое.
  */
 export function Dialog({ title, description, open, onClose, minWidth, children }: DialogProps) {
 	const titleId = useId();
 	const descriptionId = useId();
+	const dialogStyle: DialogStyle = {
+		"--dialog-min-width": typeof minWidth === "number" ? `${minWidth}px` : minWidth
+	};
 	const panelRef = useOverlayFocus<HTMLDivElement>({
 		active: open,
 		trapFocus: true,
 		restoreFocus: true,
-		initialFocus: "auto"
+		initialFocus: "container"
 	});
 
 	useEscapeDismiss({
@@ -45,10 +55,7 @@ export function Dialog({ title, description, open, onClose, minWidth, children }
 	}
 
 	return createPortal(
-		<div
-			className="fixed inset0 flexCenter surfaceBackdrop"
-			style={{ zIndex: "var(--z-dialog)" }}
-			onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+		<div className={`${styles.overlay} surfaceBackdrop`} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
 			<div
 				ref={panelRef}
 				role="dialog"
@@ -56,8 +63,8 @@ export function Dialog({ title, description, open, onClose, minWidth, children }
 				aria-labelledby={title ? titleId : undefined}
 				aria-describedby={description ? descriptionId : undefined}
 				tabIndex={-1}
-				className="surface0 shadowMd paddingLg radiusSm"
-				style={{ minWidth }}>
+				className={`${styles.panel} scrollable overscroll surface0 shadowMd paddingLg radiusMd`}
+				style={dialogStyle}>
 				{title && (
 					<h2 id={titleId} className="margin0">
 						{title}

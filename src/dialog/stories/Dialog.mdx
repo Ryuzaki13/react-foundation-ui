@@ -59,6 +59,13 @@ export function Example() {
 
 <Canvas of={DialogStories.Opened} />
 
+### Большой контент на низком или узком экране
+
+Диалог ограничивает размеры доступной областью viewport. Если контент не помещается, прокручивается панель диалога, а заголовок,
+описание и управляющие элементы остаются достижимыми.
+
+<Canvas of={DialogStories.LongContent} />
+
 ## API
 
 <ArgTypes of={DialogStories} />

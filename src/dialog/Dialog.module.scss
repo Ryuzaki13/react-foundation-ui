@@ -1,0 +1,30 @@
+.overlay {
+	z-index: var(--z-dialog);
+	position: fixed;
+	inset: 0;
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: minmax(0, 1fr);
+	place-items: center;
+	box-sizing: border-box;
+	width: 100%;
+	height: 100vh;
+	height: 100dvh;
+	padding-block: max(var(--space-md), env(safe-area-inset-top, 0px)) max(var(--space-md), env(safe-area-inset-bottom, 0px));
+	padding-inline: max(var(--space-md), env(safe-area-inset-left, 0px)) max(var(--space-md), env(safe-area-inset-right, 0px));
+	overflow: hidden;
+}
+
+.panel {
+	--dialog-min-width: 0px;
+
+	/*
+	 * Панель может расти по содержимому только в пределах grid-track overlay. Это сохраняет
+	 * компактный desktop-диалог, а на узком или низком viewport отдаёт прокрутку самой панели.
+	 */
+	box-sizing: border-box;
+	min-width: min(var(--dialog-min-width), 100%);
+	max-width: 100%;
+	max-height: 100%;
+	overflow-wrap: anywhere;
+}
