@@ -5,6 +5,8 @@ import { act, type ReactNode } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import uiStyles from "../ui.module.scss";
+
 import { Listbox } from "./Listbox";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
@@ -58,6 +60,16 @@ afterEach(async () => {
 });
 
 describe("Listbox", () => {
+	it("применяет общий UiBaseProps.size к оболочке поля", async () => {
+		await renderNode(<Listbox size="sm" options={OPTIONS} value="week" onChange={() => undefined} />);
+
+		const listbox = getRequiredElement(container?.querySelector<HTMLElement>('[role="listbox"]') ?? null, "Не найден Listbox");
+		const field = getRequiredElement(listbox.parentElement?.parentElement ?? null, "Не найдена оболочка поля Listbox");
+
+		expect(field.classList.contains(uiStyles.uiSizable)).toBe(true);
+		expect(field.classList.contains(uiStyles.sm)).toBe(true);
+	});
+
 	it("переиспользует подпись и описание Input и связывает их со списком через ARIA", async () => {
 		await renderNode(
 			<Listbox

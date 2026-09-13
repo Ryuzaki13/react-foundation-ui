@@ -12,17 +12,20 @@
 	--anchor-gap: var(--space-xs);
 	--anchor-padding: var(--space-xs);
 	--anchor-offset: 0;
+	// Минимальная ширина нужна только floating-панели. Встроенный Listbox получает ширину от UiBaseProps.size.
+	--input-width: min(100vw, var(--base-width, 15em));
 
 	min-width: 0;
 	z-index: var(--z-dropdown);
 	box-shadow: var(--shadow-md);
+
+	.options {
+		min-width: var(--input-width);
+	}
 }
 
 .options {
-	--input-width: min(100vw, var(--base-width, 15em));
-
 	width: 100%;
-	min-width: var(--input-width);
 	min-height: 0;
 	max-height: 75vh;
 
@@ -95,7 +98,7 @@
 }
 
 @include mobile {
-	.options {
+	.popupPositioner {
 		--input-width: calc(100dvw - var(--space-xl));
 	}
 }

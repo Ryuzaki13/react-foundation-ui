@@ -4,10 +4,11 @@ import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { type UiSize } from "../../types";
 import { Listbox } from "../Listbox";
 
 type StringOption = {
-	id: string;
+	value: string;
 	label?: string;
 	disabled?: boolean;
 };
@@ -20,6 +21,7 @@ function StringListbox(props: {
 	label?: ReactNode;
 	description?: string;
 	disabled?: boolean;
+	size?: UiSize;
 	focusOnMount?: boolean;
 	onChange?: (value: string | string[], option: StringOption) => void;
 	renderItem?: (option: StringOption, selected: boolean, active: boolean) => ReactNode;
@@ -37,10 +39,10 @@ function StringListbox(props: {
 }
 
 const options: StringOption[] = [
-	{ id: "low", label: "Низкий" },
-	{ id: "medium", label: "Средний" },
-	{ id: "high", label: "Высокий" },
-	{ id: "critical", label: "Критический", disabled: true }
+	{ value: "low", label: "Низкий" },
+	{ value: "medium", label: "Средний" },
+	{ value: "high", label: "Высокий" },
+	{ value: "critical", label: "Критический", disabled: true }
 ];
 
 const meta = {
@@ -84,6 +86,11 @@ const meta = {
 		disabled: {
 			description: "Блокирует фокусировку, навигацию и изменение выбора.",
 			control: "boolean"
+		},
+		size: {
+			description: "Ширина Listbox из общего контракта UiBaseProps.",
+			control: "select",
+			options: ["xs", "sm", "md", "lg", "xl"]
 		},
 		onChange: {
 			description: "Вызывается при выборе опции.",
@@ -190,4 +197,18 @@ export const Disabled: Story = {
 		value: "medium"
 	},
 	render: (args) => <StringListbox {...args} />
+};
+
+export const Sizes: Story = {
+	args: {
+		label: undefined,
+		description: undefined
+	},
+	render: (args) => (
+		<div style={{ display: "grid", gap: 12 }}>
+			{(["xs", "sm", "md", "lg", "xl"] satisfies UiSize[]).map((size) => (
+				<StringListbox key={size} {...args} size={size} label={size} />
+			))}
+		</div>
+	)
 };

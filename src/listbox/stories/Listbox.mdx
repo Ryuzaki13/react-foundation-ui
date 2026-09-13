@@ -40,6 +40,7 @@ export function Example() {
 		<Listbox
 			label="Статус"
 			description="Выберите текущий статус задачи."
+			size="md"
 			options={options}
 			value={value}
 			onChange={setValue}
@@ -51,6 +52,7 @@ export function Example() {
 ## Практические рекомендации
 
 - Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- Для ширины используйте общий prop `size`: `xs`, `sm`, `md`, `lg` или `xl`. Без `size` компонент занимает доступную ширину контейнера.
 
 ## Сценарии использования
 
@@ -77,6 +79,12 @@ export function Example() {
 Заблокированный список не получает фокус и не изменяет выбор с клавиатуры или указателем.
 
 <Canvas of={ListboxStories.Disabled} />
+
+### Размеры
+
+`size` использует тот же контракт ширины, что и остальные поля ввода.
+
+<Canvas of={ListboxStories.Sizes} />
 
 ## API
 

@@ -21,6 +21,7 @@ import { CheckIcon } from "lucide-react";
 
 import { CustomOptionButton, Option, OptionButton } from "../option";
 import { PickerField, PickerOptions } from "../picker";
+import { UiBaseProps } from "../types";
 
 type ListboxOption<T> = {
 	value: T;
@@ -28,11 +29,15 @@ type ListboxOption<T> = {
 	disabled?: boolean;
 };
 
-interface ListboxBaseProps<T> extends Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "value"> {
+/**
+ * Общие свойства Listbox берутся из UiBaseProps, чтобы подпись, состояние и
+ * размер поля оставались согласованными с остальными контролами библиотеки.
+ */
+interface ListboxBaseProps<T>
+	extends
+		Omit<UiBaseProps<T>, "value" | "onChange" | "placeholder">,
+		Omit<HTMLAttributes<HTMLDivElement>, "onChange" | "defaultValue" | "value"> {
 	options: ListboxOption<T>[];
-	label?: ReactNode;
-	description?: string;
-	disabled?: boolean;
 	focusOnMount?: boolean;
 	renderItem?: (option: ListboxOption<T>, selected: boolean, active: boolean) => ReactNode;
 	getKey?: (option: ListboxOption<T>, index: number) => string;
@@ -93,6 +98,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 		label,
 		description,
 		disabled,
+		size,
 		focusOnMount,
 		renderItem,
 		getKey,
@@ -185,7 +191,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 	}, [focusOnMount]);
 
 	return (
-		<PickerField id={externalId} label={label} description={description} disabled={disabled}>
+		<PickerField id={externalId} label={label} description={description} disabled={disabled} size={size}>
 			{({ controlId: listId, labelId, describedBy }) => (
 				<PickerOptions
 					rootRef={listRef}
