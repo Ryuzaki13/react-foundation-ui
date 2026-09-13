@@ -117,7 +117,8 @@ describe("theme", () => {
 
 	it("разрешает token overrides на этапе сборки и выводит каждое свойство один раз", () => {
 		const css = compileExactTheme();
-		const declarationNames = Array.from(css.matchAll(/^\s*(--[\w-]+):/gm), ([, name]) => name);
+		const themeCss = css.slice(css.indexOf(".custom-theme"));
+		const declarationNames = Array.from(themeCss.matchAll(/^\s*(--[\w-]+):/gm), ([, name]) => name);
 		const duplicateNames = declarationNames.filter((name, index) => declarationNames.indexOf(name) !== index);
 
 		expect(declarationNames).toHaveLength(94);
@@ -161,12 +162,13 @@ describe("theme", () => {
 });
 
 describe("interactive surface", () => {
-	it("использует соответствующие состояния accent-схемы для hover, active и selected", () => {
-		const css = compileString('@use "interactive-surface";', {
-			loadPaths: [resolve("src/styles/themes")],
+	it("публично экспортирует класс с соответствующими состояниями accent-схемы", () => {
+		const css = compileString('@use "styles/themes";', {
+			loadPaths: [resolve(".")],
 			style: "expanded"
 		}).css;
 
+		expect(css).toContain(".interactiveSurface");
 		expect(css).toContain("--ch: var(--accent-text-hover)");
 		expect(css).toContain("--sh: var(--accent-fill-hover)");
 		expect(css).toContain("--bh: var(--accent-border-hover)");
