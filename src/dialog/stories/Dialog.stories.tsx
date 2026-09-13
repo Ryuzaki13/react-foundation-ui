@@ -16,7 +16,8 @@ const meta = {
 		description: "Проверьте параметры перед выполнением действия.",
 		open: false,
 		onClose: fn(),
-		minWidth: 360,
+		size: "sm",
+		minWidth: undefined,
 		children: null
 	},
 	parameters: {
@@ -40,8 +41,13 @@ const meta = {
 			description: "Вызывается при закрытии диалога.",
 			control: false
 		},
+		size: {
+			description: "Предустановленная ширина панели с теми же вариантами, что и у Modal.",
+			control: "inline-radio",
+			options: ["sm", "md", "lg", "xl", "xxl", "inside"]
+		},
 		minWidth: {
-			description: "Желаемая минимальная ширина панели в CSS-единицах или пикселях; ограничивается доступной шириной viewport.",
+			description: "Дополнительная минимальная ширина панели; ограничивается выбранным size и доступной шириной viewport.",
 			control: "text"
 		},
 		children: {
@@ -110,7 +116,7 @@ export const Opened: Story = {
 export const LongContent: Story = {
 	args: {
 		open: true,
-		minWidth: 640
+		size: "lg"
 	},
 	render: createDialogStoryRender((close) => (
 		<div>
@@ -123,4 +129,12 @@ export const LongContent: Story = {
 			<Button onClick={close}>Закрыть диалог</Button>
 		</div>
 	))
+};
+
+export const Sizes: Story = {
+	args: {
+		open: true,
+		size: "sm"
+	},
+	render: createDialogStoryRender(() => <div>Измените size в Controls, чтобы сравнить ширину с одноимённым пресетом Modal.</div>)
 };

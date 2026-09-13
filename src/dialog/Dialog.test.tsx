@@ -2,15 +2,16 @@ import { fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { Dialog } from "./Dialog";
+import styles from "./Dialog.module.scss";
 
 afterEach(() => {
 	document.getElementById("dialog-root")?.remove();
 });
 
 describe("Dialog", () => {
-	it("передаёт минимальную ширину через ограничиваемую панелью CSS-переменную", () => {
+	it("применяет тот же размерный пресет ширины, что и Modal", () => {
 		render(
-			<Dialog title="Проверка размера" description="Описание" open onClose={() => undefined} minWidth={640}>
+			<Dialog title="Проверка размера" description="Описание" open onClose={() => undefined} size="lg" minWidth={640}>
 				Содержимое
 			</Dialog>
 		);
@@ -19,6 +20,8 @@ describe("Dialog", () => {
 
 		expect(dialog.style.minWidth).toBe("");
 		expect(dialog.style.getPropertyValue("--dialog-min-width")).toBe("640px");
+		expect(dialog.classList.contains(styles.sized)).toBe(true);
+		expect(dialog.classList.contains(styles.lg)).toBe(true);
 		expect(dialog.classList.contains("scrollable")).toBe(true);
 		expect(dialog.classList.contains("overscroll")).toBe(true);
 	});

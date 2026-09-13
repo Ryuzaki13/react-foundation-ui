@@ -25,7 +25,8 @@ Dialog уже имеет живые stories, а эта страница соби
 ```tsx
 import { useState } from "react";
 
-import { Button, Dialog } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
+import { Dialog } from "@ryuzaki13/react-foundation-ui/dialog";
 
 export function Example() {
 	const [open, setOpen] = useState(false);
@@ -33,7 +34,7 @@ export function Example() {
 	return (
 		<>
 			<Button onClick={() => setOpen(true)}>Удалить</Button>
-			<Dialog title="Подтверждение" description="Действие нельзя отменить" open={open} onClose={() => setOpen(false)}>
+			<Dialog title="Подтверждение" description="Действие нельзя отменить" open={open} onClose={() => setOpen(false)} size="sm">
 				<Button onClick={() => setOpen(false)}>Понятно</Button>
 			</Dialog>
 		</>
@@ -44,6 +45,7 @@ export function Example() {
 ## Практические рекомендации
 
 - Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
+- Для ширины используйте те же пресеты `size`, что и у Modal: `sm`, `md`, `lg`, `xl`, `xxl` или `inside`. На мобильном любой пресет ограничивается доступной шириной viewport.
 
 ## Сценарии использования
 
@@ -58,6 +60,12 @@ export function Example() {
 Компонент открыт сразу при первом рендере.
 
 <Canvas of={DialogStories.Opened} />
+
+### Размеры
+
+`size` задаёт ширину Dialog тем же набором пресетов, что и Modal. Без `size` панель сохраняет компактную ширину по содержимому.
+
+<Canvas of={DialogStories.Sizes} />
 
 ### Большой контент на низком или узком экране
 

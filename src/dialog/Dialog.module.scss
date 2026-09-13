@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .overlay {
 	z-index: var(--z-dialog);
 	position: fixed;
@@ -17,14 +19,46 @@
 
 .panel {
 	--dialog-min-width: 0px;
+	--dialog-max-width: 100%;
 
 	/*
 	 * Панель может расти по содержимому только в пределах grid-track overlay. Это сохраняет
 	 * компактный desktop-диалог, а на узком или низком viewport отдаёт прокрутку самой панели.
 	 */
 	box-sizing: border-box;
-	min-width: min(var(--dialog-min-width), 100%);
-	max-width: 100%;
+	min-width: min(var(--dialog-min-width), var(--dialog-max-width), 100%);
+	max-width: min(var(--dialog-max-width), 100%);
 	max-height: 100%;
 	overflow-wrap: anywhere;
+}
+
+.sized {
+	/* На мобильном все пресеты, как у Modal, занимают доступную ширину. */
+	width: 100%;
+}
+
+@include mobile-above {
+	.sm {
+		--dialog-max-width: 30em;
+	}
+
+	.md {
+		--dialog-max-width: 50em;
+	}
+
+	.lg {
+		--dialog-max-width: 70em;
+	}
+
+	.xl {
+		--dialog-max-width: 80em;
+	}
+
+	.xxl {
+		--dialog-max-width: 95dvw;
+	}
+
+	.inside {
+		--dialog-max-width: 100%;
+	}
 }

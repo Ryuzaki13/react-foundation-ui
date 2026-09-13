@@ -1,15 +1,24 @@
 import { type CSSProperties, type PropsWithChildren, type ReactNode, useId } from "react";
 
 import { getOrCreatePortalRoot, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
+import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { createPortal } from "react-dom";
+
+import { type ModalProps } from "../modal";
 
 import styles from "./Dialog.module.scss";
 
-type DialogProps = PropsWithChildren<{
+/** Набор ширин Dialog совпадает с публичными размерными пресетами Modal. */
+export type DialogSize = NonNullable<ModalProps["size"]>;
+
+export type DialogProps = PropsWithChildren<{
 	title: ReactNode;
 	description: string;
 	open: boolean;
 	onClose: () => void;
+	/** Предустановленная ширина панели с теми же вариантами, что и у Modal. */
+	size?: DialogSize;
+	/** Дополнительная минимальная ширина, ограниченная выбранным size и viewport. */
 	minWidth?: string | number;
 }>;
 
@@ -21,7 +30,7 @@ type DialogStyle = CSSProperties & {
  * Модальное диалоговое окно для важных подтверждений и пользовательских сценариев.
  * Ограничивает панель доступной областью viewport и прокручивает большое содержимое.
  */
-export function Dialog({ title, description, open, onClose, minWidth, children }: DialogProps) {
+export function Dialog({ title, description, open, onClose, size, minWidth, children }: DialogProps) {
 	const titleId = useId();
 	const descriptionId = useId();
 	const dialogStyle: DialogStyle = {
@@ -63,7 +72,12 @@ export function Dialog({ title, description, open, onClose, minWidth, children }
 				aria-labelledby={title ? titleId : undefined}
 				aria-describedby={description ? descriptionId : undefined}
 				tabIndex={-1}
-				className={`${styles.panel} scrollable overscroll surface0 shadowMd paddingLg radiusMd`}
+				className={cn(
+					styles.panel,
+					size && styles.sized,
+					size && styles[size],
+					"scrollable overscroll surface0 shadowMd paddingLg radiusMd"
+				)}
 				style={dialogStyle}>
 				{title && (
 					<h2 id={titleId} className="margin0">
