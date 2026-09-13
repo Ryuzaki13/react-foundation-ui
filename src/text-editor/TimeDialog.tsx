@@ -6,19 +6,14 @@ import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
 import { RadioGroup } from "../radio-group";
 
-type TimeDialogInitialState = {
-	mode?: TimeMode;
-	from?: string;
-	to?: string;
-};
+import { isSemanticDateTime } from "./lib/semantic/isSemanticDateTime";
+import { type TimeMode, type TimeDialogInitialState } from "./model/timeDialogState";
 
 interface TimeDialogProps {
 	onClose: () => void;
 	onConfirm: (tagName: string, text: string, attributes: Record<string, string>) => void;
 	initialState?: TimeDialogInitialState;
 }
-
-type TimeMode = "date" | "datetime" | "time" | "range-time" | "range-date" | "range-datetime";
 
 /**
  * Диалог настройки временного атрибута или значения в текстовом редакторе.
@@ -42,6 +37,7 @@ export function TimeDialog({ onClose, onConfirm, initialState }: TimeDialogProps
 			if (type === "date" && !isDate(value)) return "Неверный формат даты (ГГГГ-ММ-ДД)";
 			if (type === "time" && !isTime(value)) return "Неверный формат времени (ЧЧ:ММ)";
 			if (type === "datetime" && !isDateTime(value)) return "Неверный формат даты и времени (ГГГГ-ММ-ДДTЧЧ:ММ)";
+			if (!isSemanticDateTime(value)) return "Укажите существующую дату и корректное время";
 			return undefined;
 		};
 
@@ -76,7 +72,8 @@ export function TimeDialog({ onClose, onConfirm, initialState }: TimeDialogProps
 	const handleConfirm = () => {
 		if (!validate()) return;
 
-		const datetime = to ? `${from}/${to}` : from;
+		// Скрытая правая граница не должна попадать в одиночный режим.
+		const datetime = mode?.startsWith("range-") ? `${from}/${to}` : from;
 		onConfirm("time", datetime, { datetime });
 		onClose();
 	};

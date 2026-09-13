@@ -1,7 +1,7 @@
 import { $createParagraphNode, $createTextNode, $getRoot, createEditor } from "lexical";
 import { describe, expect, it } from "vitest";
 
-import { $restoreLinkDialogSelection } from "./restoreLinkDialogSelection";
+import { $restoreEditorDialogSelection } from "./restoreEditorDialogSelection";
 
 describe("безопасное восстановление места вставки ссылки", () => {
 	it("создаёт абзац только при подтверждении в действительно пустом корне", () => {
@@ -14,7 +14,7 @@ describe("безопасное восстановление места вста�
 			() => {
 				const root = $getRoot();
 				expect(root.isEmpty()).toBe(true);
-				const selection = $restoreLinkDialogSelection(null);
+				const selection = $restoreEditorDialogSelection(null);
 				expect(root.getChildrenSize()).toBe(1);
 				expect(selection.anchor.getNode().getType()).toBe("paragraph");
 				expect(selection.isCollapsed()).toBe(true);
@@ -36,7 +36,7 @@ describe("безопасное восстановление места вста�
 				const snapshot = text.select(10, 12).clone();
 				if (change === "removed") text.remove();
 				else text.setTextContent("Кратко");
-				const selection = $restoreLinkDialogSelection(snapshot);
+				const selection = $restoreEditorDialogSelection(snapshot);
 				expect(selection.anchor.key).toBe(tail.getKey());
 				expect(selection.anchor.offset).toBe(5);
 				expect(selection.isCollapsed()).toBe(true);

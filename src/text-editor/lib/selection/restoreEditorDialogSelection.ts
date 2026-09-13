@@ -1,12 +1,12 @@
 import { $createParagraphNode, $getNodeByKey, $getRoot, $isElementNode, $isTextNode, $setSelection, type RangeSelection } from "lexical";
 
 /**
- * Восстанавливает место вставки, сохранённое до переноса фокуса в каталог.
+ * Восстанавливает место вставки, сохранённое до переноса фокуса в диалог.
  * Вызывается только внутри editor.update при подтверждении: открытие и отмена
  * не меняют документ/историю. Удалённый или отсутствующий диапазон означает
- * добавление в конец; пустому корню нужен абзац для корректной inline-ссылки.
+ * добавление в конец; пустому корню нужен абзац для корректного inline-узла.
  */
-export function $restoreLinkDialogSelection(snapshot: RangeSelection | null): RangeSelection {
+export function $restoreEditorDialogSelection(snapshot: RangeSelection | null): RangeSelection {
 	if (
 		snapshot &&
 		[snapshot.anchor, snapshot.focus].every((point) => {

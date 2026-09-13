@@ -1,16 +1,16 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 
 import { $isLinkNode } from "@lexical/link";
 import { INSERT_ORDERED_LIST_COMMAND, INSERT_UNORDERED_LIST_COMMAND, REMOVE_LIST_COMMAND } from "@lexical/list";
 import { $createHeadingNode, $createQuoteNode } from "@lexical/rich-text";
 import { $setBlocksType } from "@lexical/selection";
-import { $findMatchingParent } from "@lexical/utils";
 import {
 	$createParagraphNode,
 	$createTextNode,
 	$getSelection,
+	$getNodeByKey,
 	$isRangeSelection,
-	ElementFormatType,
+	type ElementFormatType,
 	FORMAT_ELEMENT_COMMAND,
 	FORMAT_TEXT_COMMAND,
 	HISTORY_MERGE_TAG,
@@ -23,12 +23,14 @@ import {
 	UNDO_COMMAND
 } from "lexical";
 
-import { $restoreLinkDialogSelection } from "../../lib/selection/restoreLinkDialogSelection";
+import { $findSelectedInlineNode } from "../../lib/selection/findSelectedInlineNode";
+import { $restoreEditorDialogSelection } from "../../lib/selection/restoreEditorDialogSelection";
 import { getSemanticTagDepth } from "../../lib/semantic/getSemanticTagDepth";
 import { getHeadingTagByStyle, getLexicalInlineStyle } from "../../lib/toolbar/styleMappers";
 import { $createAccessibleLinkNode, $isAccessibleLinkNode } from "../../nodes/AccessibleLinkNode";
 import { $createSemanticTagNode, $isSemanticTagNode, type SemanticTagNode } from "../../nodes/SemanticTagNode";
 import { LinkTypes, TagTypes } from "../../toolbar";
+import { type SemanticDialogState } from "../semanticDialogState";
 import { type LexicalToolbarState, type LinkType, type TextAlignment } from "../textEditorTypes";
 
 interface InsertLinkPayload {
@@ -56,7 +58,12 @@ export function useTextEditorLexicalActions({
 }: UseTextEditorLexicalActionsParams) {
 	// Snapshot принадлежит одной сессии ссылки и конкретному editor, не внешнему
 	// каталогу. Каждое открытие заменяет его, в том числе после отмены диалога.
-	const linkSelectionRef = useRef<{ editor: LexicalEditor; selection: RangeSelection | null } | null>(null);
+	const linkSelectionRef = useRef<{ editor: LexicalEditor; selection: RangeSelection | null; key: string | null; local: boolean } | null>(
+		null
+	);
+	const semanticSelectionRef = useRef<{ editor: LexicalEditor; selection: RangeSelection | null; key: string | null } | null>(null);
+	const [linkDialogState, setLinkDialogState] = useState<LinkType>("");
+	const [semanticDialogState, setSemanticDialogState] = useState<SemanticDialogState>({ text: "", attributes: {} });
 	const handleBlockStyleToggle = useCallback(
 		(style: string) => {
 			if (!editor) return;
@@ -132,31 +139,18 @@ export function useTextEditorLexicalActions({
 		editor.dispatchCommand(REDO_COMMAND, undefined);
 	}, [editor]);
 
-	const getCurrentSelectionText = useCallback((): string => {
-		if (!editor) return "";
-
-		let text = "";
-		editor.getEditorState().read(() => {
-			const selection = $getSelection();
-			if (!$isRangeSelection(selection)) return;
-			text = selection.getTextContent();
-		});
-
-		return text;
-	}, [editor]);
-
 	const insertLinkAtSelection = useCallback(
 		(payload: InsertLinkPayload) => {
 			if (!editor) return;
 
+			const snapshot = linkSelectionRef.current;
+			linkSelectionRef.current = null;
 			// Отдельный selection-only commit создаёт baseline HistoryPlugin даже
 			// до первого ввода. Вставка затем отменяется одним undo и не сливается
 			// с предыдущим набором текста; фокус передаём только после закрытия диалога.
 			editor.update(
 				() => {
-					const snapshot = linkSelectionRef.current;
-					$restoreLinkDialogSelection(snapshot?.editor === editor ? snapshot.selection : null);
-					linkSelectionRef.current = null;
+					$restoreEditorDialogSelection(snapshot?.editor === editor ? snapshot.selection : null);
 				},
 				{ discrete: true, tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG] }
 			);
@@ -164,6 +158,20 @@ export function useTextEditorLexicalActions({
 				() => {
 					const selection = $getSelection();
 					if (!$isRangeSelection(selection)) return;
+					const existing = snapshot?.editor === editor && snapshot.key ? $getNodeByKey(snapshot.key) : null;
+					if ($isAccessibleLinkNode(existing) && existing.isAttached()) {
+						existing
+							.setURL(payload.url)
+							.setAriaLabel(payload.ariaLabel)
+							.setQrCode(payload.qrCode)
+							.setAdd(payload.add || null);
+						// Изменение адреса не стирает rich-text дочерних узлов.
+						if (snapshot?.local && payload.text !== existing.getTextContent())
+							existing.clear().append($createTextNode(payload.text));
+						existing.setText(existing.getTextContent());
+						existing.selectEnd();
+						return;
+					}
 					const selectionText = selection.getTextContent();
 					const finalText = payload.text.length > 0 ? payload.text : selectionText;
 					if (!finalText.trim()) return;
@@ -217,7 +225,7 @@ export function useTextEditorLexicalActions({
 		[insertLinkAtSelection]
 	);
 
-	const getSelectedLinkState = useCallback((): LinkType => {
+	const readSelectedLinkState = useCallback((): LinkType => {
 		if (!editor) return "";
 
 		let state: LinkType = "";
@@ -229,8 +237,7 @@ export function useTextEditorLexicalActions({
 			}
 
 			const selectionText = selection.getTextContent();
-			const anchorNode = selection.anchor.getNode();
-			const linkNode = $findMatchingParent(anchorNode, (node) => $isAccessibleLinkNode(node) || $isLinkNode(node));
+			const linkNode = $findSelectedInlineNode($isLinkNode);
 
 			if ($isAccessibleLinkNode(linkNode)) {
 				state = {
@@ -268,35 +275,50 @@ export function useTextEditorLexicalActions({
 			if (!editor) return;
 			editor.getEditorState().read(() => {
 				const selection = $getSelection();
-				linkSelectionRef.current = { editor, selection: $isRangeSelection(selection) ? selection.clone() : null };
+				linkSelectionRef.current = {
+					editor,
+					selection: $isRangeSelection(selection) ? selection.clone() : null,
+					key: $findSelectedInlineNode($isAccessibleLinkNode)?.getKey() ?? null,
+					local: type === LinkTypes.LOCAL_LINK
+				};
 			});
+			setLinkDialogState(readSelectedLinkState());
 			onOpenLinkDialog(type);
 		},
-		[editor, hasLocalLinkDialog, onOpenLinkDialog]
+		[editor, hasLocalLinkDialog, onOpenLinkDialog, readSelectedLinkState]
 	);
 
 	const insertSemanticTagAtSelection = useCallback(
 		(tag: string, text: string, attributes: Record<string, string>) => {
 			if (!editor) return;
-
-			editor.update(() => {
-				const selection = $getSelection();
-				if (!$isRangeSelection(selection)) return;
-
-				const selectionText = selection.getTextContent().trim();
-				const finalText =
-					text || selectionText || attributes["title"] || attributes["aria-label"] || Object.values(attributes).join(" ") || tag;
-
-				if (!finalText.trim()) return;
-
-				const node = $createSemanticTagNode(tag, attributes, finalText);
-				node.append($createTextNode(finalText));
-				selection.insertNodes([node]);
-			});
-
-			requestAnimationFrame(() => {
-				editor.focus();
-			});
+			const snapshot = semanticSelectionRef.current;
+			semanticSelectionRef.current = null;
+			editor.update(
+				() => {
+					$restoreEditorDialogSelection(snapshot?.editor === editor ? snapshot.selection : null);
+				},
+				{ discrete: true, tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG] }
+			);
+			editor.update(
+				() => {
+					const selection = $getSelection();
+					if (!$isRangeSelection(selection) || !text.trim()) return;
+					const existing = snapshot?.editor === editor && snapshot.key ? $getNodeByKey(snapshot.key) : null;
+					if ($isSemanticTagNode(existing) && existing.isAttached() && existing.getTag() === tag) {
+						existing.setAttributes(attributes).setText(text);
+						if (text !== existing.getTextContent()) existing.clear().append($createTextNode(text));
+						existing.selectEnd();
+					} else {
+						const node = $createSemanticTagNode(tag, attributes, text);
+						const content = $createTextNode(text);
+						content.setFormat(selection.format).setStyle(selection.style);
+						node.append(content);
+						selection.insertNodes([node]);
+					}
+				},
+				{ tag: HISTORY_PUSH_TAG }
+			);
+			requestAnimationFrame(() => editor.focus());
 		},
 		[editor]
 	);
@@ -333,9 +355,24 @@ export function useTextEditorLexicalActions({
 
 	const handleTagClick = useCallback(
 		(type: TagTypes) => {
+			if (!editor) return;
+			editor.getEditorState().read(() => {
+				const selection = $getSelection();
+				const node = $findSelectedInlineNode($isSemanticTagNode);
+				const matching = node?.getTag() === (type === TagTypes.lang ? "span" : type) ? node : null;
+				semanticSelectionRef.current = {
+					editor,
+					selection: $isRangeSelection(selection) ? selection.clone() : null,
+					key: matching?.getKey() ?? null
+				};
+				setSemanticDialogState({
+					text: matching?.getTextContent() ?? ($isRangeSelection(selection) ? selection.getTextContent() : ""),
+					attributes: { ...matching?.getAttributes() }
+				});
+			});
 			onOpenTagDialog(type);
 		},
-		[onOpenTagDialog]
+		[editor, onOpenTagDialog]
 	);
 
 	return {
@@ -349,8 +386,8 @@ export function useTextEditorLexicalActions({
 		handleRedo,
 		handleTagClick,
 		handleUndo,
-		getCurrentSelectionText,
-		getSelectedLinkState,
+		semanticDialogState,
+		linkDialogState,
 		insertSemanticTagAtSelection
 	};
 }

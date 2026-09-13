@@ -31,7 +31,9 @@ export function LinkDialog({ onClose, onConfirm, initialState }: LinkDialogProps
 	const [url, setUrl] = useState(() => (isSafe(state) ? (state.url ?? "") : ""));
 	const [ariaLabel, setAriaLabel] = useState(() => (isSafe(state) ? (state.ariaLabel ?? "") : ""));
 	const [error, setError] = useState<string | null>(null);
-	const [showQrCode, setShowQrCode] = useState(false);
+	const [showQrCode, setShowQrCode] = useState(() =>
+		typeof initialState === "object" && initialState !== null ? (initialState.qrCode ?? false) : false
+	);
 
 	const handleUrlChange = (value: string) => {
 		setUrl(value);

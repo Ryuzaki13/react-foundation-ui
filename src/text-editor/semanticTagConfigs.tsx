@@ -1,3 +1,4 @@
+import { isSemanticDateTime } from "./lib/semantic/isSemanticDateTime";
 import { TagTypes } from "./toolbar";
 
 import type { SemanticTagConfig } from "./SemanticDialog";
@@ -116,6 +117,7 @@ export const SemanticTagConfigs: Record<TagTypes, SemanticTagConfig> = {
 			{
 				name: "datetime",
 				label: "Когда был удалён",
+				validate: (value) => (!value || isSemanticDateTime(value) ? null : "Укажите существующую дату и время в формате ISO 8601"),
 				description: "Формат ISO 8601: 2025-05-18T14:30",
 				placeholder: "например: 2025-05-18T14:30",
 				required: false
@@ -145,6 +147,7 @@ export const SemanticTagConfigs: Record<TagTypes, SemanticTagConfig> = {
 			{
 				name: "datetime",
 				label: "Когда был добавлен",
+				validate: (value) => (!value || isSemanticDateTime(value) ? null : "Укажите существующую дату и время в формате ISO 8601"),
 				description: "Формат ISO 8601: 2025-05-18T14:30",
 				placeholder: "например: 2025-05-18T14:30",
 				required: false

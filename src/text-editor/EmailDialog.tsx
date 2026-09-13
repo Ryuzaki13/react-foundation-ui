@@ -26,7 +26,7 @@ export function EmailDialog({ onClose, onConfirm, initialState }: EmailDialogPro
 
 		return initialState;
 	})();
-	const [email, setEmail] = useState(() => (isSafe(state) ? (state.url ?? "") : ""));
+	const [email, setEmail] = useState(() => (isSafe(state) ? (state.url ?? "").replace(/^mailto:/i, "") : ""));
 	const [ariaLabel, setAriaLabel] = useState(() => (isSafe(state) ? (state.ariaLabel ?? "") : ""));
 	const [error, setError] = useState<string | null>(null);
 

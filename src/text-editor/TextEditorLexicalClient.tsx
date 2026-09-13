@@ -145,8 +145,8 @@ export function TextEditorLexicalClient({ initialData, onChange, toolbarComponen
 				onAddLink={actions.handleAddLink}
 				onAddLocalLink={actions.handleAddLocalLink}
 				onInsertSemanticTag={actions.insertSemanticTagAtSelection}
-				getCurrentSelectionText={actions.getCurrentSelectionText}
-				getSelectedLinkState={actions.getSelectedLinkState}
+				semanticDialogState={actions.semanticDialogState}
+				linkDialogState={actions.linkDialogState}
 			/>
 		</div>
 	);

@@ -77,7 +77,8 @@ export function SemanticDialog({ onClose, onConfirm, config, initialText = "", i
 
 	const handleConfirm = () => {
 		if (!validate()) return;
-		onConfirm(config.tagName, text.trim(), values);
+		// Поля текущего диалога не должны стирать другие атрибуты существующего узла.
+		onConfirm(config.tagName, text.trim(), { ...initialState, ...values });
 		onClose();
 	};
 
