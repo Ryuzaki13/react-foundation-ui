@@ -46,11 +46,11 @@ describe("ui-tone", () => {
 
 		expect(css).toContain("--ui-tone-text-hover: color-mix(in srgb, var(--brand-text) 88%, var(--content-0))");
 		expect(css).toContain("--ui-tone-text-active: color-mix(in srgb, var(--brand-text) 76%, var(--content-0))");
-		expect(css).toContain("--ui-tone-fill-hover: color-mix(in srgb, var(--brand-fill) 88%, var(--content-0))");
-		expect(css).toContain("--ui-tone-fill-active: color-mix(in srgb, var(--brand-fill) 76%, var(--content-0))");
+		expect(css).toContain("--ui-tone-fill-hover: color-mix(in srgb, var(--brand-fill) 88%, var(--surface-0))");
+		expect(css).toContain("--ui-tone-fill-active: color-mix(in srgb, var(--brand-fill) 76%, var(--surface-0))");
 		expect(css).toContain("--ui-tone-soft: color-mix(in srgb, var(--brand-fill) 12%, var(--surface-0))");
-		expect(css).toContain("--ui-tone-border-hover: color-mix(in srgb, var(--brand-border) 88%, var(--content-0))");
-		expect(css).toContain("--ui-tone-border-active: color-mix(in srgb, var(--brand-border) 76%, var(--content-0))");
+		expect(css).toContain("--ui-tone-border-hover: color-mix(in srgb, var(--brand-border) 88%, var(--border-0))");
+		expect(css).toContain("--ui-tone-border-active: color-mix(in srgb, var(--brand-border) 76%, var(--border-0))");
 		expect(css).toContain("--ui-tone-border-focus: var(--focus-ring)");
 		expect(css).toContain("--ui-tone-ghost-hover: color-mix(in srgb, var(--brand-fill) 10%, var(--surface-0))");
 		expect(css).toContain("--ui-tone-ghost-active: color-mix(in srgb, var(--brand-fill) 20%, var(--surface-0))");
