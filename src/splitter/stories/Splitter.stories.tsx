@@ -150,6 +150,10 @@ const meta = {
 			description: "Максимальная доля первой панели. Если `min` и `max` перепутаны местами, компонент сам исправит диапазон.",
 			control: { type: "range", min: 0, max: 1, step: 0.01 }
 		},
+		onChange: {
+			description: "Получает итоговую долю первой панели после завершения drag или клавиатурного шага.",
+			control: false
+		},
 		collapsedPane: {
 			description: "Сворачивает начальную или конечную панель.",
 			control: "inline-radio",

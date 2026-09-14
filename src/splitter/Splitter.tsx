@@ -24,6 +24,8 @@ export type SplitterProps = PropsWithChildren<{
 	initial?: number; // от 0 до 1
 	min?: number; // минимальная доля первой панели
 	max?: number; // максимальная доля первой панели
+	/** Сообщает итоговую долю первой панели после завершения drag или шага с клавиатуры. */
+	onChange?: (ratio: number) => void;
 	className?: string;
 	collapsedPane?: SplitterPane | null;
 }>;
@@ -33,6 +35,7 @@ type SplitterLogicParams = {
 	initial: number;
 	min: number;
 	max: number;
+	onChange?: (ratio: number) => void;
 	collapsedPane: SplitterPane | null;
 };
 
@@ -109,7 +112,7 @@ function resolveTopLeftBasis(ratio: number, collapsedPane: SplitterPane | null) 
 	return ratio;
 }
 
-function useSplitterLogic({ direction, initial, min, max, collapsedPane }: SplitterLogicParams): SplitterLogic {
+function useSplitterLogic({ direction, initial, min, max, onChange, collapsedPane }: SplitterLogicParams): SplitterLogic {
 	const [minRatio, maxRatio] = normalizeBounds(min, max);
 
 	const containerRef = useRef<HTMLDivElement | null>(null);
@@ -168,9 +171,11 @@ function useSplitterLogic({ direction, initial, min, max, collapsedPane }: Split
 		cleanupDragRef.current = null;
 	};
 
-	const commitRatio = (nextRatio: number) => {
+	const commitRatio = (nextRatio: number, previousRatio = ratioRef.current) => {
 		flushPendingRatio();
-		setRatio(clampRatio(nextRatio, minRatio, maxRatio));
+		const committedRatio = clampRatio(nextRatio, minRatio, maxRatio);
+		setRatio(committedRatio);
+		if (committedRatio !== previousRatio) onChange?.(committedRatio);
 	};
 
 	const handleSeparatorPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -205,7 +210,7 @@ function useSplitterLogic({ direction, initial, min, max, collapsedPane }: Split
 
 		const handlePointerUp = () => {
 			stopDragging();
-			setRatio(flushPendingRatio());
+			commitRatio(flushPendingRatio(), startRatioRef.current);
 		};
 
 		cleanupDragRef.current = () => {
@@ -319,12 +324,13 @@ export function Splitter({
 	initial = DEFAULT_INITIAL,
 	min = DEFAULT_MIN,
 	max = DEFAULT_MAX,
+	onChange,
 	className,
 	collapsedPane = null,
 	children
 }: SplitterProps) {
 	const [left, right] = Children.toArray(children);
-	const logic = useSplitterLogic({ direction, initial, min, max, collapsedPane });
+	const logic = useSplitterLogic({ direction, initial, min, max, onChange, collapsedPane });
 
 	if (!right) return left;
 
