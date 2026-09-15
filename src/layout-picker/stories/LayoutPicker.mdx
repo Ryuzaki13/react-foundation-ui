@@ -26,7 +26,7 @@ import * as LayoutPickerStories from "./LayoutPicker.stories";
 ```tsx
 import { useState } from "react";
 
-import { LayoutPicker } from "@ryuzaki13/react-foundation-ui";
+import { LayoutPicker } from "@ryuzaki13/react-foundation-ui/layout-picker";
 
 export function Example() {
 	const [layoutId, setLayoutId] = useState("two-columns");
@@ -40,7 +40,7 @@ export function Example() {
 Пресет описывает размер сетки и расположение ячеек внутри CSS Grid. `LayoutPicker` использует эти данные только для превью и не применяет раскладку к пользовательскому контенту. Публичный `onChange` остаётся совместимым с `UiBaseProps<string>` и отдаёт только `preset.id`.
 
 ```tsx
-import { type LayoutPickerPreset } from "@ryuzaki13/react-foundation-ui";
+import { type LayoutPickerPreset } from "@ryuzaki13/react-foundation-ui/layout-picker";
 
 const dashboardPreset: LayoutPickerPreset = {
 	id: "dashboard-main-aside",
@@ -56,10 +56,34 @@ const dashboardPreset: LayoutPickerPreset = {
 };
 ```
 
+## Пользовательский trigger
+
+Через `renderTrigger` стандартный input-like trigger можно заменить кнопкой или другой button-композицией. `LayoutPicker` по-прежнему владеет popup и `PickerOptions`: передайте `triggerProps` в корневую кнопку, чтобы сохранить ref для позиционирования, клавиатурное управление и роли `combobox/listbox`.
+
+<Canvas of={LayoutPickerStories.CustomTrigger} />
+
+```tsx
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
+import { LayoutPicker } from "@ryuzaki13/react-foundation-ui/layout-picker";
+
+export function LayoutMenuButton() {
+	return (
+		<LayoutPicker
+			value={layoutId}
+			onChange={setLayoutId}
+			renderTrigger={({ triggerLabel, triggerProps }) => (
+				<Button {...triggerProps}>Раскладка: {triggerLabel}</Button>
+			)}
+		/>
+	);
+}
+```
+
 ## Практические рекомендации
 
 - Храните во внешней модели только `preset.id`, а полный пресет берите из стабильного списка `presets`.
 - Передавайте `ariaLabel`, когда рядом нет видимой подписи поля.
+- В `renderTrigger` обязательно передавайте `triggerProps` в интерактивный корневой элемент.
 - Используйте `getPresetDisabled`, если отдельные схемы временно недоступны из-за лимитов, прав или текущего режима.
 - Не помещайте бизнес-данные ячеек в `shared/ui`: назначение содержимого должно оставаться в вызывающем слое.
 

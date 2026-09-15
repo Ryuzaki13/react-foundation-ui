@@ -182,6 +182,43 @@ describe("LayoutPicker", () => {
 		// expect(findOptionButton("1x1").getAttribute("aria-selected")).toBe("true");
 	});
 
+	it("позволяет заменить input-like trigger на пользовательскую кнопку", async () => {
+		const onChange = vi.fn<(value: string) => void>();
+		await renderNode(
+			<LayoutPicker
+				value="single-cell"
+				onChange={onChange}
+				presets={TEST_LAYOUT_PICKER_PRESETS}
+				renderTrigger={({ triggerLabel, triggerProps }) => <button {...triggerProps}>Схема: {triggerLabel}</button>}
+			/>
+		);
+
+		const trigger = getRequiredElement(
+			container?.querySelector<HTMLButtonElement>('[data-ui="layout-picker-trigger"]'),
+			"Не найден пользовательский trigger LayoutPicker"
+		);
+
+		expect(trigger.tagName).toBe("BUTTON");
+		expect(trigger.textContent).toBe("Схема: Одна ячейка");
+		expect(trigger.getAttribute("role")).toBe("combobox");
+		expect(trigger.getAttribute("aria-haspopup")).toBe("listbox");
+		expect(trigger.getAttribute("aria-expanded")).toBe("false");
+
+		await act(async () => {
+			trigger.click();
+		});
+
+		expect(trigger.getAttribute("aria-expanded")).toBe("true");
+		expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
+
+		await act(async () => {
+			findOptionButton("Одна ячейка").click();
+		});
+
+		expect(onChange).toHaveBeenCalledWith("single-cell");
+		expect(trigger.getAttribute("aria-expanded")).toBe("false");
+	});
+
 	it("вызывает onChange выбранным id и закрывает popup", async () => {
 		const onChange = vi.fn<(value: string) => void>();
 		await renderNode(<ControlledLayoutPickerHarness onChange={onChange} />);

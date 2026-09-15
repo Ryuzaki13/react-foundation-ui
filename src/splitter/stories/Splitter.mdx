@@ -24,7 +24,7 @@ import * as SplitterStories from "./Splitter.stories";
 <Primary />
 
 ```tsx
-import { Splitter } from "@ryuzaki13/react-foundation-ui";
+import { Splitter } from "@ryuzaki13/react-foundation-ui/splitter";
 
 export function Example() {
 	return (
@@ -48,6 +48,32 @@ export function Example() {
 - Если `min` и `max` заданы в обратном порядке, компонент сам исправляет диапазон.
 - Разделитель управляется клавиатурой: стрелки двигают границу пошагово, `Home` переводит в минимум, `End` в максимум.
 
+## Изменяемая высота всей области
+
+`Splitter` управляет только долей двух соседних панелей. Если нужно увеличивать всю рабочую область, не уменьшая соседнюю строку, оберните дерево splitter-компонентов в `SplitterHeightContainer`. Горизонтальный separator располагается под viewport: его можно перетаскивать или перемещать клавишами `ArrowUp`/`ArrowDown`, а `Home`/`End` устанавливают границы. `onHeightChange` возвращает итоговую высоту в CSS-пикселях после завершения drag или клавиатурного шага — это значение можно сохранять во внешних настройках.
+
+<Canvas of={SplitterStories.AdjustableHeight} />
+
+```tsx
+import { Splitter, SplitterHeightContainer } from "@ryuzaki13/react-foundation-ui/splitter";
+
+export function AdjustableWorkspace() {
+	return (
+		<SplitterHeightContainer
+			height={480}
+			minHeight={240}
+			maxHeight={1200}
+			heightStep={20}
+			onHeightChange={(height) => saveHeight(height)}>
+			<Splitter initial={0.45}>
+				<div>Левая панель</div>
+				<div>Правая панель</div>
+			</Splitter>
+		</SplitterHeightContainer>
+	);
+}
+```
+
 ## Разделение на 2 части
 
 Это базовый и самый частый сценарий: левая панель под навигацию, правая под основное содержимое.
@@ -61,7 +87,7 @@ export function Example() {
 <Canvas of={SplitterStories.Horizontal} />
 
 ```tsx
-import { Splitter } from "@ryuzaki13/react-foundation-ui";
+import { Splitter } from "@ryuzaki13/react-foundation-ui/splitter";
 
 export function HorizontalLayout() {
 	return (
@@ -82,7 +108,7 @@ export function HorizontalLayout() {
 <Canvas of={SplitterStories.NestedFourPanels} />
 
 ```tsx
-import { Splitter } from "@ryuzaki13/react-foundation-ui";
+import { Splitter } from "@ryuzaki13/react-foundation-ui/splitter";
 
 export function FourPaneLayout() {
 	return (
@@ -110,7 +136,7 @@ export function FourPaneLayout() {
 
 ## Практические рекомендации
 
-- Родительский контейнер должен иметь явную высоту, иначе `Splitter` не сможет корректно распределить пространство по вертикали.
+- Родительский контейнер должен иметь явную высоту. `SplitterHeightContainer` задаёт её сам и подходит, когда пользователь должен менять высоту всей области.
 - Держите в `Splitter` только два прямых потомка. Для трёх и более областей используйте вложенность.
 - Если в панелях живут тяжёлые таблицы, графики или сложные формы, лучше избегать лишней бизнес-логики, завязанной на каждое движение разделителя.
 - Для touch-сценариев разделитель уже блокирует нативный скролл жеста на самом handle, поэтому drag остаётся предсказуемым.

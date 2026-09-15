@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .splitter {
 	display: flex;
 	width: 100%;
@@ -10,8 +12,8 @@
 		.separator {
 			cursor: col-resize;
 
-			border-left: var(--border);
-			border-right: var(--border);
+			// border-left: var(--border);
+			// border-right: var(--border);
 
 			margin-inline: var(--space-md);
 		}
@@ -48,24 +50,9 @@
 }
 
 .separator {
+	@include resize-separator;
+
 	flex-basis: var(--space-sm);
 	flex-grow: 0;
 	flex-shrink: 0;
-
-	border-radius: var(--radius-sm);
-	border: var(--border);
-	background-color: var(--border-0);
-
-	user-select: none;
-	touch-action: none;
-	position: relative;
-
-	&:hover {
-		border-color: var(--border-1);
-		background-color: var(--border-1);
-	}
-	&:active {
-		border-color: var(--border-2);
-		background-color: var(--border-2);
-	}
 }

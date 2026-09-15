@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { type ComponentPropsWithRef, type ReactElement, useRef, useState } from "react";
 
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -6,9 +6,25 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CustomOptionButton, Option } from "../../option";
 import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
 import { type UiBaseProps } from "../../types";
-import { DEFAULT_LAYOUT_PICKER_PRESETS, getLayoutCellStyle, getLayoutStyle, type LayoutPickerPreset } from "../lib";
+import { DEFAULT_LAYOUT_PICKER_PRESETS, type LayoutPickerPreset } from "../lib";
 
 import styles from "./LayoutPicker.module.scss";
+import { LayoutPresetPreview } from "./LayoutPresetPreview";
+
+export type LayoutPickerTriggerProps = ComponentPropsWithRef<"button"> & {
+	"data-ui": "layout-picker-trigger";
+};
+
+export type LayoutPickerTriggerRenderState = Readonly<{
+	open: boolean;
+	selectedPreset?: LayoutPickerPreset;
+	triggerLabel: string;
+	/**
+	 * Эти props нужно передать в корневую button кастомного trigger, чтобы
+	 * сохранить позиционирование popup, клавиатурное управление и ARIA-контракт.
+	 */
+	triggerProps: LayoutPickerTriggerProps;
+}>;
 
 export interface LayoutPickerProps extends UiBaseProps<string> {
 	id?: string;
@@ -24,23 +40,11 @@ export interface LayoutPickerProps extends UiBaseProps<string> {
 	triggerClassName?: string;
 	popupClassName?: string;
 	placement?: Placement;
+	/** Заменяет стандартный input-like trigger, не меняя popup со списком пресетов. */
+	renderTrigger?: (state: LayoutPickerTriggerRenderState) => ReactElement;
 }
 
 const DEFAULT_PLACEHOLDER = "Выберите раскладку";
-
-function LayoutPresetPreview({ preset, compact = false }: { preset: LayoutPickerPreset; compact?: boolean }) {
-	return (
-		<span
-			className={cn(styles.preview, compact && styles.previewCompact)}
-			style={getLayoutStyle(preset)}
-			aria-hidden="true"
-			data-ui="layout-picker-preview">
-			{preset.cells.map((cell) => (
-				<span key={`${preset.id}:${cell.id}`} className={styles.previewCell} style={getLayoutCellStyle(cell)} />
-			))}
-		</span>
-	);
-}
 
 /**
  * Контрол выбора layout-пресета. Не хранит бизнес-логику содержимого ячеек.
@@ -61,7 +65,8 @@ export function LayoutPicker({
 	className,
 	triggerClassName,
 	popupClassName,
-	placement = "bottom-start"
+	placement = "bottom-start",
+	renderTrigger
 }: LayoutPickerProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [open, setOpen] = useState(false);
@@ -114,69 +119,103 @@ export function LayoutPicker({
 		<PickerField id={id} label={label} description={description} disabled={disabled} size={size} className={className}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-listbox`;
+				const commonTriggerAria = {
+					"aria-haspopup": "listbox" as const,
+					"aria-expanded": open,
+					"aria-controls": open ? listId : undefined,
+					"aria-labelledby": labelId,
+					"aria-describedby": describedBy,
+					"aria-activedescendant": open ? getActiveOptionId(listId) : undefined,
+					"aria-label": !labelId ? (ariaLabel ?? `Выбрать layout. Текущее значение: ${triggerLabel}`) : undefined
+				};
+				const customTrigger = renderTrigger?.({
+					open,
+					selectedPreset,
+					triggerLabel,
+					triggerProps: {
+						ref: setReference,
+						id: controlId,
+						type: "button",
+						disabled,
+						role: "combobox",
+						...commonTriggerAria,
+						"data-ui": "layout-picker-trigger",
+						className: triggerClassName,
+						onClick: () => {
+							if (!disabled) toggleOpen();
+						},
+						onKeyDown: (event) => {
+							handleReferenceKeyDown(event);
+
+							if (event.defaultPrevented) return;
+
+							triggerController.handleTriggerKeyDown({
+								event,
+								onActivateWhenOpen: selectActiveOption,
+								enableSpaceActivation: true
+							});
+						}
+					}
+				});
 
 				return (
 					<>
-						<PickerTrigger
-							ref={setInputNode}
-							rootRef={setReference}
-							id={controlId}
-							type="button"
-							disabled={disabled}
-							open={open}
-							optionCount={presets.length}
-							label={label}
-							placeholder={placeholder}
-							readOnly
-							autoComplete="off"
-							role="combobox"
-							value={triggerLabel}
-							selectedValue={
-								selectedPreset ? (
-									<>
-										<LayoutPresetPreview preset={selectedPreset} compact />
-										{showPlaceholder ? (
-											<span className={styles.triggerText} data-ui="layout-picker-selected-label">
-												{selectedPreset.label}
-											</span>
-										) : null}
-									</>
-								) : undefined
-							}
-							hasSelection={selectedPreset !== undefined}
-							showSelectedValue={selectedPreset !== undefined}
-							onToggleMouseDown={triggerController.handleToggleMouseDown}
-							onToggleClick={triggerController.handleToggleClick}
-							openAriaLabel="Открыть список layout"
-							closeAriaLabel="Закрыть список layout"
-							aria-haspopup="listbox"
-							aria-expanded={open}
-							aria-controls={open ? listId : undefined}
-							aria-labelledby={labelId}
-							aria-describedby={describedBy}
-							aria-autocomplete="none"
-							aria-activedescendant={open ? getActiveOptionId(listId) : undefined}
-							aria-label={!labelId ? (ariaLabel ?? `Выбрать layout. Текущее значение: ${triggerLabel}`) : undefined}
-							data-ui="layout-picker-trigger"
-							rootClassName={triggerClassName}
-							onClick={triggerController.handleTriggerClick}
-							onFocus={(event) => {
-								triggerController.handleTriggerFocus(event.currentTarget);
-							}}
-							onKeyDown={(event) => {
-								handleReferenceKeyDown(event);
-
-								if (event.defaultPrevented) {
-									return;
+						{customTrigger ?? (
+							<PickerTrigger
+								ref={setInputNode}
+								rootRef={setReference}
+								id={controlId}
+								type="button"
+								disabled={disabled}
+								open={open}
+								optionCount={presets.length}
+								label={label}
+								placeholder={placeholder}
+								readOnly
+								autoComplete="off"
+								role="combobox"
+								value={triggerLabel}
+								selectedValue={
+									selectedPreset ? (
+										<>
+											<LayoutPresetPreview preset={selectedPreset} compact />
+											{showPlaceholder ? (
+												<span className={styles.triggerText} data-ui="layout-picker-selected-label">
+													{selectedPreset.label}
+												</span>
+											) : null}
+										</>
+									) : undefined
 								}
+								hasSelection={selectedPreset !== undefined}
+								showSelectedValue={selectedPreset !== undefined}
+								onToggleMouseDown={triggerController.handleToggleMouseDown}
+								onToggleClick={triggerController.handleToggleClick}
+								openAriaLabel="Открыть список layout"
+								closeAriaLabel="Закрыть список layout"
+								{...commonTriggerAria}
+								aria-autocomplete="none"
+								data-ui="layout-picker-trigger"
+								rootClassName={triggerClassName}
+								onClick={triggerController.handleTriggerClick}
+								onFocus={(event) => {
+									triggerController.handleTriggerFocus(event.currentTarget);
+								}}
+								onKeyDown={(event) => {
+									handleReferenceKeyDown(event);
 
-								triggerController.handleTriggerKeyDown({
-									event,
-									onActivateWhenOpen: selectActiveOption,
-									enableSpaceActivation: true
-								});
-							}}
-						/>
+									if (event.defaultPrevented) {
+										return;
+									}
+
+									triggerController.handleTriggerKeyDown({
+										event,
+										onActivateWhenOpen: selectActiveOption,
+										enableSpaceActivation: true
+									});
+								}}
+							/>
+						)}
 
 						<PickerPopup
 							open={open}

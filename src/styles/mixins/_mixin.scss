@@ -110,3 +110,46 @@
 		@include focusVisible;
 	}
 }
+
+/**
+ * Единая точечная поверхность для draggable resize-handle. Паттерн отличает
+ * изменение размера от scrollbar даже без hover-состояния.
+ */
+@mixin resize-handle-dots {
+	background-color: var(--border-0);
+	overflow: hidden;
+
+	&::after {
+		content: "";
+		position: absolute;
+		inset-block-start: 50%;
+		inset-inline-start: 50%;
+		width: 12px;
+		height: 12px;
+		transform: translate(-50%, -50%);
+		background-image: radial-gradient(circle, var(--content-1) 1px, transparent 1px);
+		background-size: 4px 4px;
+		background-repeat: repeat;
+		pointer-events: none;
+	}
+}
+
+/** Интерактивная поверхность разделителя для изменения размера областей. */
+@mixin resize-separator {
+	@include resize-handle-dots;
+
+	border-radius: var(--radius-sm);
+
+	user-select: none;
+	touch-action: none;
+	position: relative;
+
+	&:hover,
+	&:focus-visible {
+		background-color: var(--border-1);
+	}
+
+	&:active {
+		background-color: var(--border-2);
+	}
+}

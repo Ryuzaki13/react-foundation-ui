@@ -3,6 +3,7 @@ import { type ComponentProps, type ReactNode } from "react";
 import { useArgs } from "storybook/preview-api";
 
 import { Splitter } from "../Splitter";
+import { SplitterHeightContainer } from "../SplitterHeightContainer";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -217,5 +218,29 @@ export const Constrained: Story = {
 		initial: 0.35,
 		min: 0.25,
 		max: 0.55
+	}
+};
+
+export const AdjustableHeight: Story = {
+	name: "Изменяемая высота контейнера",
+	render: function Render() {
+		const [args] = useArgs<ComponentProps<typeof Splitter>>();
+
+		return (
+			<SplitterHeightContainer defaultHeight={360} minHeight={240} maxHeight={720} heightStep={20}>
+				<Splitter {...args}>
+					<Panel
+						title="Основная область"
+						description="Separator под Splitter изменяет весь viewport, не меняя доли панелей."
+						items={["Высота хранится отдельно", "Доли панелей остаются независимыми"]}
+					/>
+					<Panel
+						title="Дополнительная область"
+						description="onHeightChange можно связать с внешними настройками пользователя."
+						items={["Минимум 240 px", "Шаг клавиатуры 20 px", "Максимум 720 px"]}
+					/>
+				</Splitter>
+			</SplitterHeightContainer>
+		);
 	}
 };

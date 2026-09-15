@@ -3,6 +3,7 @@ import { useState } from "react";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
+import { Button } from "../../button";
 import { DEFAULT_LAYOUT_PICKER_PRESETS, LayoutPicker, type LayoutPickerPreset, type LayoutPickerProps } from "../index";
 
 import styles from "./LayoutPicker.stories.module.scss";
@@ -214,6 +215,10 @@ const meta = {
 			description: "Дополнительный CSS-класс popup.",
 			control: "text"
 		},
+		renderTrigger: {
+			description: "Позволяет заменить стандартный input-like trigger на собственную button-композицию.",
+			control: false
+		},
 		placement: {
 			description: "Позиционирование popup относительно trigger.",
 			control: "select",
@@ -334,6 +339,30 @@ export const DisabledPresets: Story = {
 export const InToolbar: Story = {
 	name: "В панели настройки",
 	render: () => <ControlledExample />
+};
+
+export const CustomTrigger: Story = {
+	name: "Пользовательский trigger",
+	render: (args) => {
+		const [value, setValue] = useState("1x2");
+
+		return (
+			<LayoutPicker
+				{...args}
+				value={value}
+				onChange={(layoutId) => {
+					setValue(layoutId);
+					args.onChange(layoutId);
+				}}
+				renderTrigger={({ triggerLabel, triggerProps }) => <Button {...triggerProps}>Раскладка: {triggerLabel}</Button>}
+			/>
+		);
+	},
+	args: {
+		label: undefined,
+		description: undefined,
+		value: "1x2"
+	}
 };
 
 export const Disabled: Story = {
