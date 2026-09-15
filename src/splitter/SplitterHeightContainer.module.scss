@@ -14,11 +14,11 @@
 }
 
 .separator {
-	@include resize-separator;
+	@include resize-separator(horizontal);
 
 	width: 100%;
 	height: var(--space-sm);
 	flex: 0 0 var(--space-sm);
-	margin-block: var(--space-md);
+	margin-block: var(--space-xs);
 	cursor: row-resize;
 }

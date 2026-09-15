@@ -112,11 +112,22 @@
 }
 
 /**
- * Единая точечная поверхность для draggable resize-handle. Паттерн отличает
- * изменение размера от scrollbar даже без hover-состояния.
+ * Единая точечная поверхность для draggable resize-handle. Без направления
+ * рисует матрицу 3x3, а horizontal/vertical оставляют три точки вдоль handle.
  */
-@mixin resize-handle-dots {
-	background-color: var(--border-0);
+@mixin resize-handle-dots($direction: null) {
+	$width: 12px;
+	$height: 12px;
+
+	@if $direction == horizontal {
+		$height: 4px;
+	} @else if $direction == vertical {
+		$width: 4px;
+	} @else if $direction != null {
+		@error "resize-handle-dots поддерживает только horizontal, vertical или null.";
+	}
+
+	// background-color: var(--border-0);
 	overflow: hidden;
 
 	&::after {
@@ -124,8 +135,8 @@
 		position: absolute;
 		inset-block-start: 50%;
 		inset-inline-start: 50%;
-		width: 12px;
-		height: 12px;
+		width: $width;
+		height: $height;
 		transform: translate(-50%, -50%);
 		background-image: radial-gradient(circle, var(--content-1) 1px, transparent 1px);
 		background-size: 4px 4px;
@@ -135,8 +146,8 @@
 }
 
 /** Интерактивная поверхность разделителя для изменения размера областей. */
-@mixin resize-separator {
-	@include resize-handle-dots;
+@mixin resize-separator($direction: null) {
+	@include resize-handle-dots($direction);
 
 	border-radius: var(--radius-sm);
 

@@ -10,12 +10,14 @@
 		flex-direction: row;
 
 		.separator {
+			@include resize-separator(vertical);
+
 			cursor: col-resize;
 
 			// border-left: var(--border);
 			// border-right: var(--border);
 
-			margin-inline: var(--space-md);
+			margin-inline: var(--space-xs);
 		}
 	}
 
@@ -23,12 +25,14 @@
 		flex-direction: column;
 
 		.separator {
+			@include resize-separator(horizontal);
+
 			cursor: row-resize;
 
 			// border-top: var(--border);
 			// border-bottom: var(--border);
 
-			margin-block: var(--space-md);
+			margin-block: var(--space-xs);
 		}
 	}
 }
@@ -50,8 +54,6 @@
 }
 
 .separator {
-	@include resize-separator;
-
 	flex-basis: var(--space-sm);
 	flex-grow: 0;
 	flex-shrink: 0;
