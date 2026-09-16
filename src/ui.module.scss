@@ -434,8 +434,8 @@
 }
 
 .uiOptionCode {
-	font-family: var(--font-family-mono);
 	// font-size: var(--font-size-sm);
+	font-variant-numeric: tabular-nums;
 	color: var(--content-1);
 	font-weight: 300;
 	font-variation-settings: "wght" 300;
