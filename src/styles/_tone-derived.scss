@@ -14,8 +14,8 @@
 		"--#{$target}-text-active": string.unquote("color-mix(in srgb, var(--#{$source}-text) 76%, var(--content-0))"),
 		"--#{$target}-border-hover": string.unquote("color-mix(in srgb, var(--#{$source}-border) 88%, var(--border-0))"),
 		"--#{$target}-border-active": string.unquote("color-mix(in srgb, var(--#{$source}-border) 76%, var(--border-0))"),
-		"--#{$target}-fill-hover": string.unquote("color-mix(in srgb, var(--#{$source}-fill) 75%, var(--surface-0))"),
-		"--#{$target}-fill-active": string.unquote("color-mix(in srgb, var(--#{$source}-fill) 50%, var(--surface-0))"),
+		"--#{$target}-fill-hover": string.unquote("color-mix(in srgb, var(--#{$source}-fill) 88%, white)"),
+		"--#{$target}-fill-active": string.unquote("color-mix(in srgb, var(--#{$source}-fill) 76%, white)"),
 		"--#{$target}-soft": tone-soft-value($source)
 	);
 }
