@@ -94,8 +94,8 @@ describe("theme", () => {
 			expect(css).toContain(`--${tone}-text-active: color-mix(in srgb, var(--${tone}-text) 76%, var(--content-0))`);
 			expect(css).toContain(`--${tone}-border-hover: color-mix(in srgb, var(--${tone}-border) 88%, var(--border-0))`);
 			expect(css).toContain(`--${tone}-border-active: color-mix(in srgb, var(--${tone}-border) 76%, var(--border-0))`);
-			expect(css).toContain(`--${tone}-fill-hover: color-mix(in srgb, var(--${tone}-fill) 75%, var(--surface-0))`);
-			expect(css).toContain(`--${tone}-fill-active: color-mix(in srgb, var(--${tone}-fill) 50%, var(--surface-0))`);
+			expect(css).toContain(`--${tone}-fill-hover: color-mix(in srgb, var(--${tone}-fill) 88%, white)`);
+			expect(css).toContain(`--${tone}-fill-active: color-mix(in srgb, var(--${tone}-fill) 76%, white)`);
 
 			if (tone === "error") {
 				expect(css).toContain("--error-soft: var(--surface-2)");
