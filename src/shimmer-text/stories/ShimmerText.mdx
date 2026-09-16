@@ -1,0 +1,56 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ShimmerTextStories from "./ShimmerText.stories";
+
+<Meta
+	of={ShimmerTextStories}
+	parameters={{
+		atomicCanvas: true,
+		layout: "padded",
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>ShimmerText</Title>
+<Subtitle>Обычный текст с проходящим световым бликом</Subtitle>
+
+ShimmerText визуально обозначает короткий выполняющийся процесс, не заменяя текст скелетоном или отдельным индикатором. Компонент наследует цвет окружения и сохраняет обычное текстовое содержимое в DOM и accessibility tree.
+
+## Основной сценарий
+
+<Primary />
+
+```tsx
+import { ShimmerText } from "@ryuzaki13/react-foundation-ui/shimmer-text";
+
+export function LoadingMessage() {
+	return <ShimmerText>Подготавливаем рабочую область</ShimmerText>;
+}
+```
+
+<Controls of={ShimmerTextStories.Basic} />
+
+## Ритм анимации
+
+Блик за две секунды полностью выходит из-за левой границы текста и уходит за правую. Затем следует двухсекундная пауза, поэтому повтор не воспринимается как непрерывное мерцание.
+
+<Canvas of={ShimmerTextStories.InContext} />
+
+## Доступность
+
+Компонент рендерит обычный `span` и принимает его нативные атрибуты. Сам визуальный эффект не задаёт семантику загрузки: если сообщение должно озвучиваться при изменении, передайте подходящий `role` или `aria-live` самому компоненту либо его контейнеру. При `prefers-reduced-motion: reduce` и в forced-colors режиме анимация отключается, а текст остаётся обычного унаследованного цвета.
+
+## Ограничения
+
+- `children` принимает строку, потому что блик предназначен для цельного текстового сообщения.
+- Цвет наследуется через `currentColor`; задавайте нужный semantic color на компоненте или его контейнере.
+- Для длинных абзацев используйте обычный текст: постоянное движение на большой площади ухудшает читаемость.
+
+## API
+
+<ArgTypes of={ShimmerTextStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

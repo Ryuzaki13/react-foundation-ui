@@ -259,6 +259,10 @@
 			"types": "./dist/simple-table/index.d.ts",
 			"import": "./dist/simple-table/index.js"
 		},
+		"./shimmer-text": {
+			"types": "./dist/shimmer-text/index.d.ts",
+			"import": "./dist/shimmer-text/index.js"
+		},
 		"./slider": {
 			"types": "./dist/slider/index.d.ts",
 			"import": "./dist/slider/index.js"
