@@ -74,21 +74,22 @@ p {
 }
 
 /**
+  NOTE: это должно на app-level контролироваться
   Внешний отступ вниз для параграфа без атрибута class,
   который расположен не последним среди своих соседних элементов
 	p:where(:not([class]):not(:last-child)) {
  */
-p:not(:last-child),
-ul:where(:not([class]):not(:last-child)),
-ol:where(:not([class]):not(:last-child)) {
-	margin-bottom: var(--paragraph-margin);
-}
+// p:not(:last-child),
+// ul:where(:not([class]):not(:last-child)),
+// ol:where(:not([class]):not(:last-child)) {
+// 	margin-bottom: var(--app-level-paragraph-margin, var(--paragraph-margin));
+// }
 
-p:not(:first-child),
-ul:where(:not([class]):not(:first-child)),
-ol:where(:not([class]):not(:first-child)) {
-	margin-top: var(--paragraph-margin);
-}
+// p:not(:first-child),
+// ul:where(:not([class]):not(:first-child)),
+// ol:where(:not([class]):not(:first-child)) {
+// 	margin-top: var(--app-level-paragraph-margin, var(--paragraph-margin));
+// }
 
 /**
   Упрощаем работу с изображениями и видео
