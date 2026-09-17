@@ -35,13 +35,7 @@ function maxScrollLeft(scroller: HTMLElement) {
  * Ожидает элементы фиксированной ширины (или близкой к фиксированной),
  * чтобы шаг скролла соответствовал ширине одного элемента.
  */
-export const OneStepScroller: React.FC<OneStepScrollerProps> = ({
-	children,
-	className,
-	itemSelector,
-	scrollPadding = 6,
-	smooth = true
-}) => {
+export function OneStepScroller({ children, className, itemSelector, scrollPadding = 6, smooth = true }: OneStepScrollerProps) {
 	const scrollerRef = useRef<HTMLDivElement | null>(null);
 	const rafIdRef = useRef<number | null>(null);
 
@@ -300,4 +294,4 @@ export const OneStepScroller: React.FC<OneStepScrollerProps> = ({
 			)}
 		</div>
 	);
-};
+}

@@ -7,7 +7,7 @@ export interface FlexCenterProps extends Omit<HTMLAttributes<HTMLDivElement>, "c
 	minHeight?: string | number;
 }
 
-export const FlexCenter = ({ className, minHeight, children, style, ...htmlProps }: FlexCenterProps) => {
+export function FlexCenter({ className, minHeight, children, style, ...htmlProps }: FlexCenterProps) {
 	const finalStyle = minHeight === undefined ? style : { ...style, minHeight };
 
 	return (
@@ -15,4 +15,4 @@ export const FlexCenter = ({ className, minHeight, children, style, ...htmlProps
 			{children}
 		</div>
 	);
-};
+}

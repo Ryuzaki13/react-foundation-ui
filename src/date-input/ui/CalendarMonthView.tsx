@@ -33,7 +33,7 @@ interface MonthViewProps {
 /**
  * Отображает выбор месяца в календарной семантике без timezone-сдвига.
  */
-export const CalendarMonthView: React.FC<MonthViewProps> = ({
+export function CalendarMonthView({
 	currentDate,
 	value,
 	onChange,
@@ -43,7 +43,7 @@ export const CalendarMonthView: React.FC<MonthViewProps> = ({
 	selectsPeriod,
 	selectionMode = "day",
 	weekEndDay = "sunday"
-}) => {
+}: MonthViewProps) {
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 	const months = Array.from({ length: 12 }, (_, index) => index);
 	const currentYear = currentDate.getFullYear();
@@ -134,4 +134,4 @@ export const CalendarMonthView: React.FC<MonthViewProps> = ({
 			</div>
 		</div>
 	);
-};
+}

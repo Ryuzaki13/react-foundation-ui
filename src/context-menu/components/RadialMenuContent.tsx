@@ -26,7 +26,7 @@ function clamp(value: number, min: number, max: number) {
 	return Math.min(Math.max(value, min), max);
 }
 
-export const RadialMenuContent: React.FC<RadialMenuContentProps> = ({
+export function RadialMenuContent({
 	children,
 	className,
 	closeOnOutside = true,
@@ -36,7 +36,7 @@ export const RadialMenuContent: React.FC<RadialMenuContentProps> = ({
 	radius = 76,
 	itemSize = 64,
 	closeLabel = "Закрыть"
-}) => {
+}: RadialMenuContentProps) {
 	const { open, anchorPoint, floatingRef, triggerRef, setFloating, closeMenu } = useMenuContext();
 
 	const resolvedChildren = typeof children === "function" ? children({ closeMenu }) : children;
@@ -195,4 +195,4 @@ export const RadialMenuContent: React.FC<RadialMenuContentProps> = ({
 		</AnimatePresence>,
 		document.body
 	);
-};
+}

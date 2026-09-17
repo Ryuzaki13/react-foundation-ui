@@ -22,7 +22,7 @@ export interface RadioButtonProps
  * общим `name`, а controlled API продолжает публиковать булево состояние.
  * Поддерживает tone + appearance и использует общие selection utility-классы из ui.module.scss.
  */
-export const RadioButton: React.FC<RadioButtonProps> = ({
+export function RadioButton({
 	label,
 	description,
 	placeholder,
@@ -34,7 +34,7 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
 	id: externalId,
 	tone = "neutral",
 	...props
-}) => {
+}: RadioButtonProps) {
 	const autoId = useId();
 	const id = externalId ?? autoId;
 	const descriptionId = description ? `${id}-description` : undefined;
@@ -80,4 +80,4 @@ export const RadioButton: React.FC<RadioButtonProps> = ({
 			)}
 		</div>
 	);
-};
+}

@@ -11,7 +11,7 @@ type SeparatorOwnProps<E extends React.ElementType = React.ElementType> = Polymo
 
 type SeparatorProps<E extends React.ElementType> = SeparatorOwnProps<E> & Omit<React.ComponentPropsWithRef<E>, keyof SeparatorOwnProps>;
 
-export const Separator = <E extends React.ElementType>({ as, orientation = "horizontal", className, ...props }: SeparatorProps<E>) => {
+export function Separator<E extends React.ElementType>({ as, orientation = "horizontal", className, ...props }: SeparatorProps<E>) {
 	const Component = as;
 
 	return (
@@ -22,4 +22,4 @@ export const Separator = <E extends React.ElementType>({ as, orientation = "hori
 			{...props}
 		/>
 	);
-};
+}

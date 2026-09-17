@@ -11,7 +11,7 @@ type SkeletonLineOwnProps<E extends React.ElementType = React.ElementType> = Pol
 type SkeletonLineProps<E extends React.ElementType> = SkeletonLineOwnProps<E> &
 	Omit<React.ComponentPropsWithRef<E>, keyof SkeletonLineOwnProps>;
 
-export const SkeletonLine = <E extends React.ElementType>({ as, className, ...props }: SkeletonLineProps<E>) => {
+export function SkeletonLine<E extends React.ElementType>({ as, className, ...props }: SkeletonLineProps<E>) {
 	const Component = as || "div";
 
 	return (
@@ -21,4 +21,4 @@ export const SkeletonLine = <E extends React.ElementType>({ as, className, ...pr
 			{...props}
 		/>
 	);
-};
+}

@@ -1,4 +1,4 @@
-import React, { Children, forwardRef } from "react";
+import React, { Children, type Ref } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
@@ -27,10 +27,21 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
  * Базовая кнопка дизайн-системы для пользовательских действий.
  * Поддерживает состояния, tone + appearance, иконки и безопасный `type="button"` по умолчанию.
  */
-export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button(
-	{ children, disabled, className, icon, iconEnd, title, variant, tone, appearance, type = "button", "aria-label": ariaLabel, ...props },
-	ref
-) {
+export function Button({
+	ref,
+	children,
+	disabled,
+	className,
+	icon,
+	iconEnd,
+	title,
+	variant,
+	tone,
+	appearance,
+	type = "button",
+	"aria-label": ariaLabel,
+	...props
+}: ButtonProps & { ref?: Ref<HTMLButtonElement> }) {
 	const hasChildren = Children.count(children) > 0;
 	const iconOnly = !!icon && !hasChildren;
 	const fallbackAppearance = tone && tone !== "neutral" ? "solid" : "outline";
@@ -81,4 +92,4 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
 			{button}
 		</FloatingPopover>
 	);
-});
+}

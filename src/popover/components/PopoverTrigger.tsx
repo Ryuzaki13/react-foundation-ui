@@ -7,7 +7,7 @@ export interface PopoverTriggerProps {
 	children: React.ReactElement<React.HTMLAttributes<Element> & { ref?: React.Ref<Element> }>;
 }
 
-export const PopoverTrigger: React.FC<PopoverTriggerProps> = ({ passive, children }) => {
+export function PopoverTrigger({ passive, children }: PopoverTriggerProps) {
 	const { open, setOpen, refs } = usePopoverContext();
 
 	const handleClick = useCallback(
@@ -33,4 +33,4 @@ export const PopoverTrigger: React.FC<PopoverTriggerProps> = ({ passive, childre
 		"aria-expanded": open,
 		onClick: handleClick
 	});
-};
+}

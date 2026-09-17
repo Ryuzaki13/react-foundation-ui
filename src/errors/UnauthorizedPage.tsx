@@ -1,6 +1,6 @@
 import { PageError } from "./PageError";
 
-export const UnauthorizedPage: React.FC = () => {
+export function UnauthorizedPage() {
 	return (
 		<PageError
 			code={401}
@@ -8,4 +8,4 @@ export const UnauthorizedPage: React.FC = () => {
 			description="Для доступа к этой странице нужно войти в систему. Пожалуйста, авторизуйтесь и попробуйте снова."
 		/>
 	);
-};
+}

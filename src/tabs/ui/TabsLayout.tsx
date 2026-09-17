@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, { Children, isValidElement, useMemo } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -158,18 +157,11 @@ function parseTabsLayoutChildren(children: React.ReactNode): ParsedTabsLayoutTab
 	});
 }
 
-type TabsLayoutComposition = React.FC<TabsLayoutProps> & {
-	Tab: typeof TabsLayoutTab;
-	Toolbar: typeof TabsLayoutToolbar;
-	Content: typeof TabsLayoutContent;
-	Footer: typeof TabsLayoutFooter;
-};
-
 /**
  * Compound-оболочка tabs для составных panel-layout сценариев.
  * Сам компонент управляет только переключением и каркасом панели.
  */
-const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
+export function TabsLayout({
 	children,
 	value,
 	defaultValue,
@@ -183,7 +175,7 @@ const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
 	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy
-}) => {
+}: TabsLayoutProps) {
 	const tabs = useMemo(() => parseTabsLayoutChildren(children), [children]);
 	const state = useTabsState({
 		items: tabs,
@@ -247,13 +239,9 @@ const TabsLayoutRoot: React.FC<TabsLayoutProps> = ({
 			</div>
 		</div>
 	);
-};
+}
 
-TabsLayoutRoot.displayName = "TabsLayout";
-
-export const TabsLayout = Object.assign(TabsLayoutRoot, {
-	Tab: TabsLayoutTab,
-	Toolbar: TabsLayoutToolbar,
-	Content: TabsLayoutContent,
-	Footer: TabsLayoutFooter
-}) as TabsLayoutComposition;
+TabsLayout.Tab = TabsLayoutTab;
+TabsLayout.Toolbar = TabsLayoutToolbar;
+TabsLayout.Content = TabsLayoutContent;
+TabsLayout.Footer = TabsLayoutFooter;

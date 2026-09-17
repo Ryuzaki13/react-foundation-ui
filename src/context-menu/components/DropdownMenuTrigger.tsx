@@ -7,7 +7,7 @@ export interface DropdownMenuTriggerProps {
 	children: React.ReactElement<React.HTMLAttributes<HTMLElement> & { ref?: React.Ref<HTMLElement> }>;
 }
 
-export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({ children }) => {
+export function DropdownMenuTrigger({ children }: DropdownMenuTriggerProps) {
 	const { mode, open, registerTriggerElement, onTriggerClick, onTriggerKeyDown } = useMenuContext();
 
 	if (mode !== "click") {
@@ -25,4 +25,4 @@ export const DropdownMenuTrigger: React.FC<DropdownMenuTriggerProps> = ({ childr
 		onClick: composeMouseHandlers(children.props.onClick, onTriggerClick),
 		onKeyDown: composeKeyboardHandlers(children.props.onKeyDown, onTriggerKeyDown)
 	});
-};
+}

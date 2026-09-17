@@ -13,7 +13,7 @@ interface ListToolbarProps {
 	className?: string;
 }
 
-const ListToolbar: React.FC<ListToolbarProps> = ({ children, className }) => {
+function ListToolbar({ children, className }: ListToolbarProps) {
 	if (Children.count(children) === 0) {
 		// Пустой блок для корректной работы родительского шаблона auto 1fr auto
 		return <div></div>;
@@ -24,14 +24,14 @@ const ListToolbar: React.FC<ListToolbarProps> = ({ children, className }) => {
 			{children}
 		</Grid.Container>
 	);
-};
+}
 
 interface ListFooterProps {
 	children: React.ReactNode;
 	className?: string;
 }
 
-const ListFooter: React.FC<ListFooterProps> = ({ children, className }) => {
+function ListFooter({ children, className }: ListFooterProps) {
 	if (Children.count(children) === 0) {
 		// Пустой блок для корректной работы родительского шаблона auto 1fr auto
 		return <div></div>;
@@ -42,7 +42,7 @@ const ListFooter: React.FC<ListFooterProps> = ({ children, className }) => {
 			{children}
 		</Grid.Container>
 	);
-};
+}
 
 interface ListItemProps<T> {
 	item: T;
@@ -150,26 +150,19 @@ function ListVirtualizedContent<T>({
 	);
 }
 
-interface ListComposition {
-	Toolbar: typeof ListToolbar;
-	Content: typeof ListContent;
-	Footer: typeof ListFooter;
-	VirtualizedContent: typeof ListVirtualizedContent;
-}
-
 interface ListProps extends PropsWithChildren {
 	className?: string;
 }
 
-export const List: React.FC<ListProps> & ListComposition = ({ className, children }) => {
+export function List({ className, children }: ListProps) {
 	return (
 		<Grid.Container templateRows="auto 1fr auto" className={cn("h100", className)}>
 			{children}
 		</Grid.Container>
 	);
-};
+}
 
-// Компоновка
+// Компоновка остаётся отдельным экспортным слоем, а все React-реализации объявлены через function declaration.
 List.Toolbar = ListToolbar;
 List.Content = ListContent;
 List.Footer = ListFooter;

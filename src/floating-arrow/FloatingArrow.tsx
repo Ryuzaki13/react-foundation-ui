@@ -1,4 +1,4 @@
-import { forwardRef } from "react";
+import { type Ref } from "react";
 
 import { MiddlewareData, Placement } from "@floating-ui/react";
 
@@ -9,7 +9,7 @@ interface TooltipArrowProps {
 	middlewareData: MiddlewareData;
 }
 
-export const FloatingArrow = forwardRef<HTMLDivElement, TooltipArrowProps>(({ placement, middlewareData }, ref) => {
+export function FloatingArrow({ ref, placement, middlewareData }: TooltipArrowProps & { ref?: Ref<HTMLDivElement> }) {
 	return (
 		<div ref={ref} style={getArrowStyle(placement, middlewareData)}>
 			<svg
@@ -24,4 +24,4 @@ export const FloatingArrow = forwardRef<HTMLDivElement, TooltipArrowProps>(({ pl
 			</svg>
 		</div>
 	);
-});
+}

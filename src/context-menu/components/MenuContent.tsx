@@ -19,14 +19,14 @@ export interface MenuContentProps {
 	restoreFocus?: boolean;
 }
 
-export const MenuContent: React.FC<MenuContentProps> = ({
+export function MenuContent({
 	children,
 	className,
 	closeOnOutside = true,
 	closeOnEscape = true,
 	disableOutsideClick = false,
 	restoreFocus = true
-}) => {
+}: MenuContentProps) {
 	const { open, floatingStyles, floatingRef, triggerRef, setFloating, closeMenu } = useMenuContext();
 
 	const getNavigableItems = useCallback(() => {
@@ -122,4 +122,4 @@ export const MenuContent: React.FC<MenuContentProps> = ({
 		</AnimatePresence>,
 		document.body
 	);
-};
+}

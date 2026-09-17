@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 
 import { Placement } from "@floating-ui/react";
@@ -20,20 +19,18 @@ export interface ContextMenuProps {
 	onOpenChange?: (open: boolean) => void;
 }
 
-const ContextMenuRoot: React.FC<ContextMenuProps> = ({ children, placement, open, defaultOpen, onOpenChange }) => {
+export function ContextMenu({ children, placement, open, defaultOpen, onOpenChange }: ContextMenuProps) {
 	return (
 		<MenuRoot mode="contextmenu" placement={placement} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
 			{children}
 		</MenuRoot>
 	);
-};
+}
 
-export const ContextMenu = Object.assign(ContextMenuRoot, {
-	Trigger: ContextMenuTrigger,
-	Content: MenuContent,
-	RadialContent: RadialMenuContent,
-	Item: MenuItem,
-	RadialItem: RadialMenuItem,
-	Separator: MenuSeparator,
-	GroupLabel: MenuGroupLabel
-});
+ContextMenu.Trigger = ContextMenuTrigger;
+ContextMenu.Content = MenuContent;
+ContextMenu.RadialContent = RadialMenuContent;
+ContextMenu.Item = MenuItem;
+ContextMenu.RadialItem = RadialMenuItem;
+ContextMenu.Separator = MenuSeparator;
+ContextMenu.GroupLabel = MenuGroupLabel;

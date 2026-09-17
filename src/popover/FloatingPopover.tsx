@@ -39,7 +39,7 @@ interface FloatingPopoverProps {
 	positionUpdateKey?: unknown;
 }
 
-export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
+export function FloatingPopover({
 	content,
 	children,
 	openOnHover = true,
@@ -50,7 +50,7 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 	state,
 	tooltip,
 	positionUpdateKey
-}) => {
+}: FloatingPopoverProps) {
 	const [open, setOpen] = useState(false);
 	const arrowRef = useRef<HTMLDivElement>(null);
 
@@ -119,4 +119,4 @@ export const FloatingPopover: React.FC<FloatingPopoverProps> = ({
 				)}
 		</>
 	);
-};
+}

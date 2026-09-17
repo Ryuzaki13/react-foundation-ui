@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useState } from "react";
 
 import { BoomExplosion } from "./BoomExplosion";
 import { ERROR_BOOM_MESSAGES } from "./constants";
@@ -8,7 +8,7 @@ interface ErrorExplosionProps {
 	description?: string;
 }
 
-export const ErrorExplosion: React.FC<ErrorExplosionProps> = ({ header, description }) => {
+export function ErrorExplosion({ header, description }: ErrorExplosionProps) {
 	const [randomValue] = useState(() => Math.random());
 
 	return (
@@ -30,4 +30,4 @@ export const ErrorExplosion: React.FC<ErrorExplosionProps> = ({ header, descript
 			</div>
 		</div>
 	);
-};
+}

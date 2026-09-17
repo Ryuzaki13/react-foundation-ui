@@ -1,12 +1,11 @@
 // Grid.stories.tsx
 import React from "react";
 
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
 import { Grid } from "../Grid";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { GridContainerProps } from "../types";
+import { type GridContainerProps } from "../types";
 
 // Стили для демонстрационных блоков (аналогично Flex)
 const demoStyles = {
@@ -30,16 +29,18 @@ const demoStyles = {
 
 const getItemColor = (index: number) => demoStyles.itemColors[index % demoStyles.itemColors.length];
 
-const DemoItem = ({ children, index = 0, style }: { children: React.ReactNode; index?: number; style?: React.CSSProperties }) => (
-	<Grid.Item
-		style={{
-			...demoStyles.item,
-			backgroundColor: getItemColor(index),
-			...style
-		}}>
-		{children}
-	</Grid.Item>
-);
+function DemoItem({ children, index = 0, style }: { children: React.ReactNode; index?: number; style?: React.CSSProperties }) {
+	return (
+		<Grid.Item
+			style={{
+				...demoStyles.item,
+				backgroundColor: getItemColor(index),
+				...style
+			}}>
+			{children}
+		</Grid.Item>
+	);
+}
 
 const meta = {
 	title: "Layout/Grid",

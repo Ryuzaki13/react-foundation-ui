@@ -9,6 +9,6 @@ export interface MenuGroupLabelProps {
 	className?: string;
 }
 
-export const MenuGroupLabel: React.FC<MenuGroupLabelProps> = ({ children, className }) => {
+export function MenuGroupLabel({ children, className }: MenuGroupLabelProps) {
 	return <div className={cn(uiStyles.uiPopupGroupLabel, className)}>{children}</div>;
-};
+}

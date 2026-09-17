@@ -1,5 +1,5 @@
 import { PageError } from "./PageError";
 
-export const ForbiddenPage: React.FC = () => {
+export function ForbiddenPage() {
 	return <PageError code={403} title="Доступ запрещён" description="У вас нет прав для просмотра этой страницы." />;
-};
+}

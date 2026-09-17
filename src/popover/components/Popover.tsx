@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import React, { useCallback, useRef, useState } from "react";
 
 import { arrow, autoUpdate, flip, offset, Placement, shift, size as floatingSize, useFloating } from "@floating-ui/react";
@@ -23,7 +22,7 @@ export interface PopoverProps {
  * Контролируемый Popover.
  * Используется в связке с Popover.Trigger и Popover.Content.
  */
-const PopoverRoot: React.FC<PopoverProps> = ({ children, open: controlledOpen, defaultOpen, onOpenChange, placement = "bottom" }) => {
+export function Popover({ children, open: controlledOpen, defaultOpen, onOpenChange, placement = "bottom" }: PopoverProps) {
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen ?? false);
 
 	const isControlled = controlledOpen !== undefined;
@@ -69,7 +68,7 @@ const PopoverRoot: React.FC<PopoverProps> = ({ children, open: controlledOpen, d
 			{children}
 		</PopoverContext.Provider>
 	);
-};
+}
 
 /**
  * Композиционное API:
@@ -78,7 +77,5 @@ const PopoverRoot: React.FC<PopoverProps> = ({ children, open: controlledOpen, d
  *   <Popover.Content />
  * </Popover>
  */
-export const Popover = Object.assign(PopoverRoot, {
-	Trigger: PopoverTrigger,
-	Content: PopoverContent
-});
+Popover.Trigger = PopoverTrigger;
+Popover.Content = PopoverContent;

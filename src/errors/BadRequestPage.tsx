@@ -1,6 +1,6 @@
 import { PageError } from "./PageError";
 
-export const BadRequestPage: React.FC = () => {
+export function BadRequestPage() {
 	return (
 		<PageError
 			code={400}
@@ -8,4 +8,4 @@ export const BadRequestPage: React.FC = () => {
 			description="Похоже, что запрос был сформирован неверно. Попробуйте обновить страницу или вернуться на главную."
 		/>
 	);
-};
+}

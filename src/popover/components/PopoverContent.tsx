@@ -21,14 +21,14 @@ export interface PopoverContentProps {
 /**
  * Содержимое Popover, отображаемое в портале.
  */
-export const PopoverContent: React.FC<PopoverContentProps> = ({
+export function PopoverContent({
 	children,
 	onClose,
 	closeOnOutside = true,
 	closeOnEscape = true,
 	disableOutsideClick = false,
 	background = "secondary"
-}) => {
+}: PopoverContentProps) {
 	const { open, setOpen, refs, floatingStyles, middlewareData, placement, arrowRef } = usePopoverContext();
 	const floatingElementRef = useRef<HTMLDivElement | null>(null);
 	const setFloating = useCallback(
@@ -82,4 +82,4 @@ export const PopoverContent: React.FC<PopoverContentProps> = ({
 			</div>
 		</FloatingPortal>
 	);
-};
+}

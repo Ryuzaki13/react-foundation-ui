@@ -11,7 +11,7 @@ interface CopyTextWrapperProps {
 	className?: string;
 }
 
-export const CopyTextWrapper: React.FC<CopyTextWrapperProps> = ({ children, position = "top", showOnHover = true, className }) => {
+export function CopyTextWrapper({ children, position = "top", showOnHover = true, className }: CopyTextWrapperProps) {
 	const { containerRef, copyElementText, isCopied } = useCopyElementTextWithFeedback<HTMLSpanElement>();
 
 	return (
@@ -24,4 +24,4 @@ export const CopyTextWrapper: React.FC<CopyTextWrapperProps> = ({ children, posi
 			</FloatingPopover>
 		</span>
 	);
-};
+}

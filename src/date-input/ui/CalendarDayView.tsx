@@ -39,7 +39,7 @@ interface DayViewProps {
 /**
  * Отображает сетку дней месяца в календарной семантике без timezone-сдвига.
  */
-export const CalendarDayView: React.FC<DayViewProps> = ({
+export function CalendarDayView({
 	now,
 	currentDate,
 	value,
@@ -49,7 +49,7 @@ export const CalendarDayView: React.FC<DayViewProps> = ({
 	selectsRange,
 	selectionMode = "day",
 	weekEndDay = "sunday"
-}) => {
+}: DayViewProps) {
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 	const selectionOptions: CalendarPeriodOptions = {
 		selectionMode,
@@ -199,4 +199,4 @@ export const CalendarDayView: React.FC<DayViewProps> = ({
 			</div>
 		</div>
 	);
-};
+}

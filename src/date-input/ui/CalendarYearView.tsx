@@ -30,7 +30,7 @@ interface YearViewProps {
 /**
  * Отображает выбор года в календарной семантике без timezone-сдвига.
  */
-export const CalendarYearView: React.FC<YearViewProps> = ({
+export function CalendarYearView({
 	currentDate,
 	value,
 	onChange,
@@ -40,7 +40,7 @@ export const CalendarYearView: React.FC<YearViewProps> = ({
 	selectsPeriod,
 	selectionMode = "day",
 	weekEndDay = "sunday"
-}) => {
+}: YearViewProps) {
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 	const startYear = Math.floor(currentDate.getFullYear() / 12) * 12;
 	const years = Array.from({ length: 12 }, (_, index) => startYear + index);
@@ -126,4 +126,4 @@ export const CalendarYearView: React.FC<YearViewProps> = ({
 			</div>
 		</div>
 	);
-};
+}

@@ -1,5 +1,3 @@
-import React from "react";
-
 import { ODataSingleSelectProps, useODataCollectionModel } from "@ryuzaki13/react-foundation-api/odata";
 import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
@@ -20,7 +18,7 @@ function getODataOptionTextKey(item: CollectionItem | undefined, textKey: string
 	return textKey || Object.keys(item).find((key) => key !== codeKey) || codeKey;
 }
 
-export const ODataSelect: React.FC<ODataSelectProps> = ({
+export function ODataSelect({
 	odata,
 	segment,
 	model: initialModel,
@@ -32,7 +30,7 @@ export const ODataSelect: React.FC<ODataSelectProps> = ({
 	dependencies,
 	onChange,
 	clearable
-}) => {
+}: ODataSelectProps) {
 	const model = useODataCollectionModel(initialModel);
 	const odataModel = useODataSelect({
 		odata,
@@ -88,4 +86,4 @@ export const ODataSelect: React.FC<ODataSelectProps> = ({
 			clearable={clearable}
 		/>
 	);
-};
+}

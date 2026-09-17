@@ -5,10 +5,14 @@ import { childrenCount } from "@ryuzaki13/react-foundation-lib/utils";
 import { Flex, FlexSpacer } from "../flex";
 import { Grid } from "../grid";
 
-export const ToolbarStart: React.FC<PropsWithChildren> = ({ children }) => <>{children}</>;
+export function ToolbarStart({ children }: PropsWithChildren) {
+	return <>{children}</>;
+}
 ToolbarStart.displayName = "Toolbar.Start";
 
-export const ToolbarEnd: React.FC<PropsWithChildren> = ({ children }) => <>{children}</>;
+export function ToolbarEnd({ children }: PropsWithChildren) {
+	return <>{children}</>;
+}
 ToolbarEnd.displayName = "Toolbar.End";
 
 type ToolbarStartElement = React.ReactElement<{ children: ReactNode }, typeof ToolbarStart>;

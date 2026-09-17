@@ -15,11 +15,7 @@ function getHttpStatusCode(error: Error): number | undefined {
 	return error.status;
 }
 
-export const ErrorDisplay: React.FC<{ error: Error; componentStack?: string; draftId?: string | null }> = ({
-	error,
-	componentStack,
-	draftId
-}) => {
+export function ErrorDisplay({ error, componentStack, draftId }: { error: Error; componentStack?: string; draftId?: string | null }) {
 	const [randomValue] = useState(() => Math.random());
 	const queryClient = useQueryClient();
 
@@ -73,4 +69,4 @@ export const ErrorDisplay: React.FC<{ error: Error; componentStack?: string; dra
 			</div>
 		</section>
 	);
-};
+}

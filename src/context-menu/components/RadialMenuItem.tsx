@@ -15,7 +15,7 @@ export interface RadialMenuItemProps {
 	onSelect?: (event: React.MouseEvent<HTMLButtonElement>) => void;
 }
 
-export const RadialMenuItem: React.FC<RadialMenuItemProps> = ({ children, icon, className, disabled, closeOnSelect = true, onSelect }) => {
+export function RadialMenuItem({ children, icon, className, disabled, closeOnSelect = true, onSelect }: RadialMenuItemProps) {
 	const { closeMenu } = useMenuContext();
 
 	const handleClick = useCallback(
@@ -53,4 +53,4 @@ export const RadialMenuItem: React.FC<RadialMenuItemProps> = ({ children, icon, 
 			<span className={styles.radialItemText}>{children}</span>
 		</button>
 	);
-};
+}

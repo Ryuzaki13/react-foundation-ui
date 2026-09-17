@@ -1,4 +1,3 @@
-/* eslint-disable react-refresh/only-export-components */
 import React from "react";
 
 import { Placement } from "@floating-ui/react";
@@ -18,18 +17,16 @@ export interface DropdownMenuProps {
 	onOpenChange?: (open: boolean) => void;
 }
 
-const DropdownMenuRoot: React.FC<DropdownMenuProps> = ({ children, placement, open, defaultOpen, onOpenChange }) => {
+export function DropdownMenu({ children, placement, open, defaultOpen, onOpenChange }: DropdownMenuProps) {
 	return (
 		<MenuRoot mode="click" placement={placement} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
 			{children}
 		</MenuRoot>
 	);
-};
+}
 
-export const DropdownMenu = Object.assign(DropdownMenuRoot, {
-	Trigger: DropdownMenuTrigger,
-	Content: MenuContent,
-	Item: MenuItem,
-	Separator: MenuSeparator,
-	GroupLabel: MenuGroupLabel
-});
+DropdownMenu.Trigger = DropdownMenuTrigger;
+DropdownMenu.Content = MenuContent;
+DropdownMenu.Item = MenuItem;
+DropdownMenu.Separator = MenuSeparator;
+DropdownMenu.GroupLabel = MenuGroupLabel;

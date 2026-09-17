@@ -22,21 +22,21 @@ export interface ModalCompositionProps {
 	className?: string;
 }
 
-export const ModalToolbar: React.FC<ModalCompositionProps> = ({ children, className }) => {
+export function ModalToolbar({ children, className }: ModalCompositionProps) {
 	return <div className={cn("surface2 paddingMd borderBottom", className)}>{children}</div>;
-};
+}
 ModalToolbar.displayName = "Modal.Toolbar";
 
-export const ModalContent: React.FC<ModalCompositionProps & { scrollable?: boolean }> = ({ children, className, scrollable }) => {
+export function ModalContent({ children, className, scrollable }: ModalCompositionProps & { scrollable?: boolean }) {
 	return (
 		<div className={cn("paddingMd h100 overflowHidden", className)}>
 			{scrollable ? <Scrollable className="h100">{children}</Scrollable> : children}
 		</div>
 	);
-};
+}
 ModalContent.displayName = "Modal.Content";
 
-export const ModalFooter: React.FC<ModalCompositionProps> = ({ children, className }) => {
+export function ModalFooter({ children, className }: ModalCompositionProps) {
 	return (
 		<div className={cn("surface2 borderTop paddingMd", className)}>
 			<FlexContainer gap="sm" align="center" justify="end">
@@ -44,7 +44,7 @@ export const ModalFooter: React.FC<ModalCompositionProps> = ({ children, classNa
 			</FlexContainer>
 		</div>
 	);
-};
+}
 ModalFooter.displayName = "Modal.Footer";
 
 type ToolbarElement = React.ReactElement<ModalCompositionProps, typeof ModalToolbar>;
@@ -72,7 +72,7 @@ export interface ModalProps {
 	children: ModalChildren;
 }
 
-export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height, onClose, children }) => {
+export function Modal({ isOpen, title, size = "sm", height, onClose, children }: ModalProps) {
 	const modalId = useId();
 	const titleId = useId();
 
@@ -205,4 +205,4 @@ export const Modal: React.FC<ModalProps> = ({ isOpen, title, size = "sm", height
 		</AnimatePresence>,
 		modalRoot
 	);
-};
+}

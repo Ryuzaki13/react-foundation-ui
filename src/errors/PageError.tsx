@@ -1,5 +1,3 @@
-import React from "react";
-
 import { Flex } from "../flex";
 
 interface PageErrorProps {
@@ -8,7 +6,7 @@ interface PageErrorProps {
 	description: string;
 }
 
-export const PageError: React.FC<PageErrorProps> = ({ code, title, description }) => {
+export function PageError({ code, title, description }: PageErrorProps) {
 	return (
 		<Flex.Predefined variant="columnCenter" className="paddingXl">
 			<div aria-hidden="true" className="content2 fontBolded" style={{ fontSize: "5em" }}>
@@ -19,4 +17,4 @@ export const PageError: React.FC<PageErrorProps> = ({ code, title, description }
 			{/* <Link to="/">Вернуться на главную</Link> */}
 		</Flex.Predefined>
 	);
-};
+}

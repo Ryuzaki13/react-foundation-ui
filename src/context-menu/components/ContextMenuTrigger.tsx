@@ -9,7 +9,7 @@ export interface ContextMenuTriggerProps {
 	resolveTrigger?: (eventTarget: EventTarget | null) => HTMLElement | null;
 }
 
-export const ContextMenuTrigger: React.FC<ContextMenuTriggerProps> = ({ children, resolveTrigger }) => {
+export function ContextMenuTrigger({ children, resolveTrigger }: ContextMenuTriggerProps) {
 	const { mode, open, registerTriggerElement, onTriggerContextMenu, onTriggerKeyDown } = useMenuContext();
 
 	if (mode !== "contextmenu") {
@@ -37,4 +37,4 @@ export const ContextMenuTrigger: React.FC<ContextMenuTriggerProps> = ({ children
 			if (triggerElement) onTriggerKeyDown(event, triggerElement);
 		}
 	});
-};
+}

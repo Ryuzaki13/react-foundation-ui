@@ -1,5 +1,3 @@
-import React from "react";
-
 import { ODataSelectBaseProps, useODataCollectionModel } from "@ryuzaki13/react-foundation-api/odata";
 
 import { UiBaseProps } from "../../types";
@@ -9,7 +7,7 @@ import { MultiSelect } from "./MultiSelect";
 
 type ODataMultiSelectProps = ODataSelectBaseProps & Omit<UiBaseProps<string[]>, "placeholder"> & {};
 
-export const ODataMultiSelect: React.FC<ODataMultiSelectProps> = ({
+export function ODataMultiSelect({
 	odata,
 	segment,
 	model: initialModel,
@@ -20,7 +18,7 @@ export const ODataMultiSelect: React.FC<ODataMultiSelectProps> = ({
 	dependencies,
 	onChange,
 	size
-}) => {
+}: ODataMultiSelectProps) {
 	const model = useODataCollectionModel(initialModel);
 	const odataModel = useODataMultiSelect({
 		odata,
@@ -52,4 +50,4 @@ export const ODataMultiSelect: React.FC<ODataMultiSelectProps> = ({
 			error={odataModel.isError ? "Ошибка загрузки" : undefined}
 		/>
 	);
-};
+}

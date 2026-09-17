@@ -24,7 +24,7 @@ export interface DetailItemProps {
 	required?: boolean;
 }
 
-function Item({ label, value, withColon, required }: DetailItemProps) {
+function DetailItem({ label, value, withColon, required }: DetailItemProps) {
 	const { semantic, inline, noWrap, center, vertical = "center", withColon: withColonParent = true } = useContext(DetailContext);
 	const detailClass = cn(styles.detail, center && styles.textCenter, inline && styles.inline, noWrap && styles.noWrap, styles[vertical]);
 
@@ -84,7 +84,7 @@ export interface DetailComponent extends FC<DetailProps> {
 /**
  * Компонент для вывода пар «заголовок-значение» в одну или несколько колонок. Подходит для карточек сущностей, сводок и страниц просмотра.
  */
-export const Detail: DetailComponent = ({ children, columnCount = 1, rowGap = "none", semantic = "list", className, ...itemProps }) => {
+export function Detail({ children, columnCount = 1, rowGap = "none", semantic = "list", className, ...itemProps }: DetailProps) {
 	const classes = cn(styles.detailList, styles[rowGap], className);
 	const style = { columnCount: Math.min(5, Math.max(1, columnCount)) } as CSSProperties;
 	const content =
@@ -99,6 +99,6 @@ export const Detail: DetailComponent = ({ children, columnCount = 1, rowGap = "n
 		);
 
 	return <DetailContext.Provider value={{ ...itemProps, semantic }}>{content}</DetailContext.Provider>;
-};
+}
 
-Detail.Item = Item;
+Detail.Item = DetailItem;

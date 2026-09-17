@@ -1,12 +1,11 @@
 // Flex.stories.tsx
 import React from "react";
 
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
 import { Flex } from "../Flex";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { FlexContainerProps } from "../types";
+import { type FlexContainerProps } from "../types";
 
 // Стили для демонстрационных блоков
 const demoStyles = {
@@ -31,15 +30,17 @@ const demoStyles = {
 
 const getItemColor = (index: number) => demoStyles.itemColors[index % demoStyles.itemColors.length];
 
-const DemoItem = ({ children, index = 0 }: { children: React.ReactNode; index?: number }) => (
-	<Flex.Item
-		style={{
-			...demoStyles.item,
-			backgroundColor: getItemColor(index)
-		}}>
-		{children}
-	</Flex.Item>
-);
+function DemoItem({ children, index = 0 }: { children: React.ReactNode; index?: number }) {
+	return (
+		<Flex.Item
+			style={{
+				...demoStyles.item,
+				backgroundColor: getItemColor(index)
+			}}>
+			{children}
+		</Flex.Item>
+	);
+}
 
 const meta = {
 	title: "Layout/Flex",

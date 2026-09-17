@@ -6,11 +6,7 @@ import { FloatingArrow } from "../floating-arrow/FloatingArrow";
 
 import styles from "./Popover.module.scss";
 
-export const FloatingTooltip: React.FC<{
-	x: number;
-	y: number;
-	children: React.ReactNode;
-}> = ({ x, y, children }) => {
+export function FloatingTooltip({ x, y, children }: { x: number; y: number; children: React.ReactNode }) {
 	const arrowRef = useRef<HTMLDivElement | null>(null);
 
 	const {
@@ -51,4 +47,4 @@ export const FloatingTooltip: React.FC<{
 			<FloatingArrow ref={arrowRef} placement={computedPlacement} middlewareData={middlewareData} />
 		</div>
 	);
-};
+}

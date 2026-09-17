@@ -1,5 +1,3 @@
-import React from "react";
-
 import { State } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CircleAlertIcon, CircleCheckIcon, CircleXIcon, InfoIcon } from "lucide-react";
@@ -12,7 +10,7 @@ interface StateIconProps {
 	className?: string;
 }
 
-export const StateIcon: React.FC<StateIconProps> = ({ state = "none", text, className }) => {
+export function StateIcon({ state = "none", text, className }: StateIconProps) {
 	const renderIcon = () => {
 		switch (state) {
 			case "error":
@@ -34,13 +32,13 @@ export const StateIcon: React.FC<StateIconProps> = ({ state = "none", text, clas
 			{text}
 		</div>
 	);
-};
+}
 
 interface RenderStateIconProps {
 	state?: State;
 }
 
-export const RenderStateIcon: React.FC<RenderStateIconProps> = ({ state }) => {
+export function RenderStateIcon({ state }: RenderStateIconProps) {
 	switch (state) {
 		case "error":
 			return <ErrorIcon />;
@@ -53,17 +51,17 @@ export const RenderStateIcon: React.FC<RenderStateIconProps> = ({ state }) => {
 		default:
 			return null;
 	}
-};
+}
 
-export const ErrorIcon = () => {
+export function ErrorIcon() {
 	return <CircleXIcon className={cn(styles.state, styles.error)} />;
-};
-export const WarningIcon = () => {
+}
+export function WarningIcon() {
 	return <CircleAlertIcon className={cn(styles.state, styles.warning)} />;
-};
-export const SuccessIcon = () => {
+}
+export function SuccessIcon() {
 	return <CircleCheckIcon className={cn(styles.state, styles.success)} />;
-};
-export const InformationIcon = () => {
+}
+export function InformationIcon() {
 	return <InfoIcon className={cn(styles.state, styles.information)} />;
-};
+}

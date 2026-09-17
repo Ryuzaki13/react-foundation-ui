@@ -1,6 +1,8 @@
-import { createElement, forwardRef, useMemo } from "react";
+import { type Ref, useMemo } from "react";
 
 import { resolveProps, useMatchMedia } from "@ryuzaki13/react-foundation-lib/media";
+
+import { PolymorphicComponent } from "../polymorphic";
 
 import { FlexContainerLayoutProps, FlexContainerProps } from "./types";
 import { useFlexContainerClasses } from "./useFlexClasses";
@@ -22,91 +24,79 @@ const RESPONSIVE_KEYS = [
 	"gapColumn"
 ] as const satisfies readonly (keyof FlexContainerLayoutProps)[];
 
-export const FlexContainer = forwardRef<HTMLElement, FlexContainerProps>(
-	(
-		{
-			children,
-			className = "",
-			as,
-			style,
-			inline,
-			row,
-			column,
-			rowReverse,
-			columnReverse,
-			wrap,
-			nowrap,
-			wrapReverse,
-			align,
-			justify,
-			alignContent,
-			gap,
-			gapRow,
-			gapColumn,
-			...htmlProps
-		},
-		ref
-	) => {
-		const { activeBreakpoint } = useMatchMedia();
+export function FlexContainer({
+	ref,
+	children,
+	className = "",
+	as,
+	style,
+	inline,
+	row,
+	column,
+	rowReverse,
+	columnReverse,
+	wrap,
+	nowrap,
+	wrapReverse,
+	align,
+	justify,
+	alignContent,
+	gap,
+	gapRow,
+	gapColumn,
+	...htmlProps
+}: FlexContainerProps & { ref?: Ref<HTMLElement> }) {
+	const { activeBreakpoint } = useMatchMedia();
 
-		const resolvedProps = useMemo(
-			() =>
-				resolveProps(
-					{
-						inline,
-						row,
-						column,
-						rowReverse,
-						columnReverse,
-						wrap,
-						nowrap,
-						wrapReverse,
-						align,
-						justify,
-						alignContent,
-						gap,
-						gapRow,
-						gapColumn
-					},
-					activeBreakpoint,
-					RESPONSIVE_KEYS
-				),
-			[
+	const resolvedProps = useMemo(
+		() =>
+			resolveProps(
+				{
+					inline,
+					row,
+					column,
+					rowReverse,
+					columnReverse,
+					wrap,
+					nowrap,
+					wrapReverse,
+					align,
+					justify,
+					alignContent,
+					gap,
+					gapRow,
+					gapColumn
+				},
 				activeBreakpoint,
-				align,
-				alignContent,
-				column,
-				columnReverse,
-				gap,
-				gapColumn,
-				gapRow,
-				inline,
-				justify,
-				nowrap,
-				row,
-				rowReverse,
-				wrap,
-				wrapReverse
-			]
-		);
+				RESPONSIVE_KEYS
+			),
+		[
+			activeBreakpoint,
+			align,
+			alignContent,
+			column,
+			columnReverse,
+			gap,
+			gapColumn,
+			gapRow,
+			inline,
+			justify,
+			nowrap,
+			row,
+			rowReverse,
+			wrap,
+			wrapReverse
+		]
+	);
 
-		const flexClasses = useFlexContainerClasses(resolvedProps);
+	const flexClasses = useFlexContainerClasses(resolvedProps);
 
-		const finalClassName = [flexClasses, className].filter(Boolean).join(" ");
-		const Component = as || "div";
-
-		return createElement(
-			Component,
-
-			{
-				...htmlProps,
-				ref,
-				className: finalClassName,
-				style
-			},
-			children
-		);
-	}
-);
+	const finalClassName = [flexClasses, className].filter(Boolean).join(" ");
+	return (
+		<PolymorphicComponent as={as} {...htmlProps} ref={ref} className={finalClassName} style={style}>
+			{children}
+		</PolymorphicComponent>
+	);
+}
 
 FlexContainer.displayName = "FlexContainer";

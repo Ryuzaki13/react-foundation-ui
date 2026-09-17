@@ -1,3 +1,5 @@
+import { type Ref } from "react";
+
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -11,27 +13,34 @@ const scannerHarness = vi.hoisted(() => ({
 	stopTrack: vi.fn()
 }));
 
+type ScannerMockHandle = {
+	getStream: () => { getTracks: () => { stop: typeof scannerHarness.stopTrack }[] };
+	getVideoElement: () => null;
+};
+
+type ScannerMockProps = {
+	onError?: (error: IScannerError) => void;
+	onScan: (detectedCodes: IDetectedBarcode[]) => void;
+	ref?: Ref<ScannerMockHandle>;
+};
+
 vi.mock("@yudiel/react-qr-scanner", async () => {
-	const { forwardRef, useImperativeHandle } = await import("react");
+	const { useImperativeHandle } = await import("react");
+
+	function ScannerMock({ onError, onScan, ref }: ScannerMockProps) {
+		scannerHarness.onError = onError;
+		scannerHarness.onScan = onScan;
+		useImperativeHandle(ref, () => ({
+			getStream: () => ({ getTracks: () => [{ stop: scannerHarness.stopTrack }] }),
+			getVideoElement: () => null
+		}));
+
+		return <div data-testid="scanner" />;
+	}
 
 	return {
 		prepareZXingModule: vi.fn(),
-		Scanner: forwardRef(function ScannerMock(
-			props: {
-				onError?: (error: IScannerError) => void;
-				onScan: (detectedCodes: IDetectedBarcode[]) => void;
-			},
-			ref
-		) {
-			scannerHarness.onError = props.onError;
-			scannerHarness.onScan = props.onScan;
-			useImperativeHandle(ref, () => ({
-				getStream: () => ({ getTracks: () => [{ stop: scannerHarness.stopTrack }] }),
-				getVideoElement: () => null
-			}));
-
-			return <div data-testid="scanner" />;
-		})
+		Scanner: ScannerMock
 	};
 });
 
