@@ -23,7 +23,8 @@ Popover уже имеет живые stories, а эта страница соб�
 <Controls of={PopoverStories.Default} />
 
 ```tsx
-import { Button, Popover } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
+import { Popover } from "@ryuzaki13/react-foundation-ui/popover";
 
 export function Example() {
 	return (
@@ -31,7 +32,7 @@ export function Example() {
 			<Popover.Trigger>
 				<Button>Открыть</Button>
 			</Popover.Trigger>
-			<Popover.Content>
+			<Popover.Content role="dialog" aria-label="Параметры отображения">
 				<div style={{ padding: 12 }}>Содержимое поповера</div>
 			</Popover.Content>
 		</Popover>
@@ -41,6 +42,9 @@ export function Example() {
 
 ## Практические рекомендации
 
+- Popover является немодальным: фон остаётся доступным, а фокус может перейти за пределы панели. Для блокирующего сценария используйте `Dialog` или `Modal`.
+- Компонент не назначает `role` автоматически. Для самостоятельной интерактивной панели задайте подходящую семантику и доступное имя, например `role="dialog"` вместе с `aria-label` или `aria-labelledby`.
+- `FloatingPopover` для короткой подсказки использует `role="tooltip"`, открывается и при наведении, и при фокусе, а trigger связывается с подсказкой через `aria-describedby`.
 - Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
 - Если компонент участвует в фильтрации или поиске, заранее определите дефолтные значения и допустимые ограничения.
 
@@ -58,6 +62,12 @@ export function Example() {
 
 <Canvas of={PopoverStories.Controlled} />
 
+### Открытое немодальное состояние
+
+История фиксирует accessibility-проверку раскрытой панели: содержимое не объявляется модальным и остаётся связано с trigger через `aria-controls`.
+
+<Canvas of={PopoverStories.Opened} />
+
 ### Сравнение вариантов позиционирования относительно trigger-элемента
 
 Сравнение вариантов позиционирования относительно trigger-элемента.
@@ -69,6 +79,12 @@ export function Example() {
 Сценарий демонстрирует вариант `WithInteractiveContent` и помогает быстро сравнить его с остальными режимами компонента.
 
 <Canvas of={PopoverStories.WithInteractiveContent} />
+
+### Tooltip
+
+Подсказку можно открыть наведением или клавиатурным фокусом. Она не объявляет trigger как кнопку раскрытия диалога и не добавляет ему несоответствующие `aria-haspopup` или `aria-expanded`.
+
+<Canvas of={PopoverStories.Tooltip} />
 
 ## API
 

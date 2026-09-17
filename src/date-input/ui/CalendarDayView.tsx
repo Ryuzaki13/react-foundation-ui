@@ -189,6 +189,7 @@ export function CalendarDayView({
 										[styles.now]: isNow
 									})}
 									aria-label={dayLabelFormatter.format(day)}
+									aria-current={isNow ? "date" : undefined}
 									aria-pressed={isSelected || isRange || isStart || isEnd}>
 									{day.getDate()}
 								</button>

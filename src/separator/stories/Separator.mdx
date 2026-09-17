@@ -1,0 +1,36 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as SeparatorStories from "./Separator.stories";
+
+<Meta
+	of={SeparatorStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>Separator</Title>
+<Subtitle>Горизонтальное или вертикальное семантическое разделение соседних частей интерфейса</Subtitle>
+
+`Separator` по умолчанию использует `role="separator"`. Значение `aria-orientation` автоматически соответствует визуальному `orientation`, поэтому направление одинаково воспринимается и визуально, и assistive technologies.
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={SeparatorStories.Horizontal} />
+
+## Вертикальная ориентация
+
+<Canvas of={SeparatorStories.Vertical} />
+
+Если разделитель нужен только как декоративная линия, передайте `role="presentation"`. В этом случае компонент не добавляет `aria-orientation`, поскольку декоративный элемент исключён из accessibility tree.
+
+## API
+
+<ArgTypes of={SeparatorStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

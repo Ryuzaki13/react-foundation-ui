@@ -357,6 +357,26 @@ function getOptionByText(text: string) {
 	return option;
 }
 
+function getOptionCheckBox(text: string) {
+	const checkBox = getOptionByText(text).querySelector('input[type="checkbox"]');
+
+	if (!(checkBox instanceof HTMLInputElement)) {
+		throw new Error(`Не найден checkbox строки «${text}»`);
+	}
+
+	return checkBox;
+}
+
+function getOptionActionButton(text: string) {
+	const button = getOptionByText(text).querySelector('button[aria-label^="Выбрать только"]');
+
+	if (!(button instanceof HTMLButtonElement)) {
+		throw new Error(`Не найдена основная кнопка строки «${text}»`);
+	}
+
+	return button;
+}
+
 function findInnermostElementWithText(text: string) {
 	return Array.from(container?.querySelectorAll<HTMLElement>("*") ?? []).find(
 		(element) =>
@@ -786,11 +806,43 @@ describe("TreeMultiSelect tree expansion", () => {
 		expect(getOptionOrder()).toHaveLength(4);
 		expect(getOptionOrder().some((optionText) => optionText?.includes("Филиал 1"))).toBe(true);
 		expect(document.querySelector('[data-ui="tree-select-expander"]')).toBeTruthy();
-		const listbox = document.querySelector('[role="listbox"]') as HTMLElement;
-		expect(listbox.firstElementChild?.classList.contains(styles.treeColumnsPopupLayout)).toBe(false);
+		const treeGrid = document.querySelector('[role="treegrid"]') as HTMLElement;
+		expect(treeGrid).toBeTruthy();
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-haspopup")).toBe("grid");
+		expect(treeGrid.closest('[data-ui="picker-options"]')?.classList.contains(styles.treeColumnsPopupLayout)).toBe(false);
 	});
 
-	it("сохраняет клавиатурную навигацию из expander и checkbox и разделяет Space с Enter", async () => {
+	it("разделяет черновое действие checkbox и немедленное действие кнопки узла", async () => {
+		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
+		await renderHarness({
+			initialValue: {},
+			onChange,
+			optionsLayout: "tree",
+			defaultExpandedCodeKeys: ["DIV"]
+		});
+
+		const rootOption = getOptionByText("Дивизион 1");
+
+		expect(rootOption.getAttribute("role")).toBe("row");
+		expect(rootOption.querySelectorAll(':scope > [role="gridcell"]')).toHaveLength(2);
+		expect(getOptionCheckBox("Дивизион 1")).toBeInstanceOf(HTMLInputElement);
+		expect(getOptionActionButton("Дивизион 1")).toBeInstanceOf(HTMLButtonElement);
+
+		await clickElement(getOptionCheckBox("Дивизион 1"));
+		expect(rootOption.getAttribute("aria-selected")).toBe("true");
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
+		expect(getCommittedValueText()).toBe("{}");
+		expect(onChange).not.toHaveBeenCalled();
+
+		await clickElement(getOptionActionButton("Филиал 1"));
+
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+		expect(getCommittedValueText()).toBe('{"BR":["001"]}');
+		expect(onChange).toHaveBeenCalledTimes(1);
+		expect(onChange).toHaveBeenLastCalledWith({ BR: ["001"] });
+	});
+
+	it("оставляет Space черновым действием строки, а Enter применяет узел сразу", async () => {
 		const onChange = vi.fn<(value: TreeMultiSelectValue) => void>();
 		await renderHarness({
 			initialValue: {},
@@ -801,26 +853,19 @@ describe("TreeMultiSelect tree expansion", () => {
 
 		const rootOption = getOptionByText("Дивизион 1");
 		const branchOption = getOptionByText("Филиал 1");
-		const rootExpander = rootOption.querySelector('[data-ui="tree-select-expander"]') as HTMLButtonElement;
-		const rootCheckBox = getCheckBox("Дивизион 1");
 
-		rootExpander.focus();
-		await pressKey(rootExpander, "ArrowDown");
+		rootOption.focus();
+		await pressKey(rootOption, "ArrowDown");
 		expect(document.activeElement).toBe(branchOption);
 
-		rootCheckBox.focus();
-		await pressKey(rootCheckBox, "ArrowDown");
-		expect(document.activeElement).toBe(branchOption);
+		rootOption.focus();
+		await pressKey(rootOption, " ");
+		expect(rootOption.getAttribute("aria-selected")).toBe("true");
+		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
+		expect(onChange).not.toHaveBeenCalled();
 
-		rootExpander.focus();
-		await pressKey(rootExpander, " ");
-		expect(rootCheckBox.checked).toBe(true);
-		expect(rootExpander.dataset.action).toBe("collapse-tree-select-node");
-		expect(document.querySelector('[role="listbox"]')).toBeTruthy();
-
-		const branchCheckBox = getCheckBox("Филиал 1");
-		branchCheckBox.focus();
-		await pressKey(branchCheckBox, "Enter");
+		branchOption.focus();
+		await pressKey(branchOption, "Enter");
 
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
 		expect(getCommittedValueText()).toBe('{"BR":["001"]}');
@@ -836,7 +881,7 @@ describe("TreeMultiSelect tree expansion", () => {
 		const searchInput = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
 
 		await setInputValue(searchInput, "Филиал 1");
-		await clickElement(getCheckBox("Дивизион 1"));
+		await clickElement(getOptionCheckBox("Дивизион 1"));
 		await closePopup();
 
 		expect(getCommittedValueText()).toBe(JSON.stringify(expectedValue));

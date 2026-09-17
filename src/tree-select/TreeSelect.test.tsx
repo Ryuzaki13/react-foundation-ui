@@ -129,14 +129,14 @@ function getExpansionOption(label: string) {
 	return option;
 }
 
-function getExpansionButton(label: string) {
-	const button = getExpansionOption(label).querySelector('[data-ui="tree-select-expander"]');
+function getExpansionControl(label: string) {
+	const control = getExpansionOption(label).querySelector('[data-ui="tree-select-expander"]');
 
-	if (!(button instanceof HTMLButtonElement)) {
+	if (!(control instanceof HTMLElement)) {
 		throw new Error(`Не найден expander опции «${label}»`);
 	}
 
-	return button;
+	return control;
 }
 
 async function setInputValue(input: HTMLInputElement, value: string) {
@@ -167,19 +167,18 @@ afterEach(async () => {
 });
 
 describe("TreeSelect", () => {
-	it("разделяет раскрытие ветки и выбор значения внутри общей Option", async () => {
+	it("оставляет treeitem единственным интерактивным элементом строки", async () => {
 		const onChange = vi.fn<(value: TreeSelectValue) => void>();
 		await renderNode(<TreeSelect label="Дерево" nodes={EXPANSION_NODES} value={undefined} onChange={onChange} />);
 		await openPopup();
 
 		const rootOption = getExpansionOption("Дивизион 1");
-		const expander = getExpansionButton("Дивизион 1");
-		const optionButton = Array.from(rootOption.children).find(
-			(element): element is HTMLButtonElement => element instanceof HTMLButtonElement && element !== expander
-		);
+		const expander = getExpansionControl("Дивизион 1");
 
 		expect(rootOption.tagName).toBe("DIV");
-		expect(optionButton).toBeInstanceOf(HTMLButtonElement);
+		expect(rootOption.getAttribute("role")).toBe("treeitem");
+		expect(rootOption.getAttribute("aria-expanded")).toBe("false");
+		expect(rootOption.querySelector("button, input, a")).toBeNull();
 		expect(rootOption.querySelector('input[type="checkbox"]')).toBeNull();
 
 		await act(async () => expander.click());
@@ -187,7 +186,7 @@ describe("TreeSelect", () => {
 		expect(onChange).not.toHaveBeenCalled();
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
 
-		await act(async () => optionButton?.click());
+		await act(async () => rootOption.click());
 
 		expect(onChange).toHaveBeenCalledWith({ codeKey: "DIV", value: "01" });
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
@@ -199,14 +198,14 @@ describe("TreeSelect", () => {
 		await openPopup();
 
 		const rootOption = getExpansionOption("Дивизион 1");
-		const rootExpander = getExpansionButton("Дивизион 1");
-		rootExpander.focus();
+		const rootExpander = getExpansionControl("Дивизион 1");
+		rootOption.focus();
 
-		await pressKey(rootExpander, "ArrowRight");
+		await pressKey(rootOption, "ArrowRight");
 		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Дивизион 2"]);
 		expect(rootExpander.dataset.action).toBe("collapse-tree-select-node");
 
-		await pressKey(rootExpander, "ArrowRight");
+		await pressKey(rootOption, "ArrowRight");
 		const branchOption = getExpansionOption("Филиал 1");
 		expect(document.activeElement).toBe(branchOption);
 
@@ -257,7 +256,7 @@ describe("TreeSelect", () => {
 
 		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
 
-		await act(async () => getExpansionButton("Дивизион 1").click());
+		await act(async () => getExpansionControl("Дивизион 1").click());
 
 		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Команда 1", "Дивизион 2"]);
 	});
@@ -275,10 +274,10 @@ describe("TreeSelect", () => {
 		await openPopup();
 
 		expect(getVisibleExpansionLabels()).toContain("Филиал 1");
-		await act(async () => getExpansionButton("Дивизион 1").click());
+		await act(async () => getExpansionControl("Дивизион 1").click());
 
 		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Дивизион 2"]);
-		expect(getExpansionButton("Дивизион 1").dataset.action).toBe("expand-tree-select-node");
+		expect(getExpansionControl("Дивизион 1").dataset.action).toBe("expand-tree-select-node");
 	});
 
 	it("временно раскрывает вручную закрытую ветку для поиска", async () => {
@@ -292,7 +291,7 @@ describe("TreeSelect", () => {
 			/>
 		);
 		await openPopup();
-		await act(async () => getExpansionButton("Дивизион 1").click());
+		await act(async () => getExpansionControl("Дивизион 1").click());
 
 		const input = container?.querySelector('input[role="combobox"]');
 		if (!(input instanceof HTMLInputElement)) {
@@ -313,7 +312,7 @@ describe("TreeSelect", () => {
 
 		await renderNode(renderTree(undefined));
 		await openPopup();
-		await act(async () => getExpansionButton("Дивизион 1").click());
+		await act(async () => getExpansionControl("Дивизион 1").click());
 
 		await act(async () => root?.render(renderTree({ codeKey: "TEAM", value: "0001" })));
 		expect(getVisibleExpansionLabels()).toEqual(["Дивизион 1", "Филиал 1", "Команда 1", "Дивизион 2"]);
@@ -346,7 +345,7 @@ describe("TreeSelect", () => {
 			input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		expect(document.querySelectorAll('[role="option"]')).toHaveLength(0);
+		expect(document.querySelectorAll('[role="treeitem"]')).toHaveLength(0);
 
 		const toggleButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
 
@@ -355,7 +354,7 @@ describe("TreeSelect", () => {
 		});
 
 		expect(document.activeElement).toBe(input);
-		expect(document.querySelectorAll('[role="option"]').length).toBeGreaterThan(0);
+		expect(document.querySelectorAll('[role="treeitem"]').length).toBeGreaterThan(0);
 
 		expect(document.querySelectorAll('input[role="combobox"]').length).toBe(1);
 
@@ -365,7 +364,7 @@ describe("TreeSelect", () => {
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 		});
 
-		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
+		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="treeitem"]'));
 		expect(options).toHaveLength(1);
 		expect(options[0]?.textContent).toContain("Корень 2");
 
@@ -407,9 +406,9 @@ describe("TreeSelect", () => {
 		await renderNode(<TreeSelect label="Дерево" nodes={NODES} value={{ codeKey: "DIV", value: "01" }} onChange={() => undefined} />);
 
 		await act(async () => (container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click());
-		await act(async () => (document.querySelector('[data-ui="tree-select-expander"]') as HTMLButtonElement).click());
+		await act(async () => (document.querySelector('[data-ui="tree-select-expander"]') as HTMLElement).click());
 
-		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
+		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="treeitem"]'));
 		expect(options[0]?.getAttribute("aria-selected")).toBe("true");
 		expect(options[1]?.getAttribute("aria-selected")).toBe("false");
 	});

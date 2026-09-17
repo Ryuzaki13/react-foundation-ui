@@ -95,14 +95,10 @@ export function TreePickerBase({
 }: TreePickerBaseProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const selectAllButtonRef = useRef<HTMLButtonElement | null>(null);
-	const optionRefs = useRef<Array<HTMLDivElement | null>>([]);
+	const optionRefs = useRef<Array<HTMLElement | null>>([]);
 	/** Явный owner open-state позволяет сбрасывать query непосредственно в close-событии. */
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(false);
-	/**
-	 * Сохраняет строку, в которую фокус вошёл через независимый expander или
-	 * checkbox. Это синхронизирует видимый active-state, не превращая строку в
-	 * единственный tab-stop и не меняя доступность вложенных контролов.
-	 */
+	/** Синхронизирует видимый active-state со строкой, в которую вошёл фокус. */
 	const [focusedNodeId, setFocusedNodeId] = useState<string>();
 	const isOpenControlled = controlledOpen !== undefined;
 	const open = isOpenControlled ? controlledOpen : uncontrolledOpen;
@@ -211,7 +207,7 @@ export function TreePickerBase({
 		onSelect: (entry) => onNodeActivate(entry.node, selectionScopeIndex),
 		getOptionDisabled: isEntryDisabled,
 		disabled: disabled || isLoading,
-		// selectOption вызывается только основной кнопкой; checkbox обходит его и остаётся в draft-режиме.
+		// Основное действие всегда завершает выбор; checkbox multi-select управляет черновиком отдельно.
 		closeOnSelect: true,
 		allowOpenWithoutOptions: true,
 		triggerMode: resolvedTriggerMode,
@@ -302,11 +298,14 @@ export function TreePickerBase({
 		optionRefs.current[optionIndex]?.focus();
 	};
 	/**
-	 * Объединяет клавиатурную модель строки для внешней Option и её независимых
-	 * контролов: вертикальные клавиши перемещают строковый фокус, горизонтальные
-	 * управляют веткой, Space меняет checkbox, а Enter выполняет основное действие.
+	 * Клавиатурная модель дерева: стрелки управляют навигацией и ветками,
+	 * Space меняет черновик multi-select, а Enter завершает выбор текущим узлом.
 	 */
 	const handleTreeOptionKeyDown = (event: KeyboardEvent<HTMLElement>, entry: TreeVisibleEntry, optionIndex: number) => {
+		if (event.target !== event.currentTarget) {
+			return;
+		}
+
 		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
 			event.preventDefault();
 			const direction = event.key === "ArrowDown" ? 1 : -1;
@@ -362,11 +361,24 @@ export function TreePickerBase({
 			selectOption(entry);
 		}
 	};
+	const isTreeMultiGrid = optionsLayout === "tree" && selectionMode === "multi";
+	const handlePopupKeyDown = (event: KeyboardEvent<HTMLElement>) => {
+		if (isTreeMultiGrid && event.target === event.currentTarget && event.key === " ") {
+			event.preventDefault();
+			const activeEntry = listboxActiveIndex >= 0 ? visibleEntries[listboxActiveIndex] : undefined;
+			if (activeEntry && !isEntryDisabled(activeEntry)) {
+				onNodeToggleSelection?.(activeEntry.node, selectionScopeIndex);
+			}
+			return;
+		}
+
+		handleFloatingKeyDown(event);
+	};
 
 	return (
 		<PickerField label={label} description={description} disabled={disabled} size={size}>
 			{({ controlId, labelId, describedBy }) => {
-				const listId = `${controlId}-listbox`;
+				const listId = `${controlId}-${optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}`;
 				const popupAriaLabel = typeof label === "string" ? label : placeholder;
 
 				return (
@@ -398,7 +410,7 @@ export function TreePickerBase({
 							aria-labelledby={labelId}
 							aria-label={labelId ? undefined : placeholder}
 							aria-describedby={describedBy}
-							aria-haspopup={optionsLayout === "columns" ? "dialog" : "listbox"}
+							aria-haspopup={optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "grid" : "tree"}
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}
 							aria-autocomplete={optionsLayout !== "columns" && triggerMode === "search" ? "list" : "none"}
@@ -436,6 +448,15 @@ export function TreePickerBase({
 									return;
 								}
 
+								if (isTreeMultiGrid && open && event.ctrlKey && event.key === " ") {
+									event.preventDefault();
+									const activeEntry = listboxActiveIndex >= 0 ? visibleEntries[listboxActiveIndex] : undefined;
+									if (activeEntry && !isEntryDisabled(activeEntry)) {
+										onNodeToggleSelection?.(activeEntry.node, selectionScopeIndex);
+									}
+									return;
+								}
+
 								triggerController.handleTriggerKeyDown({
 									event,
 									onActivateWhenOpen: () => {
@@ -460,15 +481,15 @@ export function TreePickerBase({
 							activeOptionId={
 								optionsLayout !== "columns" && visibleEntries.length > 0 ? getActiveOptionId(listId) : undefined
 							}
-							ariaMultiselectable={optionsLayout !== "columns" && selectionMode === "multi"}
-							popupRole={optionsLayout === "columns" ? "dialog" : "listbox"}
+							ariaMultiselectable={isTreeMultiGrid}
+							popupRole={optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}
 							setFloating={setFloating}
 							getFloatingProps={getFloatingProps}
-							onKeyDown={handleFloatingKeyDown}
+							onKeyDown={handlePopupKeyDown}
 							layoutClassName={optionsLayout === "columns" ? styles.treeColumnsPopupLayout : undefined}
 							bodyClassName="scrollable"
 							toolbar={popupHeader}>
-							<div className={cn(optionsLayout === "columns" && styles.treeColumns)}>
+							<div role="presentation" className={cn(optionsLayout === "columns" && styles.treeColumns)}>
 								{visibleEntries.length === 0 ? (
 									<PickerStatus errorState={error} emptyState={!error && !isLoading ? "Нет данных" : undefined} />
 								) : (
@@ -487,18 +508,37 @@ export function TreePickerBase({
 												key={entry.node.id}
 												data-ui="tree-select-option"
 												id={getOptionId(listId, index)}
-												ref={(node) => {
-													optionRefs.current[index] = node;
-													setOptionRef(index, node);
-												}}
-												tabIndex={-1}
-												role={optionsLayout === "columns" ? undefined : "option"}
+												ref={
+													optionsLayout === "tree"
+														? (node) => {
+																optionRefs.current[index] = node;
+																setOptionRef(index, node);
+															}
+														: undefined
+												}
+												tabIndex={optionsLayout === "tree" ? -1 : undefined}
+												role={optionsLayout === "tree" ? (isTreeMultiGrid ? "row" : "treeitem") : undefined}
+												aria-level={optionsLayout === "tree" ? entry.level + 1 : undefined}
+												aria-expanded={optionsLayout === "tree" && entry.hasChildren ? entry.isExpanded : undefined}
 												aria-selected={optionsLayout === "columns" ? undefined : selected}
+												aria-disabled={optionDisabled || undefined}
 												disabled={optionDisabled}
 												active={active}
 												selected={selected}
 												onFocus={() => setFocusedNodeId(entry.node.id)}
-												onKeyDown={(event) => handleTreeOptionKeyDown(event, entry, index)}
+												onKeyDown={
+													optionsLayout === "tree"
+														? (event) => handleTreeOptionKeyDown(event, entry, index)
+														: undefined
+												}
+												onMouseDown={
+													optionsLayout === "tree" && !isTreeMultiGrid
+														? (event) => event.preventDefault()
+														: undefined
+												}
+												onClick={
+													optionsLayout === "tree" && !isTreeMultiGrid ? () => selectOption(entry) : undefined
+												}
 												className={optionsLayout === "columns" ? styles.treeColumnRow : undefined}
 												style={
 													optionsLayout === "columns"
@@ -518,6 +558,14 @@ export function TreePickerBase({
 													partial={partial}
 													selectionMode={selectionMode}
 													optionsLayout={optionsLayout}
+													actionRef={
+														optionsLayout === "columns"
+															? (node) => {
+																	optionRefs.current[index] = node;
+																	setOptionRef(index, node);
+																}
+															: undefined
+													}
 													onToggleExpand={() => toggleExpand(entry)}
 													onToggleSelection={() => onNodeToggleSelection?.(entry.node, selectionScopeIndex)}
 													onActivate={() => selectOption(entry)}

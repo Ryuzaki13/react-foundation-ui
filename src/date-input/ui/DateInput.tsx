@@ -276,17 +276,22 @@ function DateInput({
 				onClearError={onClearError}
 				endAdornmentWidth="var(--control-height)"
 				endAdornment={
-					<Popover.Trigger>
-						<div className={uiStyles.uiToggleButtonContainer}>
-							<button type="button" disabled={disabled} aria-label="Открыть календарь" className={uiStyles.uiToggleButton}>
+					<div className={uiStyles.uiToggleButtonContainer}>
+						<Popover.Trigger>
+							<button
+								type="button"
+								disabled={disabled}
+								aria-label="Открыть календарь"
+								aria-haspopup="dialog"
+								className={uiStyles.uiToggleButton}>
 								<CalendarDaysIcon />
 							</button>
-						</div>
-					</Popover.Trigger>
+						</Popover.Trigger>
+					</div>
 				}
 			/>
 
-			<Popover.Content background="primary">
+			<Popover.Content background="primary" role="dialog" aria-label={props.selectsRange ? "Выбор диапазона дат" : "Выбор даты"}>
 				<CalendarView
 					view={calendarType}
 					datePickerLevel={minDatePickerLevel}

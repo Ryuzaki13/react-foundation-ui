@@ -208,10 +208,6 @@ export function TabsLayout({
 						isVisited: state.isVisited(tab.id)
 					});
 
-					if (!isMounted) {
-						return null;
-					}
-
 					const templateRows = `${tab.toolbar ? "auto " : ""}minmax(0, 1fr)${tab.footer ? " auto" : ""}`;
 
 					return (
@@ -222,17 +218,19 @@ export function TabsLayout({
 							className={styles.panel}
 							getTabElementId={state.getTabElementId}
 							getPanelElementId={state.getPanelElementId}>
-							<div className={styles.layoutPanel} style={{ gridTemplateRows: templateRows }}>
-								{tab.toolbar ? (
-									<div className={cn(styles.layoutSection, tab.toolbar.className)}>{tab.toolbar.children}</div>
-								) : null}
-								<div className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}>
-									{tab.content.children}
+							{isMounted ? (
+								<div className={styles.layoutPanel} style={{ gridTemplateRows: templateRows }}>
+									{tab.toolbar ? (
+										<div className={cn(styles.layoutSection, tab.toolbar.className)}>{tab.toolbar.children}</div>
+									) : null}
+									<div className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}>
+										{tab.content.children}
+									</div>
+									{tab.footer ? (
+										<div className={cn(styles.layoutSection, tab.footer.className)}>{tab.footer.children}</div>
+									) : null}
 								</div>
-								{tab.footer ? (
-									<div className={cn(styles.layoutSection, tab.footer.className)}>{tab.footer.children}</div>
-								) : null}
-							</div>
+							) : null}
 						</TabsPanel>
 					);
 				})}

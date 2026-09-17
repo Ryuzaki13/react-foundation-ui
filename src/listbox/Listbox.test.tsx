@@ -66,6 +66,9 @@ describe("Listbox", () => {
 		const listbox = getRequiredElement(container?.querySelector<HTMLElement>('[role="listbox"]') ?? null, "Не найден Listbox");
 		const field = getRequiredElement(listbox.parentElement?.parentElement ?? null, "Не найдена оболочка поля Listbox");
 
+		expect(Array.from(listbox.querySelectorAll('[role="option"]')).every((option) => !option.querySelector("button, input, a"))).toBe(
+			true
+		);
 		expect(field.classList.contains(uiStyles.uiSizable)).toBe(true);
 		expect(field.classList.contains(uiStyles.sm)).toBe(true);
 	});

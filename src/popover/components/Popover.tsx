@@ -1,6 +1,6 @@
-import React, { useCallback, useRef, useState } from "react";
+import React, { useCallback, useId, useRef, useState } from "react";
 
-import { arrow, autoUpdate, flip, offset, Placement, shift, size as floatingSize, useFloating } from "@floating-ui/react";
+import { arrow, autoUpdate, flip, offset, shift, size as floatingSize, useFloating, type Placement } from "@floating-ui/react";
 
 import { applyPopoverAvailableSize } from "../lib/applyPopoverAvailableSize";
 
@@ -19,11 +19,13 @@ export interface PopoverProps {
 }
 
 /**
- * Контролируемый Popover.
- * Используется в связке с Popover.Trigger и Popover.Content.
+ * Якорный немодальный Popover.
+ * Используется в связке с Popover.Trigger и Popover.Content; для блокирующих
+ * сценариев с недоступным фоном следует использовать Dialog или Modal.
  */
 export function Popover({ children, open: controlledOpen, defaultOpen, onOpenChange, placement = "bottom" }: PopoverProps) {
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen ?? false);
+	const contentId = useId();
 
 	const isControlled = controlledOpen !== undefined;
 	const open = isControlled ? controlledOpen : uncontrolledOpen;
@@ -64,7 +66,8 @@ export function Popover({ children, open: controlledOpen, defaultOpen, onOpenCha
 	});
 
 	return (
-		<PopoverContext.Provider value={{ open, setOpen, refs, floatingStyles, placement: actualPlacement, middlewareData, arrowRef }}>
+		<PopoverContext.Provider
+			value={{ open, setOpen, refs, floatingStyles, placement: actualPlacement, middlewareData, arrowRef, contentId }}>
 			{children}
 		</PopoverContext.Provider>
 	);

@@ -1,6 +1,6 @@
-import React, { useCallback, useMemo, useRef, useState } from "react";
+import { type KeyboardEvent, type MouseEvent, type ReactNode, useCallback, useId, useMemo, useRef, useState } from "react";
 
-import { autoUpdate, flip, offset, Placement, shift, useFloating } from "@floating-ui/react";
+import { autoUpdate, flip, offset, type Placement, shift, useFloating } from "@floating-ui/react";
 import {
 	closeMenu,
 	createVirtualAnchor,
@@ -10,10 +10,10 @@ import {
 	openMenu
 } from "@ryuzaki13/react-foundation-lib/context-menu";
 
-import { MenuContext, MenuTriggerMode } from "./MenuContext";
+import { MenuContext, type MenuInitialFocus, type MenuTriggerMode } from "./MenuContext";
 
 interface MenuRootProps {
-	children: React.ReactNode;
+	children: ReactNode;
 	mode: MenuTriggerMode;
 	placement?: Placement;
 	open?: boolean;
@@ -29,7 +29,12 @@ export function MenuRoot({
 	defaultOpen,
 	onOpenChange
 }: MenuRootProps) {
+	const generatedId = useId();
+	const menuId = `${generatedId}-menu`;
+	const defaultTriggerId = `${generatedId}-trigger`;
 	const [menuState, setMenuState] = useState(initialMenuState);
+	const [initialFocus, setInitialFocus] = useState<MenuInitialFocus>("first");
+	const [triggerId, setTriggerId] = useState(defaultTriggerId);
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen ?? false);
 	const isControlled = controlledOpen !== undefined;
 	const open = isControlled ? controlledOpen : uncontrolledOpen;
@@ -62,8 +67,9 @@ export function MenuRoot({
 	}, [setOpen]);
 
 	const openAtElement = useCallback(
-		(element: HTMLElement, source: "click" | "keyboard") => {
+		(element: HTMLElement, source: "click" | "keyboard", nextInitialFocus: MenuInitialFocus = "first") => {
 			refs.setReference(element);
+			setInitialFocus(nextInitialFocus);
 			setMenuState(
 				openMenu({
 					source,
@@ -81,6 +87,7 @@ export function MenuRoot({
 	const openAtPoint = useCallback(
 		(point: { x: number; y: number }, source: "contextmenu" | "keyboard", contextElement?: HTMLElement | null) => {
 			refs.setReference(createVirtualAnchor(point, contextElement));
+			setInitialFocus("first");
 			setMenuState(
 				openMenu({
 					source,
@@ -101,6 +108,9 @@ export function MenuRoot({
 		(node: HTMLElement | null) => {
 			const previous = registeredTriggerElementRef.current;
 			registeredTriggerElementRef.current = node;
+			if (node) {
+				setTriggerId(node.id || defaultTriggerId);
+			}
 			// Повторный ref-callback общего контейнера не должен заменить делегированную цель,
 			// иначе после закрытия фокус вернётся на всю таблицу вместо исходной ячейки.
 			if (triggerElementRef.current === null || triggerElementRef.current === previous) {
@@ -110,11 +120,11 @@ export function MenuRoot({
 				refs.setReference(node);
 			}
 		},
-		[mode, refs]
+		[defaultTriggerId, mode, refs]
 	);
 
 	const onTriggerClick = useCallback(
-		(event: React.MouseEvent<HTMLElement>) => {
+		(event: MouseEvent<HTMLElement>) => {
 			if (mode !== "click") return;
 			const element = event.currentTarget;
 
@@ -129,7 +139,7 @@ export function MenuRoot({
 	);
 
 	const onTriggerContextMenu = useCallback(
-		(event: React.MouseEvent<HTMLElement>, triggerElement = event.currentTarget) => {
+		(event: MouseEvent<HTMLElement>, triggerElement = event.currentTarget) => {
 			if (mode !== "contextmenu") return;
 			event.preventDefault();
 
@@ -141,7 +151,14 @@ export function MenuRoot({
 	);
 
 	const onTriggerKeyDown = useCallback(
-		(event: React.KeyboardEvent<HTMLElement>, triggerElement = event.currentTarget) => {
+		(event: KeyboardEvent<HTMLElement>, triggerElement = event.currentTarget) => {
+			if (mode === "click" && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+				event.preventDefault();
+				triggerElementRef.current = triggerElement;
+				openAtElement(triggerElement, "keyboard", event.key === "ArrowUp" ? "last" : "first");
+				return;
+			}
+
 			const isContextMenuKeyboardOpen = event.key === "ContextMenu" || (event.shiftKey && event.key === "F10");
 			if (!isContextMenuKeyboardOpen) return;
 
@@ -176,6 +193,9 @@ export function MenuRoot({
 			mode,
 			open: visible,
 			openSource: menuState.source,
+			initialFocus,
+			menuId,
+			triggerId,
 			anchorPoint,
 			floatingStyles,
 			floatingRef: refs.floating,
@@ -191,6 +211,9 @@ export function MenuRoot({
 			mode,
 			visible,
 			menuState.source,
+			initialFocus,
+			menuId,
+			triggerId,
 			anchorPoint,
 			floatingStyles,
 			refs.floating,

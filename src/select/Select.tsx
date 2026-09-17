@@ -5,7 +5,8 @@ import { InputType } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { CustomOptionButton, Option, OptionButton } from "../option";
+import { Option, OptionContent } from "../option";
+import { OptionContentContainer } from "../option/OptionContentContainer";
 import {
 	extractPickerTextContent,
 	PickerField,
@@ -237,25 +238,19 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 				active={active}
 				selected={selected}
 				disabled={optionDisabled}
-				className={getOptionClassName?.(option, optionState)}>
+				className={getOptionClassName?.(option, optionState)}
+				onMouseDown={(event) => event.preventDefault()}
+				onClick={() => selectOption(option)}>
 				{renderOption ? (
-					<CustomOptionButton
-						tabIndex={-1}
-						disabled={optionDisabled}
-						onMouseDown={(event) => event.preventDefault()}
-						onClick={() => selectOption(option)}>
-						{renderOption(option, optionState)}
-					</CustomOptionButton>
+					<OptionContentContainer>{renderOption(option, optionState)}</OptionContentContainer>
 				) : (
-					<OptionButton
-						tabIndex={-1}
-						disabled={optionDisabled}
-						icon={selected ? <CheckIcon /> : <span />}
-						text={getOptionLabel(option)}
-						code={getOptionCode?.(option)}
-						onMouseDown={(event) => event.preventDefault()}
-						onClick={() => selectOption(option)}
-					/>
+					<OptionContentContainer>
+						<OptionContent
+							icon={selected ? <CheckIcon /> : <span />}
+							text={getOptionLabel(option)}
+							code={getOptionCode?.(option)}
+						/>
+					</OptionContentContainer>
 				)}
 			</Option>
 		);
@@ -338,7 +333,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							className={optionsClassName}
 							maxWidth={optionsMaxWidth}
 							toolbar={renderPopupHeader}>
-							<div className={cn(optionsContentClassName, "h100 scrollable overscroll")}>
+							<div role="presentation" className={cn(optionsContentClassName, "h100 scrollable overscroll")}>
 								{hasOptions ? (
 									optionSections ? (
 										optionSections.map((section, sectionIndex) => {

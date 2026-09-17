@@ -1,4 +1,4 @@
-import React, { useCallback } from "react";
+import { type KeyboardEvent, type ReactNode, type RefObject, useCallback, useEffect } from "react";
 
 import { useClickOutside, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -11,8 +11,10 @@ import styles from "../ContextMenu.module.scss";
 import { useMenuContext } from "./MenuContext";
 
 export interface MenuContentProps {
-	children: React.ReactNode | ((ctx: { closeMenu: () => void }) => React.ReactNode);
+	children: ReactNode | ((ctx: { closeMenu: () => void }) => ReactNode);
 	className?: string;
+	"aria-label"?: string;
+	"aria-labelledby"?: string;
 	closeOnOutside?: boolean;
 	closeOnEscape?: boolean;
 	disableOutsideClick?: boolean;
@@ -22,12 +24,26 @@ export interface MenuContentProps {
 export function MenuContent({
 	children,
 	className,
+	"aria-label": ariaLabel,
+	"aria-labelledby": ariaLabelledBy,
 	closeOnOutside = true,
 	closeOnEscape = true,
 	disableOutsideClick = false,
 	restoreFocus = true
 }: MenuContentProps) {
-	const { open, floatingStyles, floatingRef, triggerRef, setFloating, closeMenu } = useMenuContext();
+	const {
+		open,
+		openSource,
+		initialFocus,
+		menuId,
+		triggerId,
+		anchorPoint,
+		floatingStyles,
+		floatingRef,
+		triggerRef,
+		setFloating,
+		closeMenu
+	} = useMenuContext();
 
 	const getNavigableItems = useCallback(() => {
 		const floatingElement = floatingRef.current;
@@ -38,11 +54,25 @@ export function MenuContent({
 
 	useOverlayFocus<HTMLElement>({
 		active: open,
-		initialFocus: (container) => getNavigableItems()[0] ?? container,
+		initialFocus: (container) => {
+			const items = getNavigableItems();
+			return (initialFocus === "last" ? items[items.length - 1] : items[0]) ?? container;
+		},
 		restoreFocus,
 		restoreFocusTarget: () => triggerRef.current,
 		containerRef: floatingRef
 	});
+
+	useEffect(() => {
+		if (!open || openSource !== "contextmenu" || !anchorPoint) return;
+
+		const rafId = window.requestAnimationFrame(() => {
+			const focusTarget = getNavigableItems()[0] ?? floatingRef.current;
+			focusTarget?.focus({ preventScroll: true });
+		});
+
+		return () => window.cancelAnimationFrame(rafId);
+	}, [open, openSource, anchorPoint, getNavigableItems, floatingRef]);
 
 	useEscapeDismiss({
 		active: open,
@@ -58,10 +88,18 @@ export function MenuContent({
 		}
 	}, [open, disableOutsideClick, closeOnOutside, closeMenu]);
 
-	useClickOutside([floatingRef as React.RefObject<HTMLElement>, triggerRef as React.RefObject<HTMLElement>], outsideClose);
+	useClickOutside([floatingRef as RefObject<HTMLElement>, triggerRef as RefObject<HTMLElement>], outsideClose);
 
 	const onMenuKeyDown = useCallback(
-		(event: React.KeyboardEvent<HTMLElement>) => {
+		(event: KeyboardEvent<HTMLElement>) => {
+			if (event.key === "Tab") {
+				// Возвращаем точку отсчёта в tab-порядок до browser default action:
+				// так Tab и Shift+Tab продолжают обход относительно trigger, а не portal в конце body.
+				triggerRef.current?.focus({ preventScroll: true });
+				closeMenu();
+				return;
+			}
+
 			const items = getNavigableItems();
 			if (items.length === 0) {
 				return;
@@ -93,9 +131,20 @@ export function MenuContent({
 			if (event.key === "End") {
 				event.preventDefault();
 				items[items.length - 1]?.focus();
+				return;
+			}
+
+			if (event.key.length === 1 && event.key !== " " && !event.altKey && !event.ctrlKey && !event.metaKey) {
+				const query = event.key.toLocaleLowerCase();
+				const nextItems = [...items.slice(currentIndex + 1), ...items.slice(0, currentIndex + 1)];
+				const match = nextItems.find((item) => item.textContent?.trim().toLocaleLowerCase().startsWith(query));
+				if (match) {
+					event.preventDefault();
+					match.focus();
+				}
 			}
 		},
-		[getNavigableItems]
+		[getNavigableItems, triggerRef, closeMenu]
 	);
 
 	if (typeof document === "undefined") return null;
@@ -104,9 +153,12 @@ export function MenuContent({
 		<AnimatePresence>
 			{open && (
 				<motion.div
+					id={menuId}
 					ref={setFloating}
 					style={floatingStyles}
 					role="menu"
+					aria-label={ariaLabel}
+					aria-labelledby={ariaLabel ? undefined : (ariaLabelledBy ?? triggerId)}
 					tabIndex={-1}
 					className={styles.menuPositioner}
 					onKeyDown={onMenuKeyDown}

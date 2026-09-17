@@ -19,7 +19,8 @@ import {
 } from "@ryuzaki13/react-foundation-lib/utils";
 import { CheckIcon } from "lucide-react";
 
-import { CustomOptionButton, Option, OptionButton } from "../option";
+import { Option, OptionContent } from "../option";
+import { OptionContentContainer } from "../option/OptionContentContainer";
 import { PickerField, PickerOptions } from "../picker";
 import { UiBaseProps } from "../types";
 
@@ -213,7 +214,7 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 						const active = index === activeIndex;
 						const optionDisabled = disabled || option.disabled || undefined;
 
-						const handleMouseDown = (e: MouseEvent<HTMLButtonElement>) => {
+						const handleMouseDown = (e: MouseEvent<HTMLDivElement>) => {
 							e.preventDefault(); // чтобы не сбрасывался фокус listbox
 							if (optionDisabled) {
 								return;
@@ -231,19 +232,17 @@ export function Listbox<T>(props: ListboxProps<T>): JSX.Element {
 								aria-disabled={optionDisabled}
 								disabled={optionDisabled}
 								active={active}
-								selected={selected}>
+								selected={selected}
+								onMouseDown={handleMouseDown}>
 								{renderItem ? (
-									<CustomOptionButton tabIndex={-1} disabled={optionDisabled} onMouseDown={handleMouseDown}>
-										{renderItem(option, selected, active)}
-									</CustomOptionButton>
+									<OptionContentContainer>{renderItem(option, selected, active)}</OptionContentContainer>
 								) : (
-									<OptionButton
-										tabIndex={-1}
-										disabled={optionDisabled}
-										onMouseDown={handleMouseDown}
-										icon={selected ? <CheckIcon /> : <span />}
-										text={option.label ?? String(option.value)}
-									/>
+									<OptionContentContainer>
+										<OptionContent
+											icon={selected ? <CheckIcon /> : <span />}
+											text={option.label ?? String(option.value)}
+										/>
+									</OptionContentContainer>
 								)}
 							</Option>
 						);

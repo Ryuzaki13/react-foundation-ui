@@ -5,6 +5,8 @@ declare const styles: {
   readonly treeColumnRow: "treeColumnRow";
   readonly treeColumnsPopupLayout: "treeColumnsPopupLayout";
   readonly treeColumnCheckBox: "treeColumnCheckBox";
+  readonly treeNodeSelectionCell: "treeNodeSelectionCell";
+  readonly treeNodeActionCell: "treeNodeActionCell";
   readonly treeIndent: "treeIndent";
   readonly treeExpander: "treeExpander";
   readonly treeExpanderPlaceholder: "treeExpanderPlaceholder";

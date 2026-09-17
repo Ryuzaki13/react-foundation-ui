@@ -1,6 +1,6 @@
 import React, { createContext, useContext } from "react";
 
-import { Placement, useFloating } from "@floating-ui/react";
+import { useFloating, type Placement } from "@floating-ui/react";
 import { createMissingContextError } from "@ryuzaki13/react-foundation-lib/error";
 
 interface PopoverContextValue {
@@ -11,6 +11,7 @@ interface PopoverContextValue {
 	placement: Placement;
 	middlewareData: ReturnType<typeof useFloating>["middlewareData"];
 	arrowRef: React.RefObject<HTMLDivElement | null>;
+	contentId: string;
 }
 
 export const PopoverContext = createContext<PopoverContextValue | null>(null);

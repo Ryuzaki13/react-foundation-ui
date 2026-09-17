@@ -1,4 +1,4 @@
-import { type CSSProperties, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
+import { type CSSProperties, type FocusEvent, type KeyboardEvent, type MouseEvent, type ReactNode, useRef } from "react";
 
 import { FloatingContext, FloatingFocusManager, FloatingPortal } from "@floating-ui/react";
 import { AnimatePresence, motion } from "motion/react";
@@ -16,7 +16,7 @@ interface PickerPopupProps {
 	descriptionId?: string;
 	activeOptionId?: string;
 	ariaMultiselectable?: boolean;
-	popupRole?: "listbox" | "dialog";
+	popupRole?: "listbox" | "tree" | "treegrid" | "grid" | "dialog";
 	setFloating: (node: HTMLElement | null) => void;
 	getFloatingProps: (userProps?: Record<string, unknown>) => Record<string, unknown>;
 	onKeyDown: (event: KeyboardEvent<HTMLElement>) => void;
@@ -61,36 +61,67 @@ export function PickerPopup({
 	selectionActions,
 	children
 }: PickerPopupProps) {
+	const compositeRef = useRef<HTMLDivElement | null>(null);
+	const isDialog = popupRole === "dialog";
+	const compositeProps = isDialog
+		? undefined
+		: getFloatingProps({
+				id: listId,
+				role: popupRole,
+				tabIndex,
+				"aria-labelledby": labelId,
+				"aria-label": labelId ? undefined : popupAriaLabel,
+				"aria-describedby": descriptionId,
+				"aria-activedescendant": activeOptionId,
+				"aria-multiselectable": ariaMultiselectable || undefined,
+				onKeyDown
+			});
+	const handlePositionerFocus = (event: FocusEvent<HTMLDivElement>) => {
+		if (!isDialog && event.target === event.currentTarget) {
+			compositeRef.current?.focus();
+		}
+	};
+
 	return (
 		<AnimatePresence>
 			{open && (
-				<FloatingPortal>
-					<FloatingFocusManager context={context} modal={false} initialFocus={initialFocus} returnFocus={returnFocus}>
+				<FloatingPortal preserveTabOrder={false}>
+					<FloatingFocusManager
+						context={context}
+						modal={false}
+						guards={false}
+						initialFocus={initialFocus}
+						returnFocus={returnFocus}>
 						<motion.div
 							ref={setFloating}
 							style={{ ...floatingStyles, maxWidth }}
+							className={styles.popupPositioner}
 							initial={{ opacity: 0, scale: 0.95 }}
 							animate={{ opacity: 1, scale: 1 }}
 							exit={{ opacity: 0, scale: 0.95 }}
-							{...getFloatingProps({
-								id: listId,
-								role: popupRole,
-								tabIndex,
-								"aria-labelledby": labelId,
-								"aria-label": labelId ? undefined : popupAriaLabel,
-								"aria-describedby": descriptionId,
-								"aria-activedescendant": activeOptionId,
-								"aria-multiselectable": ariaMultiselectable || undefined,
-								onMouseDown: stopNestedFloatingMouseDown,
-								onKeyDown,
-								className: styles.popupPositioner
-							})}>
+							tabIndex={isDialog ? undefined : -1}
+							onMouseDown={stopNestedFloatingMouseDown}
+							onFocus={isDialog ? undefined : handlePositionerFocus}
+							{...(isDialog
+								? getFloatingProps({
+										id: listId,
+										role: "dialog",
+										tabIndex,
+										"aria-labelledby": labelId,
+										"aria-label": labelId ? undefined : popupAriaLabel,
+										"aria-describedby": descriptionId,
+										onMouseDown: stopNestedFloatingMouseDown,
+										onKeyDown
+									})
+								: {})}>
 							<PickerOptions
 								className={className}
 								layoutClassName={layoutClassName}
 								bodyClassName={bodyClassName}
 								toolbar={toolbar}
 								selectionActions={selectionActions}
+								bodyRef={isDialog ? undefined : compositeRef}
+								bodyProps={isDialog ? undefined : compositeProps}
 								scrollable={false}>
 								{children}
 							</PickerOptions>

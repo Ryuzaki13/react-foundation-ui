@@ -15,6 +15,8 @@ export type PickerSelectionActions = {
 
 export interface PickerOptionsProps extends Omit<HTMLAttributes<HTMLDivElement>, "children"> {
 	rootRef?: Ref<HTMLDivElement>;
+	bodyRef?: Ref<HTMLDivElement>;
+	bodyProps?: Omit<HTMLAttributes<HTMLDivElement>, "children" | "className">;
 	children: ReactNode;
 	toolbar?: ReactNode | false;
 	selectionActions?: PickerSelectionActions;
@@ -30,6 +32,8 @@ export interface PickerOptionsProps extends Omit<HTMLAttributes<HTMLDivElement>,
  */
 export function PickerOptions({
 	rootRef,
+	bodyRef,
+	bodyProps,
 	children,
 	toolbar,
 	selectionActions,
@@ -54,7 +58,12 @@ export function PickerOptions({
 					<Separator />
 				</div>
 			) : null}
-			<div className={cn(styles.optionsBody, scrollable ? "scrollable overscroll" : "overflowHidden", bodyClassName)}>{children}</div>
+			<div
+				{...bodyProps}
+				ref={bodyRef}
+				className={cn(styles.optionsBody, scrollable ? "scrollable overscroll" : "overflowHidden", bodyClassName)}>
+				{children}
+			</div>
 		</div>
 	);
 }

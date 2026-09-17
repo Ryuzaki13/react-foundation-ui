@@ -167,32 +167,36 @@ function MultiSelectOptionGroup({
 				key={`${itemKey}-${index}`}
 				id={getOptionId(listId, index)}
 				ref={(node) => setOptionRef(index, node)}
-				role="option"
+				role="row"
 				aria-selected={selected}
 				aria-disabled={optionDisabled || undefined}
 				selected={selected}
 				active={active}
 				disabled={optionDisabled}>
 				<div
+					role="gridcell"
 					className={styles.optionCheckBox}
 					onMouseDown={(event) => event.stopPropagation()}
 					onClick={(event) => event.stopPropagation()}>
 					<CheckBox
 						value={selected}
 						disabled={optionDisabled}
-						aria-label={`Выбрать ${highlightQuery ?? itemKey}`}
+						aria-label={`${selected ? "Убрать" : "Добавить"} «${content.text}» ${selected ? "из выбора" : "в выбор"}`}
 						onChange={() => toggleOption(item)}
 					/>
 				</div>
-				<OptionButton
-					tabIndex={-1}
-					disabled={optionDisabled}
-					text={content.text}
-					code={content.code}
-					searchText={highlightQuery}
-					onMouseDown={(event) => event.preventDefault()}
-					onClick={() => selectOnlyOption(item)}
-				/>
+				<div role="gridcell" className={styles.optionActionCell}>
+					<OptionButton
+						tabIndex={-1}
+						disabled={optionDisabled}
+						aria-label={`Выбрать только «${content.text}»`}
+						text={content.text}
+						code={content.code}
+						searchText={highlightQuery}
+						onMouseDown={(event) => event.preventDefault()}
+						onClick={() => selectOnlyOption(item)}
+					/>
+				</div>
 			</Option>
 		);
 	});
@@ -316,7 +320,6 @@ export function MultiSelect({
 		close,
 		openList,
 		toggleOpen,
-		selectActiveOption,
 		handleReferenceKeyDown,
 		handleFloatingKeyDown,
 		getOptionId,
@@ -451,7 +454,7 @@ export function MultiSelect({
 	return (
 		<PickerField label={label} description={description} disabled={disabled} size={size} className={styles.multiSelect}>
 			{({ controlId, labelId, describedBy }) => {
-				const listId = `${controlId}-listbox`;
+				const listId = `${controlId}-grid`;
 
 				return (
 					<>
@@ -480,7 +483,7 @@ export function MultiSelect({
 							onToggleClick={triggerController.handleToggleClick}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
-							aria-haspopup="listbox"
+							aria-haspopup="grid"
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}
 							aria-autocomplete="list"
@@ -500,18 +503,22 @@ export function MultiSelect({
 									return;
 								}
 
+								if (open && event.ctrlKey && event.key === " ") {
+									event.preventDefault();
+									const activeItem = visibleOptions[activeIndex];
+									if (activeItem) {
+										toggleDraftSelection(activeItem);
+									}
+									return;
+								}
+
 								triggerController.handleTriggerKeyDown({
 									event,
 									onActivateWhenOpen: () => {
-										if (activeIndex >= 0) {
-											const activeItem = visibleOptions[activeIndex];
-											if (activeItem) {
-												toggleDraftSelection(activeItem);
-												return;
-											}
+										const activeItem = visibleOptions[activeIndex];
+										if (activeItem) {
+											selectOnlyOption(activeItem);
 										}
-
-										selectActiveOption();
 									},
 									enableClosedArrowDownOpen: true,
 									suppressClosedArrowUp: true
@@ -527,6 +534,8 @@ export function MultiSelect({
 							labelId={labelId}
 							descriptionId={describedBy}
 							activeOptionId={open ? getActiveOptionId(listId) : undefined}
+							ariaMultiselectable
+							popupRole="grid"
 							setFloating={setFloating}
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handleFloatingKeyDown}
@@ -538,7 +547,7 @@ export function MultiSelect({
 								renderToolbar === undefined ? { onSelectAll: selectAll, onDeselectAll: deselectAll } : undefined
 							}>
 							<MultiSelectOptionsWrapper isNoData={isNoData} error={error}>
-								<div className="scrollable overscroll h100">
+								<div role="presentation" className="scrollable overscroll h100">
 									<MultiSelectOptionGroup
 										entries={selectedEntries}
 										listId={listId}
@@ -555,7 +564,9 @@ export function MultiSelect({
 										renderItem={itemRenderer}
 									/>
 
-									{selectedEntries.length > 0 && availableItems.length > 0 && <Separator className="marginBlockSm" />}
+									{selectedEntries.length > 0 && availableItems.length > 0 && (
+										<Separator aria-hidden="true" className="marginBlockSm" />
+									)}
 
 									<MultiSelectOptionGroup
 										entries={itemEntries}

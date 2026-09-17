@@ -195,12 +195,14 @@ export function SortableHandle<E extends ElementType = "div">(props: SortableHan
 		disabled: handleDisabled,
 		isDragging: context?.isDragging ?? false
 	};
+	const nativeDisabledProps = Component === "button" ? { disabled: handleDisabled } : {};
 
 	return createElement(
 		Component,
 		{
 			...restProps,
 			...dragBindings,
+			...nativeDisabledProps,
 			ref: !handleDisabled && context ? context.setActivatorNodeRef : undefined,
 			"aria-disabled": handleDisabled || undefined,
 			"data-sortable-handle": "true",

@@ -1,5 +1,7 @@
-import { useState } from "react";
+import { useState, type ComponentProps } from "react";
 
+import { type Placement } from "@floating-ui/react";
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
@@ -7,11 +9,9 @@ import { Button } from "../../button/Button";
 import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { Input } from "../../input/Input";
 import { Popover, type PopoverProps } from "../components/Popover";
-
-import type { Placement } from "@floating-ui/react";
-import type { Meta, StoryObj } from "@storybook/react-vite";
-import type { PopoverContentProps } from "../components/PopoverContent";
-import type { PopoverTriggerProps } from "../components/PopoverTrigger";
+import { type PopoverContentProps } from "../components/PopoverContent";
+import { type PopoverTriggerProps } from "../components/PopoverTrigger";
+import { FloatingPopover } from "../FloatingPopover";
 
 const placements = [
 	"top",
@@ -109,9 +109,10 @@ interface PopoverStoryCanvasProps {
 	updateArgs: (newArgs: Partial<PopoverStoryArgs>) => void;
 	trigger: (open: boolean) => PopoverTriggerProps["children"];
 	children: PopoverContentProps["children"];
+	contentSemantics?: Pick<ComponentProps<typeof Popover.Content>, "role" | "aria-label" | "aria-labelledby" | "aria-describedby">;
 }
 
-function PopoverStoryCanvas({ args, updateArgs, trigger, children }: PopoverStoryCanvasProps) {
+function PopoverStoryCanvas({ args, updateArgs, trigger, children, contentSemantics }: PopoverStoryCanvasProps) {
 	const onOpenChange = (open: boolean) => {
 		args.onOpenChange?.(open);
 		updateArgs({ open });
@@ -125,7 +126,8 @@ function PopoverStoryCanvas({ args, updateArgs, trigger, children }: PopoverStor
 				closeOnOutside={args.closeOnOutside}
 				closeOnEscape={args.closeOnEscape}
 				disableOutsideClick={args.disableOutsideClick}
-				background={args.background}>
+				background={args.background}
+				{...contentSemantics}>
 				{children}
 			</Popover.Content>
 		</Popover>
@@ -146,6 +148,7 @@ function InteractivePopoverStoryCanvas({ args, updateArgs }: Pick<PopoverStoryCa
 			args={args}
 			updateArgs={updateArgs}
 			trigger={() => <button type="button">Форма</button>}
+			contentSemantics={{ role: "dialog", "aria-label": "Форма имени" }}
 			children={(ctx) => (
 				<form
 					onSubmit={(event) => {
@@ -179,6 +182,16 @@ export const Controlled: Story = {
 	render: createPopoverStoryRender(
 		(open) => <button type="button">{open ? "Закрыть" : "Открыть"}</button>,
 		<div style={{ padding: 12 }}>Контролируемый режим</div>
+	)
+};
+
+export const Opened: Story = {
+	args: {
+		open: true
+	},
+	render: createPopoverStoryRender(
+		() => <button type="button">Открыть</button>,
+		<div style={{ padding: 12 }}>Открытый немодальный popover</div>
 	)
 };
 
@@ -218,7 +231,20 @@ export const AnchorPlacement: Story = {
 };
 
 export const WithInteractiveContent: Story = {
+	args: {
+		open: true
+	},
 	render: createControlledStoryRender<PopoverStoryArgs>((args, updateArgs) => (
 		<InteractivePopoverStoryCanvas args={args} updateArgs={updateArgs} />
 	))
+};
+
+export const Tooltip: Story = {
+	render: function Render() {
+		return (
+			<FloatingPopover tooltip content="Дополнительное описание действия">
+				<button type="button">Навести или сфокусировать</button>
+			</FloatingPopover>
+		);
+	}
 };

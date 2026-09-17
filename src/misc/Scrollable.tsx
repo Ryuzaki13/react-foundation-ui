@@ -1,23 +1,35 @@
-import { type PropsWithChildren, type Ref } from "react";
+import { type ComponentPropsWithoutRef, type Ref } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-interface ScrollableProps extends PropsWithChildren {
-	className?: string;
+export interface ScrollableProps extends ComponentPropsWithoutRef<"div"> {
 	height?: string | number;
 	stable?: boolean;
 	overscroll?: boolean;
 }
 
-export function Scrollable({ ref, children, height, stable, overscroll, className }: ScrollableProps & { ref?: Ref<HTMLDivElement> }) {
+export function Scrollable({
+	ref,
+	children,
+	height,
+	stable,
+	overscroll,
+	className,
+	style,
+	...htmlProps
+}: ScrollableProps & { ref?: Ref<HTMLDivElement> }) {
 	return (
-		<div ref={ref} className={cn("scrollable", stable && "stable", overscroll && "overscroll", className)} style={{ height }}>
+		<div
+			{...htmlProps}
+			ref={ref}
+			className={cn("scrollable", stable && "stable", overscroll && "overscroll", className)}
+			style={{ ...style, height: height ?? style?.height }}>
 			{children}
 		</div>
 	);
 }
 
-interface ScrollableBlockProps extends ScrollableProps {
+export interface ScrollableBlockProps extends ScrollableProps {
 	blockClassName?: string;
 }
 

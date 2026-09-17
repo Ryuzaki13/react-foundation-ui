@@ -5,7 +5,6 @@ import { resolveNumberScaleBounds } from "@ryuzaki13/react-foundation-lib/number
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { InputControl, InputText, InputUI, useInputFieldIds } from "../input";
-import { PickerTriggerActions } from "../picker";
 import { Popover } from "../popover";
 import { UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
@@ -22,6 +21,7 @@ import {
 } from "./lib";
 import { SliderBase } from "./Slider";
 import styles from "./Slider.module.scss";
+import { SliderPopoverToggle } from "./SliderPopoverToggle";
 
 interface SliderInputCommonProps {
 	/**
@@ -71,31 +71,6 @@ export interface SliderRangeInputProps extends UiBaseProps<SliderRangeValue>, Sl
 	 * Popover остаётся единственным способом изменить значение через слайдер, а потребитель получает изменение при закрытии popover.
 	 */
 	readonlyValueText?: boolean;
-}
-
-function createSliderToggle({
-	open,
-	disabled,
-	setOpen
-}: {
-	open: boolean;
-	disabled?: boolean;
-	setOpen: (nextOpen: boolean | ((prev: boolean) => boolean)) => void;
-}) {
-	return (
-		<Popover.Trigger passive>
-			<div>
-				<PickerTriggerActions
-					open={open}
-					disabled={disabled}
-					openAriaLabel="Открыть слайдер"
-					closeAriaLabel="Закрыть слайдер"
-					onToggleMouseDown={(event) => event.preventDefault()}
-					onToggleClick={() => setOpen((prev) => !prev)}
-				/>
-			</div>
-		</Popover.Trigger>
-	);
 }
 
 function formatRangeDraft(
@@ -269,10 +244,10 @@ export function SliderInput({
 				onBlur={commitDraftValue}
 				onKeyDown={handleDraftKeyDown}
 				endAdornmentWidth="var(--control-height)"
-				endAdornment={createSliderToggle({ open, disabled, setOpen })}
+				endAdornment={<SliderPopoverToggle open={open} disabled={disabled} setOpen={setOpen} />}
 			/>
 
-			<Popover.Content background="primary">
+			<Popover.Content background="primary" role="dialog" aria-label="Выбор значения">
 				<div className={styles.popoverContent}>
 					<SliderBase
 						mode="single"
@@ -450,7 +425,7 @@ export function SliderRangeInput({
 				errorId={errorId}>
 				<InputControl
 					endAdornmentWidth="var(--control-height)"
-					endAdornment={createSliderToggle({ open, disabled, setOpen: setRangeOpen })}>
+					endAdornment={<SliderPopoverToggle open={open} disabled={disabled} setOpen={setRangeOpen} />}>
 					{({ controlClassName }) => (
 						<div
 							id={controlId}
@@ -500,7 +475,7 @@ export function SliderRangeInput({
 				</InputControl>
 			</InputUI>
 
-			<Popover.Content background="primary">
+			<Popover.Content background="primary" role="dialog" aria-label="Выбор диапазона значений">
 				<div className={styles.popoverContent}>
 					<SliderBase
 						mode="range"

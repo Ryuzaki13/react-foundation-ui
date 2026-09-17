@@ -1,24 +1,27 @@
-import { createContext, useContext } from "react";
+import { createContext, type CSSProperties, type KeyboardEvent, type MouseEvent, type RefObject, useContext } from "react";
 
+import { type MenuOpenSource, type MenuPoint } from "@ryuzaki13/react-foundation-lib/context-menu";
 import { createMissingContextError } from "@ryuzaki13/react-foundation-lib/error";
 
-import type { MenuOpenSource, MenuPoint } from "@ryuzaki13/react-foundation-lib/context-menu";
-
 export type MenuTriggerMode = "click" | "contextmenu";
+export type MenuInitialFocus = "first" | "last";
 
 interface MenuContextValue {
 	mode: MenuTriggerMode;
 	open: boolean;
 	openSource: MenuOpenSource | null;
+	initialFocus: MenuInitialFocus;
+	menuId: string;
+	triggerId: string;
 	anchorPoint: MenuPoint | null;
-	floatingStyles: React.CSSProperties;
-	floatingRef: React.RefObject<HTMLElement | null>;
-	triggerRef: React.RefObject<HTMLElement | null>;
+	floatingStyles: CSSProperties;
+	floatingRef: RefObject<HTMLElement | null>;
+	triggerRef: RefObject<HTMLElement | null>;
 	setFloating: (node: HTMLElement | null) => void;
 	registerTriggerElement: (node: HTMLElement | null) => void;
-	onTriggerClick: (event: React.MouseEvent<HTMLElement>) => void;
-	onTriggerContextMenu: (event: React.MouseEvent<HTMLElement>, triggerElement?: HTMLElement) => void;
-	onTriggerKeyDown: (event: React.KeyboardEvent<HTMLElement>, triggerElement?: HTMLElement) => void;
+	onTriggerClick: (event: MouseEvent<HTMLElement>) => void;
+	onTriggerContextMenu: (event: MouseEvent<HTMLElement>, triggerElement?: HTMLElement) => void;
+	onTriggerKeyDown: (event: KeyboardEvent<HTMLElement>, triggerElement?: HTMLElement) => void;
 	closeMenu: () => void;
 }
 

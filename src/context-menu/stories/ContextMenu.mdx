@@ -23,7 +23,7 @@ ContextMenu уже имеет живые stories, а эта страница с�
 <Controls of={ContextMenuStories.DropdownMenuBasic} />
 
 ```tsx
-import { DropdownMenu } from "@ryuzaki13/react-foundation-ui";
+import { DropdownMenu } from "@ryuzaki13/react-foundation-ui/context-menu";
 
 export function Example() {
 	return (
@@ -43,6 +43,10 @@ export function Example() {
 ## Практические рекомендации
 
 - Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- `DropdownMenu` открывается с trigger-кнопки через `Enter`, `Space`, `ArrowDown` и `ArrowUp`.
+- Обычный `ContextMenu.Trigger` автоматически становится доступным из tab-порядка; при делегировании через `resolveTrigger` клавиатурно доступными должны быть сами вложенные цели.
+- Оба вида меню связывают popup с trigger через `aria-controls` и `aria-labelledby`. Для делегированных или составных областей задайте `aria-label` у `Content` явно.
+- В открытом меню используйте стрелки, `Home`, `End`, поиск по первой букве, `Escape` и `Tab`.
 
 ## Сценарии использования
 

@@ -1,4 +1,4 @@
-import React from "react";
+import { type ReactNode } from "react";
 
 /**
  * Унифицированная ARIA-обёртка для содержимого активной панели tabs.
@@ -9,7 +9,7 @@ interface TabsPanelProps {
 	className?: string;
 	getTabElementId: (tabId: string) => string;
 	getPanelElementId: (tabId: string) => string;
-	children: React.ReactNode;
+	children?: ReactNode;
 }
 
 export function TabsPanel({ tabId, isSelected, className, getTabElementId, getPanelElementId, children }: TabsPanelProps) {
@@ -19,6 +19,7 @@ export function TabsPanel({ tabId, isSelected, className, getTabElementId, getPa
 			id={getPanelElementId(tabId)}
 			aria-labelledby={getTabElementId(tabId)}
 			hidden={!isSelected}
+			tabIndex={isSelected ? 0 : -1}
 			className={className}>
 			{children}
 		</div>

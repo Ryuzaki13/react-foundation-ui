@@ -1,0 +1,30 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as ScrollableStories from "./Scrollable.stories";
+
+<Meta of={ScrollableStories} />
+
+<Title>Scrollable</Title>
+<Subtitle>Нейтральный контейнер прокрутки с управляемой семантикой</Subtitle>
+
+`Scrollable` не добавляет роль и не меняет порядок фокуса автоматически: большинство внутренних областей прокрутки не являются самостоятельными регионами интерфейса.
+Компонент пропускает стандартные HTML- и ARIA-атрибуты, поэтому значимую область можно явно назвать и сделать доступной с клавиатуры.
+
+<Primary />
+
+<Controls of={ScrollableStories.AccessibleRegion} />
+
+```tsx
+import { Scrollable } from "@ryuzaki13/react-foundation-ui/misc";
+
+<Scrollable height={240} role="region" aria-label="Журнал событий" tabIndex={0}>
+	{events.map((event) => (
+		<div key={event.id}>{event.title}</div>
+	))}
+</Scrollable>;
+```
+
+Используйте `role="region"`, доступное имя и `tabIndex={0}` только для самостоятельной области, которую пользователю действительно нужно находить и прокручивать отдельно. Для внутренней прокрутки списка, таблицы или модального окна оставляйте нейтральную семантику по умолчанию.
+
+<Canvas of={ScrollableStories.AccessibleRegion} />
+
+<ArgTypes of={ScrollableStories} />

@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, ReactNode } from "react";
+import { type ComponentPropsWithoutRef, type ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { GripIcon } from "lucide-react";
@@ -31,7 +31,7 @@ function renderHandleContent(children: ReactNode, icon: ReactNode) {
 }
 
 function resolveIconOnlyAriaLabel(children: ReactNode, ariaLabel: string | undefined, title: string | undefined) {
-	return children == null ? (ariaLabel ?? title) : ariaLabel;
+	return children == null ? (ariaLabel ?? title ?? "Изменить порядок") : ariaLabel;
 }
 
 export function SortableDragHandle(props: SortableDragHandleProps) {
@@ -59,6 +59,7 @@ export function SortableDragHandle(props: SortableDragHandleProps) {
 		<SortableHandle<"div">
 			{...restProps}
 			as={as}
+			role="button"
 			disabled={disabled}
 			aria-label={ariaLabel}
 			className={cn(styles.dragHandle, className)}>

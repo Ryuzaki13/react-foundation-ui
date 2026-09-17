@@ -201,6 +201,9 @@ describe("SliderInput", () => {
 
 		const input = container?.querySelector("input[type='text']") as HTMLInputElement;
 		const openButton = container?.querySelector('button[aria-label="Открыть слайдер"]') as HTMLButtonElement;
+		expect(openButton.getAttribute("aria-haspopup")).toBe("dialog");
+		expect(openButton.getAttribute("aria-expanded")).toBe("false");
+		expect(container?.querySelector("div[aria-expanded]")).toBeNull();
 
 		await act(async () => {
 			input.focus();
@@ -215,6 +218,9 @@ describe("SliderInput", () => {
 		expect(document.querySelectorAll('[role="slider"]')).toHaveLength(1);
 
 		const closeButton = document.querySelector('button[aria-label="Закрыть слайдер"]') as HTMLButtonElement;
+		const dialog = document.querySelector('[role="dialog"][aria-label="Выбор значения"]');
+		expect(dialog?.id).toBe(closeButton.getAttribute("aria-controls"));
+		expect(closeButton.getAttribute("aria-expanded")).toBe("true");
 
 		await act(async () => {
 			closeButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
@@ -296,6 +302,7 @@ describe("SliderInput", () => {
 		await act(async () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
+		expect(document.querySelector('[role="dialog"][aria-label="Выбор диапазона значений"]')).not.toBeNull();
 
 		const track = document.querySelector('[data-slot="track"]') as HTMLDivElement;
 		setTrackRect(track, 0, 100);

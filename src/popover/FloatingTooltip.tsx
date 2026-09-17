@@ -41,7 +41,11 @@ export function FloatingTooltip({ x, y, children }: { x: number; y: number; chil
 	}, [x, y, refs]);
 
 	return (
-		<div ref={refs.setFloating} style={{ ...floatingStyles, position: "absolute", pointerEvents: "none" }} className={styles.tooltip}>
+		<div
+			ref={refs.setFloating}
+			style={{ ...floatingStyles, position: "absolute", pointerEvents: "none" }}
+			role="tooltip"
+			className={styles.tooltip}>
 			{children}
 
 			<FloatingArrow ref={arrowRef} placement={computedPlacement} middlewareData={middlewareData} />

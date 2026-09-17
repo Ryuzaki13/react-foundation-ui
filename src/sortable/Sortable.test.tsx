@@ -170,7 +170,26 @@ describe("Sortable item bindings", () => {
 		expect(hasElementAttribute(html, "handle", "data-sortable-handle", "true")).toBe(true);
 		expect(hasElementAttribute(html, "handle", "data-sortable-handle-disabled", "true")).toBe(true);
 		expect(hasElementAttribute(html, "handle", "data-sortable-handle-dragging", "false")).toBe(true);
+		expect(hasElementAttribute(html, "handle", "role", "button")).toBe(true);
+		expect(hasElementAttribute(html, "handle", "aria-label", "Перетащить строку")).toBe(true);
+		expect(hasElementAttribute(html, "handle", "aria-disabled", "true")).toBe(true);
 		expect(html).toContain("<svg");
+	});
+
+	it("задает доступное имя icon-only ручке и нативно отключает button-вариант", () => {
+		const html = renderToStaticMarkup(
+			<Sortable.Root>
+				<Sortable.Container containerId="demo" items={["row-1"]}>
+					<Sortable.Item id="row-1" disabled>
+						<Sortable.DragHandle as="button" data-testid="button-handle" />
+					</Sortable.Item>
+				</Sortable.Container>
+			</Sortable.Root>
+		);
+
+		expect(hasElementAttribute(html, "button-handle", "aria-label", "Изменить порядок")).toBe(true);
+		expect(hasElementAttribute(html, "button-handle", "aria-disabled", "true")).toBe(true);
+		expect(html).toMatch(/<button[^>]+data-testid="button-handle"[^>]+disabled=""/);
 	});
 });
 

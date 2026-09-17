@@ -211,18 +211,22 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 					<TabsLayout.Content>
 						<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, height: "100%" }}>
 							<Scrollable className="surface0 border radiusSm paddingSm h100">
-								{longLines.map((line) => (
-									<div key={`left-${line}`} className="paddingBlockXs">
-										Левая колонка: {line}
-									</div>
-								))}
+								<div role="region" aria-label="Содержимое левой колонки" tabIndex={0}>
+									{longLines.map((line) => (
+										<div key={`left-${line}`} className="paddingBlockXs">
+											Левая колонка: {line}
+										</div>
+									))}
+								</div>
 							</Scrollable>
 							<Scrollable className="surface0 border radiusSm paddingSm h100">
-								{longLines.map((line) => (
-									<div key={`right-${line}`} className="paddingBlockXs">
-										Правая колонка: {line}
-									</div>
-								))}
+								<div role="region" aria-label="Содержимое правой колонки" tabIndex={0}>
+									{longLines.map((line) => (
+										<div key={`right-${line}`} className="paddingBlockXs">
+											Правая колонка: {line}
+										</div>
+									))}
+								</div>
 							</Scrollable>
 						</div>
 					</TabsLayout.Content>
@@ -234,11 +238,13 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 				<TabsLayout.Tab id="history" title="История">
 					<TabsLayout.Content>
 						<Scrollable className="surface0 border radiusSm paddingSm h100">
-							{longLines.map((line) => (
-								<div key={`history-${line}`} className="paddingBlockXs">
-									История изменения: {line}
-								</div>
-							))}
+							<div role="region" aria-label="История изменений" tabIndex={0}>
+								{longLines.map((line) => (
+									<div key={`history-${line}`} className="paddingBlockXs">
+										История изменения: {line}
+									</div>
+								))}
+							</div>
 						</Scrollable>
 					</TabsLayout.Content>
 				</TabsLayout.Tab>

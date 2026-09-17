@@ -88,7 +88,7 @@ function SortablePreviewCanvas(props: SortablePreviewCanvasProps) {
 									...itemStyle,
 									minWidth: props.itemWidth
 								}}>
-								<Sortable.DragHandle title={`Перетащить ${item}`} />
+								<Sortable.DragHandle as="button" title={`Перетащить ${item}`} />
 								<div>{item}</div>
 							</Sortable.Item>
 						))}
@@ -238,7 +238,7 @@ function NestedContainersCanvas({ args, onTopItemsChange }: { args: SortablePrev
 									gridTemplateColumns: "var(--control-height) 1fr",
 									alignItems: "start"
 								}}>
-								<Sortable.DragHandle title={`Перетащить ${groupId}`} />
+								<Sortable.DragHandle as="button" title={`Перетащить ${groupId}`} />
 								<div style={{ display: "grid", gap: "var(--space-sm)" }}>
 									<strong>{groupId}</strong>
 									<Sortable.Container containerId={`parent:${groupId}`} items={childItemsByGroup[groupId] ?? []}>
@@ -251,7 +251,7 @@ function NestedContainersCanvas({ args, onTopItemsChange }: { args: SortablePrev
 														...itemStyle,
 														background: "var(--surface-1)"
 													}}>
-													<Sortable.DragHandle title={`Перетащить ${item}`} />
+													<Sortable.DragHandle as="button" title={`Перетащить ${item}`} />
 													<div>{item}</div>
 												</Sortable.Item>
 											))}

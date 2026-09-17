@@ -46,7 +46,7 @@ function Example({ items, setItems }: { items: string[]; setItems: (next: string
 			<Sortable.Container containerId="list" items={items} layout="vertical">
 				{items.map((item) => (
 					<Sortable.Item key={item} id={item}>
-						<Sortable.DragHandle title={`Перетащить ${item}`} />
+						<Sortable.DragHandle as="button" title={`Перетащить ${item}`} />
 						<span>{item}</span>
 					</Sortable.Item>
 				))}
@@ -64,6 +64,8 @@ function Example({ items, setItems }: { items: string[]; setItems: (next: string
 - Для вложенных сценариев размещайте несколько `Sortable.Container` внутри одного `Sortable.Root`.
 - `Sortable.Item` отвечает только за DnD-bindings и inline-style трансформации; визуальный каркас строки или карточки должен оставаться у потребителя.
 - Используйте `Sortable.DragHandle` для стандартной ручки с `GripIcon`, локальными стилями и состояниями disabled/dragging.
+- Для нативной семантики кнопки передавайте `as="button"`; компонент безопасно задаёт `type="button"` и нативный `disabled`.
+- Для icon-only ручки задавайте контекстное имя через `aria-label` или `title`, например `title={`Перетащить ${item}`}`. Если имя не передано, используется нейтральное «Изменить порядок».
 
 ## Сценарии использования
 

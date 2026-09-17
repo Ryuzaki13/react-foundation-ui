@@ -7,8 +7,16 @@
 
 .optionCheckBox {
 	display: inline-flex;
+	align-items: center;
 	flex-shrink: 0;
 
 	--check-box-control-size: auto;
 	padding-left: var(--space-sm);
+}
+
+.optionActionCell {
+	display: flex;
+	align-self: stretch;
+	flex: 1 1 0;
+	min-width: 0;
 }

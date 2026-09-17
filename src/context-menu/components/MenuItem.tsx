@@ -66,6 +66,11 @@ export function MenuItem({
 					data-disabled={disabled ? "true" : undefined}
 					data-ui="context-menu-item"
 					data-action="select-context-menu-item"
+					onKeyDown={(event) => {
+						if (event.key !== " ") return;
+						event.preventDefault();
+						event.currentTarget.click();
+					}}
 					onClick={handleClick as React.MouseEventHandler<HTMLAnchorElement>}
 				/>
 			</Option>

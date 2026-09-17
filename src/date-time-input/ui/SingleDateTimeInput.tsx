@@ -161,13 +161,18 @@ export function SingleDateTimeInput({
 				<InputControl
 					endAdornmentWidth="var(--control-height)"
 					endAdornment={
-						<Popover.Trigger>
-							<div className={uiStyles.uiToggleButtonContainer}>
-								<button type="button" disabled={disabled} aria-label={buttonAriaLabel} className={uiStyles.uiToggleButton}>
+						<div className={uiStyles.uiToggleButtonContainer}>
+							<Popover.Trigger>
+								<button
+									type="button"
+									disabled={disabled}
+									aria-label={buttonAriaLabel}
+									aria-haspopup="dialog"
+									className={uiStyles.uiToggleButton}>
 									{mode === "time" ? <Clock3Icon /> : <CalendarDaysIcon />}
 								</button>
-							</div>
-						</Popover.Trigger>
+							</Popover.Trigger>
+						</div>
 					}>
 					{({ controlClassName }) => (
 						<div
@@ -177,7 +182,7 @@ export function SingleDateTimeInput({
 							data-invalid={error ? "" : undefined}
 							role="group"
 							aria-invalid={!!error || undefined}
-							aria-placeholder={inputPlaceholder}
+							aria-description={inputPlaceholder}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
 							onFocus={handleContainerFocus}
@@ -221,7 +226,11 @@ export function SingleDateTimeInput({
 				</InputControl>
 			</InputUI>
 
-			<Popover.Content background="primary" onClose={handlePopoverClose}>
+			<Popover.Content
+				background="primary"
+				role="dialog"
+				aria-label={mode === "time" ? "Выбор времени" : "Выбор даты и времени"}
+				onClose={handlePopoverClose}>
 				{mode === "time" ? (
 					<div className={styles.timeOnlyPopoverContent}>
 						<TimePanel

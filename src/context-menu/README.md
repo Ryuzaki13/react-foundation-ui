@@ -125,6 +125,8 @@ Root-компонент для меню, открываемого по `contextm
 | `closeOnEscape`       | `boolean`                                                                  | `true`       | Закрывать ли меню по клавише `Escape`         |
 | `disableOutsideClick` | `boolean`                                                                  | `false`      | Полностью выключить закрытие по клику снаружи |
 | `restoreFocus`        | `boolean`                                                                  | `true`       | Возвращать ли фокус в trigger после закрытия  |
+| `aria-label`          | `string`                                                                   | —            | Явное доступное имя радиального меню          |
+| `aria-labelledby`     | `string`                                                                   | trigger ID   | ID элемента, задающего имя меню               |
 | `radius`              | `number`                                                                   | `76`         | Радиус раскладки пунктов в пикселях           |
 | `itemSize`            | `number`                                                                   | `64`         | Размер одного пункта в пикселях               |
 | `closeLabel`          | `string`                                                                   | `"Закрыть"`  | Текст и `aria-label` центральной кнопки       |
@@ -175,8 +177,11 @@ Root-компонент для меню, открываемого по `contextm
 
 - Для `DropdownMenu.Trigger` используется `onClick`.
 - Для `ContextMenu.Trigger` используется `onContextMenu` (с `preventDefault()`).
-- В оба trigger-компонента добавляются `aria-haspopup="menu"` и `aria-expanded`.
+- В оба trigger-компонента добавляются `aria-haspopup="menu"` и связь с открытым popup через `aria-controls`.
+- `aria-expanded` добавляется только в `DropdownMenu.Trigger`: контекстная область может быть обычным `div`, для которого этот атрибут недопустим.
+- Обычный `ContextMenu.Trigger` получает `tabIndex={0}`, если consumer не задал его явно. При `resolveTrigger` доступность вложенных целей остаётся ответственностью consumer.
 - Вызов через клавиатуру работает в обоих триггерах: `Shift+F10` и `ContextMenu`.
+- `DropdownMenu.Trigger` также открывает меню через `ArrowDown` с фокусом на первом пункте и через `ArrowUp` с фокусом на последнем пункте.
 - `resolveTrigger` позволяет одному `ContextMenu` обслуживать таблицу или список:
   точка клавиатурного открытия и возврат фокуса относятся к найденной вложенной
   цели, а `null` не открывает меню.
@@ -196,19 +201,24 @@ Root-компонент для меню, открываемого по `contextm
 | --------------------- | -------------------------------------------------------------------------- | ------------ | ---------------------------------------------- |
 | `children`            | `React.ReactNode \| ((ctx: { closeMenu: () => void }) => React.ReactNode)` | —            | Контент меню или render-function с `closeMenu` |
 | `className`           | `string`                                                                   | —            | Дополнительный CSS-класс контейнера меню       |
+| `aria-label`          | `string`                                                                   | —            | Явное доступное имя меню                       |
+| `aria-labelledby`     | `string`                                                                   | trigger ID   | ID элемента, задающего имя меню                |
 | `closeOnOutside`      | `boolean`                                                                  | `true`       | Закрывать ли меню при клике вне него           |
 | `closeOnEscape`       | `boolean`                                                                  | `true`       | Закрывать ли меню по клавише `Escape`          |
 | `disableOutsideClick` | `boolean`                                                                  | `false`      | Полностью выключить закрытие по клику снаружи  |
+| `restoreFocus`        | `boolean`                                                                  | `true`       | Возвращать ли фокус в trigger после закрытия   |
 
 ### Поведение по умолчанию
 
 - Рендер в `document.body` через портал.
 - Роль контейнера: `role="menu"`.
+- Popup получает устойчивый ID и по умолчанию доступное имя от trigger через `aria-labelledby`.
 - Автофокус на первый доступный пункт меню.
 - Навигация с клавиатуры:
-- `ArrowDown`, `ArrowUp`
-- `Home`, `End`
-- `Escape`
+    - `ArrowDown`, `ArrowUp`;
+    - `Home`, `End`;
+    - поиск по первой букве;
+    - `Escape` и `Tab` закрывают меню.
 
 ---
 

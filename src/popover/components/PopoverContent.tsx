@@ -9,17 +9,20 @@ import { TooltipArrow } from "../../floating-arrow";
 import styles from "./Popover.module.scss";
 import { usePopoverContext } from "./PopoverContext";
 
-export interface PopoverContentProps {
+export type PopoverContentProps = Readonly<{
 	children: React.ReactNode | ((ctx: { setClose: () => void }) => React.ReactNode);
 	onClose?: () => void;
 	closeOnOutside?: boolean;
 	closeOnEscape?: boolean;
 	disableOutsideClick?: boolean;
 	background?: "primary" | "secondary";
-}
+}> &
+	Pick<React.HTMLAttributes<HTMLDivElement>, "role" | "aria-label" | "aria-labelledby" | "aria-describedby">;
 
 /**
- * Содержимое Popover, отображаемое в портале.
+ * Содержимое немодального Popover, отображаемое в портале.
+ * Компонент не навязывает ARIA-role: consumer задаёт семантику содержимого
+ * явно и добавляет доступное имя для ролей, которым оно требуется.
  */
 export function PopoverContent({
 	children,
@@ -27,9 +30,13 @@ export function PopoverContent({
 	closeOnOutside = true,
 	closeOnEscape = true,
 	disableOutsideClick = false,
-	background = "secondary"
+	background = "secondary",
+	role,
+	"aria-label": ariaLabel,
+	"aria-labelledby": ariaLabelledBy,
+	"aria-describedby": ariaDescribedBy
 }: PopoverContentProps) {
-	const { open, setOpen, refs, floatingStyles, middlewareData, placement, arrowRef } = usePopoverContext();
+	const { open, setOpen, refs, floatingStyles, middlewareData, placement, arrowRef, contentId } = usePopoverContext();
 	const floatingElementRef = useRef<HTMLDivElement | null>(null);
 	const setFloating = useCallback(
 		(node: HTMLDivElement | null) => {
@@ -71,11 +78,14 @@ export function PopoverContent({
 	return (
 		<FloatingPortal>
 			<div
+				id={contentId}
 				ref={setFloating}
 				style={floatingStyles}
 				className={cn(styles.popover, styles[background])}
-				role="dialog"
-				aria-modal="true"
+				role={role}
+				aria-label={ariaLabel}
+				aria-labelledby={ariaLabelledBy}
+				aria-describedby={ariaDescribedBy}
 				tabIndex={-1}>
 				{typeof children === "function" ? children({ setClose }) : children}
 				<TooltipArrow ref={arrowRef} placement={placement} middlewareData={middlewareData} />

@@ -252,6 +252,10 @@ export function OneStepScroller({ children, className, itemSelector, scrollPaddi
 	 * Клавиатурная доступность: стрелки влево/вправо двигают на один шаг.
 	 */
 	const onWrapperKeyDown = (e: React.KeyboardEvent) => {
+		if (e.defaultPrevented) {
+			return;
+		}
+
 		if (e.key === "ArrowLeft") {
 			e.preventDefault();
 			handlePrev();

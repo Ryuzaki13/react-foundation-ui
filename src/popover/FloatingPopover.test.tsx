@@ -20,7 +20,12 @@ describe("FloatingPopover", () => {
 		await user.tab();
 
 		expect(document.activeElement).toBe(screen.getByTestId("trigger"));
-		expect(screen.getByTestId("popover-content").closest('[role="tooltip"]')).not.toBeNull();
+		const tooltip = screen.getByTestId("popover-content").closest('[role="tooltip"]');
+		const reference = screen.getByTestId("trigger").parentElement;
+		expect(tooltip).not.toBeNull();
+		expect(reference?.getAttribute("aria-describedby")).toBe(tooltip?.id);
+		expect(reference?.hasAttribute("aria-expanded")).toBe(false);
+		expect(reference?.hasAttribute("aria-haspopup")).toBe(false);
 
 		await user.tab();
 

@@ -146,6 +146,15 @@ afterEach(async () => {
 });
 
 describe("Slider", () => {
+	it("различает границы range-слайдера внутри подписанной группы", async () => {
+		await renderNode(<RangeSliderHarness />);
+
+		const group = container?.querySelector('[role="group"]');
+		const thumbs = Array.from(container?.querySelectorAll<HTMLButtonElement>('[role="slider"]') ?? []);
+		expect(document.getElementById(group?.getAttribute("aria-labelledby") ?? "")?.textContent).toBe("Диапазон");
+		expect(thumbs.map((thumb) => thumb.getAttribute("aria-label"))).toEqual(["Минимальное значение", "Максимальное значение"]);
+	});
+
 	it("перемещает anchor тултипа вместе с бегунком при drag и клавиатурной навигации", async () => {
 		await renderNode(<SingleSliderHarness />);
 
@@ -226,6 +235,7 @@ describe("Slider", () => {
 
 		const markButtons = Array.from(container?.querySelectorAll<HTMLButtonElement>('[data-slot="mark"]') ?? []);
 		expect(markButtons).toHaveLength(4);
+		expect(markButtons.map((button) => button.getAttribute("aria-label"))).toEqual(["До", "3", "6", "От"]);
 
 		await act(async () => {
 			markButtons[0]?.dispatchEvent(new MouseEvent("click", { bubbles: true }));

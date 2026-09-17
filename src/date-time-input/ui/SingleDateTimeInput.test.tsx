@@ -9,6 +9,12 @@ import { SingleDateTimeInput } from "./SingleDateTimeInput";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
+// jsdom не реализует прокрутку, которая запускается wheel-picker при открытии панели.
+Object.defineProperty(HTMLElement.prototype, "scrollTo", {
+	configurable: true,
+	value: () => {}
+});
+
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
 
@@ -46,6 +52,39 @@ afterEach(async () => {
 });
 
 describe("SingleDateTimeInput", () => {
+	it("описывает сегментное поле и popup без недопустимых ARIA-атрибутов", async () => {
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+
+		await act(async () =>
+			root?.render(
+				<SingleDateTimeInput
+					label="Дата и время"
+					description="Укажите момент события"
+					placeholder="дд.мм.гггг чч:мм"
+					value={new Date(2026, 2, 3, 12, 30)}
+					onChange={() => {}}
+				/>
+			)
+		);
+
+		const group = container.querySelector('[role="group"]');
+		const trigger = container.querySelector('button[aria-label="Открыть календарь даты и времени"]') as HTMLButtonElement;
+		expect(group?.hasAttribute("aria-placeholder")).toBe(false);
+		expect(group?.getAttribute("aria-description")).toBe("дд.мм.гггг чч:мм");
+		expect(document.getElementById(group?.getAttribute("aria-labelledby") ?? "")?.textContent).toBe("Дата и время");
+		expect(trigger.getAttribute("aria-haspopup")).toBe("dialog");
+		expect(trigger.getAttribute("aria-expanded")).toBe("false");
+		expect(trigger.parentElement?.hasAttribute("aria-expanded")).toBe(false);
+
+		await act(async () => trigger.click());
+
+		const dialog = document.querySelector('[role="dialog"][aria-label="Выбор даты и времени"]');
+		expect(dialog?.id).toBe(trigger.getAttribute("aria-controls"));
+		expect(trigger.getAttribute("aria-expanded")).toBe("true");
+	});
+
 	it("отбрасывает незавершённые сегменты после смены controlled value", async () => {
 		container = document.createElement("div");
 		document.body.appendChild(container);

@@ -93,7 +93,7 @@ export function FloatingPopover({
 	// управляемые сценарии, которые не запрашивали автоматическое открытие.
 	const focus = useFocus(context, { enabled: openOnHover });
 	const dismiss = useDismiss(context);
-	const role = useRole(context);
+	const role = useRole(context, { role: "tooltip" });
 
 	const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss, role]);
 

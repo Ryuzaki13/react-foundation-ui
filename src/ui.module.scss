@@ -363,6 +363,11 @@
 		color: var(--accent-on-fill);
 		background-color: var(--accent-fill);
 		cursor: default;
+
+		// Вторичный код должен сохранять контраст выбранной строки, а не брать приглушённый content-цвет.
+		.uiOptionCode {
+			color: inherit;
+		}
 	}
 
 	@include hover(true, false) {
@@ -376,6 +381,10 @@
 	&:active {
 		color: var(--accent-text-active);
 		background-color: var(--accent-fill-active);
+
+		.uiOptionCode {
+			color: inherit;
+		}
 	}
 
 	&.disabled {

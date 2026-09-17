@@ -8,7 +8,8 @@ export interface PopoverTriggerProps {
 }
 
 export function PopoverTrigger({ passive, children }: PopoverTriggerProps) {
-	const { open, setOpen, refs } = usePopoverContext();
+	const { open, setOpen, refs, contentId } = usePopoverContext();
+	const ariaControls = [children.props["aria-controls"], contentId].filter(Boolean).join(" ");
 
 	const handleClick = useCallback(
 		(e: React.MouseEvent) => {
@@ -31,6 +32,7 @@ export function PopoverTrigger({ passive, children }: PopoverTriggerProps) {
 	return cloneElement(children as React.JSX.Element, {
 		ref: refs.setReference,
 		"aria-expanded": open,
+		"aria-controls": ariaControls,
 		onClick: handleClick
 	});
 }

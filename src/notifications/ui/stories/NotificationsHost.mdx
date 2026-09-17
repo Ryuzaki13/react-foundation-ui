@@ -23,18 +23,17 @@ NotificationsHost уже имеет живые stories, а эта страниц
 <Controls of={NotificationsHostStories.Showcase} />
 
 ```tsx
-import { Button } from "@ryuzaki13/react-foundation-ui";
-import { NotificationApi, NotificationsHost, NotificationsProvider } from "@ryuzaki13/react-foundation-ui";
+import { notify } from "@ryuzaki13/react-foundation-lib/notifications";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
+import { NotificationsHost, NotificationsProvider } from "@ryuzaki13/react-foundation-ui/notifications";
 
 export function Example() {
 	return (
 		<NotificationsProvider>
 			<Button
 				onClick={() =>
-					NotificationApi.push({
-						title: "Готово",
-						description: "Операция завершена",
-						tone: "success"
+					notify.success("Операция завершена", {
+						title: "Готово"
 					})
 				}>
 				Показать уведомление
@@ -47,7 +46,11 @@ export function Example() {
 
 ## Практические рекомендации
 
-- Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- Хост объявляется именованной областью «Область уведомлений», чтобы пользователь assistive technologies мог найти текущие сообщения.
+- Обычные уведомления используют `role="status"` с вежливым объявлением, ошибки — `role="alert"` с приоритетным объявлением. Общий контейнер не является вторым live-region, поэтому сообщение не дублируется.
+- Кнопка закрытия включает заголовок уведомления в доступное имя. Кнопки действий остаются обычными кнопками и доступны с клавиатуры.
+- Для уведомлений с действиями или длинным текстом задавайте `ttlMs: 0` либо достаточно большой интервал: автоматически исчезающее сообщение может оказаться недоступным пользователю.
+- Не используйте уведомление как единственный способ показать ошибку поля или состояние длительной операции: основное состояние должно оставаться в интерфейсе владельца сценария.
 
 ## Сценарии использования
 

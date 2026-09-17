@@ -68,6 +68,23 @@ afterEach(async () => {
 });
 
 describe("SingleDateInput", () => {
+	it("передаёт popup-семантику кнопке и связывает её с календарным диалогом", async () => {
+		await renderNode(<SingleDateInput label="Дата" value={new Date(2026, 2, 3)} onChange={() => {}} />);
+
+		const trigger = container?.querySelector('button[aria-label="Открыть календарь"]') as HTMLButtonElement;
+		expect(trigger.getAttribute("aria-haspopup")).toBe("dialog");
+		expect(trigger.getAttribute("aria-expanded")).toBe("false");
+		expect(trigger.parentElement?.hasAttribute("aria-expanded")).toBe(false);
+
+		await act(async () => trigger.click());
+
+		const dialog = document.querySelector('[role="dialog"][aria-label="Выбор даты"]');
+		expect(dialog?.id).toBe(trigger.getAttribute("aria-controls"));
+		expect(trigger.getAttribute("aria-expanded")).toBe("true");
+		expect(document.querySelector('button[aria-label="Предыдущий месяц"]')).not.toBeNull();
+		expect(document.querySelector('button[aria-label="Следующий месяц"]')).not.toBeNull();
+	});
+
 	it("выводит новое controlled value без синхронизирующего effect", async () => {
 		await renderNode(<ExternallyControlledSingleDateInput />);
 
@@ -140,6 +157,16 @@ describe("SingleDateInput", () => {
 });
 
 describe("RangeDateInput", () => {
+	it("даёт календарному диалогу имя сценария выбора диапазона", async () => {
+		await renderNode(<RangeDateInput label="Период" value={[null, null]} onChange={() => {}} />);
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть календарь"]') as HTMLButtonElement).click();
+		});
+
+		expect(document.querySelector('[role="dialog"][aria-label="Выбор диапазона дат"]')).not.toBeNull();
+	});
+
 	it("сохраняет порядок runtime-режимов и применяет отдельный формат каждого режима", async () => {
 		await renderNode(
 			<RangeDateInput

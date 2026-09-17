@@ -12,9 +12,9 @@ export interface OptionProps extends HTMLAttributes<HTMLDivElement> {
 }
 
 /**
- * Общая внешняя оболочка опции. Она владеет фоном, отступами и состояниями строки,
- * а вложенные OptionButton, OptionLink, checkbox и expander остаются независимыми
- * интерактивными элементами.
+ * Общая внешняя оболочка опции. Она владеет фоном и состояниями строки. Если
+ * Option участвует в composite-виджете, интерактивное действие принадлежит самой
+ * строке, а внутри остаётся только неинтерактивное содержимое.
  */
 export function Option({ ref, active, selected, disabled, className, ...props }: OptionProps) {
 	return (

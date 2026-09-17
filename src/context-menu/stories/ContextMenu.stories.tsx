@@ -162,6 +162,8 @@ function ContextMenuBasicCanvas({ args, updateArgs }: { args: ContextMenuStoryAr
 		<ContextMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
 			<ContextMenu.Trigger>
 				<div
+					role="region"
+					aria-label="Область документа с контекстным меню"
 					style={{
 						width: 300,
 						height: 180,
@@ -205,6 +207,8 @@ function ContextMenuRadialCanvas({
 		<ContextMenu placement={args.placement} open={args.open} defaultOpen={args.defaultOpen} onOpenChange={onOpenChange}>
 			<ContextMenu.Trigger>
 				<div
+					role="region"
+					aria-label="Область документа с радиальным контекстным меню"
 					style={{
 						width: 360,
 						height: 220,

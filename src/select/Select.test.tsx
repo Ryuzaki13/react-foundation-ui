@@ -168,9 +168,11 @@ describe("Select", () => {
 
 		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
 		expect(options.map((option) => option.textContent?.trim())).toEqual(["Альфа", "Бета", "Гамма"]);
+		expect(options.every((option) => !option.querySelector("button, input, a"))).toBe(true);
+		expect(document.querySelector('[data-floating-ui-focus-guard][aria-hidden="true"]')).toBeNull();
 
 		await act(async () => {
-			options[1]?.querySelector("button")?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+			options[1]?.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
 		expect(input.value).toBe("Бета");
@@ -188,7 +190,9 @@ describe("Select", () => {
 
 		expect(input.getAttribute("aria-expanded")).toBe("true");
 		expect(document.querySelectorAll('[role="option"]')).toHaveLength(3);
-		expect((document.querySelector('[role="listbox"]') as HTMLElement | null)?.style.maxWidth).toBe("32rem");
+		expect((document.querySelector('[role="listbox"]') as HTMLElement | null)?.parentElement?.parentElement?.style.maxWidth).toBe(
+			"32rem"
+		);
 
 		const closeButton = document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement;
 

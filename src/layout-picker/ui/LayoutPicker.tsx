@@ -3,7 +3,8 @@ import { type ComponentPropsWithRef, type ReactElement, useRef, useState } from 
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { CustomOptionButton, Option } from "../../option";
+import { Option } from "../../option";
+import { OptionContentContainer } from "../../option/OptionContentContainer";
 import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
 import { type UiBaseProps } from "../../types";
 import { DEFAULT_LAYOUT_PICKER_PRESETS, type LayoutPickerPreset } from "../lib";
@@ -231,7 +232,7 @@ export function LayoutPicker({
 							className={cn(styles.popup, popupClassName)}
 							layoutClassName={styles.popupLayout}
 							bodyClassName={styles.popupBody}>
-							<div className={styles.options}>
+							<div role="presentation" className={styles.options}>
 								{presets.map((preset, index) => {
 									const selected = index === selectedIndex;
 									const active = index === activeIndex;
@@ -252,17 +253,14 @@ export function LayoutPicker({
 											selected={selected}
 											disabled={presetDisabled}
 											data-ui="layout-picker-option"
-											data-selected={selected || undefined}>
-											<CustomOptionButton
-												tabIndex={-1}
-												disabled={presetDisabled}
-
-												onMouseDown={(event) => event.preventDefault()}
-												onClick={() => selectOption(preset)}>
+											data-selected={selected || undefined}
+											onMouseDown={(event) => event.preventDefault()}
+											onClick={() => selectOption(preset)}>
+											<OptionContentContainer>
 												<span className={styles.optionPreviewWrap}>
 													<LayoutPresetPreview preset={preset} />
 												</span>
-											</CustomOptionButton>
+											</OptionContentContainer>
 										</Option>
 									);
 								})}

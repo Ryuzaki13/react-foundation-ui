@@ -3,7 +3,7 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import uiStyles from "../../ui.module.scss";
 import { getUiPanelToneClassName } from "../../uiClasses";
 import { shouldMountTabPanel } from "../lib/tabs";
-import { TabsBoxProps } from "../model/types";
+import { type TabsBoxProps } from "../model/types";
 import { useTabsState } from "../model/useTabsState";
 
 import styles from "./Tabs.module.scss";
@@ -92,10 +92,6 @@ export function TabsBox({
 						isVisited: state.isVisited(item.id)
 					});
 
-					if (!isMounted) {
-						return null;
-					}
-
 					return (
 						<TabsPanel
 							key={item.id}
@@ -104,7 +100,7 @@ export function TabsBox({
 							className={panelClassName}
 							getTabElementId={state.getTabElementId}
 							getPanelElementId={state.getPanelElementId}>
-							<div className={panelBodyClassName}>{item.content}</div>
+							{isMounted ? <div className={panelBodyClassName}>{item.content}</div> : null}
 						</TabsPanel>
 					);
 				})}

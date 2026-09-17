@@ -94,6 +94,13 @@ export function Example() {
 
 <Canvas of={SliderStories.Disabled} />
 
+## Доступность
+
+- Каждый бегунок использует `role="slider"` и передаёт assistive technologies текущие `aria-valuemin`, `aria-valuemax`, `aria-valuenow` и текстовое `aria-valuetext`.
+- Single-слайдер получает имя от `label`. В range-слайдере оба бегунка различаются как «Минимальное значение» и «Максимальное значение», а весь диапазон связан с общей подписью и описанием поля.
+- Управление с клавиатуры сохраняет стандартные команды: стрелки изменяют значение на шаг, `PageUp` и `PageDown` используют крупный шаг, `Home` и `End` переходят к границам.
+- Кнопки compact marks получают доступное имя даже при скрытой визуальной подписи. Tooltip связывается с активной меткой или бегунком через `aria-describedby`.
+
 ## API
 
 <ArgTypes of={SliderStories} />

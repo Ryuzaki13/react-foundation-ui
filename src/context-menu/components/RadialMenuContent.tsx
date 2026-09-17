@@ -1,4 +1,4 @@
-import React, { Children, useCallback, useEffect, useMemo } from "react";
+import { Children, type CSSProperties, type KeyboardEvent, type ReactNode, type RefObject, useCallback, useEffect, useMemo } from "react";
 
 import { useClickOutside, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -10,8 +10,10 @@ import styles from "../ContextMenu.module.scss";
 import { useMenuContext } from "./MenuContext";
 
 export interface RadialMenuContentProps {
-	children: React.ReactNode | ((ctx: { closeMenu: () => void }) => React.ReactNode);
+	children: ReactNode | ((ctx: { closeMenu: () => void }) => ReactNode);
 	className?: string;
+	"aria-label"?: string;
+	"aria-labelledby"?: string;
 	closeOnOutside?: boolean;
 	closeOnEscape?: boolean;
 	disableOutsideClick?: boolean;
@@ -29,6 +31,8 @@ function clamp(value: number, min: number, max: number) {
 export function RadialMenuContent({
 	children,
 	className,
+	"aria-label": ariaLabel,
+	"aria-labelledby": ariaLabelledBy,
 	closeOnOutside = true,
 	closeOnEscape = true,
 	disableOutsideClick = false,
@@ -37,7 +41,7 @@ export function RadialMenuContent({
 	itemSize = 64,
 	closeLabel = "Закрыть"
 }: RadialMenuContentProps) {
-	const { open, anchorPoint, floatingRef, triggerRef, setFloating, closeMenu } = useMenuContext();
+	const { open, menuId, triggerId, anchorPoint, floatingRef, triggerRef, setFloating, closeMenu } = useMenuContext();
 
 	const resolvedChildren = typeof children === "function" ? children({ closeMenu }) : children;
 	const itemNodes = useMemo(() => Children.toArray(resolvedChildren), [resolvedChildren]);
@@ -102,10 +106,18 @@ export function RadialMenuContent({
 		}
 	}, [open, disableOutsideClick, closeOnOutside, closeMenu]);
 
-	useClickOutside([floatingRef as React.RefObject<HTMLElement>, triggerRef as React.RefObject<HTMLElement>], outsideClose);
+	useClickOutside([floatingRef as RefObject<HTMLElement>, triggerRef as RefObject<HTMLElement>], outsideClose);
 
 	const onMenuKeyDown = useCallback(
-		(event: React.KeyboardEvent<HTMLElement>) => {
+		(event: KeyboardEvent<HTMLElement>) => {
+			if (event.key === "Tab") {
+				// Portal расположен в конце body, поэтому перед browser default action
+				// продолжаем tab-порядок от исходного trigger.
+				triggerRef.current?.focus({ preventScroll: true });
+				closeMenu();
+				return;
+			}
+
 			const items = getNavigableItems();
 			if (items.length === 0) return;
 
@@ -135,9 +147,20 @@ export function RadialMenuContent({
 			if (event.key === "End") {
 				event.preventDefault();
 				items[items.length - 1]?.focus();
+				return;
+			}
+
+			if (event.key.length === 1 && event.key !== " " && !event.altKey && !event.ctrlKey && !event.metaKey) {
+				const query = event.key.toLocaleLowerCase();
+				const nextItems = [...items.slice(currentIndex + 1), ...items.slice(0, currentIndex + 1)];
+				const match = nextItems.find((item) => item.textContent?.trim().toLocaleLowerCase().startsWith(query));
+				if (match) {
+					event.preventDefault();
+					match.focus();
+				}
 			}
 		},
-		[getNavigableItems]
+		[getNavigableItems, triggerRef, closeMenu]
 	);
 
 	if (typeof document === "undefined") return null;
@@ -146,6 +169,7 @@ export function RadialMenuContent({
 		<AnimatePresence>
 			{open && panelPoint && (
 				<motion.div
+					id={menuId}
 					ref={setFloating}
 					style={
 						{
@@ -155,9 +179,11 @@ export function RadialMenuContent({
 							left: panelPoint.x - panelSize / 2,
 							top: panelPoint.y - panelSize / 2,
 							transformOrigin: "center"
-						} as React.CSSProperties
+						} as CSSProperties
 					}
 					role="menu"
+					aria-label={ariaLabel}
+					aria-labelledby={ariaLabel ? undefined : (ariaLabelledBy ?? triggerId)}
 					tabIndex={-1}
 					className={cn(styles.radialPanel, className)}
 					onKeyDown={onMenuKeyDown}
@@ -169,6 +195,7 @@ export function RadialMenuContent({
 					<button
 						type="button"
 						role="menuitem"
+						tabIndex={-1}
 						className={styles.radialCenterButton}
 						aria-label={closeLabel}
 						data-menu-item="true"
@@ -184,7 +211,7 @@ export function RadialMenuContent({
 									// Индекс допустим: порядок пунктов полностью задает геометрию кольца.
 									key={index}
 									className={styles.radialItemSlot}
-									style={{ "--radial-item-angle": `${angle}deg` } as React.CSSProperties}>
+									style={{ "--radial-item-angle": `${angle}deg` } as CSSProperties}>
 									{item}
 								</div>
 							);

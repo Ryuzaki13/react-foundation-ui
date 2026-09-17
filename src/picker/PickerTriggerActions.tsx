@@ -1,4 +1,4 @@
-import { MouseEvent, ReactNode } from "react";
+import { type AriaAttributes, type MouseEvent, type ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { ChevronDownIcon } from "lucide-react";
@@ -13,6 +13,11 @@ interface PickerTriggerActionsProps {
 	onToggleClick: () => void;
 	openAriaLabel?: string;
 	closeAriaLabel?: string;
+	/**
+	 * Передаёт ARIA-связи непосредственно кнопке раскрытия, не меняя геометрию
+	 * контейнера с adornment-действиями.
+	 */
+	toggleAria?: Pick<AriaAttributes, "aria-controls" | "aria-expanded" | "aria-haspopup">;
 }
 
 export function PickerTriggerActions({
@@ -22,7 +27,8 @@ export function PickerTriggerActions({
 	onToggleMouseDown,
 	onToggleClick,
 	openAriaLabel = "Открыть список",
-	closeAriaLabel = "Закрыть список"
+	closeAriaLabel = "Закрыть список",
+	toggleAria
 }: PickerTriggerActionsProps) {
 	return (
 		<div className={uiStyles.uiToggleButtonContainer} data-disabled={disabled || undefined}>
@@ -31,6 +37,7 @@ export function PickerTriggerActions({
 			<div className={uiStyles.uiButtonSeparator} />
 
 			<button
+				{...toggleAria}
 				type="button"
 				disabled={disabled}
 				aria-label={open ? closeAriaLabel : openAriaLabel}

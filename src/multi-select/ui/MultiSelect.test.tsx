@@ -21,6 +21,7 @@ window.matchMedia ??= () =>
 		removeEventListener: () => undefined,
 		dispatchEvent: () => false
 	}) as MediaQueryList;
+window.HTMLElement.prototype.scrollIntoView = () => undefined;
 
 const ITEMS = [
 	{ code: "01", text: "Альфа" },
@@ -87,7 +88,7 @@ describe("MultiSelect", () => {
 			input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		expect(document.querySelectorAll('[role="option"]')).toHaveLength(0);
+		expect(document.querySelectorAll('[role="row"]')).toHaveLength(0);
 
 		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
 
@@ -95,7 +96,7 @@ describe("MultiSelect", () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		expect(document.querySelectorAll('[role="option"]')).toHaveLength(2);
+		expect(document.querySelectorAll('[role="row"]')).toHaveLength(2);
 		expect(document.activeElement).toBe(input);
 
 		const closeButton = document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement;
@@ -108,7 +109,7 @@ describe("MultiSelect", () => {
 		expect(document.activeElement).toBe(input);
 	});
 
-	it("разделяет draft-checkbox и кнопку немедленного выбора внутри общей Option", async () => {
+	it("разделяет checkbox чернового выбора и кнопку немедленного выбора в строке grid", async () => {
 		await renderNode(<MultiSelectHarness />);
 
 		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
@@ -117,22 +118,22 @@ describe("MultiSelect", () => {
 			openButton.click();
 		});
 
-		const option = document.querySelector('[role="option"]') as HTMLDivElement;
-		const checkBox = option.querySelector('input[type="checkbox"]') as HTMLInputElement;
-		const optionButton = option.querySelector(":scope > button") as HTMLButtonElement;
-		const [text, code] = Array.from(optionButton.children);
+		const grid = document.querySelector('[role="grid"]') as HTMLDivElement;
+		const row = grid.querySelector('[role="row"]') as HTMLDivElement;
+		const checkBox = row.querySelector('input[type="checkbox"]') as HTMLInputElement;
+		const optionButton = row.querySelector('button[aria-label^="Выбрать только"]') as HTMLButtonElement;
 
-		expect(option.tagName).toBe("DIV");
-		expect(option.children).toHaveLength(2);
+		expect(grid.getAttribute("aria-multiselectable")).toBe("true");
+		expect(row.querySelectorAll('[role="gridcell"]')).toHaveLength(2);
 		expect(checkBox.checked).toBe(false);
-		expect(text?.textContent).toBe("Альфа");
-		expect(code?.textContent).toBe("01");
+		expect(optionButton.textContent).toContain("Альфа");
+		expect(optionButton.textContent).toContain("01");
 
 		await act(async () => {
 			checkBox.click();
 		});
 
-		expect(option.getAttribute("aria-selected")).toBe("true");
+		expect(row.getAttribute("aria-selected")).toBe("true");
 		expect(checkBox.checked).toBe(true);
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
 
@@ -143,7 +144,7 @@ describe("MultiSelect", () => {
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
 	});
 
-	it("кнопка текста выбирает только одну опцию и сразу закрывает popup", async () => {
+	it("кнопка строки выбирает только одну опцию и сразу применяет значение", async () => {
 		const onChange = vi.fn<(value: CollectionItem[]) => void>();
 		await renderNode(<MultiSelect label="Справочник" codeKey="code" textKey="text" items={ITEMS} value={[]} onChange={onChange} />);
 
@@ -151,15 +152,43 @@ describe("MultiSelect", () => {
 			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
 		});
 
-		const betaOption = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find((option) =>
-			option.textContent?.includes("Бета")
-		);
+		const betaRow = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]')).find((row) => row.textContent?.includes("Бета"));
 
 		await act(async () => {
-			(betaOption?.querySelector(":scope > button") as HTMLButtonElement).click();
+			(betaRow?.querySelector('button[aria-label^="Выбрать только"]') as HTMLButtonElement).click();
 		});
 
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
+		expect(onChange).toHaveBeenCalledWith([{ code: "02", text: "Бета" }]);
+	});
+
+	it("Ctrl+Space меняет черновик, а Enter применяет только активную строку", async () => {
+		const onChange = vi.fn<(value: CollectionItem[]) => void>();
+		await renderNode(<MultiSelect label="Справочник" codeKey="code" textKey="text" items={ITEMS} value={[]} onChange={onChange} />);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+
+		await act(async () => {
+			input.dispatchEvent(new KeyboardEvent("keydown", { key: " ", code: "Space", ctrlKey: true, bubbles: true }));
+		});
+
+		expect(document.querySelector('[role="row"]')?.getAttribute("aria-selected")).toBe("true");
+		expect(input.getAttribute("aria-expanded")).toBe("true");
+		expect(onChange).not.toHaveBeenCalled();
+
+		await act(async () => {
+			input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
+		});
+
+		await act(async () => {
+			input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
+		});
+
+		expect(input.getAttribute("aria-expanded")).toBe("false");
 		expect(onChange).toHaveBeenCalledWith([{ code: "02", text: "Бета" }]);
 	});
 
@@ -173,7 +202,7 @@ describe("MultiSelect", () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		expect(document.querySelectorAll('[role="option"]')).toHaveLength(2);
+		expect(document.querySelectorAll('[role="row"]')).toHaveLength(2);
 
 		await act(async () => {
 			const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
@@ -181,9 +210,9 @@ describe("MultiSelect", () => {
 			input.dispatchEvent(new Event("input", { bubbles: true }));
 		});
 
-		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
-		expect(options).toHaveLength(1);
-		expect(options[0]?.textContent).toContain("Бета");
+		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
+		expect(rows).toHaveLength(1);
+		expect(rows[0]?.textContent).toContain("Бета");
 	});
 
 	it("оставляет отключенные варианты видимыми и не выбирает их массовым действием", async () => {
@@ -208,14 +237,16 @@ describe("MultiSelect", () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
-		expect(options).toHaveLength(2);
-		expect(options[1]?.getAttribute("aria-disabled")).toBe("true");
-		expect(options[1]).toBeInstanceOf(HTMLDivElement);
-		expect(options[1]?.querySelector("button")?.disabled).toBe(true);
-		expect(options[1]?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.disabled).toBe(true);
+		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
+		expect(rows).toHaveLength(2);
+		expect(rows[1]?.getAttribute("aria-disabled")).toBe("true");
+		expect(rows[1]).toBeInstanceOf(HTMLDivElement);
+		expect(rows[1]?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.disabled).toBe(true);
+		expect(rows[1]?.querySelector<HTMLButtonElement>('button[aria-label^="Выбрать только"]')?.disabled).toBe(true);
 
 		const selectAllButton = document.querySelector('button[data-action="select-all"]') as HTMLButtonElement;
+		expect(selectAllButton.closest('[role="grid"]')).toBeNull();
+		expect(document.querySelector('[role="separator"][aria-orientation="horizontal"]')).toBeTruthy();
 
 		await act(async () => {
 			selectAllButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
@@ -261,16 +292,16 @@ describe("MultiSelect", () => {
 			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
 		});
 
-		const firstCheckbox = document.querySelectorAll<HTMLInputElement>('[role="option"] input[type="checkbox"]')[0];
-		expect(firstCheckbox).toBeDefined();
+		const firstCheckBox = document.querySelectorAll<HTMLInputElement>('[role="row"] input[type="checkbox"]')[0];
+		expect(firstCheckBox).toBeDefined();
 
 		await act(async () => {
-			firstCheckbox?.click();
+			firstCheckBox?.click();
 		});
 
-		const options = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]'));
-		expect(options[0]?.getAttribute("aria-disabled")).toBeNull();
-		expect(options[1]?.getAttribute("aria-disabled")).toBe("true");
-		expect(options[2]?.getAttribute("aria-disabled")).toBeNull();
+		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
+		expect(rows[0]?.getAttribute("aria-disabled")).toBeNull();
+		expect(rows[1]?.getAttribute("aria-disabled")).toBe("true");
+		expect(rows[2]?.getAttribute("aria-disabled")).toBeNull();
 	});
 });

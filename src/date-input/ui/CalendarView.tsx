@@ -132,13 +132,19 @@ export function CalendarView({
 	 */
 	const renderHeader = () => {
 		let title = "";
+		let previousLabel = "Предыдущий период лет";
+		let nextLabel = "Следующий период лет";
 		if (view === "day") {
 			title = currentDate.toLocaleDateString("ru-RU", {
 				month: "long",
 				year: "numeric"
 			});
+			previousLabel = "Предыдущий месяц";
+			nextLabel = "Следующий месяц";
 		} else if (view === "month") {
 			title = currentDate.getFullYear().toString();
+			previousLabel = "Предыдущий год";
+			nextLabel = "Следующий год";
 		} else {
 			const startYear = Math.floor(currentDate.getFullYear() / 12) * 12;
 			const endYear = startYear + 11;
@@ -151,7 +157,7 @@ export function CalendarView({
 					icon={<ChevronLeft />}
 					onClick={goToPrevious}
 					variant="ghost"
-					aria-label="Предыдущий"
+					aria-label={previousLabel}
 					data-action="calendar-previous"
 				/>
 
@@ -162,6 +168,10 @@ export function CalendarView({
 					}}
 					variant="ghost"
 					className="flex1"
+					aria-label={
+						view === "day" ? `Выбрать месяц, сейчас ${title}` : view === "month" ? `Выбрать год, сейчас ${title}` : title
+					}
+					aria-disabled={view === "year" || undefined}
 					data-ui="calendar-view-switch-button"
 					data-action="calendar-switch-view">
 					{title}
@@ -171,7 +181,7 @@ export function CalendarView({
 					icon={<ChevronRight />}
 					onClick={goToNext}
 					variant="ghost"
-					aria-label="Следующий"
+					aria-label={nextLabel}
 					data-ui="calendar-next-button"
 					data-action="calendar-next"
 				/>

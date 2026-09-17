@@ -414,7 +414,12 @@ export function SliderBase(props: SliderBaseProps) {
 			<div
 				id={controlId}
 				className={cn(styles.slider, marksDisplay === "compact" && styles.sliderCompact)}
-				data-disabled={disabled || undefined}>
+				data-disabled={disabled || undefined}
+				role={isRange ? "group" : undefined}
+				aria-label={isRange && !labelId ? "Диапазон значений" : undefined}
+				aria-labelledby={isRange ? labelId : undefined}
+				aria-describedby={isRange ? describedBy : undefined}
+				aria-invalid={isRange && error ? true : undefined}>
 				<div className={styles.trackShell}>
 					<div
 						ref={trackRef}
@@ -447,7 +452,12 @@ export function SliderBase(props: SliderBaseProps) {
 												data-slot="mark"
 												data-active={isActive ? "" : undefined}
 												className={styles.compactMark}
-												aria-label={mark.ariaLabel}
+												aria-label={
+													mark.ariaLabel ??
+													(typeof mark.label === "string" || typeof mark.label === "number"
+														? String(mark.label)
+														: undefined)
+												}
 												disabled={disabled}
 												onClick={() => handleMarkSelect(mark.value)}>
 												<span className={styles.markDot} aria-hidden="true" />
@@ -490,15 +500,16 @@ export function SliderBase(props: SliderBaseProps) {
 													? String(thumbLabel)
 													: undefined
 											}
-											aria-labelledby={labelId}
-											aria-describedby={describedBy}
+											aria-labelledby={isRange ? undefined : labelId}
+											aria-describedby={isRange ? undefined : describedBy}
+											aria-invalid={!isRange && error ? true : undefined}
 											aria-label={
-												labelId
-													? undefined
-													: isRange
-														? thumbIndex === 0
-															? "Минимальное значение"
-															: "Максимальное значение"
+												isRange
+													? thumbIndex === 0
+														? "Минимальное значение"
+														: "Максимальное значение"
+													: labelId
+														? undefined
 														: "Значение"
 											}
 											onPointerDown={handleThumbPointerDown(thumbIndex)}

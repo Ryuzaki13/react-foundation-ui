@@ -1,4 +1,4 @@
-import { NotificationType } from "@ryuzaki13/react-foundation-lib/notifications";
+import { type NotificationType } from "@ryuzaki13/react-foundation-lib/notifications";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, TriangleAlertIcon, XIcon } from "lucide-react";
 
@@ -42,14 +42,14 @@ export function NotificationsHost() {
 	const { dismiss } = useNotify();
 
 	return (
-		<div className={styles.container} aria-label="Область уведомлений" aria-live="polite" aria-relevant="additions text">
+		<section className={styles.container} aria-label="Область уведомлений">
 			{items.map((notification) => {
 				const config = notificationConfig[notification.type];
 				const title = notification.title ?? config.title;
 				const Icon = config.Icon;
 
 				return (
-					<article
+					<div
 						key={notification.id}
 						role={notification.type === "error" ? "alert" : "status"}
 						aria-atomic="true"
@@ -89,15 +89,15 @@ export function NotificationsHost() {
 									appearance="ghost"
 									tone={notification.type}
 									onClick={() => dismiss(notification.id)}
-									aria-label="Закрыть уведомление"
+									aria-label={`Закрыть уведомление «${title}»`}
 									data-ui="notification-dismiss-button"
 									data-action="dismiss-notification"
 								/>
 							) : null}
 						</FlexContainer>
-					</article>
+					</div>
 				);
 			})}
-		</div>
+		</section>
 	);
 }

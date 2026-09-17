@@ -37,17 +37,6 @@ function getRequiredElement<TElement extends Element>(element: TElement | null |
 	return element;
 }
 
-function findOptionButton(label: string): HTMLButtonElement {
-	const option = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find((option) => {
-		const accessibleName = option.getAttribute("aria-label");
-
-		return accessibleName === label || accessibleName?.startsWith(`${label}.`);
-	});
-	const button = option?.querySelector("button");
-
-	return getRequiredElement(button, `Не найдена опция layout: ${label}`);
-}
-
 function findOption(label: string): HTMLElement {
 	const option = Array.from(document.querySelectorAll<HTMLElement>('[role="option"]')).find((item) => {
 		const accessibleName = item.getAttribute("aria-label");
@@ -179,7 +168,7 @@ describe("LayoutPicker", () => {
 		expect(trigger.getAttribute("aria-expanded")).toBe("true");
 		expect(trigger.getAttribute("aria-controls")).toBeTruthy();
 		expect(document.querySelectorAll('[role="option"]')).toHaveLength(DEFAULT_LAYOUT_PICKER_PRESETS.length);
-		// expect(findOptionButton("1x1").getAttribute("aria-selected")).toBe("true");
+		// expect(findOption("1x1").getAttribute("aria-selected")).toBe("true");
 	});
 
 	it("позволяет заменить input-like trigger на пользовательскую кнопку", async () => {
@@ -212,7 +201,7 @@ describe("LayoutPicker", () => {
 		expect(document.querySelectorAll('[role="option"]')).toHaveLength(1);
 
 		await act(async () => {
-			findOptionButton("Одна ячейка").click();
+			findOption("Одна ячейка").click();
 		});
 
 		expect(onChange).toHaveBeenCalledWith("single-cell");
@@ -233,7 +222,7 @@ describe("LayoutPicker", () => {
 		});
 
 		await act(async () => {
-			findOptionButton("1x2").click();
+			findOption("1x2").click();
 		});
 
 		expect(onChange).toHaveBeenCalledTimes(1);
@@ -321,9 +310,9 @@ describe("LayoutPicker", () => {
 			trigger.click();
 		});
 
-		const disabledOption = findOptionButton("1x2");
-		expect(disabledOption.disabled).toBe(true);
-		expect(findOption("1x2").getAttribute("aria-disabled")).toBe("true");
+		const disabledOption = findOption("1x2");
+		expect(disabledOption.getAttribute("aria-disabled")).toBe("true");
+		expect(disabledOption.querySelector("button")).toBeNull();
 
 		await act(async () => {
 			disabledOption.click();

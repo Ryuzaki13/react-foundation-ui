@@ -37,6 +37,19 @@
 	--check-box-control-size: auto;
 }
 
+.treeNodeSelectionCell {
+	display: flex;
+	align-items: center;
+	flex-shrink: 0;
+}
+
+.treeNodeActionCell {
+	display: flex;
+	align-self: stretch;
+	flex: 1 1 0;
+	min-width: 0;
+}
+
 .treeIndent {
 	flex-shrink: 0;
 	width: calc(var(--tree-level) * 1em);

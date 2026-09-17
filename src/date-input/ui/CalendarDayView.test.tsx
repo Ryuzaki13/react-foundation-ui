@@ -53,6 +53,13 @@ afterEach(async () => {
 });
 
 describe("CalendarDayView", () => {
+	it("помечает текущую календарную дату для assistive technology", async () => {
+		await renderCalendar(null);
+
+		const currentDate = container?.querySelector('[aria-current="date"]');
+		expect(currentDate?.textContent).toBe("10");
+	});
+
 	it("отмечает выбранными дни одиночной недели до включительной границы", async () => {
 		await renderCalendar(new Date(2026, 6, 2));
 
