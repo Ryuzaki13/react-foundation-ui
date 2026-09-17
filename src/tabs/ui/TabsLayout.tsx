@@ -197,7 +197,9 @@ export function TabsLayout({
 
 	return (
 		<div className={rootClassName}>
-			<TabsTabList items={tabs} state={state} className={styles.tabs} ariaLabel={ariaLabel} ariaLabelledBy={ariaLabelledBy} />
+			<div className={styles.tabsWrapper}>
+				<TabsTabList items={tabs} state={state} className={styles.tabs} ariaLabel={ariaLabel} ariaLabelledBy={ariaLabelledBy} />
+			</div>
 
 			<div className={panelsClassName}>
 				{tabs.map((tab) => {

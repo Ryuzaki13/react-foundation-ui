@@ -81,7 +81,15 @@ export function TabsBox({
 
 	return (
 		<div className={rootClassName}>
-			<TabsTabList items={items} state={state} className={tabListClassName} ariaLabel={ariaLabel} ariaLabelledBy={ariaLabelledBy} />
+			<div className={styles.tabsWrapper}>
+				<TabsTabList
+					items={items}
+					state={state}
+					className={tabListClassName}
+					ariaLabel={ariaLabel}
+					ariaLabelledBy={ariaLabelledBy}
+				/>
+			</div>
 
 			<div className={panelsClassName}>
 				{items.map((item) => {

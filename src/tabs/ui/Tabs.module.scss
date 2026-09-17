@@ -7,6 +7,8 @@
 	min-height: 0;
 	height: 100%;
 	overflow: hidden;
+	border: var(--tabs-border);
+	border-radius: var(--radius-md);
 
 	&.clean {
 		--tabs-border: none;
@@ -14,52 +16,48 @@
 	}
 }
 
+.tabsWrapper {
+	background-color: var(--surface-1);
+}
+
 .tabs {
 	display: flex;
 	min-width: 0;
-
-	border: var(--tabs-border);
-	background-color: var(--surface-1);
+	padding: var(--space-sm);
 }
 
 .panels {
 	min-width: 0;
 	min-height: 0;
-	border: var(--tabs-border);
 }
 
 .horizontal {
 	grid-template-rows: auto minmax(0, 1fr);
 
-	.tabs {
-		padding: var(--space-sm);
-
-		border-top-left-radius: var(--radius-sm);
-		border-top-right-radius: var(--radius-sm);
+	.tabsWrapper {
+		border-bottom: var(--border);
 	}
 
-	.panels {
-		border-top: none;
-
-		border-bottom-left-radius: var(--radius-sm);
-		border-bottom-right-radius: var(--radius-sm);
-	}
-
-	.tab {
-		&::before {
-			content: "";
-			position: absolute;
-			bottom: 0;
-			left: 0;
-			right: 0;
-			border-bottom: var(--focus-width) solid var(--decoration-color);
-		}
-	}
+	// .tab {
+	// 	border-top-left-radius: var(--radius-sm);
+	// 	border-top-right-radius: var(--radius-sm);
+	// 	border-bottom: var(--focus-width) solid var(--decoration-color);
+	// }
 }
 
 .vertical {
 	grid-template-columns: 10em minmax(0, 1fr);
 	min-height: 0;
+
+	.tabsWrapper {
+		border-right: var(--border);
+	}
+
+	// .tab {
+	// 	border-top-left-radius: var(--radius-sm);
+	// 	border-bottom-left-radius: var(--radius-sm);
+	// 	border-right: var(--focus-width) solid var(--decoration-color);
+	// }
 
 	.tabs {
 		flex-direction: column;
@@ -92,8 +90,6 @@
 }
 
 .tab {
-	--decoration-color: transparent;
-
 	text-align: left;
 
 	position: relative;
@@ -109,21 +105,19 @@
 	&:hover {
 		cursor: pointer;
 		color: var(--accent-text);
-		// background-color: var(--accent-fill);
-		--decoration-color: var(--accent-border);
+		background-color: var(--accent-fill-hover);
 	}
 
 	&.selected {
 		color: var(--brand-text);
 		// color: var(--content-0);
-		// background-color: var(--brand-fill);
-		--decoration-color: var(--brand-border);
+		background-color: var(--accent-fill);
 	}
 
 	&:disabled {
 		cursor: not-allowed;
 		color: var(--content-2);
-		background-color: var(--surface-2);
+		// background-color: var(--surface-2);
 	}
 }
 
