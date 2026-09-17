@@ -11,7 +11,7 @@ import * as NotificationsHostStories from "./NotificationsHost.stories";
 />
 
 <Title>NotificationsHost</Title>
-<Subtitle>Хост глобальных уведомлений для очереди toast-сообщений и длинных пользовательских операций</Subtitle>
+<Subtitle>Активный toast-стек и headless-доступ к полной истории уведомлений</Subtitle>
 
 NotificationsHost уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
 Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента.
@@ -43,6 +43,40 @@ export function Example() {
 	);
 }
 ```
+
+## Отдельный центр уведомлений
+
+`NotificationsHost` отвечает только за краткоживущий toast-стек. Все созданные уведомления остаются в store и доступны через `useNotificationHistory()`, даже если toast был закрыт вручную, истёк по TTL или вытеснен лимитом из шести элементов.
+
+Hook возвращает только данные и не навязывает UI. Host-проект сам решает, где и как показать историю: на отдельной странице, внутри `Dialog`, `Modal` или другого собственного контейнера.
+
+```tsx
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
+import { useNotificationHistory, useNotify } from "@ryuzaki13/react-foundation-ui/notifications";
+
+export function NotificationsHistoryContent() {
+	const history = useNotificationHistory();
+	const { clearHistory } = useNotify();
+
+	return (
+		<section aria-labelledby="notifications-history-title">
+			<h2 id="notifications-history-title">Все уведомления</h2>
+			<Button onClick={clearHistory}>Очистить историю</Button>
+
+			<ul>
+				{history.map((notification) => (
+					<li key={notification.id}>
+						<strong>{notification.title}</strong>
+						<div>{notification.message}</div>
+					</li>
+				))}
+			</ul>
+		</section>
+	);
+}
+```
+
+`useNotifications()` возвращает только активные toast-уведомления. `clear()` скрывает toast-стек, сохраняя историю; `clearHistory()` очищает историю, не закрывая активные toast.
 
 ## Практические рекомендации
 

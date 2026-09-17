@@ -4,7 +4,7 @@ import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, TriangleAlertIcon, XIcon }
 
 import { Button } from "../../button";
 import { FlexContainer } from "../../flex";
-import { useNotifications, useNotify } from "../model/NotificationsProvider";
+import { useNotifications, useNotify } from "../model";
 
 import styles from "./Notification.module.scss";
 
@@ -34,8 +34,9 @@ const notificationConfig: Record<
 };
 
 /**
- * Хост для визуального отображения очереди уведомлений.
+ * Хост для визуального отображения активного toast-стека.
  * Обычно монтируется один раз на уровне приложения рядом с провайдером уведомлений.
+ * Полную историю host-проект отображает отдельно через useNotificationHistory.
  */
 export function NotificationsHost() {
 	const items = useNotifications();

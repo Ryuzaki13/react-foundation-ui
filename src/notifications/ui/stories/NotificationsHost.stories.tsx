@@ -1,13 +1,11 @@
-import type { ComponentProps, CSSProperties, PropsWithChildren } from "react";
-import { useEffect, useRef, useState } from "react";
+import { type ComponentProps, type CSSProperties, type PropsWithChildren, useEffect, useRef, useState } from "react";
 
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { BellRingIcon, CheckIcon, InfoIcon, RefreshCwIcon, TimerResetIcon, Trash2Icon, TriangleAlertIcon, XCircleIcon } from "lucide-react";
 
 import { Button } from "../../../button";
-import { NotificationsProvider, useNotify } from "../../model";
+import { NotificationsProvider, useNotificationHistory, useNotify } from "../../model";
 import { NotificationsHost } from "../NotificationsHost";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type NotificationsHostStoryArgs = ComponentProps<typeof NotificationsHost>;
 
@@ -22,7 +20,7 @@ const meta = {
 		docs: {
 			description: {
 				component:
-					"Компонент отображает очередь глобальных уведомлений поверх интерфейса. Истории ниже показывают внешний вид для разных статусов, работу автозакрытия, ограничение очереди и сценарий длительной операции с обновлением одного уведомления."
+					"Компонент отображает активный toast-стек поверх интерфейса, а useNotificationHistory даёт host-проекту полную историю без готового контейнера. Stories показывают статусы, автозакрытие, лимит toast и длительную операцию."
 			}
 		}
 	}
@@ -77,15 +75,17 @@ const buttonGridStyle: CSSProperties = {
 };
 
 function NotificationsStateReset() {
-	const { clear } = useNotify();
+	const { clear, clearHistory } = useNotify();
 
 	useEffect(() => {
 		clear();
+		clearHistory();
 
 		return () => {
 			clear();
+			clearHistory();
 		};
-	}, [clear]);
+	}, [clear, clearHistory]);
 
 	return null;
 }
@@ -161,6 +161,7 @@ function ShowcaseSeed() {
 
 function PlaygroundPanel() {
 	const api = useNotify();
+	const history = useNotificationHistory();
 	const progressIdRef = useRef<string | null>(null);
 	const [hasProgress, setHasProgress] = useState(false);
 
@@ -312,10 +313,10 @@ function PlaygroundPanel() {
 			</section>
 
 			<section style={panelStyle}>
-				<h3 style={{ margin: 0 }}>Очередь и очистка</h3>
+				<h3 style={{ margin: 0 }}>Toast-стек и история</h3>
 				<p style={{ margin: 0, color: "var(--content-1)" }}>
-					Стор сохраняет не более 6 уведомлений. Кнопка ниже специально создаёт 8 элементов, чтобы проверить отсечение старых
-					записей.
+					Toast-host отображает не более 6 уведомлений, а история сохраняет все записи. Кнопка ниже создаёт 8 элементов для
+					проверки обоих представлений. Сейчас в истории: {history.length}.
 				</p>
 
 				<div style={buttonGridStyle}>
@@ -353,7 +354,11 @@ function PlaygroundPanel() {
 							resetProgress();
 							api.clear();
 						}}>
-						Очистить всё
+						Скрыть toast
+					</Button>
+
+					<Button variant="transparent" icon={<Trash2Icon />} onClick={() => api.clearHistory()}>
+						Очистить историю
 					</Button>
 				</div>
 			</section>
@@ -389,7 +394,7 @@ export const InteractivePlayground: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story: "Интерактивный сценарий для проверки базовых уведомлений, длительной операции, лимита очереди и автозакрытия."
+				story: "Интерактивный сценарий для проверки базовых уведомлений, длительной операции, лимита toast, истории и автозакрытия."
 			}
 		}
 	}

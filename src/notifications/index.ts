@@ -10,5 +10,5 @@ export {
 	notify
 };
 
-export * from "./model/NotificationsProvider";
+export * from "./model";
 export * from "./ui/NotificationsHost";
