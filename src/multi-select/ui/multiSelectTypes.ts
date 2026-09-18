@@ -3,12 +3,12 @@ import { type ReactNode } from "react";
 import { type SelectOptionGroup, type SelectOptionKey } from "../../select/SelectOptionGroup";
 
 /** Устойчивый строковый ключ опции, согласованный с identity-контрактом Select. */
-export type OptionMultiSelectOptionKey = SelectOptionKey;
+export type MultiSelectOptionKey = SelectOptionKey;
 
 /** Визуальная группа соседних опций; заголовок не участвует в keyboard navigation. */
-export type OptionMultiSelectOptionGroup = SelectOptionGroup;
+export type MultiSelectOptionGroup = SelectOptionGroup;
 
-export type OptionMultiSelectOptionState = Readonly<{
+export type MultiSelectOptionState = Readonly<{
 	selected: boolean;
 	active: boolean;
 	disabled: boolean;
@@ -20,12 +20,12 @@ export type OptionMultiSelectOptionState = Readonly<{
  * Структурированное содержимое опции. Компонент сохраняет общую интерактивную
  * оболочку и accessibility-контракт, а consumer управляет только текстом и кодом.
  */
-export type OptionMultiSelectOptionContent = Readonly<{
+export type MultiSelectOptionContent = Readonly<{
 	text: string;
 	code?: string;
 }>;
 
-export type OptionMultiSelectRenderContext<TOption> = Readonly<{
+export type MultiSelectRenderContext<TOption> = Readonly<{
 	selectedOptions: readonly TOption[];
 	committedSelectedOptions: readonly TOption[];
 	availableOptions: readonly TOption[];
@@ -36,17 +36,17 @@ export type OptionMultiSelectRenderContext<TOption> = Readonly<{
 	deselectAll: () => void;
 }>;
 
-export type OptionMultiSelectOptionDisableContext<TOption> = Readonly<{
+export type MultiSelectOptionDisableContext<TOption> = Readonly<{
 	selectedOptions: readonly TOption[];
 	committedSelectedOptions: readonly TOption[];
-	selectedKeys: ReadonlySet<OptionMultiSelectOptionKey>;
+	selectedKeys: ReadonlySet<MultiSelectOptionKey>;
 	open: boolean;
 }>;
 
-type OptionMultiSelectOptionalRenderer<TContext> = ((context: TContext) => ReactNode) | null | false;
+type MultiSelectOptionalRenderer<TContext> = ((context: TContext) => ReactNode) | null | false;
 
-export type OptionMultiSelectRenderers<TOption> = Readonly<{
-	renderToken?: OptionMultiSelectOptionalRenderer<OptionMultiSelectRenderContext<TOption>>;
-	renderToolbar?: OptionMultiSelectOptionalRenderer<OptionMultiSelectRenderContext<TOption>>;
-	renderOption?: (option: TOption, state: OptionMultiSelectOptionState) => OptionMultiSelectOptionContent;
+export type MultiSelectRenderers<TOption> = Readonly<{
+	renderToken?: MultiSelectOptionalRenderer<MultiSelectRenderContext<TOption>>;
+	renderToolbar?: MultiSelectOptionalRenderer<MultiSelectRenderContext<TOption>>;
+	renderOption?: (option: TOption, state: MultiSelectOptionState) => MultiSelectOptionContent;
 }>;

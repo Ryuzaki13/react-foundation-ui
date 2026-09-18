@@ -1,4 +1,4 @@
-import { type OptionMultiSelectOptionGroup } from "../ui/optionMultiSelectTypes";
+import { type MultiSelectOptionGroup } from "../ui/multiSelectTypes";
 
 export type MultiSelectOptionEntry<TOption> = Readonly<{
 	option: TOption;
@@ -6,7 +6,7 @@ export type MultiSelectOptionEntry<TOption> = Readonly<{
 }>;
 
 export type MultiSelectOptionSection<TOption> = Readonly<{
-	group: OptionMultiSelectOptionGroup | undefined;
+	group: MultiSelectOptionGroup | undefined;
 	entries: readonly MultiSelectOptionEntry<TOption>[];
 }>;
 
@@ -16,10 +16,10 @@ export type MultiSelectOptionSection<TOption> = Readonly<{
  */
 export function createMultiSelectOptionSections<TOption>(
 	entries: readonly MultiSelectOptionEntry<TOption>[],
-	getOptionGroup: (option: TOption) => OptionMultiSelectOptionGroup | undefined
+	getOptionGroup: (option: TOption) => MultiSelectOptionGroup | undefined
 ): readonly MultiSelectOptionSection<TOption>[] {
 	const sections: Array<{
-		group: OptionMultiSelectOptionGroup | undefined;
+		group: MultiSelectOptionGroup | undefined;
 		entries: MultiSelectOptionEntry<TOption>[];
 	}> = [];
 

@@ -3,7 +3,7 @@ import { ODataSelectBaseProps, useODataCollectionModel } from "@ryuzaki13/react-
 import { UiBaseProps } from "../../types";
 import { useODataMultiSelect } from "../model/useODataMultiSelect";
 
-import { MultiSelect } from "./MultiSelect";
+import { DeprecatedMultiSelect } from "./DeprecatedMultiSelect";
 
 type ODataMultiSelectProps = ODataSelectBaseProps & Omit<UiBaseProps<string[]>, "placeholder"> & {};
 
@@ -30,7 +30,7 @@ export function ODataMultiSelect({
 	});
 
 	return (
-		<MultiSelect
+		<DeprecatedMultiSelect
 			label={label}
 			description={description}
 			size={size}

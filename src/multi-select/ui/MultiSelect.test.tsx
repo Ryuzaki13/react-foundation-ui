@@ -1,40 +1,50 @@
 // @vitest-environment jsdom
 
-import React, { act, useState } from "react";
+import React, { act } from "react";
 
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { MultiSelect } from "./MultiSelect";
 
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
-
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
-window.matchMedia ??= () =>
-	({
-		matches: false,
-		media: "",
-		onchange: null,
-		addListener: () => undefined,
-		removeListener: () => undefined,
-		addEventListener: () => undefined,
-		removeEventListener: () => undefined,
-		dispatchEvent: () => false
-	}) as MediaQueryList;
 window.HTMLElement.prototype.scrollIntoView = () => undefined;
 
-const ITEMS = [
-	{ code: "01", text: "Альфа" },
-	{ code: "02", text: "Бета" }
+type CatalogOption = {
+	id: string;
+	label: string;
+	displayCode: string;
+	group?: string;
+	searchAliases: readonly string[];
+	unit: "руб" | "тн";
+};
+
+const OPTIONS: CatalogOption[] = [
+	{
+		id: "internal-001",
+		label: "Альфа",
+		displayCode: "DUP",
+		group: "Коммерческий блок",
+		searchAliases: ["первый"],
+		unit: "руб"
+	},
+	{
+		id: "internal-002",
+		label: "Бета",
+		displayCode: "DUP",
+		group: "Коммерческий блок",
+		searchAliases: ["второй"],
+		unit: "тн"
+	},
+	{
+		id: "internal-003",
+		label: "Гамма",
+		displayCode: "OPS",
+		group: "Операционный блок",
+		searchAliases: ["третий"],
+		unit: "руб"
+	}
 ];
-
-function MultiSelectHarness() {
-	const [value, setValue] = useState<CollectionItem[]>([]);
-
-	return (
-		<MultiSelect label="Справочник" placeholder="Поиск" codeKey="code" textKey="text" items={ITEMS} value={value} onChange={setValue} />
-	);
-}
 
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
@@ -47,6 +57,38 @@ async function renderNode(node: React.ReactNode) {
 	await act(async () => {
 		root!.render(node);
 	});
+}
+
+async function openOptions() {
+	const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
+
+	await act(async () => {
+		openButton.click();
+	});
+}
+
+async function closeOptions() {
+	const closeButton = document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement;
+
+	await act(async () => {
+		closeButton.click();
+	});
+}
+
+async function enterQuery(input: HTMLInputElement, query: string) {
+	await act(async () => {
+		const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+		valueSetter?.call(input, query);
+		input.dispatchEvent(new Event("input", { bubbles: true }));
+	});
+}
+
+function getOptionRows() {
+	return Array.from(document.querySelectorAll<HTMLElement>('[role="row"]')).filter((row) => row.querySelector('input[type="checkbox"]'));
+}
+
+function getRowByLabel(label: string) {
+	return getOptionRows().find((row) => row.textContent?.includes(label));
 }
 
 afterEach(async () => {
@@ -63,395 +105,246 @@ afterEach(async () => {
 });
 
 describe("MultiSelect", () => {
-	it("показывает количество выбранных элементов", async () => {
-		await renderNode(
-			<MultiSelect
-				label="Справочник"
-				placeholder="Поиск"
-				codeKey="code"
-				textKey="text"
-				items={ITEMS}
-				value={ITEMS}
-				onChange={() => undefined}
-			/>
-		);
-
-		expect(container?.textContent).toContain("2 элемента");
-	});
-
-	it("сохраняет ссылки mutable-массивов в опубликованных legacy callback-контекстах", async () => {
-		const value = [ITEMS[0]!];
-		let renderSelectedItems: CollectionItem[] | undefined;
-		let renderCommittedItems: CollectionItem[] | undefined;
-		let disableSelectedItems: CollectionItem[] | undefined;
-		let disableCommittedItems: CollectionItem[] | undefined;
+	it("разделяет identity и отображаемый code и подтверждает checkbox-черновик только при закрытии", async () => {
+		const committedClone = { ...OPTIONS[0]! };
+		const onChange = vi.fn<(value: CatalogOption[]) => void>();
 
 		await renderNode(
 			<MultiSelect
-				label="Справочник"
-				codeKey="code"
-				textKey="text"
-				items={ITEMS}
-				value={value}
-				onChange={() => undefined}
-				renderToken={(context) => {
-					renderSelectedItems = context.selectedItems;
-					renderCommittedItems = context.committedSelectedItems;
-					return context.selectedItems[0]?.text;
-				}}
-				getOptionDisabled={(_, context) => {
-					disableSelectedItems = context.selectedItems;
-					disableCommittedItems = context.committedSelectedItems;
-					return false;
-				}}
+				label="Каталог"
+				options={OPTIONS}
+				value={[committedClone]}
+				onChange={onChange}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+				getOptionCode={(option) => option.displayCode}
 			/>
 		);
 
-		expect(renderSelectedItems).toBe(value);
-		expect(renderCommittedItems).toBe(value);
+		await openOptions();
 
+		const rows = getOptionRows();
+		expect(rows).toHaveLength(3);
+		expect(rows[0]?.getAttribute("aria-selected")).toBe("true");
+		expect(rows[0]?.textContent).toContain("DUP");
+		expect(rows[1]?.textContent).toContain("DUP");
+
+		const betaCheckBox = rows[1]?.querySelector<HTMLInputElement>('input[type="checkbox"]');
 		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+			betaCheckBox?.click();
 		});
 
-		expect(disableSelectedItems).toBe(value);
-		expect(disableCommittedItems).toBe(value);
+		expect(onChange).not.toHaveBeenCalled();
+
+		await closeOptions();
+
+		expect(onChange).toHaveBeenCalledTimes(1);
+		expect(onChange).toHaveBeenCalledWith([committedClone, OPTIONS[1]]);
 	});
 
-	it("сохраняет корректную работу шеврона и фокус input", async () => {
-		await renderNode(<MultiSelectHarness />);
+	it("не теряет falsy option при отображении токена и keyboard toggle/activation", async () => {
+		const onChange = vi.fn<(value: number[]) => void>();
+
+		function NumberMultiSelect() {
+			const [value, setValue] = React.useState<number[]>([]);
+
+			return (
+				<MultiSelect
+					label="Числа"
+					options={[0, 1]}
+					value={value}
+					onChange={(nextValue) => {
+						onChange(nextValue);
+						setValue(nextValue);
+					}}
+					getOptionKey={String}
+					getOptionLabel={String}
+				/>
+			);
+		}
+
+		await renderNode(<NumberMultiSelect />);
+		await openOptions();
 
 		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
-
-		await act(async () => {
-			input.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
-
-		expect(document.querySelectorAll('[role="row"]')).toHaveLength(0);
-
-		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
-
-		await act(async () => {
-			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
-
-		expect(document.querySelectorAll('[role="row"]')).toHaveLength(2);
-		expect(document.activeElement).toBe(input);
-
-		const closeButton = document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement;
-
-		await act(async () => {
-			closeButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
-
-		expect(input.getAttribute("aria-expanded")).toBe("false");
-		expect(document.activeElement).toBe(input);
-	});
-
-	it("разделяет checkbox чернового выбора и кнопку немедленного выбора в строке grid", async () => {
-		await renderNode(<MultiSelectHarness />);
-
-		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
-
-		await act(async () => {
-			openButton.click();
-		});
-
-		const grid = document.querySelector('[role="grid"]') as HTMLDivElement;
-		const row = grid.querySelector('[role="row"]') as HTMLDivElement;
-		const checkBox = row.querySelector('input[type="checkbox"]') as HTMLInputElement;
-		const optionButton = row.querySelector('button[aria-label^="Выбрать только"]') as HTMLButtonElement;
-
-		expect(grid.getAttribute("aria-multiselectable")).toBe("true");
-		expect(row.querySelectorAll('[role="gridcell"]')).toHaveLength(2);
-		expect(checkBox.checked).toBe(false);
-		expect(optionButton.textContent).toContain("Альфа");
-		expect(optionButton.textContent).toContain("01");
-
-		await act(async () => {
-			checkBox.click();
-		});
-
-		expect(row.getAttribute("aria-selected")).toBe("true");
-		expect(checkBox.checked).toBe(true);
-		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("true");
-
-		await act(async () => {
-			optionButton.click();
-		});
-
-		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
-	});
-
-	it("кнопка строки выбирает только одну опцию и сразу применяет значение", async () => {
-		const onChange = vi.fn<(value: CollectionItem[]) => void>();
-		await renderNode(<MultiSelect label="Справочник" codeKey="code" textKey="text" items={ITEMS} value={[]} onChange={onChange} />);
-
-		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
-		});
-
-		const betaRow = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]')).find((row) => row.textContent?.includes("Бета"));
-
-		await act(async () => {
-			(betaRow?.querySelector('button[aria-label^="Выбрать только"]') as HTMLButtonElement).click();
-		});
-
-		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
-		expect(onChange).toHaveBeenCalledWith([{ code: "02", text: "Бета" }]);
-	});
-
-	it("Ctrl+Space меняет черновик, а Enter применяет только активную строку", async () => {
-		const onChange = vi.fn<(value: CollectionItem[]) => void>();
-		await renderNode(<MultiSelect label="Справочник" codeKey="code" textKey="text" items={ITEMS} value={[]} onChange={onChange} />);
-
-		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
-
-		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
-		});
-
 		await act(async () => {
 			input.dispatchEvent(new KeyboardEvent("keydown", { key: " ", code: "Space", ctrlKey: true, bubbles: true }));
 		});
 
-		expect(document.querySelector('[role="row"]')?.getAttribute("aria-selected")).toBe("true");
-		expect(input.getAttribute("aria-expanded")).toBe("true");
+		expect(getOptionRows()[0]?.getAttribute("aria-selected")).toBe("true");
 		expect(onChange).not.toHaveBeenCalled();
-
-		await act(async () => {
-			input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
-		});
 
 		await act(async () => {
 			input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 		});
 
-		expect(input.getAttribute("aria-expanded")).toBe("false");
-		expect(onChange).toHaveBeenCalledWith([{ code: "02", text: "Бета" }]);
+		expect(onChange).toHaveBeenCalledWith([0]);
+		expect(container?.querySelector('[data-ui="picker-selected-token"]')?.textContent).toBe("0");
 	});
 
-	it("фильтрует видимые варианты по введенному запросу", async () => {
-		await renderNode(<MultiSelectHarness />);
+	it("по умолчанию ищет по label, code и group, но не использует identity key", async () => {
+		await renderNode(
+			<MultiSelect
+				label="Каталог"
+				options={OPTIONS}
+				value={[]}
+				onChange={() => undefined}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+				getOptionCode={(option) => option.displayCode}
+				getOptionGroup={(option) => (option.group ? { key: option.group, label: <span>{option.group}</span> } : undefined)}
+			/>
+		);
 
+		await openOptions();
 		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
-		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
 
-		await act(async () => {
-			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
+		await enterQuery(input, "Альфа");
+		expect(getOptionRows().map((row) => row.textContent)).toEqual([expect.stringContaining("Альфа")]);
 
-		expect(document.querySelectorAll('[role="row"]')).toHaveLength(2);
+		await enterQuery(input, "OPS");
+		expect(getOptionRows().map((row) => row.textContent)).toEqual([expect.stringContaining("Гамма")]);
 
-		await act(async () => {
-			const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-			valueSetter?.call(input, "Бе");
-			input.dispatchEvent(new Event("input", { bubbles: true }));
-		});
+		await enterQuery(input, "Коммерческий блок");
+		expect(getOptionRows().map((row) => row.textContent)).toEqual([expect.stringContaining("Альфа"), expect.stringContaining("Бета")]);
 
-		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
-		expect(rows).toHaveLength(1);
-		expect(rows[0]?.textContent).toContain("Бета");
+		await enterQuery(input, "internal-001");
+		expect(getOptionRows()).toHaveLength(0);
 	});
 
-	it("сохраняет codeKey как identity при независимом отображаемом code из renderItem", async () => {
-		const items = [
-			{ id: "group-1", label: "Первая группа", displayCode: "23-ИС" },
-			{ id: "group-2", label: "Вторая группа", displayCode: "24-ИС" }
-		];
-		const onChange = vi.fn<(value: CollectionItem[]) => void>();
+	it("использует явный search text независимо от отображаемых selector-значений", async () => {
+		await renderNode(
+			<MultiSelect
+				label="Каталог"
+				options={OPTIONS}
+				value={[]}
+				onChange={() => undefined}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+				getOptionCode={(option) => option.displayCode}
+				getOptionSearchText={(option) => option.searchAliases}
+			/>
+		);
+
+		await openOptions();
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+
+		await enterQuery(input, "второй");
+		expect(getOptionRows().map((row) => row.textContent)).toEqual([expect.stringContaining("Бета")]);
+
+		await enterQuery(input, "Бета");
+		expect(getOptionRows()).toHaveLength(0);
+	});
+
+	it("группирует committed и available секции независимо и пропускает заголовки при keyboard selection", async () => {
+		const ungroupedOption: CatalogOption = {
+			id: "internal-004",
+			label: "Без группы",
+			displayCode: "FREE",
+			searchAliases: [],
+			unit: "руб"
+		};
+		const options = [OPTIONS[0]!, OPTIONS[1]!, ungroupedOption, OPTIONS[2]!];
+		const committedClone = { ...OPTIONS[0]! };
+		const onChange = vi.fn<(value: CatalogOption[]) => void>();
 
 		await renderNode(
 			<MultiSelect
-				label="Группы"
-				codeKey="id"
-				textKey="label"
-				items={items}
-				value={[]}
+				label="Каталог"
+				options={options}
+				value={[committedClone]}
 				onChange={onChange}
-				renderItem={(item) => ({ text: item.label ?? "", code: item.displayCode })}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+				getOptionCode={(option) => option.displayCode}
+				getOptionGroup={(option) => (option.group ? { key: option.group, label: option.group } : undefined)}
 			/>
 		);
 
-		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
-		});
+		await openOptions();
 
-		const firstRow = document.querySelector<HTMLElement>('[role="row"]');
-		expect(firstRow?.textContent).toContain("Первая группа");
-		expect(firstRow?.textContent).toContain("23-ИС");
-		expect(firstRow?.textContent).not.toContain("group-1");
-
-		await act(async () => {
-			firstRow?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.click();
-		});
-
-		await act(async () => {
-			(document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement).click();
-		});
-
-		expect(onChange).toHaveBeenCalledWith([items[0]]);
-	});
-
-	it("скрывает code визуально, но сохраняет legacy-поиск по нему", async () => {
-		await renderNode(
-			<MultiSelect label="Справочник" codeKey="code" textKey="text" hideCode items={ITEMS} value={[]} onChange={() => undefined} />
-		);
+		const rowGroups = Array.from(document.querySelectorAll<HTMLElement>('[role="rowgroup"]'));
+		expect(rowGroups.map((group) => group.querySelector('[role="row"]')?.textContent?.trim())).toEqual([
+			"Коммерческий блок",
+			"Коммерческий блок",
+			"Операционный блок"
+		]);
+		expect(getOptionRows().map((row) => row.textContent?.trim())).toEqual(["АльфаDUP", "БетаDUP", "Без группыFREE", "ГаммаOPS"]);
+		expect(getRowByLabel("Без группы")?.closest('[role="rowgroup"]')).toBeNull();
+		expect(document.querySelector('[role="grid"] [role="separator"]')).toBeTruthy();
 
 		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
 		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+			input.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true }));
 		});
 		await act(async () => {
-			const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
-			valueSetter?.call(input, "02");
-			input.dispatchEvent(new Event("input", { bubbles: true }));
+			input.dispatchEvent(new KeyboardEvent("keydown", { key: "Enter", bubbles: true }));
 		});
 
-		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
-		expect(rows).toHaveLength(1);
-		expect(rows[0]?.textContent).toContain("Бета");
-		expect(rows[0]?.textContent).not.toContain("02");
+		expect(onChange).toHaveBeenCalledWith([OPTIONS[1]]);
 	});
 
-	it("показывает code в token, но не подставляет его вместо отсутствующего legacy-текста строки", async () => {
-		const item = { code: "01" };
-
+	it("не оставляет separator, когда фильтр скрывает available-секцию", async () => {
 		await renderNode(
 			<MultiSelect
-				label="Справочник"
-				codeKey="code"
-				textKey="text"
-				hideCode
-				items={[item]}
-				value={[item]}
+				label="Каталог"
+				options={OPTIONS}
+				value={[OPTIONS[0]!]}
 				onChange={() => undefined}
-			/>
-		);
-		expect(container?.textContent).toContain("01");
-
-		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
-		});
-
-		expect(document.querySelector('[role="row"]')?.textContent).not.toContain("01");
-	});
-
-	it("передаёт исходную ссылку value в onClose, если выбор не менялся", async () => {
-		const value = [ITEMS[0]];
-		const onClose = vi.fn<(nextValue: CollectionItem[]) => void>();
-
-		await renderNode(
-			<MultiSelect
-				label="Справочник"
-				codeKey="code"
-				textKey="text"
-				items={ITEMS}
-				value={value}
-				onChange={() => undefined}
-				onClose={onClose}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+				getOptionCode={(option) => option.displayCode}
 			/>
 		);
 
-		await act(async () => {
-			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
-		});
+		await openOptions();
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		await enterQuery(input, "Альфа");
 
-		await act(async () => {
-			(document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement).click();
-		});
-
-		expect(onClose).toHaveBeenCalledTimes(1);
-		expect(onClose.mock.calls[0]?.[0]).toBe(value);
+		expect(getOptionRows()).toHaveLength(1);
+		expect(document.querySelector('[role="grid"] [role="separator"]')).toBeNull();
 	});
 
-	it("оставляет отключенные варианты видимыми и не выбирает их массовым действием", async () => {
-		const handleChange = vi.fn<(value: CollectionItem[]) => void>();
-
-		await renderNode(
-			<MultiSelect
-				label="Справочник"
-				placeholder="Поиск"
-				codeKey="code"
-				textKey="text"
-				items={ITEMS}
-				value={[]}
-				getOptionDisabled={(item) => item.code === "02"}
-				onChange={handleChange}
-			/>
-		);
-
-		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
-
-		await act(async () => {
-			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
-
-		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
-		expect(rows).toHaveLength(2);
-		expect(rows[1]?.getAttribute("aria-disabled")).toBe("true");
-		expect(rows[1]).toBeInstanceOf(HTMLDivElement);
-		expect(rows[1]?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.disabled).toBe(true);
-		expect(rows[1]?.querySelector<HTMLButtonElement>('button[aria-label^="Выбрать только"]')?.disabled).toBe(true);
-
-		const selectAllButton = document.querySelector('button[data-action="select-all"]') as HTMLButtonElement;
-		expect(selectAllButton.closest('[role="grid"]')).toBeNull();
-		expect(document.querySelector('[role="separator"][aria-orientation="horizontal"]')).toBeTruthy();
-
-		await act(async () => {
-			selectAllButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
-
-		const closeButton = document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement;
-
-		await act(async () => {
-			closeButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
-		});
-
-		expect(handleChange).toHaveBeenCalledTimes(1);
-		expect(handleChange).toHaveBeenCalledWith([{ code: "01", text: "Альфа" }]);
-	});
-
-	it("пересчитывает disabled-состояние по черновому выбору до закрытия списка", async () => {
-		const items = [
-			{ code: "01", text: "Выручка", unit: "руб" },
-			{ code: "02", text: "Вес", unit: "тн" },
-			{ code: "03", text: "План", unit: "руб" }
+	it("пересчитывает typed disabled-context по draft и массово выбирает только совместимые опции", async () => {
+		const metrics: CatalogOption[] = [
+			{ id: "revenue", label: "Выручка", displayCode: "RUB", searchAliases: [], unit: "руб" },
+			{ id: "weight", label: "Вес", displayCode: "TON", searchAliases: [], unit: "тн" },
+			{ id: "plan", label: "План", displayCode: "PLAN", searchAliases: [], unit: "руб" }
 		];
+		const onChange = vi.fn<(value: CatalogOption[]) => void>();
 
 		await renderNode(
 			<MultiSelect
 				label="Показатели"
-				placeholder="Поиск"
-				codeKey="code"
-				textKey="text"
-				items={items}
+				options={metrics}
 				value={[]}
-				getOptionDisabled={(item, context) => {
-					if (context.selectedKeys.has(item.code)) return false;
-					const selectedUnit = context.selectedItems[0]?.unit;
-					return Boolean(selectedUnit && item.unit !== selectedUnit);
+				onChange={onChange}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+				getOptionCode={(option) => option.displayCode}
+				getOptionDisabled={(option, context) => {
+					if (context.selectedKeys.has(option.id)) return false;
+					const selectedUnit = context.selectedOptions[0]?.unit;
+					return Boolean(selectedUnit && option.unit !== selectedUnit);
 				}}
-				onChange={() => undefined}
 			/>
 		);
 
-		const openButton = container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement;
-
+		await openOptions();
+		const revenueCheckBox = getRowByLabel("Выручка")?.querySelector<HTMLInputElement>('input[type="checkbox"]');
 		await act(async () => {
-			openButton.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+			revenueCheckBox?.click();
 		});
 
-		const firstCheckBox = document.querySelectorAll<HTMLInputElement>('[role="row"] input[type="checkbox"]')[0];
-		expect(firstCheckBox).toBeDefined();
+		expect(getRowByLabel("Вес")?.getAttribute("aria-disabled")).toBe("true");
+		expect(getRowByLabel("План")?.getAttribute("aria-disabled")).toBeNull();
 
+		const selectAllButton = document.querySelector('button[data-action="select-all"]') as HTMLButtonElement;
 		await act(async () => {
-			firstCheckBox?.click();
+			selectAllButton.click();
 		});
+		await closeOptions();
 
-		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
-		expect(rows[0]?.getAttribute("aria-disabled")).toBeNull();
-		expect(rows[1]?.getAttribute("aria-disabled")).toBe("true");
-		expect(rows[2]?.getAttribute("aria-disabled")).toBeNull();
+		expect(onChange).toHaveBeenCalledWith([metrics[0], metrics[2]]);
 	});
 });

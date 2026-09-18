@@ -5,28 +5,28 @@ import { createMultiSelectOptionSections, type MultiSelectOptionEntry } from "..
 
 import { MultiSelectOptionRow } from "./MultiSelectOptionRow";
 import {
-	type OptionMultiSelectOptionContent,
-	type OptionMultiSelectOptionGroup,
-	type OptionMultiSelectOptionKey,
-	type OptionMultiSelectOptionState
-} from "./optionMultiSelectTypes";
+	type MultiSelectOptionContent,
+	type MultiSelectOptionGroup,
+	type MultiSelectOptionKey,
+	type MultiSelectOptionState
+} from "./multiSelectTypes";
 
 type MultiSelectOptionListProps<TOption> = Readonly<{
 	entries: readonly MultiSelectOptionEntry<TOption>[];
 	sectionId: string;
 	listId: string;
 	activeIndex: number;
-	selectedKeys: ReadonlySet<OptionMultiSelectOptionKey>;
+	selectedKeys: ReadonlySet<MultiSelectOptionKey>;
 	query: string;
 	highlightQuery: string;
-	getOptionKey: (option: TOption) => OptionMultiSelectOptionKey;
-	getOptionGroup?: (option: TOption) => OptionMultiSelectOptionGroup | undefined;
+	getOptionKey: (option: TOption) => MultiSelectOptionKey;
+	getOptionGroup?: (option: TOption) => MultiSelectOptionGroup | undefined;
 	getOptionDisabled?: (option: TOption) => boolean;
 	getOptionId: (listId: string, index: number) => string;
 	setOptionRef: (index: number, node: HTMLElement | null) => void;
 	toggleOption: (option: TOption) => void;
 	selectOnlyOption: (option: TOption) => void;
-	renderOption: (option: TOption, state: OptionMultiSelectOptionState) => OptionMultiSelectOptionContent;
+	renderOption: (option: TOption, state: MultiSelectOptionState) => MultiSelectOptionContent;
 }>;
 
 /** Рендерит одну selected/available-секцию, сохраняя global option indexes при группировке. */

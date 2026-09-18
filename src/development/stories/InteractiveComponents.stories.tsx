@@ -527,15 +527,12 @@ export function InteractiveComponents() {
 			<ComponentCard title="MultiSelect">
 				<MultiSelect
 					label="Города"
-					items={cityOptions}
+					options={cityOptions}
 					value={selectedCities}
-					query=""
-					codeKey="code"
-					textKey="label"
 					onChange={setSelectedCities}
-					onQuery={() => undefined}
-					onOpen={() => undefined}
-					onClose={() => undefined}
+					getOptionKey={(option) => option.code}
+					getOptionLabel={(option) => option.label}
+					getOptionCode={(option) => option.code}
 				/>
 			</ComponentCard>
 

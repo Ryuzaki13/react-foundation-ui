@@ -1,0 +1,101 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Stories, Subtitle, Title } from "@storybook/addon-docs/blocks";
+import * as DeprecatedMultiSelectStories from "./DeprecatedMultiSelect.stories";
+
+<Meta
+	of={DeprecatedMultiSelectStories}
+	parameters={{
+		docs: {
+			toc: true
+		}
+	}}
+/>
+
+<Title>DeprecatedMultiSelect</Title>
+<Subtitle>Совместимый мультиселект для CollectionItem и OData-ориентированных коллекций</Subtitle>
+
+`DeprecatedMultiSelect` сохраняет совместимый `codeKey`/`textKey` API для существующих consumers и OData-обёрток.
+Для нового кода с произвольной типизированной option, независимыми identity и отображаемым code используйте канонический `MultiSelect` из того же package subpath.
+DeprecatedMultiSelect имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
+Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны загрузку, ошибочные состояния.
+
+Host, которому на время миграции нужен прежний public name, может явно переименовать экспорт на своей границе:
+
+```ts
+export { DeprecatedMultiSelect as MultiSelect } from "@ryuzaki13/react-foundation-ui/multi-select";
+```
+
+## Основной сценарий
+
+<Primary />
+
+<Controls of={DeprecatedMultiSelectStories.Basic} />
+
+```tsx
+import { useState } from "react";
+
+import { DeprecatedMultiSelect } from "@ryuzaki13/react-foundation-ui/multi-select";
+
+const items = [
+	{ code: "MOW", label: "Москва" },
+	{ code: "EKB", label: "Екатеринбург" }
+];
+
+export function Example() {
+	const [value, setValue] = useState([]);
+	const [query, setQuery] = useState("");
+
+	return (
+		<DeprecatedMultiSelect
+			label="Города"
+			items={items}
+			value={value}
+			query={query}
+			onQuery={setQuery}
+			onChange={setValue}
+			codeKey="code"
+			textKey="label"
+		/>
+	);
+}
+```
+
+## Практические рекомендации
+
+- Для асинхронных сценариев предусмотрите не только успешный путь, но и загрузку, пустой результат и ошибку.
+- Popup использует `grid`, потому что строка содержит два самостоятельных действия: checkbox меняет черновой множественный выбор, а кнопка с названием выбирает только текущую строку и сразу применяет значение.
+- При фокусе в поле стрелки перемещают активную строку, `Ctrl+Space` переключает её checkbox без закрытия, а `Enter` выполняет немедленный выбор только активной строки.
+- Массовые действия находятся вне `grid`, поэтому остаются самостоятельными кнопками и не нарушают структуру составного виджета.
+
+## Сценарии использования
+
+### Базовый сценарий без дополнительной логики
+
+Базовый сценарий без дополнительной логики.
+
+<Canvas of={DeprecatedMultiSelectStories.Basic} />
+
+### Состояние загрузки
+
+Состояние загрузки.
+
+<Canvas of={DeprecatedMultiSelectStories.Loading} />
+
+### Состояние ошибки
+
+Состояние ошибки.
+
+<Canvas of={DeprecatedMultiSelectStories.ErrorState} />
+
+### Пустое состояние
+
+Пустое состояние.
+
+<Canvas of={DeprecatedMultiSelectStories.Empty} />
+
+## API
+
+<ArgTypes of={DeprecatedMultiSelectStories} />
+
+## Все сторисы
+
+<Stories includePrimary={false} />

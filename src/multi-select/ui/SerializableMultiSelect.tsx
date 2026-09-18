@@ -1,7 +1,7 @@
-import { MultiSelect } from "./MultiSelect";
+import { DeprecatedMultiSelect } from "./DeprecatedMultiSelect";
 
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 import type { UiBaseProps } from "../../types";
+import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 type SerializableOptionRecord = Record<string, unknown>;
 
@@ -68,7 +68,7 @@ export function SerializableMultiSelect<
 	const selectedItems = items.filter((item) => selectedKeys.has(item.key));
 
 	return (
-		<MultiSelect
+		<DeprecatedMultiSelect
 			label={label}
 			description={description}
 			disabled={disabled}

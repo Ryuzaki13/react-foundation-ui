@@ -1,12 +1,17 @@
 import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
-import { type MultiSelectOptionDisableContext, type MultiSelectRenderContext } from "../ui/legacyMultiSelectTypes";
-import { type OptionMultiSelectOptionDisableContext, type OptionMultiSelectRenderContext } from "../ui/optionMultiSelectTypes";
+import { type DeprecatedMultiSelectOptionDisableContext, type DeprecatedMultiSelectRenderContext } from "../ui/legacyMultiSelectTypes";
+import {
+	type MultiSelectOptionDisableContext,
+	type MultiSelectRenderContext as GenericMultiSelectRenderContext
+} from "../ui/multiSelectTypes";
 
 import { materializeMultiSelectOptions } from "./materializeMultiSelectOptions";
 
 /** Преобразует generic render-context в опубликованный legacy-контракт. */
-export function adaptLegacyMultiSelectRenderContext(context: OptionMultiSelectRenderContext<CollectionItem>): MultiSelectRenderContext {
+export function adaptLegacyMultiSelectRenderContext(
+	context: GenericMultiSelectRenderContext<CollectionItem>
+): DeprecatedMultiSelectRenderContext {
 	return {
 		selectedItems: materializeMultiSelectOptions(context.selectedOptions, true),
 		committedSelectedItems: materializeMultiSelectOptions(context.committedSelectedOptions, true),
@@ -21,8 +26,8 @@ export function adaptLegacyMultiSelectRenderContext(context: OptionMultiSelectRe
 
 /** Преобразует generic disable-context без изменения identity выбранных элементов. */
 export function adaptLegacyMultiSelectOptionDisableContext(
-	context: OptionMultiSelectOptionDisableContext<CollectionItem>
-): MultiSelectOptionDisableContext {
+	context: MultiSelectOptionDisableContext<CollectionItem>
+): DeprecatedMultiSelectOptionDisableContext {
 	return {
 		selectedItems: materializeMultiSelectOptions(context.selectedOptions, true),
 		committedSelectedItems: materializeMultiSelectOptions(context.committedSelectedOptions, true),

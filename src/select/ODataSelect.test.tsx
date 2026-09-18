@@ -209,8 +209,8 @@ vi.mock("./Select", () => ({
 	}
 }));
 
-vi.mock("../multi-select/ui/MultiSelect", () => ({
-	MultiSelect: function MockMultiSelect(props: Record<string, any>) {
+vi.mock("../multi-select/ui/DeprecatedMultiSelect", () => ({
+	DeprecatedMultiSelect: function MockDeprecatedMultiSelect(props: Record<string, any>) {
 		lastMultiSelectProps = props;
 
 		return (

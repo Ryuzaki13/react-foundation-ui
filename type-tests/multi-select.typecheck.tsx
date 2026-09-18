@@ -1,4 +1,4 @@
-import { OptionMultiSelect, type OptionMultiSelectProps } from "../src/multi-select";
+import { DeprecatedMultiSelect, type DeprecatedMultiSelectProps, MultiSelect, type MultiSelectProps } from "../src/multi-select";
 
 type CatalogOption =
 	| {
@@ -44,21 +44,36 @@ const props = {
 		code: state.selected && option.kind === "catalog" ? option.displayCode : undefined
 	}),
 	renderToken: (context) => context.selectedOptions.map((option) => option.label).join(", ")
-} satisfies OptionMultiSelectProps<CatalogOption>;
+} satisfies MultiSelectProps<CatalogOption>;
 
-const inferredElement = <OptionMultiSelect {...props} />;
-const explicitElement = <OptionMultiSelect<CatalogOption> {...props} />;
+const inferredElement = <MultiSelect {...props} />;
+const explicitElement = <MultiSelect<CatalogOption> {...props} />;
+
+type LegacyOption = {
+	code: string;
+	text: string;
+};
+
+const legacyOptions: LegacyOption[] = [{ code: "legacy", text: "Устаревшая опция" }];
+const legacyProps = {
+	label: "Старый контракт",
+	codeKey: "code",
+	textKey: "text",
+	items: legacyOptions,
+	value: legacyOptions,
+	onChange: (nextOptions) => {
+		const firstOption: LegacyOption | undefined = nextOptions[0];
+		void firstOption;
+	}
+} satisfies DeprecatedMultiSelectProps<LegacyOption>;
+const deprecatedElement = <DeprecatedMultiSelect {...legacyProps} />;
 
 void inferredElement;
 void explicitElement;
+void deprecatedElement;
 
-export type OptionMultiSelectKeyContract = Expect<Equal<ReturnType<OptionMultiSelectProps<CatalogOption>["getOptionKey"]>, string>>;
-export type OptionMultiSelectChangeContract = Expect<
-	Equal<Parameters<OptionMultiSelectProps<CatalogOption>["onChange"]>[0], CatalogOption[]>
->;
-export type OptionMultiSelectDisableContextContract = Expect<
-	Equal<
-		Parameters<NonNullable<OptionMultiSelectProps<CatalogOption>["getOptionDisabled"]>>[1]["selectedOptions"],
-		readonly CatalogOption[]
-	>
+export type MultiSelectKeyContract = Expect<Equal<ReturnType<MultiSelectProps<CatalogOption>["getOptionKey"]>, string>>;
+export type MultiSelectChangeContract = Expect<Equal<Parameters<MultiSelectProps<CatalogOption>["onChange"]>[0], CatalogOption[]>>;
+export type MultiSelectDisableContextContract = Expect<
+	Equal<Parameters<NonNullable<MultiSelectProps<CatalogOption>["getOptionDisabled"]>>[1]["selectedOptions"], readonly CatalogOption[]>
 >;

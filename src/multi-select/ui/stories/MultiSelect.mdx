@@ -11,80 +11,98 @@ import * as MultiSelectStories from "./MultiSelect.stories";
 />
 
 <Title>MultiSelect</Title>
-<Subtitle>Совместимый мультиселект для CollectionItem и OData-ориентированных коллекций</Subtitle>
+<Subtitle>Типобезопасный getter-based мультиселект для произвольных option</Subtitle>
 
-MultiSelect сохраняет совместимый `codeKey`/`textKey` API для существующих consumers и OData-обёрток; компонент не объявлен deprecated.
-Для нового кода с произвольной типизированной option, независимыми identity и отображаемым code предпочтителен `OptionMultiSelect` из того же package subpath.
-MultiSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
-Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны загрузку, ошибочные состояния.
+`MultiSelect<TOption>` сохраняет исходный тип option на всём пути от `options` и `value` до `onChange`.
+Компонент не требует `CollectionItem` и независимо получает identity, основной текст, отображаемый код, группу и поисковое представление.
 
 ## Основной сценарий
 
 <Primary />
 
-<Controls of={MultiSelectStories.Basic} />
+<Controls of={MultiSelectStories.IndependentIdentity} />
 
 ```tsx
 import { useState } from "react";
 
 import { MultiSelect } from "@ryuzaki13/react-foundation-ui/multi-select";
 
-const items = [
-	{ code: "MOW", label: "Москва" },
-	{ code: "EKB", label: "Екатеринбург" }
+type DepartmentOption = {
+	id: string;
+	name: string;
+	displayCode: string;
+};
+
+const options: DepartmentOption[] = [
+	{ id: "education:north", name: "Учебное отделение «Север»", displayCode: "УО-01" },
+	{ id: "education:south", name: "Учебное отделение «Юг»", displayCode: "УО-01" }
 ];
 
 export function Example() {
-	const [value, setValue] = useState([]);
-	const [query, setQuery] = useState("");
+	const [value, setValue] = useState<DepartmentOption[]>([]);
 
 	return (
 		<MultiSelect
-			label="Города"
-			items={items}
+			label="Подразделения"
+			options={options}
 			value={value}
-			query={query}
-			onQuery={setQuery}
 			onChange={setValue}
-			codeKey="code"
-			textKey="label"
+			getOptionKey={(option) => option.id}
+			getOptionLabel={(option) => option.name}
+			getOptionCode={(option) => option.displayCode}
 		/>
 	);
 }
 ```
 
-## Практические рекомендации
+## Контракт selector-функций
 
-- Для асинхронных сценариев предусмотрите не только успешный путь, но и загрузку, пустой результат и ошибку.
-- Popup использует `grid`, потому что строка содержит два самостоятельных действия: checkbox меняет черновой множественный выбор, а кнопка с названием выбирает только текущую строку и сразу применяет значение.
-- При фокусе в поле стрелки перемещают активную строку, `Ctrl+Space` переключает её checkbox без закрытия, а `Enter` выполняет немедленный выбор только активной строки.
-- Массовые действия находятся вне `grid`, поэтому остаются самостоятельными кнопками и не нарушают структуру составного виджета.
+- `getOptionKey` задаёт единственный identity option. Строковый ключ должен быть уникальным и устойчивым; числовой domain-id следует явно преобразовать через `String(id)`.
+- `getOptionLabel` возвращает основной текст, а `getOptionCode` — независимый дополнительный код. Одинаковый отображаемый code не объединяет option, если их key различаются.
+- По умолчанию поиск учитывает label, code и текст заголовка группы. `getOptionSearchText` полностью заменяет это представление и подходит для скрытых синонимов, транслитерации или заранее нормализованного индекса.
+- `getOptionGroup` объединяет соседние option с одинаковым `group.key`. Выбранная и доступная секции группируются независимо, поэтому один заголовок может появиться в обеих секциях.
+
+## Draft и commit
+
+При открытии компонент создаёт draft из контролируемого `value`. Checkbox изменяет draft, не вызывая `onChange` немедленно; закрытие popup подтверждает его через `onChange` и передаёт то же значение в `onClose`.
+Кнопка с названием option выбирает только эту option и сразу закрывает popup. `getOptionDisabled` получает `selectedOptions` и `selectedKeys` текущего draft, а также `committedSelectedOptions`, поэтому взаимозависимые ограничения обновляются ещё до commit.
+
+`renderToken` и `renderToolbar` получают тот же текущий выбор: draft, пока popup открыт, и подтверждённое значение после закрытия.
 
 ## Сценарии использования
 
-### Базовый сценарий без дополнительной логики
+### Identity независимо от отображаемого code
 
-Базовый сценарий без дополнительной логики.
+У двух option намеренно одинаковый `code`, но разные `id`. Их можно выбирать независимо без преобразования в `CollectionItem`.
 
-<Canvas of={MultiSelectStories.Basic} />
+<Canvas of={MultiSelectStories.IndependentIdentity} />
 
-### Состояние загрузки
+### Группировка и selected-first
 
-Состояние загрузки.
+Подтверждённые option отображаются первыми. После них идёт доступная секция; внутри обеих секций соседние option группируются отдельно.
 
-<Canvas of={MultiSelectStories.Loading} />
+<Canvas of={MultiSelectStories.GroupedSelectedFirst} />
 
-### Состояние ошибки
+### Контекстная блокировка и поисковый индекс
 
-Состояние ошибки.
+Option «Все подразделения» взаимоисключается с частным выбором через draft-aware `getOptionDisabled`.
+`getOptionSearchText` добавляет невидимые поисковые синонимы: например, запрос `СПО` находит оба учебных отделения.
 
-<Canvas of={MultiSelectStories.ErrorState} />
+<Canvas of={MultiSelectStories.ContextualDisabledAndSearch} />
 
-### Пустое состояние
+## Миграция с DeprecatedMultiSelect
 
-Пустое состояние.
+`DeprecatedMultiSelect` сохраняет `CollectionItem` и OData-ориентированный `codeKey`/`textKey` API. Для перехода на канонический `MultiSelect` замените:
 
-<Canvas of={MultiSelectStories.Empty} />
+- `items` на `options`;
+- `codeKey` на `getOptionKey`;
+- `textKey` на `getOptionLabel`;
+- использование identity как видимого code на отдельный `getOptionCode`;
+- `renderItem`, если он только вычислял text/code, на `getOptionLabel` и `getOptionCode`; сложную структурированную пару можно вернуть через `renderOption`.
+
+`onChange` после миграции получает `TOption[]`, поэтому адаптер к `CollectionItem` больше не нужен. `ODataMultiSelect` продолжает использовать `DeprecatedMultiSelect` внутри пакета.
+
+Старый контракт с `codeKey`/`items` доступен через `DeprecatedMultiSelect`; новый код должен использовать selector API `MultiSelect`.
 
 ## API
 

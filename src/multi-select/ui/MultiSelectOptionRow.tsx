@@ -2,27 +2,23 @@ import { CheckBox } from "../../check-box";
 import { Option, OptionButton } from "../../option";
 
 import styles from "./MultiSelect.module.scss";
-import {
-	type OptionMultiSelectOptionContent,
-	type OptionMultiSelectOptionKey,
-	type OptionMultiSelectOptionState
-} from "./optionMultiSelectTypes";
+import { type MultiSelectOptionContent, type MultiSelectOptionKey, type MultiSelectOptionState } from "./multiSelectTypes";
 
 type MultiSelectOptionRowProps<TOption> = Readonly<{
 	option: TOption;
 	index: number;
 	listId: string;
 	activeIndex: number;
-	selectedKeys: ReadonlySet<OptionMultiSelectOptionKey>;
+	selectedKeys: ReadonlySet<MultiSelectOptionKey>;
 	query: string;
 	highlightQuery: string;
-	getOptionKey: (option: TOption) => OptionMultiSelectOptionKey;
+	getOptionKey: (option: TOption) => MultiSelectOptionKey;
 	getOptionDisabled?: (option: TOption) => boolean;
 	getOptionId: (listId: string, index: number) => string;
 	setOptionRef: (index: number, node: HTMLElement | null) => void;
 	toggleOption: (option: TOption) => void;
 	selectOnlyOption: (option: TOption) => void;
-	renderOption: (option: TOption, state: OptionMultiSelectOptionState) => OptionMultiSelectOptionContent;
+	renderOption: (option: TOption, state: MultiSelectOptionState) => MultiSelectOptionContent;
 }>;
 
 /** Одна интерактивная строка grid: checkbox меняет draft, основная кнопка подтверждает только эту опцию. */

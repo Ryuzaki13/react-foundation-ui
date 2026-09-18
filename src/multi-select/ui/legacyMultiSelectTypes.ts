@@ -1,6 +1,6 @@
 import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
-export interface MultiSelectItemState {
+export interface DeprecatedMultiSelectItemState {
 	selected: boolean;
 	active: boolean;
 	disabled: boolean;
@@ -8,12 +8,12 @@ export interface MultiSelectItemState {
 	highlightQuery: string;
 }
 
-export interface MultiSelectOptionContent {
+export interface DeprecatedMultiSelectOptionContent {
 	text: string;
 	code: string | undefined;
 }
 
-export interface MultiSelectRenderContext {
+export interface DeprecatedMultiSelectRenderContext {
 	selectedItems: CollectionItem[];
 	committedSelectedItems: CollectionItem[];
 	availableItems: CollectionItem[];
@@ -24,7 +24,7 @@ export interface MultiSelectRenderContext {
 	deselectAll: () => void;
 }
 
-export interface MultiSelectOptionDisableContext {
+export interface DeprecatedMultiSelectOptionDisableContext {
 	selectedItems: CollectionItem[];
 	committedSelectedItems: CollectionItem[];
 	selectedKeys: ReadonlySet<string>;

@@ -16,13 +16,13 @@ import { formatMultiSelectOptionCount } from "../lib/formatMultiSelectOptionCoun
 import { materializeMultiSelectOptions } from "../lib/materializeMultiSelectOptions";
 import { areMultiSelectSelectionsEqual } from "../lib/multiSelectSelection";
 
+import { type MultiSelectProps } from "./MultiSelect";
 import styles from "./MultiSelect.module.scss";
 import { MultiSelectOptionList } from "./MultiSelectOptionList";
 import { MultiSelectOptionsWrapper } from "./MultiSelectOptionsWrapper";
-import { type OptionMultiSelectProps } from "./OptionMultiSelect";
-import { type OptionMultiSelectOptionDisableContext } from "./optionMultiSelectTypes";
+import { type MultiSelectOptionDisableContext } from "./multiSelectTypes";
 
-type OptionMultiSelectCoreProps<TOption> = OptionMultiSelectProps<TOption> &
+type MultiSelectCoreProps<TOption> = MultiSelectProps<TOption> &
 	Readonly<{
 		/** Сохраняет опубликованную ссылочную семантику только для legacy MultiSelect. */
 		preserveOptionArrayReference?: boolean;
@@ -33,7 +33,7 @@ type OptionMultiSelectCoreProps<TOption> = OptionMultiSelectProps<TOption> &
  * адаптируют свои контракты к этим selector-функциям, поэтому focus и a11y
  * поведение не расходятся между новым и legacy API.
  */
-export function OptionMultiSelectCore<TOption>({
+export function MultiSelectCore<TOption>({
 	ref,
 	options,
 	value,
@@ -62,7 +62,7 @@ export function OptionMultiSelectCore<TOption>({
 	renderToolbar,
 	renderOption,
 	preserveOptionArrayReference = false
-}: OptionMultiSelectCoreProps<TOption>) {
+}: MultiSelectCoreProps<TOption>) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [open, setOpen] = useState(false);
 	const triggerMode = "search-multi";
@@ -137,7 +137,7 @@ export function OptionMultiSelectCore<TOption>({
 		isEqual: compareSelections
 	});
 	const selectedKeys = useMemo(() => new Set(draftSelectedOptions.map(getOptionKey)), [draftSelectedOptions, getOptionKey]);
-	const optionDisableContext = useMemo<OptionMultiSelectOptionDisableContext<TOption>>(
+	const optionDisableContext = useMemo<MultiSelectOptionDisableContext<TOption>>(
 		() => ({
 			selectedOptions: draftSelectedOptions,
 			committedSelectedOptions,
