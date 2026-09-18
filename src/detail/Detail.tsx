@@ -1,69 +1,12 @@
-import { createContext, CSSProperties, FC, ReactNode, useContext } from "react";
+import { type AriaAttributes, type CSSProperties, type ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import styles from "./Detail.module.scss";
+import { DetailContext, type DetailType } from "./DetailContext";
+import { DetailItem } from "./DetailItem";
 
-export type DetailType = "detail" | "list";
-
-export interface DetailContextType {
-	semantic?: DetailType;
-	inline?: boolean;
-	center?: boolean;
-	vertical?: "start" | "center" | "end";
-	noWrap?: boolean;
-	withColon?: boolean;
-}
-
-const DetailContext = createContext<DetailContextType>({});
-
-export interface DetailItemProps {
-	label: ReactNode;
-	value: ReactNode;
-	withColon?: boolean;
-	required?: boolean;
-}
-
-function DetailItem({ label, value, withColon, required }: DetailItemProps) {
-	const { semantic, inline, noWrap, center, vertical = "center", withColon: withColonParent = true } = useContext(DetailContext);
-	const detailClass = cn(styles.detail, center && styles.textCenter, inline && styles.inline, noWrap && styles.noWrap, styles[vertical]);
-
-	const labelContent = (
-		<>
-			{label}
-			{required && <span className="statusError">*</span>}
-			{(typeof withColon === "boolean" ? withColon : withColonParent) && ":"}
-		</>
-	);
-
-	switch (semantic) {
-		case "detail":
-			return (
-				<div className={detailClass}>
-					<dt className={styles.dt}>{labelContent}</dt>
-					<dd className={styles.dd}>{value}</dd>
-				</div>
-			);
-
-		case "list":
-			return (
-				<li className={detailClass}>
-					<div className={styles.dt}>{labelContent}</div>
-					<div className={styles.dd}>{value}</div>
-				</li>
-			);
-
-		default:
-			return (
-				<div className={detailClass}>
-					<div className={styles.dt}>{labelContent}</div>
-					<div className={styles.dd}>{value}</div>
-				</div>
-			);
-	}
-}
-
-export interface DetailProps {
+export interface DetailProps extends AriaAttributes {
 	columnCount?: number;
 	rowGap?: "none" | "small" | "normal" | "large";
 	children: ReactNode;
@@ -77,28 +20,44 @@ export interface DetailProps {
 	withColon?: boolean;
 }
 
-export interface DetailComponent extends FC<DetailProps> {
-	Item: FC<DetailItemProps>;
+function normalizeColumnCount(columnCount: number) {
+	if (!Number.isFinite(columnCount)) {
+		return 1;
+	}
+
+	return Math.min(5, Math.max(1, Math.trunc(columnCount)));
 }
 
 /**
  * Компонент для вывода пар «заголовок-значение» в одну или несколько колонок. Подходит для карточек сущностей, сводок и страниц просмотра.
  */
-export function Detail({ children, columnCount = 1, rowGap = "none", semantic = "list", className, ...itemProps }: DetailProps) {
+export function Detail({
+	children,
+	columnCount = 1,
+	rowGap = "none",
+	semantic = "list",
+	className,
+	inline,
+	center,
+	vertical,
+	noWrap,
+	withColon,
+	...ariaAttributes
+}: DetailProps) {
 	const classes = cn(styles.detailList, styles[rowGap], className);
-	const style = { columnCount: Math.min(5, Math.max(1, columnCount)) } as CSSProperties;
+	const style = { columnCount: normalizeColumnCount(columnCount) } satisfies CSSProperties;
 	const content =
 		semantic === "detail" ? (
-			<dl className={classes} style={style}>
+			<dl {...ariaAttributes} className={classes} style={style}>
 				{children}
 			</dl>
 		) : (
-			<ul className={classes} style={style}>
+			<ul {...ariaAttributes} className={classes} style={style}>
 				{children}
 			</ul>
 		);
 
-	return <DetailContext.Provider value={{ ...itemProps, semantic }}>{content}</DetailContext.Provider>;
+	return <DetailContext.Provider value={{ semantic, inline, center, vertical, noWrap, withColon }}>{content}</DetailContext.Provider>;
 }
 
 Detail.Item = DetailItem;

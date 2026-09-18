@@ -23,11 +23,11 @@ Detail уже имеет живые stories, а эта страница соби
 <Controls of={DetailStories.BasicList} />
 
 ```tsx
-import { Detail } from "@ryuzaki13/react-foundation-ui";
+import { Detail } from "@ryuzaki13/react-foundation-ui/detail";
 
 export function Example() {
 	return (
-		<Detail columnCount={2}>
+		<Detail aria-label="Реквизиты документа" columnCount={2} semantic="detail">
 			<Detail.Item label="Номер" value="DOC-001" />
 			<Detail.Item label="Статус" value="Черновик" />
 		</Detail>
@@ -38,6 +38,8 @@ export function Example() {
 ## Практические рекомендации
 
 - Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- Для пар «термин-значение» используйте `semantic="detail"`; режим `list` остаётся режимом по умолчанию для спискового представления.
+- Если на странице несколько блоков Detail, задайте каждому понятное доступное имя через `aria-label` или `aria-labelledby`.
 
 ## Сценарии использования
 

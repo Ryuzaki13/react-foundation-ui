@@ -1,8 +1,7 @@
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
 import { Detail, type DetailProps } from "../Detail";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
 	title: "UI/Detail",
@@ -121,6 +120,7 @@ export const SemanticDl: Story = {
 		semantic: "detail",
 		inline: true,
 		columnCount: 1,
+		"aria-label": "Сведения о заказе",
 		children: undefined
 	}
 };
