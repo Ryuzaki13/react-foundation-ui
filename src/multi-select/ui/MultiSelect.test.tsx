@@ -79,6 +79,45 @@ describe("MultiSelect", () => {
 		expect(container?.textContent).toContain("2 элемента");
 	});
 
+	it("сохраняет ссылки mutable-массивов в опубликованных legacy callback-контекстах", async () => {
+		const value = [ITEMS[0]!];
+		let renderSelectedItems: CollectionItem[] | undefined;
+		let renderCommittedItems: CollectionItem[] | undefined;
+		let disableSelectedItems: CollectionItem[] | undefined;
+		let disableCommittedItems: CollectionItem[] | undefined;
+
+		await renderNode(
+			<MultiSelect
+				label="Справочник"
+				codeKey="code"
+				textKey="text"
+				items={ITEMS}
+				value={value}
+				onChange={() => undefined}
+				renderToken={(context) => {
+					renderSelectedItems = context.selectedItems;
+					renderCommittedItems = context.committedSelectedItems;
+					return context.selectedItems[0]?.text;
+				}}
+				getOptionDisabled={(_, context) => {
+					disableSelectedItems = context.selectedItems;
+					disableCommittedItems = context.committedSelectedItems;
+					return false;
+				}}
+			/>
+		);
+
+		expect(renderSelectedItems).toBe(value);
+		expect(renderCommittedItems).toBe(value);
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+
+		expect(disableSelectedItems).toBe(value);
+		expect(disableCommittedItems).toBe(value);
+	});
+
 	it("сохраняет корректную работу шеврона и фокус input", async () => {
 		await renderNode(<MultiSelectHarness />);
 
@@ -213,6 +252,117 @@ describe("MultiSelect", () => {
 		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
 		expect(rows).toHaveLength(1);
 		expect(rows[0]?.textContent).toContain("Бета");
+	});
+
+	it("сохраняет codeKey как identity при независимом отображаемом code из renderItem", async () => {
+		const items = [
+			{ id: "group-1", label: "Первая группа", displayCode: "23-ИС" },
+			{ id: "group-2", label: "Вторая группа", displayCode: "24-ИС" }
+		];
+		const onChange = vi.fn<(value: CollectionItem[]) => void>();
+
+		await renderNode(
+			<MultiSelect
+				label="Группы"
+				codeKey="id"
+				textKey="label"
+				items={items}
+				value={[]}
+				onChange={onChange}
+				renderItem={(item) => ({ text: item.label ?? "", code: item.displayCode })}
+			/>
+		);
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+
+		const firstRow = document.querySelector<HTMLElement>('[role="row"]');
+		expect(firstRow?.textContent).toContain("Первая группа");
+		expect(firstRow?.textContent).toContain("23-ИС");
+		expect(firstRow?.textContent).not.toContain("group-1");
+
+		await act(async () => {
+			firstRow?.querySelector<HTMLInputElement>('input[type="checkbox"]')?.click();
+		});
+
+		await act(async () => {
+			(document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement).click();
+		});
+
+		expect(onChange).toHaveBeenCalledWith([items[0]]);
+	});
+
+	it("скрывает code визуально, но сохраняет legacy-поиск по нему", async () => {
+		await renderNode(
+			<MultiSelect label="Справочник" codeKey="code" textKey="text" hideCode items={ITEMS} value={[]} onChange={() => undefined} />
+		);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+		await act(async () => {
+			const valueSetter = Object.getOwnPropertyDescriptor(HTMLInputElement.prototype, "value")?.set;
+			valueSetter?.call(input, "02");
+			input.dispatchEvent(new Event("input", { bubbles: true }));
+		});
+
+		const rows = Array.from(document.querySelectorAll<HTMLElement>('[role="row"]'));
+		expect(rows).toHaveLength(1);
+		expect(rows[0]?.textContent).toContain("Бета");
+		expect(rows[0]?.textContent).not.toContain("02");
+	});
+
+	it("показывает code в token, но не подставляет его вместо отсутствующего legacy-текста строки", async () => {
+		const item = { code: "01" };
+
+		await renderNode(
+			<MultiSelect
+				label="Справочник"
+				codeKey="code"
+				textKey="text"
+				hideCode
+				items={[item]}
+				value={[item]}
+				onChange={() => undefined}
+			/>
+		);
+		expect(container?.textContent).toContain("01");
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+
+		expect(document.querySelector('[role="row"]')?.textContent).not.toContain("01");
+	});
+
+	it("передаёт исходную ссылку value в onClose, если выбор не менялся", async () => {
+		const value = [ITEMS[0]];
+		const onClose = vi.fn<(nextValue: CollectionItem[]) => void>();
+
+		await renderNode(
+			<MultiSelect
+				label="Справочник"
+				codeKey="code"
+				textKey="text"
+				items={ITEMS}
+				value={value}
+				onChange={() => undefined}
+				onClose={onClose}
+			/>
+		);
+
+		await act(async () => {
+			(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement).click();
+		});
+
+		await act(async () => {
+			(document.querySelector('button[aria-label="Закрыть список"]') as HTMLButtonElement).click();
+		});
+
+		expect(onClose).toHaveBeenCalledTimes(1);
+		expect(onClose.mock.calls[0]?.[0]).toBe(value);
 	});
 
 	it("оставляет отключенные варианты видимыми и не выбирает их массовым действием", async () => {

@@ -11,8 +11,10 @@ import * as MultiSelectStories from "./MultiSelect.stories";
 />
 
 <Title>MultiSelect</Title>
-<Subtitle>Мультиселект для локальных коллекций с токенами, поиском и состояниями загрузки</Subtitle>
+<Subtitle>Совместимый мультиселект для CollectionItem и OData-ориентированных коллекций</Subtitle>
 
+MultiSelect сохраняет совместимый `codeKey`/`textKey` API для существующих consumers и OData-обёрток; компонент не объявлен deprecated.
+Для нового кода с произвольной типизированной option, независимыми identity и отображаемым code предпочтителен `OptionMultiSelect` из того же package subpath.
 MultiSelect уже имеет живые stories, а эта страница собирает их в структурированную документацию с краткими рекомендациями, примерами подключения и API.
 Ниже можно быстро проверить базовый сценарий, а затем перейти к отдельным режимам использования и состояниям компонента. Отдельно разобраны загрузку, ошибочные состояния.
 
@@ -25,7 +27,7 @@ MultiSelect уже имеет живые stories, а эта страница с�
 ```tsx
 import { useState } from "react";
 
-import { MultiSelect } from "@ryuzaki13/react-foundation-ui";
+import { MultiSelect } from "@ryuzaki13/react-foundation-ui/multi-select";
 
 const items = [
 	{ code: "MOW", label: "Москва" },

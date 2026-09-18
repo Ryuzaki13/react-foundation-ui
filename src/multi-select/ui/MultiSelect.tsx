@@ -1,79 +1,20 @@
-import React, { type PropsWithChildren, type Ref, useCallback, useMemo, useRef, useState } from "react";
+import { type ReactNode, type Ref, useMemo } from "react";
 
-import { CheckBox } from "../../check-box";
-import { Option, OptionButton } from "../../option";
-import {
-	PickerField,
-	PickerPopup,
-	PickerStatus,
-	PickerTrigger,
-	usePickerDefaultFilter,
-	usePickerFloatingListbox,
-	usePickerQuery,
-	usePickerSelectionLifecycle,
-	usePickerTriggerController
-} from "../../picker";
-import { Separator } from "../../separator";
+import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
+
 import { type UiBaseProps } from "../../types";
+import { adaptLegacyMultiSelectOptionDisableContext, adaptLegacyMultiSelectRenderContext } from "../lib/adaptLegacyMultiSelectContext";
+import { resolveLegacyMultiSelectTextKey } from "../lib/resolveLegacyMultiSelectTextKey";
 
-import { createDefaultMultiSelectItemRenderer, createDefaultMultiSelectTokenRenderer, resolveMultiSelectTextKey } from "./defaultRenderers";
-import styles from "./MultiSelect.module.scss";
-import { MultiSelectOptionSkeleton } from "./MultiSelectOptionSkeleton";
+import {
+	type MultiSelectItemState,
+	type MultiSelectOptionContent,
+	type MultiSelectOptionDisableContext,
+	type MultiSelectRenderContext
+} from "./legacyMultiSelectTypes";
+import { OptionMultiSelectCore } from "./OptionMultiSelectCore";
 
-import type { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
-
-interface MultiSelectOptionsProps extends PropsWithChildren {
-	isNoData?: boolean;
-	// isLoading?: boolean;
-	error?: string;
-}
-
-function MultiSelectOptionsWrapper({ isNoData, error, children }: MultiSelectOptionsProps) {
-	if (isNoData) return <PickerStatus emptyState={<MultiSelectOptionSkeleton text="Нет данных" />} />;
-	// if (isLoading) return <PickerStatus loadingState={<MultiSelectOptionSkeleton text="Загрузка..." />} />;
-	if (error) return <PickerStatus errorState={<MultiSelectOptionSkeleton isError text="Ошибка загрузки" />} />;
-
-	return <>{children}</>;
-}
-
-export interface MultiSelectItemState {
-	selected: boolean;
-	active: boolean;
-	disabled: boolean;
-	query: string;
-	highlightQuery: string;
-}
-
-/**
- * Структурированное содержимое опции множественного выбора. `MultiSelect` владеет
- * интерактивной оболочкой и checkbox-слотом, а renderer отвечает только за данные
- * текстовой части, поэтому единая композиция `OptionButton` сохраняется и для
- * произвольного ReactNode.
- */
-export interface MultiSelectOptionContent {
-	text: string;
-	code: string | undefined;
-}
-
-export interface MultiSelectRenderContext {
-	selectedItems: CollectionItem[];
-	committedSelectedItems: CollectionItem[];
-	availableItems: CollectionItem[];
-	query: string;
-	open: boolean;
-	clearSelection: () => void;
-	selectAll: () => void;
-	deselectAll: () => void;
-}
-
-export interface MultiSelectOptionDisableContext {
-	selectedItems: CollectionItem[];
-	committedSelectedItems: CollectionItem[];
-	selectedKeys: ReadonlySet<string>;
-	open: boolean;
-}
-
-type MultiSelectOptionalRenderer<TContext> = ((context: TContext) => React.ReactNode) | null | false;
+type MultiSelectOptionalRenderer<TContext> = ((context: TContext) => ReactNode) | null | false;
 
 interface MultiSelectRenderers {
 	renderToken?: MultiSelectOptionalRenderer<MultiSelectRenderContext>;
@@ -99,112 +40,10 @@ export interface MultiSelectProps<TOption extends Record<string, string> = Colle
 	isLoading?: boolean;
 }
 
-const fallback: CollectionItem[] = [];
-
-function getItemKey(item: CollectionItem, codeKey: string) {
-	return item[codeKey];
-}
-
-function getItemSearchParts(item: CollectionItem, codeKey: string, textKey: string) {
-	return Array.from(new Set([item[textKey], item[codeKey], ...Object.values(item)]));
-}
-
-function areSelectionsEqual(left: CollectionItem[], right: CollectionItem[], codeKey: string) {
-	if (left.length !== right.length) {
-		return false;
-	}
-
-	const rightKeys = new Set(right.map((item) => getItemKey(item, codeKey)));
-
-	return left.every((item) => rightKeys.has(getItemKey(item, codeKey)));
-}
-
-interface MultiSelectOptionEntry {
-	item: CollectionItem;
-	index: number;
-}
-
-interface MultiSelectOptionGroupProps {
-	entries: MultiSelectOptionEntry[];
-	listId: string;
-	activeIndex: number;
-	selectedKeys: Set<string>;
-	codeKey: string;
-	query: string;
-	highlightQuery: string;
-	getOptionDisabled?: (item: CollectionItem) => boolean;
-	getOptionId: (listId: string, index: number) => string;
-	setOptionRef: (index: number, node: HTMLElement | null) => void;
-	toggleOption: (item: CollectionItem) => void;
-	selectOnlyOption: (item: CollectionItem) => void;
-	renderItem: (item: CollectionItem, state: MultiSelectItemState) => MultiSelectOptionContent;
-}
-
-function MultiSelectOptionGroup({
-	entries,
-	listId,
-	activeIndex,
-	selectedKeys,
-	codeKey,
-	query,
-	highlightQuery,
-	getOptionDisabled,
-	getOptionId,
-	setOptionRef,
-	toggleOption,
-	selectOnlyOption,
-	renderItem
-}: MultiSelectOptionGroupProps) {
-	return entries.map(({ item, index }) => {
-		const active = index === activeIndex;
-		const itemKey = getItemKey(item, codeKey);
-		const selected = selectedKeys.has(itemKey);
-		const optionDisabled = getOptionDisabled?.(item) ?? false;
-		const content = renderItem(item, { selected, active, disabled: optionDisabled, query, highlightQuery });
-
-		return (
-			<Option
-				key={`${itemKey}-${index}`}
-				id={getOptionId(listId, index)}
-				ref={(node) => setOptionRef(index, node)}
-				role="row"
-				aria-selected={selected}
-				aria-disabled={optionDisabled || undefined}
-				selected={selected}
-				active={active}
-				disabled={optionDisabled}>
-				<div
-					role="gridcell"
-					className={styles.optionCheckBox}
-					onMouseDown={(event) => event.stopPropagation()}
-					onClick={(event) => event.stopPropagation()}>
-					<CheckBox
-						value={selected}
-						disabled={optionDisabled}
-						aria-label={`${selected ? "Убрать" : "Добавить"} «${content.text}» ${selected ? "из выбора" : "в выбор"}`}
-						onChange={() => toggleOption(item)}
-					/>
-				</div>
-				<div role="gridcell" className={styles.optionActionCell}>
-					<OptionButton
-						tabIndex={-1}
-						disabled={optionDisabled}
-						aria-label={`Выбрать только «${content.text}»`}
-						text={content.text}
-						code={content.code}
-						searchText={highlightQuery}
-						onMouseDown={(event) => event.preventDefault()}
-						onClick={() => selectOnlyOption(item)}
-					/>
-				</div>
-			</Option>
-		);
-	});
-}
-
 /**
- * Поле множественного выбора с внутренним черновиком значений и подтверждением выбора при закрытии списка.
- * Подходит как для самостоятельного использования, так и как базовый слой для OData-оберток.
+ * Совместимый адаптер исходного codeKey/textKey API. Новым typed-consumers следует
+ * использовать `OptionMultiSelect`, а OData-обёртки продолжают работать через
+ * опубликованный контракт без изменения selection semantics.
  */
 export function MultiSelect({
 	ref,
@@ -214,383 +53,66 @@ export function MultiSelect({
 	items,
 	value,
 	onChange,
-	label,
-	description,
-	placeholder,
-	size,
-	query,
-	defaultQuery,
-	highlightQuery,
-	onQuery,
-	defaultFilter = true,
-	onOpen,
-	onClose,
 	getOptionDisabled,
-	disabled,
-	error,
-	isLoading,
+	onClose,
 	renderToken,
 	renderToolbar,
-	renderItem
+	renderItem,
+	...props
 }: MultiSelectProps & { ref?: Ref<HTMLInputElement> }) {
-	const inputRef = useRef<HTMLInputElement | null>(null);
-	const [open, setOpen] = useState(false);
-	const triggerMode = "search-multi";
-	const committedSelectedItems = value ?? fallback;
-	const committedSelectedKeys = useMemo(
-		() => new Set(committedSelectedItems.map((item) => getItemKey(item, codeKey))),
-		[codeKey, committedSelectedItems]
-	);
-	const availableItems = useMemo(
-		() => items.filter((item) => !committedSelectedKeys.has(getItemKey(item, codeKey))),
-		[codeKey, committedSelectedKeys, items]
-	);
+	const selectedItems = useMemo(() => value ?? [], [value]);
 	const resolvedTextKey = useMemo(
-		() => resolveMultiSelectTextKey([...committedSelectedItems, ...items], codeKey, textKey),
-		[codeKey, committedSelectedItems, items, textKey]
+		() => resolveLegacyMultiSelectTextKey([...selectedItems, ...items], codeKey, textKey),
+		[codeKey, items, selectedItems, textKey]
 	);
-	const {
-		query: currentQuery,
-		setQuery,
-		resetQueryOnClose
-	} = usePickerQuery({
-		query,
-		defaultQuery,
-		onQuery,
-		triggerMode
-	});
-	const handleOpenChange = (nextOpen: boolean) => {
-		if (open && !nextOpen && resetQueryOnClose) {
-			setQuery("");
-		}
-
-		setOpen(nextOpen);
-	};
-	const filteredCommittedSelectedItems = usePickerDefaultFilter({
-		options: committedSelectedItems,
-		query: currentQuery,
-		enabled: defaultFilter,
-		getSearchText: (item) => getItemSearchParts(item, codeKey, resolvedTextKey)
-	});
-	const filteredAvailableItems = usePickerDefaultFilter({
-		options: availableItems,
-		query: currentQuery,
-		enabled: defaultFilter,
-		getSearchText: (item) => getItemSearchParts(item, codeKey, resolvedTextKey)
-	});
-	const visibleOptions = useMemo(
-		() => [...filteredCommittedSelectedItems, ...filteredAvailableItems],
-		[filteredAvailableItems, filteredCommittedSelectedItems]
-	);
-	const selectedIndex = filteredCommittedSelectedItems.length > 0 ? 0 : -1;
-	const {
-		draftValue: draftSelectedItems,
-		setDraftValue: setDraftSelectedItems,
-		prepareOpen
-	} = usePickerSelectionLifecycle({
-		value: committedSelectedItems,
-		open,
-		onCommit: onChange,
-		onOpen,
-		onClose,
-		isEqual: (left, right) => areSelectionsEqual(left, right, codeKey)
-	});
-	const selectedKeys = useMemo(() => new Set(draftSelectedItems.map((item) => getItemKey(item, codeKey))), [codeKey, draftSelectedItems]);
-	const optionDisableContext = useMemo<MultiSelectOptionDisableContext>(
-		() => ({
-			selectedItems: draftSelectedItems,
-			committedSelectedItems,
-			selectedKeys,
-			open
-		}),
-		[committedSelectedItems, draftSelectedItems, open, selectedKeys]
-	);
-	const isOptionDisabled = useCallback(
-		(item: CollectionItem) => getOptionDisabled?.(item, optionDisableContext) ?? false,
-		[getOptionDisabled, optionDisableContext]
-	);
-	const {
-		activeIndex,
-		context,
-		floatingStyles,
-		getFloatingProps,
-		setReference,
-		setFloating,
-		setOptionRef,
-		close,
-		openList,
-		toggleOpen,
-		handleReferenceKeyDown,
-		handleFloatingKeyDown,
-		getOptionId,
-		getActiveOptionId
-	} = usePickerFloatingListbox({
-		options: visibleOptions,
-		selectedIndex,
-		open,
-		onOpenChange: handleOpenChange,
-		onSelect: undefined,
-		disabled,
-		getOptionDisabled: isOptionDisabled,
-		closeOnSelect: false,
-		allowOpenWithoutOptions: true,
-		triggerMode
-	});
-
-	const currentHighlightQuery = highlightQuery ?? currentQuery;
-	const toggleDraftSelection = (item: CollectionItem) => {
-		const itemKey = getItemKey(item, codeKey);
-
-		setDraftSelectedItems((currentItems) => {
-			const isSelected = currentItems.some((selectedItem) => getItemKey(selectedItem, codeKey) === itemKey);
-
-			if (isSelected) {
-				return currentItems.filter((selectedItem) => getItemKey(selectedItem, codeKey) !== itemKey);
-			}
-
-			if (isOptionDisabled(item)) {
-				return currentItems;
-			}
-
-			return [...currentItems, item];
-		});
-	};
-
-	const setInputNode = (node: HTMLInputElement | null) => {
-		inputRef.current = node;
-
-		if (typeof ref === "function") {
-			ref(node);
-			return;
-		}
-
-		if (ref) {
-			ref.current = node;
-		}
-	};
-
-	const clearSelection = () => {
-		setDraftSelectedItems([]);
-
-		if (!open) {
-			onChange([]);
-		}
-	};
-
-	const selectAll = () => {
-		setDraftSelectedItems((currentItems) => {
-			const nextItems = [...currentItems];
-			const selectedKeys = new Set(currentItems.map((item) => getItemKey(item, codeKey)));
-
-			for (const item of visibleOptions) {
-				const itemKey = getItemKey(item, codeKey);
-
-				if (!selectedKeys.has(itemKey) && !isOptionDisabled(item)) {
-					selectedKeys.add(itemKey);
-					nextItems.push(item);
-				}
-			}
-
-			return nextItems;
-		});
-	};
-
-	const deselectAll = () => {
-		setDraftSelectedItems([]);
-	};
-
-	const selectOnlyOption = (item: CollectionItem) => {
-		if (isOptionDisabled(item)) {
-			return;
-		}
-
-		setDraftSelectedItems([item]);
-		close();
-	};
-
-	const currentSelectedItems = open ? draftSelectedItems : committedSelectedItems;
-	const hasSelectedItems = currentSelectedItems.length > 0;
-	const renderContext: MultiSelectRenderContext = {
-		selectedItems: currentSelectedItems,
-		committedSelectedItems,
-		availableItems: filteredAvailableItems,
-		query: currentQuery,
-		open,
-		clearSelection,
-		selectAll,
-		deselectAll
-	};
-	const tokenRenderer =
-		renderToken === undefined ? createDefaultMultiSelectTokenRenderer({ codeKey, textKey: resolvedTextKey }) : renderToken;
-	const itemRenderer =
-		renderItem ??
-		createDefaultMultiSelectItemRenderer({
-			codeKey,
-			textKey: resolvedTextKey,
-			hideCode
-		});
-	const tokenNode = typeof tokenRenderer === "function" ? tokenRenderer(renderContext) : null;
-	const toolbarNode = typeof renderToolbar === "function" ? renderToolbar(renderContext) : renderToolbar;
-	const selectedEntries = filteredCommittedSelectedItems.map((item, index) => ({ item, index }));
-	const itemEntries = filteredAvailableItems.map((item, index) => ({ item, index: index + selectedEntries.length }));
-	const isNoData = !isLoading && !error && visibleOptions.length === 0;
-	const triggerController = usePickerTriggerController({
-		mode: triggerMode,
-		open,
-		currentQuery,
-		hasDisplayValue: false,
-		inputRef,
-		setQuery,
-		openList,
-		close,
-		toggleOpen,
-		onBeforeOpen: () => {
-			if (!open) {
-				prepareOpen();
-			}
-		}
-	});
+	const adaptedRenderToken =
+		typeof renderToken === "function"
+			? (context: Parameters<typeof adaptLegacyMultiSelectRenderContext>[0]) =>
+					renderToken(adaptLegacyMultiSelectRenderContext(context))
+			: renderToken;
+	const adaptedRenderToolbar =
+		typeof renderToolbar === "function"
+			? (context: Parameters<typeof adaptLegacyMultiSelectRenderContext>[0]) =>
+					renderToolbar(adaptLegacyMultiSelectRenderContext(context))
+			: renderToolbar;
 
 	return (
-		<PickerField label={label} description={description} disabled={disabled} size={size} className={styles.multiSelect}>
-			{({ controlId, labelId, describedBy }) => {
-				const listId = `${controlId}-grid`;
-
-				return (
-					<>
-						<PickerTrigger
-							ref={setInputNode}
-							rootRef={setReference}
-							id={controlId}
-							type="text"
-							role="combobox"
-							autoComplete="off"
-							isLoading={isLoading}
-							disabled={disabled}
-							open={open}
-							optionCount={items.length}
-							label={label}
-							placeholder={placeholder}
-							placeholderFallback="Выберите значения"
-							value={currentQuery}
-							selectedValue={tokenNode}
-							hasSelection={hasSelectedItems}
-							showSelectedValue={hasSelectedItems && currentQuery.length === 0}
-							clearable
-							onClear={clearSelection}
-							clearAriaLabel="Очистить все"
-							onToggleMouseDown={triggerController.handleToggleMouseDown}
-							onToggleClick={triggerController.handleToggleClick}
-							aria-labelledby={labelId}
-							aria-describedby={describedBy}
-							aria-haspopup="grid"
-							aria-expanded={open}
-							aria-controls={open ? listId : undefined}
-							aria-autocomplete="list"
-							aria-activedescendant={open ? getActiveOptionId(listId) : undefined}
-							rootClassName="flex alignItemsCenter"
-							onChange={(event) => {
-								triggerController.handleTriggerInputChange(event.target.value);
-							}}
-							onClick={triggerController.handleTriggerClick}
-							onFocus={(event) => {
-								triggerController.handleTriggerFocus(event.currentTarget);
-							}}
-							onKeyDown={(event) => {
-								handleReferenceKeyDown(event);
-
-								if (event.defaultPrevented) {
-									return;
-								}
-
-								if (open && event.ctrlKey && event.key === " ") {
-									event.preventDefault();
-									const activeItem = visibleOptions[activeIndex];
-									if (activeItem) {
-										toggleDraftSelection(activeItem);
-									}
-									return;
-								}
-
-								triggerController.handleTriggerKeyDown({
-									event,
-									onActivateWhenOpen: () => {
-										const activeItem = visibleOptions[activeIndex];
-										if (activeItem) {
-											selectOnlyOption(activeItem);
-										}
-									},
-									enableClosedArrowDownOpen: true,
-									suppressClosedArrowUp: true
-								});
-							}}
-						/>
-
-						<PickerPopup
-							open={open}
-							context={context}
-							floatingStyles={floatingStyles}
-							listId={listId}
-							labelId={labelId}
-							descriptionId={describedBy}
-							activeOptionId={open ? getActiveOptionId(listId) : undefined}
-							ariaMultiselectable
-							popupRole="grid"
-							setFloating={setFloating}
-							getFloatingProps={getFloatingProps}
-							onKeyDown={handleFloatingKeyDown}
-							initialFocus={-1}
-							returnFocus={false}
-							tabIndex={-1}
-							toolbar={toolbarNode}
-							selectionActions={
-								renderToolbar === undefined ? { onSelectAll: selectAll, onDeselectAll: deselectAll } : undefined
-							}>
-							<MultiSelectOptionsWrapper isNoData={isNoData} error={error}>
-								<div role="presentation" className="scrollable overscroll h100">
-									<MultiSelectOptionGroup
-										entries={selectedEntries}
-										listId={listId}
-										activeIndex={activeIndex}
-										selectedKeys={selectedKeys}
-										codeKey={codeKey}
-										query={currentQuery}
-										highlightQuery={currentHighlightQuery}
-										getOptionDisabled={isOptionDisabled}
-										getOptionId={getOptionId}
-										setOptionRef={setOptionRef}
-										toggleOption={toggleDraftSelection}
-										selectOnlyOption={selectOnlyOption}
-										renderItem={itemRenderer}
-									/>
-
-									{selectedEntries.length > 0 && availableItems.length > 0 && (
-										<Separator aria-hidden="true" className="marginBlockSm" />
-									)}
-
-									<MultiSelectOptionGroup
-										entries={itemEntries}
-										listId={listId}
-										activeIndex={activeIndex}
-										selectedKeys={selectedKeys}
-										codeKey={codeKey}
-										query={currentQuery}
-										highlightQuery={currentHighlightQuery}
-										getOptionDisabled={isOptionDisabled}
-										getOptionId={getOptionId}
-										setOptionRef={setOptionRef}
-										toggleOption={toggleDraftSelection}
-										selectOnlyOption={selectOnlyOption}
-										renderItem={itemRenderer}
-									/>
-								</div>
-							</MultiSelectOptionsWrapper>
-						</PickerPopup>
-					</>
-				);
-			}}
-		</PickerField>
+		<OptionMultiSelectCore
+			{...props}
+			ref={ref}
+			preserveOptionArrayReference
+			options={items}
+			value={selectedItems}
+			onChange={onChange}
+			getOptionKey={(item) => item[codeKey]}
+			getOptionLabel={(item) => item[resolvedTextKey] ?? item[codeKey] ?? ""}
+			getOptionCode={hideCode ? undefined : (item) => item[codeKey] ?? ""}
+			getOptionSearchText={(item) => Array.from(new Set([item[resolvedTextKey], item[codeKey], ...Object.values(item)]))}
+			getOptionDisabled={
+				getOptionDisabled
+					? (item, context) => getOptionDisabled(item, adaptLegacyMultiSelectOptionDisableContext(context))
+					: undefined
+			}
+			onClose={onClose}
+			renderToken={adaptedRenderToken}
+			renderToolbar={adaptedRenderToolbar}
+			renderOption={
+				renderItem
+					? (item, state) => renderItem(item, state)
+					: (item) => ({
+							text: item[resolvedTextKey] ?? "",
+							code: hideCode ? undefined : (item[codeKey] ?? "")
+						})
+			}
+		/>
 	);
 }
 
 MultiSelect.displayName = "MultiSelect";
+
+export {
+	type MultiSelectItemState,
+	type MultiSelectOptionContent,
+	type MultiSelectOptionDisableContext,
+	type MultiSelectRenderContext
+} from "./legacyMultiSelectTypes";
