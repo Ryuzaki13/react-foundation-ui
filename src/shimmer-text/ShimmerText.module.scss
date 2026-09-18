@@ -16,7 +16,7 @@
 			100deg,
 			currentColor 0%,
 			currentColor 42%,
-			color-mix(in srgb, currentColor 38%, white) 50%,
+			color-mix(in srgb, currentColor 38%, var(--shimmer-color, white)) 50%,
 			currentColor 58%,
 			currentColor 100%
 		);
@@ -28,7 +28,7 @@
 		background-clip: text;
 		-webkit-background-clip: text;
 		-webkit-text-fill-color: transparent;
-		animation: shimmer-text-sweep 4s linear infinite;
+		animation: shimmer-text-sweep 2s linear infinite;
 	}
 }
 
