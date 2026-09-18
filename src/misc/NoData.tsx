@@ -1,17 +1,18 @@
-import { AriaRole } from "react";
+import { type AriaAttributes, type AriaRole } from "react";
 
 import { Message } from "./Message";
 
-interface NoDataProps {
+type NoDataProps = Readonly<{
 	className?: string;
 	text?: string;
 	minHeight?: string | number;
 	role?: AriaRole;
-}
+}> &
+	AriaAttributes;
 
-export function NoData({ className, text, role, minHeight = "5em" }: NoDataProps) {
+export function NoData({ className, text, role, minHeight = "5em", ...ariaAttributes }: NoDataProps) {
 	return (
-		<Message className={className} color="muted" minHeight={minHeight} role={role}>
+		<Message {...ariaAttributes} className={className} color="muted" minHeight={minHeight} role={role}>
 			{text || "Нет данных"}
 		</Message>
 	);

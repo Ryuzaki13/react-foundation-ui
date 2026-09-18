@@ -1,4 +1,4 @@
-import React, { AriaRole, CSSProperties, useMemo } from "react";
+import { type AriaAttributes, type AriaRole, type CSSProperties, type ReactNode, useMemo } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
@@ -53,8 +53,8 @@ interface BaseTextProps {
 	role?: AriaRole;
 }
 
-interface TextProps extends BaseTextProps {
-	children: React.ReactNode;
+interface TextProps extends BaseTextProps, AriaAttributes {
+	children: ReactNode;
 	as?: "code" | "span" | "p" | "div" | "h2" | "h3" | "h4" | "h5" | "h6";
 }
 
@@ -85,12 +85,12 @@ function useTextStyles({ size, color, weight, italic, uppercase, wrap, className
 	}, [size, weight, color, italic, uppercase, wrap, className]);
 }
 
-export function Text({ children, as, style, role, ...props }: TextProps) {
-	const classes = useTextStyles(props);
+export function Text({ children, as, style, role, size, color, weight, italic, uppercase, wrap, className, ...ariaAttributes }: TextProps) {
+	const classes = useTextStyles({ size, color, weight, italic, uppercase, wrap, className });
 	const Component = as || "span";
 
 	return (
-		<Component role={role} className={classes} style={style}>
+		<Component {...ariaAttributes} role={role} className={classes} style={style}>
 			{children}
 		</Component>
 	);
