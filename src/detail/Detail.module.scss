@@ -6,22 +6,24 @@
 	}
 
 	&.small {
-		--row-gap: var(--space-xs);
-	}
-
-	&.normal {
 		--row-gap: var(--space-sm);
 	}
 
-	&.large {
+	&.normal {
 		--row-gap: var(--space-md);
+	}
+
+	&.large {
+		--row-gap: var(--space-lg);
 	}
 }
 
 .detail {
 	.dt {
-		font-weight: 700;
-		font-variation-settings: "wght" 700;
+		color: var(--content-1);
+		font-size: var(--font-size-xs);
+		font-weight: 300;
+		font-variation-settings: "wght" 300;
 	}
 
 	.dd {
@@ -42,6 +44,7 @@
 		display: flex;
 
 		.dt {
+			font-size: var(--font-size-md);
 			text-align: right;
 			padding-right: var(--space-sm);
 		}
