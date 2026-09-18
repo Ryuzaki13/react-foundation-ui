@@ -141,12 +141,28 @@ html,
 	}
 
 	&:hover {
-		color: var(--info-fill);
+		color: var(--accent-text-hover);
 	}
 
 	&:active {
-		color: var(--error-fill);
+		color: var(--accent-text-active);
 	}
+}
+
+.actionLink {
+	@extend .link;
+	
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	justify-self: start;
+	gap: var(--space-xs);
+	min-block-size: var(--control-height);
+	padding-inline: var(--space-md);
+	border-radius: var(--radius-md);
+
+	font-weight: 600;
+	text-decoration: none;
 }
 
 a:not([class]) {
