@@ -2,6 +2,7 @@
 
 import React, { act } from "react";
 
+import userEvent from "@testing-library/user-event";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
@@ -140,6 +141,45 @@ describe("MultiSelect", () => {
 
 		expect(onChange).toHaveBeenCalledTimes(1);
 		expect(onChange).toHaveBeenCalledWith([committedClone, OPTIONS[1]]);
+	});
+
+	it("сохраняет фокус trigger после клика по checkbox и продолжает клавиатурную навигацию", async () => {
+		const user = userEvent.setup();
+		const onChange = vi.fn<(value: CatalogOption[]) => void>();
+
+		await renderNode(
+			<MultiSelect
+				label="Каталог"
+				options={OPTIONS}
+				value={[]}
+				onChange={onChange}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+			/>
+		);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		input.focus();
+		await user.click(container?.querySelector('button[aria-label="Открыть список"]') as HTMLButtonElement);
+
+		const betaCheckBox = getOptionRows()[1]?.querySelector<HTMLInputElement>('input[type="checkbox"]');
+		if (!betaCheckBox) {
+			throw new Error("Checkbox второй опции не найден");
+		}
+		await user.click(betaCheckBox);
+
+		expect(document.activeElement).toBe(input);
+		expect(getOptionRows()[1]?.getAttribute("aria-selected")).toBe("true");
+
+		await user.keyboard("{ArrowDown}");
+		expect(input.getAttribute("aria-activedescendant")).toBe(getOptionRows()[1]?.id);
+
+		await user.keyboard("{Control>} {/Control}");
+		expect(getOptionRows()[1]?.getAttribute("aria-selected")).toBe("false");
+
+		await user.keyboard("{Enter}");
+		expect(onChange).toHaveBeenCalledWith([OPTIONS[1]]);
+		expect(input.getAttribute("aria-expanded")).toBe("false");
 	});
 
 	it("не теряет falsy option при отображении токена и keyboard toggle/activation", async () => {

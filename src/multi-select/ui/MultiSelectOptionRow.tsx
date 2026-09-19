@@ -57,7 +57,15 @@ export function MultiSelectOptionRow<TOption>({
 			<div
 				role="gridcell"
 				className={styles.optionCheckBox}
-				onMouseDown={(event) => event.stopPropagation()}
+				onMouseDown={(event) => {
+					/*
+					 * Checkbox меняет draft мышью, но владельцем виртуального фокуса
+					 * остаётся combobox input с aria-activedescendant. Иначе браузер
+					 * переводит focus на input[type=checkbox] и разрывает навигацию строк.
+					 */
+					event.preventDefault();
+					event.stopPropagation();
+				}}
 				onClick={(event) => event.stopPropagation()}>
 				<CheckBox
 					value={selected}
