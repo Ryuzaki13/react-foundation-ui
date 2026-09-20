@@ -12,7 +12,7 @@ function TreeSelectStoryCanvas({ args, updateArgs }: { args: TreeSelectProps; up
 				{...args}
 				onChange={(value) => {
 					args.onChange(value);
-					updateArgs({ value });
+					updateArgs({ value, fieldError: value ? undefined : args.fieldError });
 				}}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
@@ -43,6 +43,8 @@ const meta = {
 	argTypes: {
 		label: { description: "Заголовок поля.", control: "text" },
 		description: { description: "Описание под полем.", control: "text" },
+		required: { description: "Помечает выбор узла как обязательный.", control: "boolean" },
+		fieldError: { description: "Текст ошибки выбранного узла под полем.", control: "text" },
 		placeholder: { description: "Текст без выбранного узла.", control: "text" },
 		nodes: { description: "Дерево доступных узлов.", control: false },
 		value: { description: "Выбранный узел в формате codeKey/value.", control: false },
@@ -92,5 +94,15 @@ export const Empty: Story = {
 	args: {
 		nodes: [],
 		description: "Состояние без доступных узлов."
+	}
+};
+
+export const RequiredWithError: Story = {
+	name: "Обязательное поле с ошибкой",
+	render: renderTreeSelectStory,
+	args: {
+		required: true,
+		fieldError: "Выберите узел дерева.",
+		value: undefined
 	}
 };

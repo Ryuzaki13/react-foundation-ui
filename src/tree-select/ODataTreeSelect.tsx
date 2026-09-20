@@ -16,6 +16,8 @@ export interface ODataTreeSelectProps
 	defaultQuery?: string;
 	onQuery?: (value: string) => void;
 	clearable?: boolean;
+	required?: boolean;
+	fieldError?: string;
 	/**
 	 * Ключи OData-уровней, раскрываемых после появления загруженных узлов.
 	 * Настройка влияет только на представление и не изменяет OData-запросы.
@@ -27,6 +29,8 @@ export function ODataTreeSelect({
 	label,
 	description,
 	disabled,
+	required,
+	fieldError,
 	size,
 	placeholder,
 	query,
@@ -50,6 +54,8 @@ export function ODataTreeSelect({
 		<TreeSelect
 			label={label}
 			description={description}
+			required={required}
+			fieldError={fieldError}
 			disabled={disabled || treeData.isLoading}
 			size={size}
 			placeholder={placeholder ?? treeData.placeholder}

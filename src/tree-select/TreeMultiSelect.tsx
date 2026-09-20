@@ -24,6 +24,9 @@ export interface TreeMultiSelectProps extends Omit<UiBaseProps<TreeMultiSelectVa
 	onQuery?: (value: string) => void;
 	isLoading?: boolean;
 	error?: string;
+	/** Ошибка выбранного значения; error сообщает о сбое загрузки дерева в popup. */
+	fieldError?: string;
+	required?: boolean;
 	/** Определяет обычное раскрываемое дерево или полностью открытый адаптивный набор колонок. */
 	optionsLayout?: TreeMultiSelectOptionsLayout;
 	/**
@@ -87,6 +90,8 @@ export function TreeMultiSelect({
 	onQuery,
 	isLoading,
 	error,
+	fieldError,
+	required,
 	optionsLayout = "tree",
 	defaultExpandedCodeKeys
 }: TreeMultiSelectProps) {
@@ -167,6 +172,8 @@ export function TreeMultiSelect({
 			onClearSelection={clearSelection}
 			isLoading={isLoading}
 			error={error}
+			fieldError={fieldError}
+			required={required}
 		/>
 	);
 }

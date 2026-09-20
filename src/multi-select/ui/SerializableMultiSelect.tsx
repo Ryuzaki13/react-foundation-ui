@@ -18,6 +18,8 @@ export interface SerializableMultiSelectProps<
 	optionKey: TOptionKey;
 	optionLabel: TOptionLabel;
 	renderCode?: true;
+	required?: boolean;
+	fieldError?: string;
 }
 
 function getSerializableOptionKey<TOption extends SerializableOptionRecord, TOptionKey extends SerializableOptionKeyField<TOption>>(
@@ -57,7 +59,9 @@ export function SerializableMultiSelect<
 	onChange,
 	optionKey,
 	optionLabel,
-	renderCode
+	renderCode,
+	required,
+	fieldError
 }: SerializableMultiSelectProps<TOption, TOptionKey, TOptionLabel>) {
 	// Как будто можно не мемоизировать, нет смысла
 	const items = options.map<CollectionItem>((option) => ({
@@ -71,6 +75,8 @@ export function SerializableMultiSelect<
 		<DeprecatedMultiSelect
 			label={label}
 			description={description}
+			required={required}
+			fieldError={fieldError}
 			disabled={disabled}
 			placeholder={placeholder}
 			size={size}

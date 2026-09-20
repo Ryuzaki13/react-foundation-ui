@@ -26,6 +26,10 @@ import * as TreeMultiSelectStories from "./TreeMultiSelect.stories";
 <Canvas of={TreeMultiSelectStories.OrphanProtectionColumns} />
 <Canvas of={TreeMultiSelectStories.RightEdgeColumns} />
 
+`required` помечает набор узлов как обязательный. `fieldError` показывает ошибку значения под полем и задаёт `aria-invalid`; `error` по-прежнему описывает ошибку загрузки дерева в popup. Проверку выбора выполняет форма.
+
+<Canvas of={TreeMultiSelectStories.RequiredWithError} />
+
 ## API
 
 <ArgTypes of={TreeMultiSelectStories} />

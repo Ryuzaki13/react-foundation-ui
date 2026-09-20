@@ -63,6 +63,8 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	onClearSelection?: () => void;
 	isLoading?: boolean;
 	error?: string;
+	fieldError?: string;
+	required?: boolean;
 };
 
 export function TreePickerBase({
@@ -91,7 +93,9 @@ export function TreePickerBase({
 	onNodeToggleSelection,
 	onClearSelection,
 	isLoading,
-	error
+	error,
+	fieldError,
+	required
 }: TreePickerBaseProps) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const selectAllButtonRef = useRef<HTMLButtonElement | null>(null);
@@ -376,7 +380,7 @@ export function TreePickerBase({
 	};
 
 	return (
-		<PickerField label={label} description={description} disabled={disabled} size={size}>
+		<PickerField label={label} description={description} disabled={disabled} size={size} error={fieldError} required={required}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-${optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}`;
 				const popupAriaLabel = typeof label === "string" ? label : placeholder;
@@ -410,6 +414,8 @@ export function TreePickerBase({
 							aria-labelledby={labelId}
 							aria-label={labelId ? undefined : placeholder}
 							aria-describedby={describedBy}
+							aria-required={required || undefined}
+							aria-invalid={Boolean(fieldError) || undefined}
 							aria-haspopup={optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "grid" : "tree"}
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}

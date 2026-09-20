@@ -106,6 +106,31 @@ afterEach(async () => {
 });
 
 describe("MultiSelect", () => {
+	it("отделяет ошибку выбора от ошибки загрузки списка", async () => {
+		await renderNode(
+			<MultiSelect
+				label="Каталог"
+				required
+				fieldError="Выберите опцию"
+				error="Ошибка загрузки"
+				options={OPTIONS}
+				value={[]}
+				onChange={vi.fn()}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+			/>
+		);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		const fieldError = container?.querySelector('[role="alert"]');
+		expect(input.getAttribute("aria-required")).toBe("true");
+		expect(input.getAttribute("aria-invalid")).toBe("true");
+		expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(fieldError?.id);
+		expect(fieldError?.textContent).toBe("Выберите опцию");
+		await openOptions();
+		expect(document.querySelector('[role="grid"]')?.textContent).toContain("Ошибка загрузки");
+	});
+
 	it("разделяет identity и отображаемый code и подтверждает checkbox-черновик только при закрытии", async () => {
 		const committedClone = { ...OPTIONS[0]! };
 		const onChange = vi.fn<(value: CatalogOption[]) => void>();

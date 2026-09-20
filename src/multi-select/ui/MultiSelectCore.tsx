@@ -57,6 +57,8 @@ export function MultiSelectCore<TOption>({
 	getOptionDisabled,
 	disabled,
 	error,
+	fieldError,
+	required,
 	isLoading,
 	renderToken,
 	renderToolbar,
@@ -301,7 +303,14 @@ export function MultiSelectCore<TOption>({
 	});
 
 	return (
-		<PickerField label={label} description={description} disabled={disabled} size={size} className={styles.multiSelect}>
+		<PickerField
+			label={label}
+			description={description}
+			disabled={disabled}
+			size={size}
+			className={styles.multiSelect}
+			error={fieldError}
+			required={required}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-grid`;
 
@@ -332,6 +341,8 @@ export function MultiSelectCore<TOption>({
 							onToggleClick={triggerController.handleToggleClick}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
+							aria-required={required || undefined}
+							aria-invalid={Boolean(fieldError) || undefined}
 							aria-haspopup="grid"
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}

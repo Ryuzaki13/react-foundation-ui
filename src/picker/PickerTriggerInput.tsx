@@ -27,6 +27,8 @@ export function PickerTriggerInput({
 	...props
 }: PickerTriggerInputProps & { ref?: Ref<HTMLInputElement> }) {
 	const hasOverlay = overlay !== undefined && overlay !== null;
+	// Picker проверяет выбранное значение, поэтому визуальная ошибка следует aria-invalid, а не native :invalid поискового input.
+	const isInvalid = props["aria-invalid"] === true || props["aria-invalid"] === "true";
 
 	return (
 		<div
@@ -39,7 +41,11 @@ export function PickerTriggerInput({
 				<>
 					<InputControl endAdornment={endAdornment}>
 						{({ controlClassName }) => (
-							<input {...props} ref={ref} className={cn(uiStyles.uiInputWithToggle, controlClassName, inputClassName)} />
+							<input
+								{...props}
+								ref={ref}
+								className={cn(uiStyles.uiInputWithToggle, isInvalid && uiStyles.invalid, controlClassName, inputClassName)}
+							/>
 						)}
 					</InputControl>
 					{hasOverlay ? overlay : null}

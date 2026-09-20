@@ -34,6 +34,9 @@ export type MultiSelectProps<TOption> = MultiSelectRenderers<TOption> &
 		onOpen?: () => void;
 		onClose?: (value: TOption[]) => void;
 		error?: string;
+		/** Ошибка выбранного значения; error сообщает о сбое загрузки опций в popup. */
+		fieldError?: string;
+		required?: boolean;
 		isLoading?: boolean;
 	}>;
 

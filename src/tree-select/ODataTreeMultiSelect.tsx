@@ -21,6 +21,8 @@ export type ODataTreeMultiSelectNodesTransform = (
 export interface ODataTreeMultiSelectProps
 	extends Omit<ODataDependentBaseProps, "model" | "value" | "dependencies">, Omit<UiBaseProps<TreeMultiSelectValue>, "placeholder"> {
 	model?: ODataDependentBaseProps["model"];
+	required?: boolean;
+	fieldError?: string;
 	placeholder?: string;
 	query?: string;
 	defaultQuery?: string;
@@ -49,6 +51,8 @@ export function ODataTreeMultiSelect({
 	label,
 	description,
 	disabled,
+	required,
+	fieldError,
 	size,
 	placeholder,
 	query,
@@ -81,6 +85,8 @@ export function ODataTreeMultiSelect({
 		<TreeMultiSelect
 			label={label}
 			description={description}
+			required={required}
+			fieldError={fieldError}
 			disabled={disabled || treeData.isLoading}
 			size={size}
 			placeholder={placeholder ?? treeData.placeholder}

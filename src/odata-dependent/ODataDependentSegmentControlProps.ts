@@ -19,6 +19,10 @@ export type ODataDependentSegmentControlProps = UseODataDependentSelectionOption
 	label?: ReactNode;
 	/** Дополнительное описание поля. */
 	description?: string;
+	/** Обязательность выбора конкретного сегмента. */
+	required?: boolean;
+	/** Ошибка выбранного значения сегмента, независимая от загрузки опций. */
+	fieldError?: string;
 	/** Размер базового Select или MultiSelect. */
 	size?: UiSize;
 	/**

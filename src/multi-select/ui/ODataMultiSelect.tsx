@@ -5,7 +5,8 @@ import { useODataMultiSelect } from "../model/useODataMultiSelect";
 
 import { DeprecatedMultiSelect } from "./DeprecatedMultiSelect";
 
-type ODataMultiSelectProps = ODataSelectBaseProps & Omit<UiBaseProps<string[]>, "placeholder"> & {};
+type ODataMultiSelectProps = ODataSelectBaseProps &
+	Omit<UiBaseProps<string[]>, "placeholder"> & { required?: boolean; fieldError?: string };
 
 export function ODataMultiSelect({
 	odata,
@@ -14,6 +15,8 @@ export function ODataMultiSelect({
 	label,
 	description,
 	disabled,
+	required,
+	fieldError,
 	value,
 	dependencies,
 	onChange,
@@ -33,6 +36,8 @@ export function ODataMultiSelect({
 		<DeprecatedMultiSelect
 			label={label}
 			description={description}
+			required={required}
+			fieldError={fieldError}
 			size={size}
 			codeKey={odataModel.codeKey}
 			textKey={odataModel.textKey}

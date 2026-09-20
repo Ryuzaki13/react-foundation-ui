@@ -17,6 +17,8 @@ import type { UiBaseProps } from "../types";
 import type { DateRangeInput } from "@ryuzaki13/react-foundation-lib/formatters";
 
 export interface PeriodSelectProps extends UiBaseProps<PeriodSelectOption["id"] | undefined> {
+	required?: boolean;
+	error?: string;
 	/**
 	 * Полный список custom options с высшим приоритетом. При его передаче
 	 * встроенные `presetIds`, `labels` и пороги диапазона не применяются.

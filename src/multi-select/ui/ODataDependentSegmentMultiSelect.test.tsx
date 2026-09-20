@@ -66,6 +66,8 @@ describe("ODataDependentSegmentMultiSelect", () => {
 					panelVisibility: "user"
 				}}
 				values={{ ZDIV: ["1000"] }}
+				required
+				fieldError="Выберите дивизион"
 			/>
 		);
 
@@ -75,7 +77,9 @@ describe("ODataDependentSegmentMultiSelect", () => {
 					placeholder: "Дивизион",
 					hideCode: true
 				}),
-				value: ["1000"]
+				value: ["1000"],
+				required: true,
+				fieldError: "Выберите дивизион"
 			})
 		);
 	});

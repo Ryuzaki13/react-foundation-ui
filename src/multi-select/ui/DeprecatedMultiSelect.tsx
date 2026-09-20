@@ -39,6 +39,8 @@ export interface DeprecatedMultiSelectProps<TOption extends Record<string, strin
 	onOpen?: () => void;
 	onClose?: (value: TOption[]) => void;
 	error?: string;
+	fieldError?: string;
+	required?: boolean;
 	isLoading?: boolean;
 }
 

@@ -79,6 +79,8 @@ describe("ODataDependentSegmentSelect", () => {
 				item={branchItem}
 				values={{ REGION: ["R01"], BRANCH: ["B0101"] }}
 				label="Подразделение"
+				required
+				fieldError="Выберите подразделение"
 				clearable
 			/>
 		);
@@ -89,6 +91,8 @@ describe("ODataDependentSegmentSelect", () => {
 				dependencies: { REGION: ["R01"], BRANCH: ["B0101"] },
 				value: "B0101",
 				label: "Подразделение",
+				required: true,
+				error: "Выберите подразделение",
 				clearable: true,
 				disabled: false
 			})

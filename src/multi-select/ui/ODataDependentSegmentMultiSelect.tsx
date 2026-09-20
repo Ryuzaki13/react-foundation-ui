@@ -9,7 +9,7 @@ import type { ODataDependentSegmentControlProps } from "../../odata-dependent";
 export type ODataDependentSegmentMultiSelectProps = ODataDependentSegmentControlProps;
 
 export function ODataDependentSegmentMultiSelect(props: ODataDependentSegmentMultiSelectProps) {
-	const { item, disabled, label, description, size, width = 15 } = props;
+	const { item, disabled, label, description, required, fieldError, size, width = 15 } = props;
 	const selection = useODataDependentSelection(props);
 	const { updateSegment } = selection;
 	const widthStyle = `calc(${width}em + var(--width-add))`;
@@ -33,6 +33,8 @@ export function ODataDependentSegmentMultiSelect(props: ODataDependentSegmentMul
 				disabled={disabled || selection.isSegmentDisabled(item.id)}
 				label={label}
 				description={description}
+				required={required}
+				fieldError={fieldError}
 				size={size}
 			/>
 		</div>

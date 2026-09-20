@@ -79,6 +79,8 @@ const meta = {
 	argTypes: {
 		label: { description: "Заголовок поля.", control: "text" },
 		description: { description: "Описание под полем.", control: "text" },
+		required: { description: "Помечает выбор как обязательный.", control: "boolean" },
+		fieldError: { description: "Текст ошибки выбранных значений под полем.", control: "text" },
 		placeholder: { description: "Текст пустого поля.", control: "text" },
 		options: { description: "Исходные типизированные option без промежуточного CollectionItem.", control: false },
 		value: { description: "Контролируемый набор выбранных option целиком.", control: false },
@@ -102,7 +104,7 @@ const meta = {
 		defaultFilter: { description: "Включает встроенную фильтрацию option.", control: "boolean" },
 		onOpen: { description: "Вызывается при открытии списка.", control: false },
 		onClose: { description: "Вызывается после закрытия и подтверждения draft-выбора.", control: false },
-		error: { description: "Текст ошибки получения option.", control: "text" },
+		error: { description: "Ошибка получения option внутри popup.", control: "text" },
 		isLoading: { description: "Показывает состояние загрузки.", control: "boolean" },
 		renderToken: { description: "Кастомный рендер значения в trigger.", control: false },
 		renderToolbar: { description: "Кастомный рендер панели действий popup.", control: false },
@@ -199,6 +201,28 @@ export const ContextualDisabledAndSearch: Story = {
 		description: "«Все подразделения» взаимоисключается с частным выбором. Поиск учитывает скрытые синонимы, например «СПО».",
 		query: "",
 		onQuery: fn<(value: string) => void>(),
+		value: []
+	}
+};
+
+export const RequiredWithError: Story = {
+	name: "Обязательное поле с ошибкой",
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<MultiSelectProps<DepartmentOption>>();
+
+		return (
+			<MultiSelect
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value, fieldError: value.length > 0 ? undefined : args.fieldError });
+				}}
+			/>
+		);
+	},
+	args: {
+		required: true,
+		fieldError: "Выберите хотя бы одно подразделение.",
 		value: []
 	}
 };

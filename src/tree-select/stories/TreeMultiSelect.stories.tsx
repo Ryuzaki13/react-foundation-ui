@@ -37,7 +37,10 @@ function TreeMultiSelectStoryCanvas({
 				{...args}
 				onChange={(value) => {
 					args.onChange(value);
-					updateArgs({ value });
+					updateArgs({
+						value,
+						fieldError: Object.values(value).some((values) => values.length > 0) ? undefined : args.fieldError
+					});
 				}}
 			/>
 			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(args.value)}</div>
@@ -74,6 +77,8 @@ const meta = {
 	argTypes: {
 		label: { description: "Заголовок поля.", control: "text" },
 		description: { description: "Описание под полем.", control: "text" },
+		required: { description: "Помечает выбор узлов как обязательный.", control: "boolean" },
+		fieldError: { description: "Текст ошибки выбранных узлов под полем.", control: "text" },
 		placeholder: { description: "Текст без выбранных узлов.", control: "text" },
 		nodes: { description: "Дерево доступных узлов.", control: false },
 		value: { description: "Контролируемое отображение выбранных узлов по codeKey.", control: false },
@@ -158,5 +163,15 @@ export const RightEdgeColumns: Story = {
 		description: "Popover для 66 опций должен сравнить вертикальные и горизонтальные стороны и остаться внутри viewport.",
 		optionsLayout: "columns",
 		nodes: rightEdgeTreeNodes
+	}
+};
+
+export const RequiredWithError: Story = {
+	name: "Обязательное поле с ошибкой",
+	render: renderTreeMultiSelectStory,
+	args: {
+		required: true,
+		fieldError: "Выберите хотя бы один узел.",
+		value: {}
 	}
 };

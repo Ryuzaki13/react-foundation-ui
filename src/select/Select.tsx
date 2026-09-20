@@ -47,6 +47,9 @@ type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TO
 	renderOption?: (option: TOption, state: SelectOptionState) => ReactNode;
 	renderValue?: (option: TOption) => ReactNode;
 	className?: string;
+	/** Ошибка самого поля; состояние загрузки опций задаётся через errorState. */
+	error?: string;
+	required?: boolean;
 	buttonClassName?: string;
 	optionsClassName?: string;
 	optionsMaxWidth?: CSSProperties["maxWidth"];
@@ -96,6 +99,8 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		renderOption,
 		renderValue,
 		className,
+		error,
+		required,
 		buttonClassName,
 		optionsClassName,
 		optionsMaxWidth,
@@ -257,7 +262,14 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 	};
 
 	return (
-		<PickerField label={label} description={description} disabled={disabled} size={size} className={className}>
+		<PickerField
+			label={label}
+			description={description}
+			disabled={disabled}
+			size={size}
+			className={className}
+			error={error}
+			required={required}>
 			{({ controlId, labelId, describedBy }) => {
 				const listId = `${controlId}-listbox`;
 
@@ -287,6 +299,8 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							onToggleClick={triggerController.handleToggleClick}
 							aria-labelledby={labelId}
 							aria-describedby={describedBy}
+							aria-required={required || undefined}
+							aria-invalid={Boolean(error) || undefined}
 							aria-haspopup="listbox"
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}

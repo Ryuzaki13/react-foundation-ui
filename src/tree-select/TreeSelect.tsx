@@ -14,6 +14,9 @@ export interface TreeSelectProps extends Omit<UiBaseProps<TreeSelectValue | unde
 	onQuery?: (value: string) => void;
 	isLoading?: boolean;
 	error?: string;
+	/** Ошибка выбранного значения; error сообщает о сбое загрузки дерева в popup. */
+	fieldError?: string;
+	required?: boolean;
 	clearable?: boolean;
 	/**
 	 * Ключи уровней, узлы которых раскрываются до ручного действия пользователя.
@@ -48,6 +51,8 @@ export function TreeSelect({
 	onQuery,
 	isLoading,
 	error,
+	fieldError,
+	required,
 	clearable = false,
 	defaultExpandedCodeKeys
 }: TreeSelectProps) {
@@ -76,6 +81,8 @@ export function TreeSelect({
 			onClearSelection={clearable ? () => onChange(undefined) : undefined}
 			isLoading={isLoading}
 			error={error}
+			fieldError={fieldError}
+			required={required}
 		/>
 	);
 }

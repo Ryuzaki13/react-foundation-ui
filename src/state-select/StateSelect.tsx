@@ -20,6 +20,8 @@ export interface StateSelectProps extends Omit<UiBaseProps<State | undefined>, "
 	stateMeta?: Partial<Record<State, StateMeta>>;
 	className?: string;
 	clearable?: boolean;
+	required?: boolean;
+	error?: string;
 }
 
 interface StateSwatchProps {
@@ -85,7 +87,9 @@ export function StateSelect({
 	options = DEFAULT_VALUE_STATES,
 	stateMeta,
 	className,
-	clearable
+	clearable,
+	required,
+	error
 }: StateSelectProps) {
 	const stateOptions = useMemo(() => Array.from(new Set(options)), [options]);
 	const hasDetailedOptions = stateOptions.some((stateOption) => hasStateMeta(stateMeta?.[stateOption]));
@@ -128,6 +132,8 @@ export function StateSelect({
 			options={stateOptions}
 			className={className}
 			clearable={clearable}
+			required={required}
+			error={error}
 			{...sharedSelectProps}
 		/>
 	);

@@ -94,6 +94,12 @@ export function Example() {
 
 <Canvas of={SelectStories.Disabled} />
 
+### Обязательное поле и ошибка значения
+
+`required` отмечает поле и сообщает о необходимости выбора через `aria-required`. `error` показывает сообщение под полем и помечает combobox как невалидный. Загрузочные ошибки списка остаются в `errorState`. Проверку выбранного значения выполняет форма.
+
+<Canvas of={SelectStories.RequiredWithError} />
+
 ## API
 
 <ArgTypes of={SelectStories} />

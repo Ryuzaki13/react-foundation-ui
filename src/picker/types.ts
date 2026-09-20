@@ -11,6 +11,8 @@ export interface PickerFieldProps<TValue extends InputType = InputType> extends 
 	id?: string;
 	className?: string;
 	error?: string;
+	/** Показывает обязательность выбора; проверку value выполняет форма, а не поисковый input. */
+	required?: boolean;
 	children: (context: PickerFieldContext) => ReactNode;
 }
 

@@ -397,6 +397,24 @@ afterEach(async () => {
 });
 
 describe("TreeMultiSelect columns layout", () => {
+	it("показывает обязательность и ошибку набора узлов", async () => {
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+		await act(async () => {
+			root?.render(
+				<TreeMultiSelect label="Оргструктура" required fieldError="Выберите узлы" nodes={NODES} value={{}} onChange={vi.fn()} />
+			);
+		});
+
+		const input = container.querySelector('input[role="combobox"]') as HTMLInputElement;
+		const error = container.querySelector('[role="alert"]');
+		expect(input.getAttribute("aria-required")).toBe("true");
+		expect(input.getAttribute("aria-invalid")).toBe("true");
+		expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(error?.id);
+		expect(error?.textContent).toBe("Выберите узлы");
+	});
+
 	it("сразу показывает все уровни чекбоксами без экспандеров", async () => {
 		await renderHarness({ initialValue: { DIV: ["01"] }, defaultExpandedCodeKeys: [] });
 

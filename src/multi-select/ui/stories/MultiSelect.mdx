@@ -90,6 +90,12 @@ Option «Все подразделения» взаимоисключается 
 
 <Canvas of={MultiSelectStories.ContextualDisabledAndSearch} />
 
+### Обязательное поле и ошибка значения
+
+`required` отмечает поле и задаёт `aria-required` для combobox. `fieldError` выводит ошибку выбора под полем; существующий `error` продолжает описывать ошибку получения опций внутри popup. Проверку массива выбранных значений выполняет форма.
+
+<Canvas of={MultiSelectStories.RequiredWithError} />
+
 ## Миграция с DeprecatedMultiSelect
 
 `DeprecatedMultiSelect` сохраняет `CollectionItem` и OData-ориентированный `codeKey`/`textKey` API. Для перехода на канонический `MultiSelect` замените:

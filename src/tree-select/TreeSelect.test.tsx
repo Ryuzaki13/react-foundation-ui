@@ -167,6 +167,19 @@ afterEach(async () => {
 });
 
 describe("TreeSelect", () => {
+	it("показывает обязательность и ошибку выбранного узла", async () => {
+		await renderNode(
+			<TreeSelect label="Дерево" required fieldError="Выберите узел" nodes={NODES} value={undefined} onChange={vi.fn()} />
+		);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		const error = container?.querySelector('[role="alert"]');
+		expect(input.getAttribute("aria-required")).toBe("true");
+		expect(input.getAttribute("aria-invalid")).toBe("true");
+		expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(error?.id);
+		expect(error?.textContent).toBe("Выберите узел");
+	});
+
 	it("оставляет treeitem единственным интерактивным элементом строки", async () => {
 		const onChange = vi.fn<(value: TreeSelectValue) => void>();
 		await renderNode(<TreeSelect label="Дерево" nodes={EXPANSION_NODES} value={undefined} onChange={onChange} />);

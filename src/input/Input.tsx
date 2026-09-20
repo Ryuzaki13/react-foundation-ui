@@ -58,8 +58,9 @@ export function InputUIFrame({
 	size,
 	disabled,
 	isLoading,
+	required,
 	className
-}: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "className"> & { isLoading?: boolean }) {
+}: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "required" | "className"> & { isLoading?: boolean }) {
 	const { controlId, labelId, descriptionId } = useInputFieldIds({
 		hasLabel: label !== undefined && label !== null,
 		hasDescription: !!description
@@ -67,7 +68,14 @@ export function InputUIFrame({
 
 	return (
 		<div
-			className={cn(uiStyles.uiElement, uiStyles.uiSizable, size && uiStyles[size as UiSize], uiStyles.disabled, className)}
+			className={cn(
+				uiStyles.uiElement,
+				uiStyles.uiSizable,
+				size && uiStyles[size as UiSize],
+				uiStyles.disabled,
+				required && uiStyles.required,
+				className
+			)}
 			aria-disabled={disabled || undefined}>
 			{label && <InputLabel label={label} controlId={controlId} labelId={labelId} />}
 			{description && (
@@ -80,7 +88,7 @@ export function InputUIFrame({
 	);
 }
 
-export function InputUILoading(props: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "className">) {
+export function InputUILoading(props: Pick<InputUIProps, "label" | "description" | "size" | "disabled" | "required" | "className">) {
 	return <InputUIFrame {...props} isLoading />;
 }
 

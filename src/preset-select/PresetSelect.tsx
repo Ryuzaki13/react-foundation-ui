@@ -17,6 +17,8 @@ export interface PresetSelectProps<TOption extends PresetOption> extends UiBaseP
 	buttonClassName?: string;
 	optionsClassName?: string;
 	clearable?: boolean;
+	required?: boolean;
+	error?: string;
 }
 
 /**

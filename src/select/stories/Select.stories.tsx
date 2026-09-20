@@ -60,6 +60,8 @@ const meta = {
 			description: "Описание под заголовком.",
 			control: "text"
 		},
+		required: { description: "Помечает выбор как обязательный.", control: "boolean" },
+		error: { description: "Текст ошибки выбранного значения под полем.", control: "text" },
 		placeholder: {
 			description: "Текст, когда значение ещё не выбрано.",
 			control: "text"
@@ -295,5 +297,27 @@ export const Disabled: Story = {
 	args: {
 		disabled: true,
 		value: departmentOptions[0]
+	}
+};
+
+export const RequiredWithError: Story = {
+	name: "Обязательное поле с ошибкой",
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<SelectProps<DepartmentOption>>();
+
+		return (
+			<Select
+				{...args}
+				onChange={(value) => {
+					args.onChange(value);
+					updateArgs({ value, error: undefined });
+				}}
+			/>
+		);
+	},
+	args: {
+		required: true,
+		error: "Выберите подразделение.",
+		value: undefined
 	}
 };

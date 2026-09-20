@@ -17,7 +17,7 @@ export type ODataDependentSegmentSelectProps = ODataDependentSegmentControlProps
  * может совместно использоваться с segment-level MultiSelect-контролами.
  */
 export function ODataDependentSegmentSelect(props: ODataDependentSegmentSelectProps) {
-	const { item, disabled, label, description, size, width = 15, clearable } = props;
+	const { item, disabled, label, description, required, fieldError, size, width = 15, clearable } = props;
 	const selection = useODataDependentSelection(props);
 	const { updateSegment } = selection;
 	const widthStyle = `calc(${width}em + var(--width-add))`;
@@ -41,6 +41,8 @@ export function ODataDependentSegmentSelect(props: ODataDependentSegmentSelectPr
 				disabled={disabled || selection.isSegmentDisabled(item.id)}
 				label={label}
 				description={description}
+				required={required}
+				error={fieldError}
 				size={size}
 				clearable={clearable}
 			/>

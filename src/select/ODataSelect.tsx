@@ -8,7 +8,8 @@ import { useODataSelect } from "./model/useODataSelect";
 import { Select } from "./Select";
 import { SelectOptionContent } from "./SelectOptionContent";
 
-type ODataSelectProps = Omit<ODataSingleSelectProps, "value"> & UiBaseProps<string | undefined> & { clearable?: boolean };
+type ODataSelectProps = Omit<ODataSingleSelectProps, "value"> &
+	UiBaseProps<string | undefined> & { clearable?: boolean; required?: boolean; error?: string };
 
 function getODataOptionTextKey(item: CollectionItem | undefined, textKey: string, codeKey: string) {
 	if (!item) {
@@ -26,6 +27,8 @@ export function ODataSelect({
 	label,
 	description,
 	disabled,
+	required,
+	error,
 	value,
 	dependencies,
 	onChange,
@@ -42,7 +45,7 @@ export function ODataSelect({
 	});
 
 	if (odataModel.isLoading) {
-		return <InputUILoading size={size} label={label} description={description} />;
+		return <InputUILoading size={size} label={label} description={description} required={required} />;
 	}
 
 	const hideCode = segment.hideCode ?? odata.hideCode;
@@ -53,6 +56,8 @@ export function ODataSelect({
 			size={size}
 			label={label}
 			description={description}
+			required={required}
+			error={error}
 			options={odataModel.options}
 			value={odataModel.selectedItem}
 			onChange={odataModel.handleChange}

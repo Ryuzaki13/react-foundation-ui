@@ -23,6 +23,10 @@ Popup использует роли `tree/treeitem`. `ArrowRight` раскрыв
 <Canvas of={TreeSelectStories.FirstLevelExpanded} />
 <Canvas of={TreeSelectStories.Empty} />
 
+`required` помечает выбор узла как обязательный. `fieldError` показывает ошибку значения под полем и задаёт `aria-invalid`; `error` по-прежнему описывает ошибку загрузки дерева в popup. Проверку выбора выполняет форма.
+
+<Canvas of={TreeSelectStories.RequiredWithError} />
+
 ## API
 
 <ArgTypes of={TreeSelectStories} />

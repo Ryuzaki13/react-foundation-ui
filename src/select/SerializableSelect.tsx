@@ -26,6 +26,8 @@ export interface SerializableSelectProps<
 	renderCode?: true;
 	className?: string;
 	clearable?: boolean;
+	required?: boolean;
+	error?: string;
 }
 
 function getSerializableOptionKey<TOption extends SerializableOptionRecord, TOptionKey extends SerializableOptionKeyField<TOption>>(
@@ -67,7 +69,9 @@ export function SerializableSelect<
 	optionLabel,
 	renderCode,
 	className,
-	clearable
+	clearable,
+	required,
+	error
 }: SerializableSelectProps<TOption, TOptionKey, TOptionLabel>) {
 	const selectedOption =
 		value === undefined ? undefined : options.find((option) => getSerializableOptionKey(option, optionKey) === value);
@@ -87,6 +91,8 @@ export function SerializableSelect<
 			getOptionCode={renderCode ? (option: TOption) => getSerializableOptionKey(option, optionKey) : undefined}
 			className={className}
 			clearable={clearable}
+			required={required}
+			error={error}
 		/>
 	);
 }

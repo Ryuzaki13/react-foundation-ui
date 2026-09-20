@@ -5,6 +5,8 @@ import React, { act, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import uiStyles from "../ui.module.scss";
+
 import { Select } from "./Select";
 import { SerializableSelect } from "./SerializableSelect";
 
@@ -154,6 +156,32 @@ afterEach(async () => {
 });
 
 describe("Select", () => {
+	it("показывает обязательность и ошибку выбранного значения на combobox", async () => {
+		await renderNode(
+			<Select
+				label="Статус"
+				description="Выберите значение"
+				required
+				error="Поле обязательно"
+				options={OPTIONS}
+				value={undefined}
+				onChange={vi.fn()}
+				getOptionKey={(option) => option.id}
+				getOptionLabel={(option) => option.label}
+			/>
+		);
+
+		const input = container?.querySelector('input[role="combobox"]') as HTMLInputElement;
+		const error = container?.querySelector('[role="alert"]');
+		expect(input.getAttribute("aria-required")).toBe("true");
+		expect(input.getAttribute("aria-invalid")).toBe("true");
+		expect(input.classList.contains(uiStyles.invalid)).toBe(true);
+		expect(input.required).toBe(false);
+		expect(input.getAttribute("aria-describedby")?.split(" ")).toContain(error?.id);
+		expect(error?.textContent).toBe("Поле обязательно");
+		expect(container?.querySelector(`.${uiStyles.required} label`)?.textContent).toBe("Статус");
+	});
+
 	it("рендерит readonly input-trigger и позволяет выбрать option клавиатурой и кликом", async () => {
 		await renderNode(<ControlledSelectHarness />);
 

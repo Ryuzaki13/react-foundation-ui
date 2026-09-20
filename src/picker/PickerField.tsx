@@ -13,6 +13,7 @@ export function PickerField<TValue extends InputType>({
 	size,
 	className,
 	error,
+	required,
 	children
 }: PickerFieldProps<TValue>) {
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
@@ -30,6 +31,7 @@ export function PickerField<TValue extends InputType>({
 			size={size}
 			className={className}
 			error={error}
+			required={required}
 			controlId={controlId}
 			labelId={labelId}
 			descriptionId={descriptionId}
