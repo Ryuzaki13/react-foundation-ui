@@ -8,8 +8,8 @@ import {
 	type Ref
 } from "react";
 
-import { DragEndEvent } from "@dnd-kit/core";
-import { restrictToHorizontalAxis } from "@dnd-kit/modifiers";
+import { DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
+import { restrictToHorizontalAxis, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { useDndSortableSensors } from "@ryuzaki13/react-foundation-lib/hooks";
 import {
 	type FoundationTableCell,
@@ -58,6 +58,13 @@ export interface BaseTableCellRenderArgs<TData extends object> {
 	columnMeta?: TableColumnMeta;
 }
 
+/** Низкоуровневый контракт DnD-строк для адаптеров `Table` поверх общего табличного каркаса. */
+export interface BaseTableRowReordering {
+	containerId?: UniqueIdentifier;
+	disabled?: boolean;
+	onDragEnd: (event: DragEndEvent) => void;
+}
+
 /**
  * Внутренний базовый рендерер таблицы.
  *
@@ -94,6 +101,7 @@ export interface BaseTableProps<TData extends object> {
 	renderHeaderContextMenu?: (header: FoundationTableHeader<TData>) => ReactNode;
 	enableColumnResizing?: boolean;
 	enableColumnReordering?: boolean;
+	rowReordering?: BaseTableRowReordering;
 	columnResizeMinWidth?: number;
 	afterTableContent?: ReactNode;
 }
@@ -206,6 +214,7 @@ export function BaseTable<TData extends object>({
 	renderHeaderContextMenu,
 	enableColumnResizing = false,
 	enableColumnReordering = false,
+	rowReordering,
 	columnResizeMinWidth,
 	afterTableContent
 }: BaseTableProps<TData>) {
@@ -221,6 +230,7 @@ export function BaseTable<TData extends object>({
 	const pinnedStartColumnIds = useMemo(() => columnState.columnPinning.start ?? [], [columnState.columnPinning.start]);
 	const pinnedStartColumnIdSet = useMemo(() => new Set(pinnedStartColumnIds), [pinnedStartColumnIds]);
 	const rowModel = table.getRowModel();
+	const rowIds = useMemo(() => rowModel.rows.map((row) => row.id), [rowModel.rows]);
 	const hasTitle = Boolean(title);
 	const hasRows = rowModel.rows.length > 0;
 	const orderVisibleCells = useCallback(
@@ -319,6 +329,69 @@ export function BaseTable<TData extends object>({
 		handleKeyboardActivation(event, () => onActivateRow(row));
 	};
 
+	const renderBodyRow = (row: FoundationTableRow<TData>) => {
+		const interactive = isRowInteractive?.(row) ?? Boolean(onActivateRow);
+		const rowContent = orderVisibleCells([
+			...row.getStartVisibleCells(),
+			...row.getCenterVisibleCells(),
+			...row.getEndVisibleCells()
+		]).map((cell) => {
+			const columnMeta = getTableColumnMeta(cell.column.columnDef);
+			const defaultContent = flexRender(cell.column.columnDef.cell, cell.getContext());
+			const renderArgs: BaseTableCellRenderArgs<TData> = {
+				row,
+				cell,
+				defaultContent,
+				columnMeta
+			};
+			const cellLayout = getCellLayout?.(renderArgs);
+			const isPinnedStart = cell.column.getIsPinned() === "start";
+			const isPinnedBoundary = cell.column.id === lastPinnedColumnId;
+			const resolvedStyle = {
+				...(columnMeta?.align ? { textAlign: columnMeta.align } : {}),
+				...(isPinnedStart ? { insetInlineStart: startPinnedOffsets[cell.column.id] ?? "0px" } : {}),
+				...(getCellStyle?.(renderArgs) ?? {})
+			};
+
+			return (
+				<td
+					key={cell.id}
+					className={cn(
+						styles.bodyCell,
+						isPinnedStart && styles.bodyCellPinnedStart,
+						isPinnedBoundary && styles.pinnedStartBoundary,
+						cellLayout?.mergeWithNext && styles.bodyCellMergedWithNext,
+						getCellClassName?.(renderArgs)
+					)}
+					style={resolvedStyle}>
+					{cellLayout?.hideContent ? null : renderCellContent ? renderCellContent(renderArgs) : defaultContent}
+				</td>
+			);
+		});
+		const rowProps = {
+			className: cn(
+				styles.bodyRow,
+				interactive && styles.bodyRowInteractive,
+				row.getIsSelected() && styles.bodyRowSelected,
+				getRowClassName?.(row)
+			),
+			"aria-selected": selectionMode !== "none" ? row.getIsSelected() : undefined,
+			tabIndex: interactive ? 0 : undefined,
+			onClick: (event: ReactMouseEvent<HTMLTableRowElement>) => handleRowClick(event, row),
+			onKeyDown: (event: ReactKeyboardEvent<HTMLTableRowElement>) => handleRowKeyDown(event, row)
+		};
+
+		return rowReordering ? (
+			<Sortable.Item as="tr" key={row.id} id={row.id} disabled={rowReordering.disabled} {...rowProps}>
+				{rowContent}
+			</Sortable.Item>
+		) : (
+			<tr key={row.id} {...rowProps}>
+				{rowContent}
+			</tr>
+		);
+	};
+
 	return (
 		<GridContainer
 			templateRows={hasTitle ? "auto 1fr" : "1fr"}
@@ -407,69 +480,21 @@ export function BaseTable<TData extends object>({
 							</thead>
 
 							<tbody>
-								{rowModel.rows.map((row) => {
-									const interactive = isRowInteractive?.(row) ?? Boolean(onActivateRow);
-
-									return (
-										<tr
-											key={row.id}
-											className={cn(
-												styles.bodyRow,
-												interactive && styles.bodyRowInteractive,
-												row.getIsSelected() && styles.bodyRowSelected,
-												getRowClassName?.(row)
-											)}
-											aria-selected={selectionMode !== "none" ? row.getIsSelected() : undefined}
-											tabIndex={interactive ? 0 : undefined}
-											onClick={(event) => handleRowClick(event, row)}
-											onKeyDown={(event) => handleRowKeyDown(event, row)}>
-											{orderVisibleCells([
-												...row.getStartVisibleCells(),
-												...row.getCenterVisibleCells(),
-												...row.getEndVisibleCells()
-											]).map((cell) => {
-												const columnMeta = getTableColumnMeta(cell.column.columnDef);
-												const defaultContent = flexRender(cell.column.columnDef.cell, cell.getContext());
-												const renderArgs: BaseTableCellRenderArgs<TData> = {
-													row,
-													cell,
-													defaultContent,
-													columnMeta
-												};
-												const cellLayout = getCellLayout?.(renderArgs);
-												const isPinnedStart = cell.column.getIsPinned() === "start";
-												const isPinnedBoundary = cell.column.id === lastPinnedColumnId;
-
-												const resolvedStyle = {
-													...(columnMeta?.align ? { textAlign: columnMeta.align } : {}),
-													...(isPinnedStart
-														? { insetInlineStart: startPinnedOffsets[cell.column.id] ?? "0px" }
-														: {}),
-													...(getCellStyle?.(renderArgs) ?? {})
-												};
-
-												return (
-													<td
-														key={cell.id}
-														className={cn(
-															styles.bodyCell,
-															isPinnedStart && styles.bodyCellPinnedStart,
-															isPinnedBoundary && styles.pinnedStartBoundary,
-															cellLayout?.mergeWithNext && styles.bodyCellMergedWithNext,
-															getCellClassName?.(renderArgs)
-														)}
-														style={resolvedStyle}>
-														{cellLayout?.hideContent
-															? null
-															: renderCellContent
-																? renderCellContent(renderArgs)
-																: defaultContent}
-													</td>
-												);
-											})}
-										</tr>
-									);
-								})}
+								{rowReordering ? (
+									<Sortable.Root
+										sensors={sensors}
+										modifiers={[restrictToVerticalAxis]}
+										onDragEnd={rowReordering.onDragEnd}>
+										<Sortable.Container
+											containerId={rowReordering.containerId ?? "base-table-body"}
+											items={rowIds}
+											layout="vertical">
+											{rowModel.rows.map(renderBodyRow)}
+										</Sortable.Container>
+									</Sortable.Root>
+								) : (
+									rowModel.rows.map(renderBodyRow)
+								)}
 
 								{isFetching && hasRows && (
 									<tr className={styles.fetchingRow}>

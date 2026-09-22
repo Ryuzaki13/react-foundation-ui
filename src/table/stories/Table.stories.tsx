@@ -6,6 +6,7 @@ import { enrichTableColumnsWithODataFormatting, type TableColumnDef } from "@ryu
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
+import { Sortable } from "../../sortable";
 import { Table, type TableProps } from "../Table";
 
 import type { EntityColumnProperty, EntityMetadata, ServiceMetadata } from "@ryuzaki13/react-foundation-lib/odata-service";
@@ -114,6 +115,18 @@ const demoColumns: TableColumnDef<DealRow>[] = [
 			width: 11
 		}
 	}
+];
+
+const reorderableDemoColumns: TableColumnDef<DealRow>[] = [
+	{
+		id: "reorder",
+		header: "Порядок",
+		cell: ({ row }) => <Sortable.DragHandle as="button" title={`Переместить сделку ${row.original.number}`} />,
+		meta: {
+			width: 4
+		}
+	},
+	...demoColumns
 ];
 
 /**
@@ -489,6 +502,20 @@ function TableStoryCanvas<TData extends object>({
 	);
 }
 
+function RowReorderingTableStory({ args }: { args: TableProps<DealRow> }) {
+	const [rows, setRows] = useState([...(args.data ?? [])]);
+
+	return (
+		<Table
+			{...args}
+			data={rows}
+			rowReordering={{
+				onReorder: (nextRows) => setRows([...nextRows])
+			}}
+		/>
+	);
+}
+
 /**
  * Демонстрирует режим `build`, когда hook сам строит колонки только по OData metadata.
  */
@@ -640,6 +667,10 @@ const meta = {
 			description: "Включает перетаскивание заголовков для изменения порядка колонок.",
 			control: "boolean"
 		},
+		rowReordering: {
+			description: "Включает вертикальную перестановку строк через Sortable.DragHandle в пользовательской колонке.",
+			control: false
+		},
 		columnResizeMinWidth: {
 			description: "Минимальная ширина колонки при resize в px.",
 			control: "number"
@@ -707,6 +738,15 @@ const renderDivisionMergeTableStory = createControlledStoryRender<TableProps<Div
  */
 export const Basic: DealStory = {
 	render: renderDealTableStory
+};
+
+/** Перестановка строк с доступной keyboard/pointer ручкой в пользовательской колонке. */
+export const WithRowReordering: DealStory = {
+	args: {
+		columns: reorderableDemoColumns,
+		selectionMode: "none"
+	},
+	render: (args) => <RowReorderingTableStory args={args} />
 };
 
 /**

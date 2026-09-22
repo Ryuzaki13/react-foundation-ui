@@ -17,6 +17,29 @@ import * as TableStories from "./Table.stories";
 Оба компонента используют общий табличный каркас, поэтому здесь совпадают states загрузки, визуальная структура, обработка выбора строк и клавиатурная активация.
 `Table` также поддерживает декларативное форматирование через `meta.formatting`, formulas, безопасное pipeline-formatting и optional OData adapter.
 
+Для перестановки строк передайте `rowReordering` и разместите `Sortable.DragHandle` в отдельной колонке. `Table` сохраняет единые стили строк и подключает pointer/keyboard DnD, а потребитель владеет обновлением порядка данных.
+
+```tsx
+import { Sortable } from "@ryuzaki13/react-foundation-ui/sortable";
+import { Table } from "@ryuzaki13/react-foundation-ui/table";
+
+const columns = [
+	{
+		id: "reorder",
+		header: "Порядок",
+		cell: ({ row }) => <Sortable.DragHandle as="button" title={`Переместить ${row.original.name}`} />
+	},
+	{ id: "name", accessorKey: "name", header: "Название" }
+];
+
+<Table
+	data={rows}
+	columns={columns}
+	getRowId={(row) => row.id}
+	rowReordering={{ onReorder: setRows }}
+/>;
+```
+
 ## Основной сценарий
 
 <Primary />
@@ -201,6 +224,10 @@ function DealsTable({ rows }: { rows: DealRow[] }) {
 ### Базовый режим
 
 <Canvas of={TableStories.Basic} />
+
+### Перестановка строк
+
+<Canvas of={TableStories.WithRowReordering} />
 
 ### Left-pinning столбцов
 

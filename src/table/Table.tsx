@@ -1,5 +1,7 @@
 import { useEffect, useEffectEvent, useMemo, useRef } from "react";
 
+import { type DragEndEvent } from "@dnd-kit/core";
+import { moveArrayItem } from "@ryuzaki13/react-foundation-lib/array";
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import { TableFormulaRowData } from "@ryuzaki13/react-foundation-lib/formulas";
 import {
@@ -29,6 +31,7 @@ import {
 	type BaseTableProps,
 	type TableColumnPinningState
 } from "../base-table";
+import { getSortableReorderResult } from "../sortable";
 
 import styles from "./Table.module.scss";
 
@@ -37,6 +40,12 @@ import styles from "./Table.module.scss";
  */
 function defaultGetRowId<TData>(_row: TData, index: number): string {
 	return String(index);
+}
+
+/** Управляемая перестановка строк; визуальную ручку потребитель размещает в нужной колонке через `Sortable.DragHandle`. */
+export interface TableRowReordering<TData extends object> {
+	disabled?: boolean;
+	onReorder: (rows: readonly TData[]) => void;
 }
 
 /**
@@ -131,6 +140,10 @@ export interface TableProps<TData extends object> {
 	 */
 	enableColumnReordering?: boolean;
 	/**
+	 * Включает вертикальную перестановку строк через `Sortable.DragHandle` в пользовательской колонке.
+	 */
+	rowReordering?: TableRowReordering<TData>;
+	/**
 	 * Минимальная ширина колонки при resize в px.
 	 */
 	columnResizeMinWidth?: number;
@@ -209,6 +222,7 @@ export function Table<TData extends object>({
 	defaultColumnPinning,
 	enableColumnResizing = false,
 	enableColumnReordering = false,
+	rowReordering,
 	columnResizeMinWidth,
 	onColumnVisibilityChange,
 	onColumnOrderChange,
@@ -326,6 +340,7 @@ export function Table<TData extends object>({
 
 	const visibleLeafColumns = getOrderedVisibleLeafColumns(table, baseTableColumnState);
 	const rowModelRows = table.getRowModel().rows;
+	const rowIds = useMemo(() => rowModelRows.map((row) => row.id), [rowModelRows]);
 	const mergedCellLayout = useMemo(
 		() =>
 			buildBaseTableMergedCellsLayout({
@@ -335,6 +350,20 @@ export function Table<TData extends object>({
 		[rowModelRows, visibleLeafColumns]
 	);
 	const leadingColumnId = visibleLeafColumns[0]?.id;
+	const handleRowDragEnd = (event: DragEndEvent) => {
+		if (!rowReordering || rowReordering.disabled) return;
+
+		const reorder = getSortableReorderResult({ event, items: rowIds });
+		if (!reorder) return;
+
+		rowReordering.onReorder(
+			moveArrayItem(
+				rowModelRows.map((row) => row.original),
+				reorder.fromIndex,
+				reorder.toIndex
+			)
+		);
+	};
 
 	/**
 	 * Активирует строку: обновляет выбор в соответствии с режимом и вызывает внешний callback.
@@ -366,6 +395,14 @@ export function Table<TData extends object>({
 			renderHeaderContextMenu={renderHeaderContextMenu}
 			enableColumnResizing={enableColumnResizing}
 			enableColumnReordering={enableColumnReordering}
+			rowReordering={
+				rowReordering
+					? {
+							disabled: rowReordering.disabled,
+							onDragEnd: handleRowDragEnd
+						}
+					: undefined
+			}
 			columnResizeMinWidth={columnResizeMinWidth}
 			renderCellContent={(args) => {
 				const displayValue = formatPipelineDisplayValue({

@@ -7,6 +7,8 @@ import { createRoot, type Root } from "react-dom/client";
 import { renderToStaticMarkup } from "react-dom/server";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
+import { Sortable } from "../sortable";
+
 import { Table } from "./Table";
 
 import type { TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
@@ -893,5 +895,36 @@ describe("Table formatting integration", () => {
 
 		const groupHeader = [...renderedContainer.querySelectorAll("thead th")].find((header) => header.textContent === "Показатели");
 		expect(groupHeader?.colSpan).toBe(2);
+	});
+
+	it("подключает строки к общему sortable-контексту и оставляет размещение drag handle потребителю", () => {
+		const columns: TableColumnDef<DemoRow>[] = [
+			{
+				id: "reorder",
+				header: "Порядок",
+				cell: () => <Sortable.DragHandle as="button" title="reorder-row" />
+			},
+			{
+				id: "status",
+				accessorKey: "status",
+				header: "Статус"
+			}
+		];
+
+		const html = renderToStaticMarkup(
+			<Table
+				data={[
+					{ id: "1", amount: 100, status: "Новая" },
+					{ id: "2", amount: 200, status: "Готово" }
+				]}
+				columns={columns}
+				getRowId={(row) => row.id}
+				rowReordering={{ onReorder: vi.fn() }}
+			/>
+		);
+
+		expect(html).toContain('data-sortable-id="1"');
+		expect(html).toContain('data-sortable-id="2"');
+		expect(html).toContain('data-sortable-handle-disabled="false"');
 	});
 });
