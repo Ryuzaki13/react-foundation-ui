@@ -1,11 +1,11 @@
 import { type Ref } from "react";
 
 import { FlexContainer } from "./FlexContainer";
-import { PredefinedFlexProps } from "./types";
-import { useFlexPredefinedClasses } from "./useFlexClasses";
+import { getFlexPredefinedClass } from "./getFlexClasses";
+import { type PredefinedFlexProps } from "./types";
 
 export function PredefinedFlex({ ref, variant, children, className = "", ...props }: PredefinedFlexProps & { ref?: Ref<HTMLElement> }) {
-	const predefinedClass = useFlexPredefinedClasses(variant ?? "");
+	const predefinedClass = getFlexPredefinedClass(variant ?? "");
 	const finalClassName = [predefinedClass, className].filter(Boolean).join(" ");
 
 	return (

@@ -1,11 +1,9 @@
-import { type Ref, useMemo } from "react";
-
-import { resolveResponsiveValue, useMatchMedia } from "@ryuzaki13/react-foundation-lib/media";
+import { type Ref } from "react";
 
 import { PolymorphicComponent } from "../polymorphic";
 
+import { getGridItemClasses, getGridItemStyles } from "./getGridClasses";
 import { GridItemProps } from "./types";
-import { useGridItemClasses, useGridItemStyles } from "./useGridClasses";
 
 export function GridItem({
 	ref,
@@ -20,28 +18,11 @@ export function GridItem({
 	justifySelf,
 	...htmlProps
 }: GridItemProps & { ref?: Ref<HTMLElement> }) {
-	const { activeBreakpoint } = useMatchMedia();
+	const gridClasses = getGridItemClasses({ alignSelf, justifySelf });
+	const gridStyles = getGridItemStyles({ area, column, row });
 
-	const resolvedProps = useMemo(() => {
-		return {
-			alignSelf: resolveResponsiveValue(alignSelf, activeBreakpoint),
-			justifySelf: resolveResponsiveValue(justifySelf, activeBreakpoint)
-		};
-	}, [activeBreakpoint, alignSelf, justifySelf]);
-
-	const resolvedPlacement = useMemo(() => {
-		return {
-			area: resolveResponsiveValue(area, activeBreakpoint),
-			column: resolveResponsiveValue(column, activeBreakpoint),
-			row: resolveResponsiveValue(row, activeBreakpoint)
-		};
-	}, [activeBreakpoint, area, column, row]);
-
-	const gridClasses = useGridItemClasses(resolvedProps);
-	const gridStyles = useGridItemStyles(resolvedPlacement);
-
-	const finalClassName = [gridClasses, className].filter(Boolean).join(" ");
-	const finalStyle = { ...gridStyles, ...style };
+	const finalClassName = [gridClasses, gridStyles.className, className].filter(Boolean).join(" ");
+	const finalStyle = { ...gridStyles.style, ...style };
 	return (
 		<PolymorphicComponent as={as} {...htmlProps} ref={ref} className={finalClassName} style={finalStyle}>
 			{children}

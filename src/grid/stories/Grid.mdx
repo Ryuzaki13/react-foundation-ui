@@ -23,7 +23,7 @@ Grid уже имеет живые stories, а эта страница собир
 <Controls of={GridStories.BasicGrid} />
 
 ```tsx
-import { Grid } from "@ryuzaki13/react-foundation-ui";
+import { Grid } from "@ryuzaki13/react-foundation-ui/grid";
 
 export function Example() {
 	return (
@@ -38,6 +38,25 @@ export function Example() {
 ## Практические рекомендации
 
 - Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- Для responsive-пропсов изменяйте ширину canvas через встроенную панель Storybook или перетаскиванием его границы. Индикатор в story показывает активный CSS-режим.
+
+## SSR и responsive-пропсы
+
+`Grid` не выбирает breakpoint в JavaScript. Классы и CSS custom properties всех режимов входят в серверный markup, а media mixins из `styles/mixins/_media.scss` применяют нужные `templateColumns`, `areas`, placement и enum-пропсы до hydration.
+
+```tsx
+<Grid.Container
+	templateColumns={{
+		mobile: "minmax(0, 1fr)",
+		tablet: "repeat(2, minmax(0, 1fr))",
+		laptop: "repeat(4, minmax(0, 1fr))"
+	}}
+	gap={{ mobile: "sm", tablet: "md", laptop: "lg" }}>
+	<Grid.Item column={{ mobile: "1", tablet: "1 / 3" }}>Содержимое</Grid.Item>
+</Grid.Container>
+```
+
+Обычные строковые значения по-прежнему передаются как inline styles. Responsive map раскладывается в локальные CSS custom properties, поэтому пользовательский `style` сохраняет высший приоритет.
 
 ## Сценарии использования
 
@@ -101,11 +120,29 @@ export function Example() {
 
 <Canvas of={GridStories.RealWorld} />
 
-### Адаптация раскладки под ширину контейнера
+### Responsive-шаблоны и свойства контейнера
 
-Адаптация раскладки под ширину контейнера.
+Проверяет `templateColumns`, `templateRows`, `autoRows`, `auto-flow`, выравнивание и `gap` во всех режимах.
 
-<Canvas of={GridStories.Responsive} />
+<Canvas of={GridStories.ResponsiveTemplates} />
+
+### Responsive-именованные области
+
+Проверяет перестройку `grid-template-areas` при сохранении семантического порядка DOM.
+
+<Canvas of={GridStories.ResponsiveAreas} />
+
+### Responsive-позиционирование Grid.Item
+
+Проверяет `column`, `row`, `alignSelf` и `justifySelf` на одном наборе элементов.
+
+<Canvas of={GridStories.ResponsiveItemPlacement} />
+
+### Intrinsic-адаптация через auto-fit
+
+Отдельный пример показывает чистый CSS `auto-fit`, не связанный с `ResponsiveValue`.
+
+<Canvas of={GridStories.IntrinsicResponsive} />
 
 ## API
 

@@ -1,212 +1,266 @@
-.grid {
-	display: grid;
+@use "@/styles/mixins" as *;
 
-	// Display variants
-	&.inline {
+@mixin container-modifiers($suffix: "") {
+	&.inline#{$suffix} {
 		display: inline-grid;
 		vertical-align: middle;
 	}
 
-	// Auto flow
-	&.row {
+	// Автоматическое размещение
+	&.row#{$suffix} {
 		grid-auto-flow: row;
 	}
-	&.column {
+	&.column#{$suffix} {
 		grid-auto-flow: column;
 	}
-	&.dense {
+	&.dense#{$suffix} {
 		grid-auto-flow: dense;
 	}
 
-	// Gap properties (аналогично Flex)
-	&.gapNone {
+	// Отступы
+	&.gapNone#{$suffix} {
 		gap: unset;
 	}
-
-	// Row gaps
-	&.gapRowXs {
+	&.gapRowXs#{$suffix} {
 		row-gap: var(--space-xs);
 	}
-	&.gapRowSm {
+	&.gapRowSm#{$suffix} {
 		row-gap: var(--space-sm);
 	}
-	&.gapRowMd {
+	&.gapRowMd#{$suffix} {
 		row-gap: var(--space-md);
 	}
-	&.gapRowLg {
+	&.gapRowLg#{$suffix} {
 		row-gap: var(--space-lg);
 	}
-	&.gapRowXl {
+	&.gapRowXl#{$suffix} {
 		row-gap: var(--space-xl);
 	}
-
-	// Column gaps
-	&.gapColumnXs {
+	&.gapColumnXs#{$suffix} {
 		column-gap: var(--space-xs);
 	}
-	&.gapColumnSm {
+	&.gapColumnSm#{$suffix} {
 		column-gap: var(--space-sm);
 	}
-	&.gapColumnMd {
+	&.gapColumnMd#{$suffix} {
 		column-gap: var(--space-md);
 	}
-	&.gapColumnLg {
+	&.gapColumnLg#{$suffix} {
 		column-gap: var(--space-lg);
 	}
-	&.gapColumnXl {
+	&.gapColumnXl#{$suffix} {
 		column-gap: var(--space-xl);
 	}
-
-	// Combined gaps
-	&.gapXs {
+	&.gapXs#{$suffix} {
 		row-gap: var(--space-xs);
 		column-gap: var(--space-xs);
 	}
-	&.gapSm {
+	&.gapSm#{$suffix} {
 		row-gap: var(--space-sm);
 		column-gap: var(--space-sm);
 	}
-	&.gapMd {
+	&.gapMd#{$suffix} {
 		row-gap: var(--space-md);
 		column-gap: var(--space-md);
 	}
-	&.gapLg {
+	&.gapLg#{$suffix} {
 		row-gap: var(--space-lg);
 		column-gap: var(--space-lg);
 	}
-	&.gapXl {
+	&.gapXl#{$suffix} {
 		row-gap: var(--space-xl);
 		column-gap: var(--space-xl);
 	}
 
-	// Align items
-	&.alignStart {
+	// Выравнивание элементов
+	&.alignStart#{$suffix} {
 		align-items: start;
 	}
-	&.alignCenter {
+	&.alignCenter#{$suffix} {
 		align-items: center;
 	}
-	&.alignEnd {
+	&.alignEnd#{$suffix} {
 		align-items: end;
 	}
-	&.alignStretch {
+	&.alignStretch#{$suffix} {
 		align-items: stretch;
 	}
-	&.alignBaseline {
+	&.alignBaseline#{$suffix} {
 		align-items: baseline;
 	}
-
-	// Justify items
-	&.justifyStart {
+	&.justifyStart#{$suffix} {
 		justify-items: start;
 	}
-	&.justifyCenter {
+	&.justifyCenter#{$suffix} {
 		justify-items: center;
 	}
-	&.justifyEnd {
+	&.justifyEnd#{$suffix} {
 		justify-items: end;
 	}
-	&.justifyStretch {
+	&.justifyStretch#{$suffix} {
 		justify-items: stretch;
 	}
 
-	// Align content
-	&.alignContentStart {
+	// Распределение сетки
+	&.alignContentStart#{$suffix} {
 		align-content: start;
 	}
-	&.alignContentCenter {
+	&.alignContentCenter#{$suffix} {
 		align-content: center;
 	}
-	&.alignContentEnd {
+	&.alignContentEnd#{$suffix} {
 		align-content: end;
 	}
-	&.alignContentStretch {
+	&.alignContentStretch#{$suffix} {
 		align-content: stretch;
 	}
-	&.alignContentBetween {
+	&.alignContentBetween#{$suffix} {
 		align-content: space-between;
 	}
-	&.alignContentAround {
+	&.alignContentAround#{$suffix} {
 		align-content: space-around;
 	}
-	&.alignContentEvenly {
+	&.alignContentEvenly#{$suffix} {
 		align-content: space-evenly;
 	}
-
-	// Justify content
-	&.justifyContentStart {
+	&.justifyContentStart#{$suffix} {
 		justify-content: start;
 	}
-	&.justifyContentCenter {
+	&.justifyContentCenter#{$suffix} {
 		justify-content: center;
 	}
-	&.justifyContentEnd {
+	&.justifyContentEnd#{$suffix} {
 		justify-content: end;
 	}
-	&.justifyContentStretch {
+	&.justifyContentStretch#{$suffix} {
 		justify-content: stretch;
 	}
-	&.justifyContentBetween {
+	&.justifyContentBetween#{$suffix} {
 		justify-content: space-between;
 	}
-	&.justifyContentAround {
+	&.justifyContentAround#{$suffix} {
 		justify-content: space-around;
 	}
-	&.justifyContentEvenly {
+	&.justifyContentEvenly#{$suffix} {
 		justify-content: space-evenly;
+	}
+
+	// Предопределённые композиции
+	&.autoRows1fr#{$suffix} {
+		grid-auto-rows: 1fr;
+	}
+	&.columnsAuto1fr#{$suffix} {
+		grid-template-columns: auto 1fr;
+		grid-auto-rows: auto;
+	}
+	&.singleColumn#{$suffix} {
+		grid-template-columns: 100%;
+		grid-auto-rows: auto 1fr;
 	}
 }
 
-// Grid Item
-.item {
-	// Grid placement
-	&.areaAuto {
+@mixin item-modifiers($suffix: "") {
+	&.areaAuto#{$suffix} {
 		grid-area: auto;
 	}
-
-	// Align self
-	&.alignSelfStart {
+	&.alignSelfStart#{$suffix} {
 		align-self: start;
 	}
-	&.alignSelfCenter {
+	&.alignSelfCenter#{$suffix} {
 		align-self: center;
 	}
-	&.alignSelfEnd {
+	&.alignSelfEnd#{$suffix} {
 		align-self: end;
 	}
-	&.alignSelfStretch {
+	&.alignSelfStretch#{$suffix} {
 		align-self: stretch;
 	}
-	&.alignSelfBaseline {
+	&.alignSelfBaseline#{$suffix} {
 		align-self: baseline;
 	}
-
-	// Justify self
-	&.justifySelfStart {
+	&.justifySelfStart#{$suffix} {
 		justify-self: start;
 	}
-	&.justifySelfCenter {
+	&.justifySelfCenter#{$suffix} {
 		justify-self: center;
 	}
-	&.justifySelfEnd {
+	&.justifySelfEnd#{$suffix} {
 		justify-self: end;
 	}
-	&.justifySelfStretch {
+	&.justifySelfStretch#{$suffix} {
 		justify-self: stretch;
 	}
 }
 
-// Предопределенные композиции
-.autoRows1fr {
-	grid-auto-rows: 1fr;
+@mixin responsive-container-values($breakpoint) {
+	&.responsiveTemplateColumns {
+		grid-template-columns: var(--foundation-grid-template-columns-#{$breakpoint});
+	}
+	&.responsiveTemplateRows {
+		grid-template-rows: var(--foundation-grid-template-rows-#{$breakpoint});
+	}
+	&.responsiveAutoColumns {
+		grid-auto-columns: var(--foundation-grid-auto-columns-#{$breakpoint});
+	}
+	&.responsiveAutoRows {
+		grid-auto-rows: var(--foundation-grid-auto-rows-#{$breakpoint});
+	}
+	&.responsiveTemplateAreas {
+		grid-template-areas: var(--foundation-grid-template-areas-#{$breakpoint});
+	}
 }
 
-.columnsAuto1fr {
-	grid-template-columns: auto 1fr;
-	grid-auto-rows: auto;
+@mixin responsive-item-values($breakpoint) {
+	&.responsiveArea {
+		grid-area: var(--foundation-grid-area-#{$breakpoint});
+	}
+	&.responsiveColumn {
+		grid-column: var(--foundation-grid-column-#{$breakpoint});
+	}
+	&.responsiveRow {
+		grid-row: var(--foundation-grid-row-#{$breakpoint});
+	}
 }
 
-.singleColumn {
-	grid-template-columns: 100%;
-	grid-auto-rows: auto 1fr;
+.grid {
+	display: grid;
+	@include container-modifiers;
+}
+
+.item {
+	@include item-modifiers;
+}
+
+// Ширины и порядок каскада принадлежат единственному источнику — styles/mixins/_media.scss.
+@include tablet-above {
+	.grid {
+		@include container-modifiers("Laptop");
+		@include responsive-container-values("laptop");
+	}
+	.item {
+		@include item-modifiers("Laptop");
+		@include responsive-item-values("laptop");
+	}
+}
+
+@include tablet {
+	.grid {
+		@include container-modifiers("Tablet");
+		@include responsive-container-values("tablet");
+	}
+	.item {
+		@include item-modifiers("Tablet");
+		@include responsive-item-values("tablet");
+	}
+}
+
+@include mobile {
+	.grid {
+		@include container-modifiers("Mobile");
+		@include responsive-container-values("mobile");
+	}
+	.item {
+		@include item-modifiers("Mobile");
+		@include responsive-item-values("mobile");
+	}
 }

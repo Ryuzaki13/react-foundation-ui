@@ -1,230 +1,252 @@
-.container {
-	display: flex;
+@use "@/styles/mixins" as *;
 
-	// Display variants
-	&.inline {
+@mixin container-modifiers($suffix: "") {
+	// Вариант display
+	&.inline#{$suffix} {
 		display: inline-flex;
 		vertical-align: middle;
 	}
 
-	// Direction
-	&.row {
+	// Направление
+	&.row#{$suffix} {
 		flex-direction: row;
 	}
-	&.column {
+	&.column#{$suffix} {
 		flex-direction: column;
 	}
-	&.rowReverse {
+	&.rowReverse#{$suffix} {
 		flex-direction: row-reverse;
 	}
-	&.columnReverse {
+	&.columnReverse#{$suffix} {
 		flex-direction: column-reverse;
 	}
 
-	// Wrap
-	&.wrap {
+	// Перенос
+	&.wrap#{$suffix} {
 		flex-wrap: wrap;
 	}
-	&.nowrap {
+	&.nowrap#{$suffix} {
 		flex-wrap: nowrap;
 	}
-	&.wrapReverse {
+	&.wrapReverse#{$suffix} {
 		flex-wrap: wrap-reverse;
 	}
 
-	// Align items
-	&.alignStart {
+	// Выравнивание элементов
+	&.alignStart#{$suffix} {
 		align-items: start;
 	}
-	&.alignCenter {
+	&.alignCenter#{$suffix} {
 		align-items: center;
 	}
-	&.alignEnd {
+	&.alignEnd#{$suffix} {
 		align-items: end;
 	}
-	&.alignStretch {
+	&.alignStretch#{$suffix} {
 		align-items: stretch;
 	}
-	&.alignBaseline {
+	&.alignBaseline#{$suffix} {
 		align-items: baseline;
 	}
 
-	// Justify content
-	&.justifyStart {
+	// Распределение по главной оси
+	&.justifyStart#{$suffix} {
 		justify-content: start;
 	}
-	&.justifyCenter {
+	&.justifyCenter#{$suffix} {
 		justify-content: center;
 	}
-	&.justifyEnd {
+	&.justifyEnd#{$suffix} {
 		justify-content: end;
 	}
-	&.justifyStretch {
+	&.justifyStretch#{$suffix} {
 		justify-content: stretch;
 	}
-	&.justifyBetween {
+	&.justifyBetween#{$suffix} {
 		justify-content: space-between;
 	}
-	&.justifyAround {
+	&.justifyAround#{$suffix} {
 		justify-content: space-around;
 	}
-	&.justifyEvenly {
+	&.justifyEvenly#{$suffix} {
 		justify-content: space-evenly;
 	}
 
-	// Align content
-	&.alignContentStart {
+	// Распределение строк
+	&.alignContentStart#{$suffix} {
 		align-content: start;
 	}
-	&.alignContentCenter {
+	&.alignContentCenter#{$suffix} {
 		align-content: center;
 	}
-	&.alignContentEnd {
+	&.alignContentEnd#{$suffix} {
 		align-content: end;
 	}
-	&.alignContentStretch {
+	&.alignContentStretch#{$suffix} {
 		align-content: stretch;
 	}
-	&.alignContentBetween {
+	&.alignContentBetween#{$suffix} {
 		align-content: space-between;
 	}
-	&.alignContentAround {
+	&.alignContentAround#{$suffix} {
 		align-content: space-around;
 	}
-	&.alignContentEvenly {
+	&.alignContentEvenly#{$suffix} {
 		align-content: space-evenly;
 	}
 
-	// Gap properties
-	&.gapNone {
+	// Отступы
+	&.gapNone#{$suffix} {
 		gap: unset;
 	}
-
-	// Row gaps
-	&.gapRowXs {
+	&.gapRowXs#{$suffix} {
 		row-gap: var(--space-xs);
 	}
-	&.gapRowSm {
+	&.gapRowSm#{$suffix} {
 		row-gap: var(--space-sm);
 	}
-	&.gapRowMd {
+	&.gapRowMd#{$suffix} {
 		row-gap: var(--space-md);
 	}
-	&.gapRowLg {
+	&.gapRowLg#{$suffix} {
 		row-gap: var(--space-lg);
 	}
-	&.gapRowXl {
+	&.gapRowXl#{$suffix} {
 		row-gap: var(--space-xl);
 	}
-
-	// Column gaps
-	&.gapColumnXs {
+	&.gapColumnXs#{$suffix} {
 		column-gap: var(--space-xs);
 	}
-	&.gapColumnSm {
+	&.gapColumnSm#{$suffix} {
 		column-gap: var(--space-sm);
 	}
-	&.gapColumnMd {
+	&.gapColumnMd#{$suffix} {
 		column-gap: var(--space-md);
 	}
-	&.gapColumnLg {
+	&.gapColumnLg#{$suffix} {
 		column-gap: var(--space-lg);
 	}
-	&.gapColumnXl {
+	&.gapColumnXl#{$suffix} {
 		column-gap: var(--space-xl);
 	}
-
-	// Combined gaps
-	&.gapXs {
+	&.gapXs#{$suffix} {
 		row-gap: var(--space-xs);
 		column-gap: var(--space-xs);
 	}
-	&.gapSm {
+	&.gapSm#{$suffix} {
 		row-gap: var(--space-sm);
 		column-gap: var(--space-sm);
 	}
-	&.gapMd {
+	&.gapMd#{$suffix} {
 		row-gap: var(--space-md);
 		column-gap: var(--space-md);
 	}
-	&.gapLg {
+	&.gapLg#{$suffix} {
 		row-gap: var(--space-lg);
 		column-gap: var(--space-lg);
 	}
-	&.gapXl {
+	&.gapXl#{$suffix} {
 		row-gap: var(--space-xl);
 		column-gap: var(--space-xl);
 	}
 }
 
-.item {
-	// Grow & Shrink with defaults (grow: 0, shrink: 1)
-	&.grow {
+@mixin item-modifiers($suffix: "") {
+	&.grow#{$suffix} {
 		flex-grow: 1;
 	}
-	&.grow0 {
+	&.grow0#{$suffix} {
 		flex-grow: 0;
 	}
-
-	&.shrink {
+	&.shrink#{$suffix} {
 		flex-shrink: 1;
 	}
-	&.shrink0 {
+	&.shrink0#{$suffix} {
 		flex-shrink: 0;
 	}
-
-	// Basis
-	&.basis0 {
+	&.basis0#{$suffix} {
 		flex-basis: 0;
 	}
-	&.basisAuto {
+	&.basisAuto#{$suffix} {
 		flex-basis: auto;
 	}
 
-	// Composite classes
-	&.flex0 {
+	&.flex0#{$suffix} {
 		flex-grow: 0;
 		flex-shrink: 0;
 		flex-basis: auto;
 	}
-
-	&.flex1 {
+	&.flex1#{$suffix} {
 		flex-grow: 1;
 		flex-shrink: 1;
 		flex-basis: auto;
 	}
 
-	// Align self
-	&.alignSelfStart {
+	&.alignSelfStart#{$suffix} {
 		align-self: start;
 	}
-	&.alignSelfCenter {
+	&.alignSelfCenter#{$suffix} {
 		align-self: center;
 	}
-	&.alignSelfEnd {
+	&.alignSelfEnd#{$suffix} {
 		align-self: end;
 	}
-	&.alignSelfStretch {
+	&.alignSelfStretch#{$suffix} {
 		align-self: stretch;
 	}
-	&.alignSelfBaseline {
+	&.alignSelfBaseline#{$suffix} {
 		align-self: baseline;
 	}
 
-	// Justify self
-	&.justifySelfCenter {
+	&.justifySelfCenter#{$suffix} {
 		justify-self: center;
 	}
-	&.justifySelfEnd {
+	&.justifySelfEnd#{$suffix} {
 		justify-self: end;
 	}
-	&.justifySelfStretch {
+	&.justifySelfStretch#{$suffix} {
 		justify-self: stretch;
 	}
 }
 
-// Predefined compositions
+.container {
+	display: flex;
+	@include container-modifiers;
+}
 
+.item {
+	@include item-modifiers;
+}
+
+// Ширины и порядок каскада принадлежат единственному источнику — styles/mixins/_media.scss.
+@include tablet-above {
+	.container {
+		@include container-modifiers("Laptop");
+	}
+	.item {
+		@include item-modifiers("Laptop");
+	}
+}
+
+@include tablet {
+	.container {
+		@include container-modifiers("Tablet");
+	}
+	.item {
+		@include item-modifiers("Tablet");
+	}
+}
+
+@include mobile {
+	.container {
+		@include container-modifiers("Mobile");
+	}
+	.item {
+		@include item-modifiers("Mobile");
+	}
+}
+
+// Предопределённые композиции
 .center {
 	display: flex;
 	align-items: center;

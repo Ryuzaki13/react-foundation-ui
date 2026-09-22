@@ -4,6 +4,7 @@ import React from "react";
 import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
+import { ResponsiveLayoutPreview } from "../../responsive-layout/stories/ResponsiveLayoutPreview";
 import { Grid } from "../Grid";
 import { type GridContainerProps } from "../types";
 
@@ -545,27 +546,141 @@ export const RealWorld: Story = {
 	args: { children: undefined }
 };
 
-// Responsive Examples
-export const Responsive: Story = {
+export const ResponsiveTemplates: Story = {
+	name: "Responsive: шаблоны контейнера",
 	render: () => (
-		<div>
-			{/* <h3>Responsive Columns</h3>
+		<ResponsiveLayoutPreview
+			title="Колонки, строки, auto-flow, gap и выравнивание"
+			description="Все значения присутствуют уже в SSR markup; изменение ширины переключает только CSS-правила."
+			legend={[
+				"laptop — четыре колонки, dense flow, gap xl",
+				"tablet — две колонки, row flow, gap md",
+				"mobile — одна колонка, row flow, gap sm"
+			]}>
 			<Grid.Container
-				templateColumns={{
-					mobile: "1fr",
-					tablet: "repeat(2, 1fr)",
-					desktop: "repeat(4, 1fr)"
-				}}
-				gap="md"
+				templateColumns={{ mobile: "minmax(0, 1fr)", tablet: "repeat(2, minmax(0, 1fr))", laptop: "repeat(4, minmax(0, 1fr))" }}
+				templateRows={{ mobile: "repeat(6, auto)", tablet: "repeat(3, minmax(7em, auto))", laptop: "repeat(2, minmax(8em, auto))" }}
+				autoRows={{ mobile: "auto", tablet: "minmax(7em, auto)", laptop: "minmax(8em, auto)" }}
+				row={{ mobile: true, tablet: true, laptop: false }}
+				dense={{ mobile: false, tablet: false, laptop: true }}
+				gap={{ mobile: "sm", tablet: "md", laptop: "xl" }}
+				align={{ mobile: "stretch", tablet: "center", laptop: "end" }}
+				justify={{ mobile: "stretch", tablet: "stretch", laptop: "center" }}
 				style={demoStyles.container}>
-				{[1, 2, 3, 4].map((i) => (
+				{[1, 2, 3, 4, 5, 6].map((i) => (
 					<DemoItem key={i} index={i}>
-						Item {i}
+						Карточка {i}
 					</DemoItem>
 				))}
-			</Grid.Container> */}
+			</Grid.Container>
+		</ResponsiveLayoutPreview>
+	),
+	args: { children: undefined },
+	parameters: {
+		docs: {
+			description: {
+				story: "Проверяет responsive CSS-классы и произвольные значения templateColumns/templateRows/autoRows в одном SSR-safe сценарии."
+			}
+		}
+	}
+};
 
-			<h3>Adaptive Layout</h3>
+export const ResponsiveAreas: Story = {
+	name: "Responsive: именованные области",
+	render: () => (
+		<ResponsiveLayoutPreview
+			title="Перестройка layout через grid-template-areas"
+			description="Семантический порядок DOM не меняется: CSS переставляет те же header, navigation, main, aside и footer."
+			legend={[
+				"laptop — navigation и aside окружают main по бокам",
+				"tablet — navigation сверху, aside рядом с main",
+				"mobile — все области образуют одну колонку"
+			]}>
+			<Grid.Container
+				areas={{
+					mobile: '"header" "navigation" "main" "aside" "footer"',
+					tablet: '"header header" "navigation navigation" "main aside" "footer footer"',
+					laptop: '"header header header" "navigation main aside" "footer footer footer"'
+				}}
+				templateColumns={{
+					mobile: "minmax(0, 1fr)",
+					tablet: "minmax(0, 2fr) minmax(12em, 1fr)",
+					laptop: "12em minmax(0, 1fr) 14em"
+				}}
+				templateRows={{
+					mobile: "repeat(5, auto)",
+					tablet: "auto auto minmax(14em, 1fr) auto",
+					laptop: "auto minmax(18em, 1fr) auto"
+				}}
+				gap={{ mobile: "sm", tablet: "md", laptop: "lg" }}
+				style={demoStyles.container}>
+				{[
+					["header", "Header", 0],
+					["navigation", "Navigation", 1],
+					["main", "Main", 2],
+					["aside", "Aside", 3],
+					["footer", "Footer", 4]
+				].map(([area, label, color]) => (
+					<Grid.Item key={String(area)} area={{ mobile: String(area), tablet: String(area), laptop: String(area) }}>
+						<div style={{ ...demoStyles.item, minWidth: 0, height: "100%", backgroundColor: getItemColor(Number(color)) }}>
+							{label}
+						</div>
+					</Grid.Item>
+				))}
+			</Grid.Container>
+		</ResponsiveLayoutPreview>
+	),
+	args: { children: undefined }
+};
+
+export const ResponsiveItemPlacement: Story = {
+	name: "Responsive: позиционирование элементов",
+	render: () => (
+		<ResponsiveLayoutPreview
+			title="Grid.Item: column, row, alignSelf и justifySelf"
+			description="На каждом режиме меняются и CSS placement-значения, и классы индивидуального выравнивания."
+			legend={[
+				"laptop — акцент занимает три колонки и две строки",
+				"tablet — акцент занимает две колонки",
+				"mobile — каждый элемент занимает одну строку"
+			]}>
+			<Grid.Container
+				templateColumns={{ mobile: "minmax(0, 1fr)", tablet: "repeat(2, minmax(0, 1fr))", laptop: "repeat(4, minmax(0, 1fr))" }}
+				templateRows={{ mobile: "repeat(3, auto)", tablet: "repeat(2, 10em)", laptop: "repeat(2, 11em)" }}
+				gap="md"
+				style={demoStyles.container}>
+				<Grid.Item
+					column={{ mobile: "1", tablet: "1 / 3", laptop: "1 / 4" }}
+					row={{ mobile: "1", tablet: "1", laptop: "1 / 3" }}
+					alignSelf={{ mobile: "stretch", tablet: "center", laptop: "stretch" }}
+					justifySelf={{ mobile: "stretch", tablet: "stretch", laptop: "center" }}>
+					<div style={{ ...demoStyles.item, minWidth: 0, height: "100%", backgroundColor: getItemColor(0) }}>Акцент</div>
+				</Grid.Item>
+				<Grid.Item
+					column={{ mobile: "1", tablet: "1", laptop: "4" }}
+					row={{ mobile: "2", tablet: "2", laptop: "1" }}
+					alignSelf={{ mobile: "stretch", tablet: "start", laptop: "start" }}
+					justifySelf={{ mobile: "stretch", tablet: "start", laptop: "stretch" }}>
+					<div style={{ ...demoStyles.item, minWidth: 0, backgroundColor: getItemColor(1) }}>Дополнение A</div>
+				</Grid.Item>
+				<Grid.Item
+					column={{ mobile: "1", tablet: "2", laptop: "4" }}
+					row={{ mobile: "3", tablet: "2", laptop: "2" }}
+					alignSelf={{ mobile: "stretch", tablet: "end", laptop: "end" }}
+					justifySelf={{ mobile: "stretch", tablet: "end", laptop: "stretch" }}>
+					<div style={{ ...demoStyles.item, minWidth: 0, backgroundColor: getItemColor(2) }}>Дополнение B</div>
+				</Grid.Item>
+			</Grid.Container>
+		</ResponsiveLayoutPreview>
+	),
+	args: { children: undefined }
+};
+
+export const IntrinsicResponsive: Story = {
+	name: "Responsive: intrinsic auto-fit",
+	render: () => (
+		<div>
+			<h3>Intrinsic auto-fit без responsive prop</h3>
 			<Grid.Container templateColumns="repeat(auto-fit, minmax(min(100%, 300px), 1fr))" gap="lg" style={demoStyles.container}>
 				{[1, 2, 3, 4, 5, 6].map((i) => (
 					<DemoItem key={i} index={i}>

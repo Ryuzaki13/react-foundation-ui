@@ -4,6 +4,7 @@ import React from "react";
 import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
+import { ResponsiveLayoutPreview } from "../../responsive-layout/stories/ResponsiveLayoutPreview";
 import { Flex } from "../Flex";
 import { type FlexContainerProps } from "../types";
 
@@ -422,6 +423,112 @@ export const RealWorld: Story = {
 				<DemoItem index={3}>Message</DemoItem>
 			</Flex.Container>
 		</div>
+	),
+	args: { children: undefined }
+};
+
+export const ResponsiveContainer: Story = {
+	name: "Responsive: контейнер",
+	render: () => (
+		<ResponsiveLayoutPreview
+			title="Направление, выравнивание и общий gap"
+			description="Изменяйте ширину canvas: DOM остаётся тем же, а режим выбирают media mixins до hydration."
+			legend={[
+				"laptop — строка, элементы у нижнего края, распределение between, gap xl",
+				"tablet — строка, центрирование, gap md",
+				"mobile — колонка, растяжение по ширине, gap sm"
+			]}>
+			<Flex.Container
+				row={{ mobile: false, tablet: true }}
+				column={{ mobile: true, tablet: false }}
+				align={{ mobile: "stretch", tablet: "center", laptop: "end" }}
+				justify={{ mobile: "start", tablet: "center", laptop: "between" }}
+				gap={{ mobile: "sm", tablet: "md", laptop: "xl" }}
+				style={{ ...demoStyles.container, minHeight: "14em" }}>
+				<DemoItem index={0}>Первый</DemoItem>
+				<DemoItem index={1}>Второй</DemoItem>
+				<DemoItem index={2}>Третий</DemoItem>
+			</Flex.Container>
+		</ResponsiveLayoutPreview>
+	),
+	args: { children: undefined },
+	parameters: {
+		docs: {
+			description: {
+				story: "Проверяет исходный сценарий `column={{ mobile: true, tablet: false }}` вместе с responsive row, align, justify и gap."
+			}
+		}
+	}
+};
+
+export const ResponsiveWrapping: Story = {
+	name: "Responsive: перенос и интервалы",
+	render: () => (
+		<ResponsiveLayoutPreview
+			title="Wrap, alignContent, row-gap и column-gap"
+			description="Высота контейнера зафиксирована только для наглядности распределения нескольких строк."
+			legend={[
+				"laptop — nowrap, интервалы xl/sm",
+				"tablet — wrap, строки распределены between, интервалы lg/md",
+				"mobile — wrap-reverse, строки центрированы, интервалы sm/xs"
+			]}>
+			<Flex.Container
+				row
+				nowrap={{ mobile: false, tablet: false, laptop: true }}
+				wrap={{ mobile: false, tablet: true, laptop: false }}
+				wrapReverse={{ mobile: true, tablet: false }}
+				alignContent={{ mobile: "center", tablet: "between", laptop: "stretch" }}
+				gapRow={{ mobile: "sm", tablet: "lg", laptop: "xl" }}
+				gapColumn={{ mobile: "xs", tablet: "md", laptop: "sm" }}
+				style={{ ...demoStyles.container, height: "26em", overflow: "auto" }}>
+				{[1, 2, 3, 4, 5, 6].map((item) => (
+					<DemoItem key={item} index={item}>
+						Элемент {item}
+					</DemoItem>
+				))}
+			</Flex.Container>
+		</ResponsiveLayoutPreview>
+	),
+	args: { children: undefined }
+};
+
+export const ResponsiveItems: Story = {
+	name: "Responsive: элементы",
+	render: () => (
+		<ResponsiveLayoutPreview
+			title="Flex.Item: flex, grow, shrink, basis и alignSelf"
+			description="Пример позволяет отдельно увидеть переходы поведения дочерних элементов без JavaScript-наблюдателя."
+			legend={[
+				"laptop — центральный элемент flex1, крайние выровнены по start/end",
+				"tablet — элементы используют grow и basis 0",
+				"mobile — фиксированное поведение flex0 и растяжение по ширине"
+			]}>
+			<Flex.Container
+				row={{ mobile: false, tablet: true }}
+				column={{ mobile: true, tablet: false }}
+				align="stretch"
+				gap="md"
+				style={{ ...demoStyles.container, minHeight: "16em" }}>
+				<Flex.Item
+					flex0={{ mobile: true, tablet: false }}
+					grow={{ mobile: false, tablet: true, laptop: false }}
+					basis={{ mobile: "auto", tablet: "0", laptop: "auto" }}
+					alignSelf={{ mobile: "stretch", tablet: "center", laptop: "start" }}>
+					<div style={{ ...demoStyles.item, backgroundColor: getItemColor(0) }}>Первый</div>
+				</Flex.Item>
+				<Flex.Item
+					flex1={{ mobile: false, tablet: false, laptop: true }}
+					grow={{ mobile: false, tablet: true, laptop: false }}
+					shrink={{ mobile: false, tablet: true }}
+					basis={{ mobile: "auto", tablet: "0", laptop: "auto" }}
+					alignSelf={{ mobile: "stretch", tablet: "stretch", laptop: "center" }}>
+					<div style={{ ...demoStyles.item, minWidth: 0, backgroundColor: getItemColor(1) }}>Изменяемый</div>
+				</Flex.Item>
+				<Flex.Item alignSelf={{ mobile: "stretch", tablet: "center", laptop: "end" }}>
+					<div style={{ ...demoStyles.item, backgroundColor: getItemColor(2) }}>Третий</div>
+				</Flex.Item>
+			</Flex.Container>
+		</ResponsiveLayoutPreview>
 	),
 	args: { children: undefined }
 };

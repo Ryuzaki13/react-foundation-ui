@@ -1,19 +1,15 @@
+import { act } from "react";
+
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { GridContainer } from "./GridContainer";
 import { GridItem } from "./GridItem";
 
-vi.mock("@ryuzaki13/react-foundation-lib/media", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@ryuzaki13/react-foundation-lib/media")>();
-
-	return {
-		...actual,
-		useMatchMedia: () => ({
-			activeBreakpoint: "laptop",
-			matches: { mobile: false, tablet: false, laptop: true }
-		})
-	};
+afterEach(() => {
+	vi.unstubAllGlobals();
 });
 
 describe("grid accessibility props", () => {
@@ -53,5 +49,55 @@ describe("grid accessibility props", () => {
 		expect(item.getAttribute("role")).toBe("article");
 		expect(item.getAttribute("aria-labelledby")).toBe("grid-item-title");
 		expect(item.hasAttribute("column")).toBe(false);
+	});
+});
+
+describe("grid SSR", () => {
+	it("передаёт в SSR markup все responsive CSS-значения без чтения viewport", () => {
+		const matchMedia = vi.fn(() => {
+			throw new Error("matchMedia не должен вызываться при render");
+		});
+		vi.stubGlobal("matchMedia", matchMedia);
+
+		const markup = renderToString(
+			<GridContainer
+				templateColumns={{ mobile: "1fr", tablet: "repeat(2, 1fr)", laptop: "repeat(3, 1fr)" }}
+				areas={{ mobile: '"header" "main"', tablet: '"header header" "main main"' }}
+				gap={{ mobile: "sm", tablet: "lg" }}>
+				<GridItem area={{ mobile: "header", tablet: "main" }} column={{ mobile: "1", tablet: "1 / 3" }}>
+					Элемент
+				</GridItem>
+			</GridContainer>
+		);
+
+		expect(matchMedia).not.toHaveBeenCalled();
+		expect(markup).toContain("responsiveTemplateColumns");
+		expect(markup).toContain("--foundation-grid-template-columns-mobile:1fr");
+		expect(markup).toContain("--foundation-grid-template-columns-tablet:repeat(2, 1fr)");
+		expect(markup).toContain("--foundation-grid-template-columns-laptop:repeat(3, 1fr)");
+		expect(markup).toContain("gapSmMobile");
+		expect(markup).toContain("gapLgTablet");
+		expect(markup).toContain("responsiveArea");
+		expect(markup).toContain("--foundation-grid-column-laptop:1 / 3");
+	});
+
+	it("гидратирует responsive template и placement без рассинхронизации", async () => {
+		const element = (
+			<GridContainer templateColumns={{ mobile: "1fr", tablet: "1fr 1fr" }}>
+				<GridItem column={{ mobile: "1", tablet: "1 / 3" }}>Содержимое</GridItem>
+			</GridContainer>
+		);
+		const container = document.createElement("div");
+		container.innerHTML = renderToString(element);
+		document.body.append(container);
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+		const root = hydrateRoot(container, element);
+		await act(async () => undefined);
+
+		expect(consoleError).not.toHaveBeenCalled();
+		await act(async () => root.unmount());
+		consoleError.mockRestore();
+		container.remove();
 	});
 });

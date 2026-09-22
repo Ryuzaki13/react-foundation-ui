@@ -23,7 +23,7 @@ Flex уже имеет живые stories, а эта страница собир
 <Controls of={FlexStories.BasicRow} />
 
 ```tsx
-import { Flex } from "@ryuzaki13/react-foundation-ui";
+import { Flex } from "@ryuzaki13/react-foundation-ui/flex";
 
 export function Example() {
 	return (
@@ -38,6 +38,22 @@ export function Example() {
 ## Практические рекомендации
 
 - Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- Для responsive-пропсов изменяйте ширину canvas через встроенную панель Storybook или перетаскиванием его границы. Индикатор в story показывает активный CSS-режим.
+
+## SSR и responsive-пропсы
+
+`Flex` формирует одинаковый markup на сервере и во время первого клиентского render. Для responsive map в DOM сразу присутствуют классы всех режимов, а активное значение выбирают media mixins из `styles/mixins/_media.scss`. Компонент не читает ширину окна и не ждёт hydration.
+
+```tsx
+<Flex.Container
+	row={{ mobile: false, tablet: true }}
+	column={{ mobile: true, tablet: false }}
+	gap={{ mobile: "sm", tablet: "md", laptop: "xl" }}>
+	<Flex.Item>Содержимое</Flex.Item>
+</Flex.Container>
+```
+
+Значение, отсутствующее у текущего режима, наследуется по действующим правилам `ResponsiveValue`. Например, в исходном сценарии `column={{ mobile: true, tablet: false }}` значение `false` применяется и для `laptop`.
 
 ## Сценарии использования
 
@@ -106,6 +122,24 @@ export function Example() {
 Прикладной пример использования в интерфейсе.
 
 <Canvas of={FlexStories.RealWorld} />
+
+### Responsive-контейнер
+
+Проверяет направление, выравнивание и общий `gap` на всех режимах. Это прямой визуальный сценарий для `column={{ mobile: true, tablet: false }}`.
+
+<Canvas of={FlexStories.ResponsiveContainer} />
+
+### Responsive-перенос и независимые интервалы
+
+Проверяет `wrap`, `nowrap`, `wrapReverse`, `alignContent`, `gapRow` и `gapColumn` при изменении ширины canvas.
+
+<Canvas of={FlexStories.ResponsiveWrapping} />
+
+### Responsive-поведение Flex.Item
+
+Проверяет `flex0`, `flex1`, `grow`, `shrink`, `basis` и `alignSelf` без клиентского observer.
+
+<Canvas of={FlexStories.ResponsiveItems} />
 
 ## API
 

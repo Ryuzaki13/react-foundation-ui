@@ -1,21 +1,9 @@
-import { type Ref, useMemo } from "react";
-
-import { resolveProps, useMatchMedia } from "@ryuzaki13/react-foundation-lib/media";
+import { type Ref } from "react";
 
 import { PolymorphicComponent } from "../polymorphic";
 
-import { FlexItemLayoutProps, FlexItemProps } from "./types";
-import { useFlexItemClasses } from "./useFlexClasses";
-
-const RESPONSIVE_KEYS = [
-	"flex0",
-	"flex1",
-	"grow",
-	"shrink",
-	"basis",
-	"alignSelf",
-	"justifySelf"
-] as const satisfies readonly (keyof FlexItemLayoutProps)[];
+import { getFlexItemClasses } from "./getFlexClasses";
+import { type FlexItemProps } from "./types";
 
 export function FlexItem({
 	ref,
@@ -32,14 +20,7 @@ export function FlexItem({
 	justifySelf,
 	...htmlProps
 }: FlexItemProps & { ref?: Ref<HTMLElement> }) {
-	const { activeBreakpoint } = useMatchMedia();
-
-	const resolvedProps = useMemo(
-		() => resolveProps({ flex0, flex1, grow, shrink, basis, alignSelf, justifySelf }, activeBreakpoint, RESPONSIVE_KEYS),
-		[activeBreakpoint, alignSelf, basis, flex0, flex1, grow, justifySelf, shrink]
-	);
-
-	const flexClasses = useFlexItemClasses(resolvedProps);
+	const flexClasses = getFlexItemClasses({ flex0, flex1, grow, shrink, basis, alignSelf, justifySelf });
 
 	const finalClassName = [flexClasses, className].filter(Boolean).join(" ");
 	return (

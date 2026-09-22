@@ -1,5 +1,9 @@
+import { act } from "react";
+
 import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { hydrateRoot } from "react-dom/client";
+import { renderToString } from "react-dom/server";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
 import { FlexCenter } from "./FlexCenter";
 import { FlexContainer } from "./FlexContainer";
@@ -7,16 +11,8 @@ import { FlexItem } from "./FlexItem";
 import { FlexSpacer } from "./FlexSpacer";
 import { PredefinedFlex } from "./PredefinedFlex";
 
-vi.mock("@ryuzaki13/react-foundation-lib/media", async (importOriginal) => {
-	const actual = await importOriginal<typeof import("@ryuzaki13/react-foundation-lib/media")>();
-
-	return {
-		...actual,
-		useMatchMedia: () => ({
-			activeBreakpoint: "laptop",
-			matches: { mobile: false, tablet: false, laptop: true }
-		})
-	};
+afterEach(() => {
+	vi.unstubAllGlobals();
 });
 
 describe("flex accessibility props", () => {
@@ -67,5 +63,50 @@ describe("flex accessibility props", () => {
 		expect(screen.getByTestId("flex-center").getAttribute("aria-live")).toBe("polite");
 		expect(screen.getByTestId("flex-spacer").getAttribute("aria-hidden")).toBe("true");
 		expect(screen.getByTestId("flex-spacer").hasAttribute("flex1")).toBe(false);
+	});
+});
+
+describe("flex SSR", () => {
+	it("формирует responsive-классы без чтения viewport", () => {
+		const matchMedia = vi.fn(() => {
+			throw new Error("matchMedia не должен вызываться при render");
+		});
+		vi.stubGlobal("matchMedia", matchMedia);
+
+		const markup = renderToString(
+			<FlexContainer
+				column={{ mobile: true, tablet: false }}
+				row={{ mobile: false, tablet: true }}
+				gap={{ mobile: "sm", tablet: "lg" }}>
+				<FlexItem flex1={{ mobile: true, tablet: false }} alignSelf={{ mobile: "stretch", tablet: "center" }}>
+					Элемент
+				</FlexItem>
+			</FlexContainer>
+		);
+
+		expect(matchMedia).not.toHaveBeenCalled();
+		expect(markup).toContain("columnMobile");
+		expect(markup).toContain("rowTablet");
+		expect(markup).toContain("rowLaptop");
+		expect(markup).toContain("gapSmMobile");
+		expect(markup).toContain("gapLgTablet");
+		expect(markup).toContain("flex1Mobile");
+		expect(markup).toContain("alignSelfCenterLaptop");
+	});
+
+	it("гидратирует тот же responsive markup без рассинхронизации", async () => {
+		const element = <FlexContainer column={{ mobile: true, tablet: false }}>Содержимое</FlexContainer>;
+		const container = document.createElement("div");
+		container.innerHTML = renderToString(element);
+		document.body.append(container);
+		const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
+		const root = hydrateRoot(container, element);
+		await act(async () => undefined);
+
+		expect(consoleError).not.toHaveBeenCalled();
+		await act(async () => root.unmount());
+		consoleError.mockRestore();
+		container.remove();
 	});
 });

@@ -1,28 +1,9 @@
-import { type Ref, useMemo } from "react";
-
-import { resolveProps, useMatchMedia } from "@ryuzaki13/react-foundation-lib/media";
+import { type Ref } from "react";
 
 import { PolymorphicComponent } from "../polymorphic";
 
-import { FlexContainerLayoutProps, FlexContainerProps } from "./types";
-import { useFlexContainerClasses } from "./useFlexClasses";
-
-const RESPONSIVE_KEYS = [
-	"inline",
-	"row",
-	"column",
-	"rowReverse",
-	"columnReverse",
-	"wrap",
-	"nowrap",
-	"wrapReverse",
-	"align",
-	"justify",
-	"alignContent",
-	"gap",
-	"gapRow",
-	"gapColumn"
-] as const satisfies readonly (keyof FlexContainerLayoutProps)[];
+import { getFlexContainerClasses } from "./getFlexClasses";
+import { type FlexContainerProps } from "./types";
 
 export function FlexContainer({
 	ref,
@@ -46,50 +27,22 @@ export function FlexContainer({
 	gapColumn,
 	...htmlProps
 }: FlexContainerProps & { ref?: Ref<HTMLElement> }) {
-	const { activeBreakpoint } = useMatchMedia();
-
-	const resolvedProps = useMemo(
-		() =>
-			resolveProps(
-				{
-					inline,
-					row,
-					column,
-					rowReverse,
-					columnReverse,
-					wrap,
-					nowrap,
-					wrapReverse,
-					align,
-					justify,
-					alignContent,
-					gap,
-					gapRow,
-					gapColumn
-				},
-				activeBreakpoint,
-				RESPONSIVE_KEYS
-			),
-		[
-			activeBreakpoint,
-			align,
-			alignContent,
-			column,
-			columnReverse,
-			gap,
-			gapColumn,
-			gapRow,
-			inline,
-			justify,
-			nowrap,
-			row,
-			rowReverse,
-			wrap,
-			wrapReverse
-		]
-	);
-
-	const flexClasses = useFlexContainerClasses(resolvedProps);
+	const flexClasses = getFlexContainerClasses({
+		inline,
+		row,
+		column,
+		rowReverse,
+		columnReverse,
+		wrap,
+		nowrap,
+		wrapReverse,
+		align,
+		justify,
+		alignContent,
+		gap,
+		gapRow,
+		gapColumn
+	});
 
 	const finalClassName = [flexClasses, className].filter(Boolean).join(" ");
 	return (
