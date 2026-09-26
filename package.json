@@ -131,6 +131,10 @@
 			"types": "./dist/floating-arrow/index.d.ts",
 			"import": "./dist/floating-arrow/index.js"
 		},
+		"./floating-windows": {
+			"types": "./dist/floating-windows/index.d.ts",
+			"import": "./dist/floating-windows/index.js"
+		},
 		"./fullscreen-portal": {
 			"types": "./dist/fullscreen-portal/index.d.ts",
 			"import": "./dist/fullscreen-portal/index.js"
