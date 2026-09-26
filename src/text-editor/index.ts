@@ -1,4 +1,5 @@
 export { TextEditorLexical } from "./TextEditorLexical";
+export { TextEditorLexicalViewer, type TextEditorLexicalViewerProps } from "./TextEditorLexicalViewer";
 export type {
 	LocalLinkDialogAdapterProps,
 	TextEditorBusinessAdapters,
