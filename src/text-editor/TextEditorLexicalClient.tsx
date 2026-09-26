@@ -30,7 +30,14 @@ type TextEditorProps = TextEditorCoreProps;
 /**
  * Редактор форматированного текста на базе Lexical. Поддерживает тулбар, бизнес-адаптеры и сериализацию контента в единый формат данных.
  */
-export function TextEditorLexicalClient({ initialData, onChange, toolbarComponents, businessAdapters }: TextEditorProps) {
+export function TextEditorLexicalClient({
+	initialData,
+	onChange,
+	toolbarComponents,
+	businessAdapters,
+	editableProps,
+	externalLinkOptions
+}: TextEditorProps) {
 	const LocalLinkDialogComponent = businessAdapters?.LocalLinkDialogComponent;
 	const [isFocused, setIsFocused] = useState(false);
 	const [toolbarState, setToolbarState] = useState<LexicalToolbarState>(DEFAULT_TOOLBAR_STATE);
@@ -120,6 +127,12 @@ export function TextEditorLexicalClient({ initialData, onChange, toolbarComponen
 					<RichTextPlugin
 						contentEditable={
 							<ContentEditable
+								id={editableProps?.id}
+								aria-label={editableProps?.["aria-label"]}
+								aria-labelledby={editableProps?.["aria-labelledby"]}
+								aria-describedby={editableProps?.["aria-describedby"]}
+								aria-invalid={editableProps?.["aria-invalid"]}
+								aria-required={editableProps?.["aria-required"]}
 								className="lexicalEditorContentEditable"
 								onFocus={() => setIsFocused(true)}
 								onBlur={() => setIsFocused(false)}
@@ -137,6 +150,7 @@ export function TextEditorLexicalClient({ initialData, onChange, toolbarComponen
 			</div>
 
 			<TextEditorDialogs
+				externalLinkOptions={externalLinkOptions}
 				linkTypeDialog={linkTypeDialog}
 				tagTypeDialog={tagTypeDialog}
 				localLinkDialogComponent={LocalLinkDialogComponent}

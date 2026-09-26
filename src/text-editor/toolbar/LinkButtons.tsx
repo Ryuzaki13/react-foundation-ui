@@ -5,6 +5,7 @@ import { ToolbarControl } from "./ToolbarControl";
 import { LinkTypes } from "./types";
 
 interface LinkButtonsProps {
+	linkTypes?: readonly LinkTypes[];
 	disabled: boolean;
 	onClick: (type: LinkTypes) => void;
 }
@@ -12,13 +13,26 @@ interface LinkButtonsProps {
 /**
  * Набор кнопок для вставки ссылок и связанных сущностей в текстовом редакторе. Используется в составе тулбара редактора.
  */
-export function LinkButtons({ disabled, onClick }: LinkButtonsProps) {
+export function LinkButtons({ disabled, onClick, linkTypes }: LinkButtonsProps) {
 	return (
 		<div className={ToolbarStyle.groupControls}>
-			<ToolbarControl title="Добавить ссылку на статью" icon={<Link />} onClick={() => onClick(LinkTypes.LOCAL_LINK)} />
-			<ToolbarControl title="Добавить ссылку" disabled={disabled} icon={<ExternalLink />} onClick={() => onClick(LinkTypes.LINK)} />
-			<ToolbarControl title="Добавить телефон" disabled={disabled} icon={<Phone />} onClick={() => onClick(LinkTypes.PHONE)} />
-			<ToolbarControl title="Добавить email" disabled={disabled} icon={<AtSign />} onClick={() => onClick(LinkTypes.EMAIL)} />
+			{(!linkTypes || linkTypes.includes(LinkTypes.LOCAL_LINK)) && (
+				<ToolbarControl title="Добавить ссылку на статью" icon={<Link />} onClick={() => onClick(LinkTypes.LOCAL_LINK)} />
+			)}
+			{(!linkTypes || linkTypes.includes(LinkTypes.LINK)) && (
+				<ToolbarControl
+					title="Добавить ссылку"
+					disabled={disabled}
+					icon={<ExternalLink />}
+					onClick={() => onClick(LinkTypes.LINK)}
+				/>
+			)}
+			{(!linkTypes || linkTypes.includes(LinkTypes.PHONE)) && (
+				<ToolbarControl title="Добавить телефон" disabled={disabled} icon={<Phone />} onClick={() => onClick(LinkTypes.PHONE)} />
+			)}
+			{(!linkTypes || linkTypes.includes(LinkTypes.EMAIL)) && (
+				<ToolbarControl title="Добавить email" disabled={disabled} icon={<AtSign />} onClick={() => onClick(LinkTypes.EMAIL)} />
+			)}
 		</div>
 	);
 }

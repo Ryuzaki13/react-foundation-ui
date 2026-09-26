@@ -185,7 +185,8 @@ export function useTextEditorLexicalActions({
 						text: finalText
 					});
 
-					const textNode = $createTextNode(finalText);
+					// Новая подпись наследует активный inline-формат восстановленного выделения.
+					const textNode = $createTextNode(finalText).setFormat(selection.format).setStyle(selection.style);
 					linkNode.append(textNode);
 					selection.insertNodes([linkNode]);
 				},

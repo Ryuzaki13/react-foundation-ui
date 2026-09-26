@@ -39,14 +39,19 @@ export function TextEditorToolbarLexical({
 	onRedo,
 	onCleanTag
 }: TextEditorToolbarLexicalProps) {
-	const components = { history: true, ...(toolbarComponents || {}) };
+	const components = { history: true, ...toolbarComponents };
+	// Настройки ограничивают только доступные действия. Валидация raw остаётся у consumer.
+	const blockControls = components.blockStyles
+		? TextEditorBlockControls.filter((control) => components.blockStyles?.some((style) => style === control.style))
+		: TextEditorBlockControls;
+	const hasLinks = components.links && (components.linkTypes === undefined || components.linkTypes.length > 0);
 
 	return (
 		<div className={ToolbarStyle.toolbar}>
-			{components.blocks && (
+			{components.blocks && blockControls.length > 0 && (
 				<>
 					<div className={ToolbarStyle.groupControls}>
-						{TextEditorBlockControls.map((control) => (
+						{blockControls.map((control) => (
 							<ToolbarControl
 								key={control.style}
 								isActive={control.style === state.blockType}
@@ -87,9 +92,9 @@ export function TextEditorToolbarLexical({
 				</>
 			)}
 
-			{components.links && (
+			{hasLinks && (
 				<>
-					<LinkButtons disabled={state.isTextUnselected} onClick={onLinkClick} />
+					<LinkButtons disabled={state.isTextUnselected} onClick={onLinkClick} linkTypes={components.linkTypes} />
 					<hr />
 				</>
 			)}
@@ -108,12 +113,14 @@ export function TextEditorToolbarLexical({
 				</>
 			)}
 
-			<ToolbarControl
-				disabled={state.isTextUnselected}
-				title="Очистить выбранный тег"
-				icon={<BrushCleaning />}
-				onClick={onCleanTag}
-			/>
+			{(components.clearSemanticTag ?? true) && (
+				<ToolbarControl
+					disabled={state.isTextUnselected}
+					title="Очистить выбранный тег"
+					icon={<BrushCleaning />}
+					onClick={onCleanTag}
+				/>
+			)}
 		</div>
 	);
 }

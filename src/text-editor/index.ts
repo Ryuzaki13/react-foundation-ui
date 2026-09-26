@@ -5,6 +5,8 @@ export type {
 	TextEditorBusinessAdapters,
 	TextEditorCoreProps,
 	TextEditorData,
+	TextEditorEditableProps,
+	TextEditorExternalLinkOptions,
 	TextEditorLexicalRaw,
 	TextEditorToolbarComponents
 } from "./editorModel";

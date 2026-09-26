@@ -1,11 +1,83 @@
-# Просмотр Lexical-документа
+# Редактор и просмотр Lexical-документа
+
+## Редактор и профиль панели
+
+`TextEditorLexical` из `@ryuzaki13/react-foundation-ui/text-editor` создаёт
+интерактивный редактор только в браузере. `initialData` задаёт начальный
+документ: существующий `TextEditorLexicalRaw` имеет приоритет над `html`.
+`onChange` сообщает новый `{ html, raw }`; consumer владеет черновиком,
+валидацией и сохранением. `initialData` не является controlled value:
+не следует возвращать в него каждое изменение только ради синхронизации
+родительского state.
+
+`toolbarComponents` позволяет включать группы действий. История и очистка
+semantic tag сохраняют значение `true` по умолчанию; группы `blocks`,
+`inline`, `alignment`, `links` и `tags` включаются явно. Новые необязательные
+настройки не изменяют существующий профиль:
+
+- `blockStyles` ограничивает стили в включённой группе `blocks`;
+- `linkTypes` ограничивает виды в включённой группе `links`;
+- отсутствие списка оставляет все прежние действия группы, пустой список
+  скрывает её;
+- списки выбирают подмножество уже существующих controls, не добавляют новые
+  стили и не меняют канонический порядок; повторяющиеся значения не создают
+  дополнительные кнопки;
+- `clearSemanticTag: false` отдельно убирает очистку semantic tag;
+- `externalLinkOptions.allowQrCode: false` отключает предложение QR в диалоге
+  внешней ссылки и при подтверждении выставляет `qrCode: false`, даже если
+  редактируемая ссылка содержала `true`; отсутствие настройки сохраняет
+  прежнее поведение.
+
+Например, предметно независимый профиль для абзацев, списков и внешних ссылок:
+
+```tsx
+import { LinkTypes, TextEditorLexical } from "@ryuzaki13/react-foundation-ui/text-editor";
+
+<TextEditorLexical
+	initialData={initialData}
+	onChange={onChange}
+	editableProps={{ "aria-label": "Редактируемый документ" }}
+	toolbarComponents={{
+		blocks: true,
+		blockStyles: ["unstyled", "ordered-list-item", "unordered-list-item"],
+		inline: true,
+		links: true,
+		linkTypes: [LinkTypes.LINK],
+		alignment: false,
+		tags: false,
+		clearSemanticTag: false
+	}}
+	externalLinkOptions={{ allowQrCode: false }}
+/>;
+```
+
+Это **профиль панели, а не sanitizer или валидатор документа**. Настройки не
+удаляют узлы из `initialData`, не фильтруют вставку и не заменяют проверку raw
+перед сохранением. Правила допустимого содержимого и доступ к данным остаются
+у consumer; пакет не содержит правил конкретного приложения.
+
+Новая подпись внешней ссылки наследует активные inline-format/style
+восстановленного выделения. Это не гарантирует сохранение нескольких разных
+text nodes и смешанного форматирования: текущая вставка создаёт одну подпись.
+
+`editableProps` передаёт `id`, `aria-label`, `aria-labelledby`,
+`aria-describedby`, `aria-invalid` и `aria-required` непосредственно в
+contenteditable. Эти атрибуты связывают редактор с подписью и ошибкой
+consumer, но не запускают валидацию. Для доступного имени задайте
+`aria-label` или связь с видимой подписью через `aria-labelledby`.
+
+Storybook `Text/TextEditorLexical` показывает реальную панель по умолчанию и
+ограниченный профиль. Ввод не сопровождается повторным построением raw JSON
+в интерфейсе: `onChange` доступен в панели действий Storybook.
+
+## Просмотр Lexical-документа
 
 `TextEditorLexicalViewer` — предметно независимый компонент чтения из
 `@ryuzaki13/react-foundation-ui/text-editor`. Принимает `raw` существующего
 формата `TextEditorLexicalRaw`, необязательные `className` и `fallback`.
 `fallback` по умолчанию сообщает, что содержимое не поддерживается.
 
-## Паспорт реализации
+### Паспорт реализации
 
 - Public boundary — существующий `/text-editor`, без изменения API редактора.
 - Component — только безопасное React-представление; парсинг сериализованных
@@ -19,7 +91,7 @@
   Неизвестный или повреждённый документ целиком заменяется `fallback`,
   без частичного скрытия неизвестных узлов и без логирования содержимого.
 
-## Область первого viewer
+### Область первого viewer
 
 Поддерживаются абзацы, заголовки h1–h6, цитаты, маркированные и нумерованные
 списки с вложениями, переносы строк и текст. Inline formatting: жирный,
@@ -46,7 +118,7 @@
 Вход — сериализованные plain JSON objects и плотные массивы; getter,
 нестандартные prototypes и произвольные JavaScript objects не входят в API.
 
-## Проверки и доставка
+### Проверки и доставка
 
 Тесты проверяют parser, URL boundary, неподдержанные данные, сочетания
 форматирования, вложенные списки, SSR/hydration и обновление props.

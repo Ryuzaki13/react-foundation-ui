@@ -11,6 +11,7 @@ import { Modal, ModalContent, ModalFooter } from "../modal";
 import { LinkType } from "./linkTypes";
 
 interface LinkDialogProps {
+	allowQrCode?: boolean;
 	onClose: () => void;
 	onConfirm: (url: string, text: string, add: string, ariaLabel: string, showQrCode: boolean) => void;
 	initialState?: LinkType;
@@ -19,7 +20,7 @@ interface LinkDialogProps {
 /**
  * Диалог вставки или редактирования ссылки в текстовом редакторе.
  */
-export function LinkDialog({ onClose, onConfirm, initialState }: LinkDialogProps) {
+export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = true }: LinkDialogProps) {
 	const state = (() => {
 		if (isSafe(initialState)) {
 			if (typeof initialState === "string") {
@@ -60,7 +61,8 @@ export function LinkDialog({ onClose, onConfirm, initialState }: LinkDialogProps
 
 		// Добавляем протокол, если его нет
 		const finalUrl = url.startsWith("http") ? url : `https://${url}`;
-		onConfirm(finalUrl, "", "", ariaLabel, showQrCode);
+		// Скрытая опция не переносится из старой ссылки или состояния предыдущего переключения props.
+		onConfirm(finalUrl, "", "", ariaLabel, allowQrCode && showQrCode);
 		handleClose();
 	};
 
@@ -90,7 +92,9 @@ export function LinkDialog({ onClose, onConfirm, initialState }: LinkDialogProps
 						placeholder="Ссылка на официальный сайт городской думмы"
 					/>
 
-					<CheckBox title="Показать кнопку для генерации QR кода ссылки" value={showQrCode} onChange={setShowQrCode} />
+					{allowQrCode && (
+						<CheckBox title="Показать кнопку для генерации QR кода ссылки" value={showQrCode} onChange={setShowQrCode} />
+					)}
 				</GridContainer>
 			</ModalContent>
 			<ModalFooter>

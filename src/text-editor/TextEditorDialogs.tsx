@@ -1,6 +1,6 @@
 import { type ComponentType } from "react";
 
-import { type LocalLinkDialogAdapterProps } from "./editorModel";
+import { type LocalLinkDialogAdapterProps, type TextEditorExternalLinkOptions } from "./editorModel";
 import { EmailDialog } from "./EmailDialog";
 import { getTimeDialogInitialState } from "./lib/semantic/getTimeDialogInitialState";
 import { LinkDialog } from "./LinkDialog";
@@ -13,6 +13,7 @@ import { TimeDialog } from "./TimeDialog";
 import { LinkTypes, TagTypes } from "./toolbar";
 
 interface TextEditorDialogsProps {
+	externalLinkOptions?: TextEditorExternalLinkOptions;
 	linkTypeDialog: LinkTypes | null;
 	tagTypeDialog: TagTypes | null;
 	localLinkDialogComponent?: ComponentType<LocalLinkDialogAdapterProps>;
@@ -30,6 +31,7 @@ interface TextEditorDialogsProps {
  * свежий draft из текущего selection state без синхронизирующих setState-effects.
  */
 export function TextEditorDialogs({
+	externalLinkOptions,
 	linkTypeDialog,
 	tagTypeDialog,
 	localLinkDialogComponent,
@@ -50,7 +52,12 @@ export function TextEditorDialogs({
 			) : null}
 
 			{linkTypeDialog === LinkTypes.LINK ? (
-				<LinkDialog initialState={linkDialogState} onClose={onCloseLinkDialog} onConfirm={onAddLink} />
+				<LinkDialog
+					initialState={linkDialogState}
+					onClose={onCloseLinkDialog}
+					onConfirm={onAddLink}
+					allowQrCode={externalLinkOptions?.allowQrCode}
+				/>
 			) : null}
 
 			{linkTypeDialog === LinkTypes.PHONE ? (
