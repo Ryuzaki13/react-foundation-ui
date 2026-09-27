@@ -53,6 +53,10 @@ export interface TextEditorBusinessAdapters {
 export interface TextEditorCoreProps<TRaw = unknown> {
 	initialData: TextEditorData<TRaw>;
 	onChange: (data: TextEditorData<TextEditorLexicalRaw>) => void;
+	/** document сохраняет обычную панель; compact предназначен для встроенного короткого ввода без внешней рамки. */
+	presentation?: "document" | "compact";
+	/** null полностью убирает подсказку и её место; undefined сохраняет стандартную подсказку. */
+	placeholder?: string | null;
 	toolbarComponents?: TextEditorToolbarComponents;
 	businessAdapters?: TextEditorBusinessAdapters;
 	editableProps?: TextEditorEditableProps;

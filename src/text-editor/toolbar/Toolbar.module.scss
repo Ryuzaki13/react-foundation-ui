@@ -14,3 +14,30 @@
 	display: flex;
 	gap: var(--space-sm);
 }
+
+.compactToolbar {
+	margin-bottom: var(--space-xs);
+}
+
+.compactPanel {
+	// Popover сообщает свободную область; вычитаем его рамку и внутренний
+	// отступ, чтобы панель оставалась доступной и над экранной клавиатурой.
+	max-width: min(24rem, calc(var(--popover-available-width, 100vw) - 2 * var(--space-sm) - 2 * var(--border-width)));
+	max-height: calc(var(--popover-available-height, 60dvh) - 2 * var(--space-sm) - 2 * var(--border-width));
+	overflow: auto;
+	overscroll-behavior: contain;
+
+	.toolbar {
+		gap: var(--space-xs);
+		margin: 0;
+
+		hr {
+			margin: var(--space-xs) 0;
+		}
+	}
+
+	.groupControls {
+		flex-wrap: wrap;
+		gap: var(--space-xs);
+	}
+}

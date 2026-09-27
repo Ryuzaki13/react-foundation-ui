@@ -23,6 +23,7 @@ export function ToolbarControl({ isActive, disabled, style, title, icon, onClick
 
 	return (
 		<Button
+			data-text-editor-command={style}
 			title={title}
 			disabled={disabled}
 			appearance="outline"

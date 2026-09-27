@@ -3,5 +3,7 @@ declare const styles: {
   readonly textEditorContent: "textEditorContent";
   readonly focused: "focused";
   readonly wrapper: "wrapper";
+  readonly compact: "compact";
+  readonly compactEditable: "compactEditable";
 };
 export default styles;

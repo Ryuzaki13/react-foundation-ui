@@ -1,5 +1,8 @@
 import { BrushCleaning } from "lucide-react";
 
+import { type TextEditorToolbarComponents } from "../editorModel";
+import { type LexicalToolbarState, type TextAlignment } from "../model/textEditorTypes";
+
 import { AlignmentControls } from "./AlignmentControls";
 import { HistoryControls } from "./HistoryControls";
 import { LinkButtons } from "./LinkButtons";
@@ -8,10 +11,7 @@ import ToolbarStyle from "./Toolbar.module.scss";
 import { ToolbarControl } from "./ToolbarControl";
 import { LinkTypes, TagTypes, TextEditorBlockControls, TextEditorInlineControls } from "./types";
 
-import type { TextEditorToolbarComponents } from "../editorModel";
-import type { LexicalToolbarState, TextAlignment } from "../model/textEditorTypes";
-
-interface TextEditorToolbarLexicalProps {
+export interface TextEditorToolbarLexicalProps {
 	toolbarComponents?: TextEditorToolbarComponents;
 	state: LexicalToolbarState;
 	onBlockStyleToggle: (style: string) => void;

@@ -29,10 +29,6 @@
 	min-height: 6rem;
 }
 
-.lexicalEditorContentEditable:focus {
-	outline: none;
-}
-
 .lexicalEditorPlaceholder {
 	padding: var(--space-md);
 	color: var(--text-secondary);
@@ -62,7 +58,6 @@
 .lexicalTextStrikethrough {
 	text-decoration: line-through;
 }
-
 
 .custom-tag-highlight {
 	outline: var(--border-width) dashed var(--text-accent);

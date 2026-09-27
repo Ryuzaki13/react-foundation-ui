@@ -1,6 +1,12 @@
-import { type CSSProperties, type PropsWithChildren, type ReactNode, useId } from "react";
+import { type CSSProperties, type PropsWithChildren, type ReactNode, useId, useRef } from "react";
 
-import { getOrCreatePortalRoot, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
+import {
+	getOrCreatePortalRoot,
+	useDocumentScrollLock,
+	useEscapeDismiss,
+	useOverlayFocus,
+	useVisualViewportFrame
+} from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { createPortal } from "react-dom";
 
@@ -32,6 +38,9 @@ type DialogStyle = CSSProperties & {
  */
 export function Dialog({ title, description, open, onClose, size, minWidth, children }: DialogProps) {
 	const titleId = useId();
+	const overlayRef = useRef<HTMLDivElement>(null);
+	useDocumentScrollLock({ active: open });
+	useVisualViewportFrame({ active: open, containerRef: overlayRef });
 	const descriptionId = useId();
 	const dialogStyle: DialogStyle = {
 		"--dialog-min-width": typeof minWidth === "number" ? `${minWidth}px` : minWidth
@@ -64,7 +73,10 @@ export function Dialog({ title, description, open, onClose, size, minWidth, chil
 	}
 
 	return createPortal(
-		<div className={`${styles.overlay} surfaceBackdrop`} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+		<div
+			ref={overlayRef}
+			className={`${styles.overlay} surfaceBackdrop`}
+			onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
 			<div
 				ref={panelRef}
 				role="dialog"

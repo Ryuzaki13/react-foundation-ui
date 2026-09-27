@@ -7,45 +7,17 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { createPortal } from "react-dom";
 
 import { Button } from "../button";
-import { FlexContainer } from "../flex";
 import { GridContainer } from "../grid";
-import { Scrollable } from "../misc";
 
 import styles from "./Modal.module.scss";
+import { type ModalCompositionProps } from "./modalCompositionTypes";
+import { ModalContent } from "./ModalContent";
+import { ModalFooter } from "./ModalFooter";
 import { modalMotionTransition, modalMotionVariants, reducedModalMotionTransition } from "./modalMotion";
+import { ModalToolbar } from "./ModalToolbar";
+import { useModalViewportFrame } from "./model/useModalViewportFrame";
 import { ModalSize } from "./types";
 import { useModalManager } from "./useModalManager";
-
-// Подкомпоненты
-export interface ModalCompositionProps {
-	children: React.ReactNode;
-	className?: string;
-}
-
-export function ModalToolbar({ children, className }: ModalCompositionProps) {
-	return <div className={cn("surface2 paddingMd borderBottom", className)}>{children}</div>;
-}
-ModalToolbar.displayName = "Modal.Toolbar";
-
-export function ModalContent({ children, className, scrollable }: ModalCompositionProps & { scrollable?: boolean }) {
-	return (
-		<div className={cn("paddingMd h100 overflowHidden", className)}>
-			{scrollable ? <Scrollable className="h100">{children}</Scrollable> : children}
-		</div>
-	);
-}
-ModalContent.displayName = "Modal.Content";
-
-export function ModalFooter({ children, className }: ModalCompositionProps) {
-	return (
-		<div className={cn("surface2 borderTop paddingMd", className)}>
-			<FlexContainer gap="sm" align="center" justify="end">
-				{children}
-			</FlexContainer>
-		</div>
-	);
-}
-ModalFooter.displayName = "Modal.Footer";
 
 type ToolbarElement = React.ReactElement<ModalCompositionProps, typeof ModalToolbar>;
 type ContentElement = React.ReactElement<ModalCompositionProps, typeof ModalContent>;
@@ -87,6 +59,7 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 	 * иначе логика Escape/focus trap никогда не включится.
 	 */
 	const isActive = isOpen && (modals.length === 0 || isTopModal(modalId));
+	useModalViewportFrame(Boolean(isOpen) || modals.includes(modalId));
 
 	useEffect(() => {
 		if (isOpen) {
@@ -125,7 +98,7 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 		 */
 		restoreFocusAnimationFrameRef.current = window.requestAnimationFrame(() => {
 			if (restoreFocusTarget?.isConnected) {
-				restoreFocusTarget.focus();
+				restoreFocusTarget.focus({ preventScroll: true });
 			}
 			restoreFocusTargetRef.current = null;
 		});

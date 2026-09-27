@@ -1,12 +1,16 @@
 .overlay {
 	position: fixed;
-	inset: 0;
+	top: var(--visual-viewport-top, 0px);
+	left: var(--visual-viewport-left, 0px);
+	width: var(--visual-viewport-width, 100%);
+	height: var(--visual-viewport-height, 100%);
+	overflow: hidden;
 	z-index: var(--z-fullscreen-portal);
 	background: var(--overlay-glass);
 }
 
 .panel {
-	position: fixed;
+	position: absolute;
 	inset: var(--space-lg);
 	display: flex;
 	flex-direction: column;

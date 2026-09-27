@@ -18,6 +18,13 @@ Dialog уже имеет живые stories, а эта страница соби
 
 ## Основной сценарий
 
+Dialog блокирует прокрутку документа общей арендой foundation-lib и делит её
+с ModalManagerProvider и FullscreenPortal. Overlay следует размеру и смещению
+visual viewport при экранной клавиатуре; собственное длинное содержимое остаётся
+прокручиваемым. Pinch zoom не отключается. Story `KeyboardViewport` предназначена
+для ручной проверки на физическом телефоне: ввод, pan, закрытие клавиатуры и
+возврат к исходному документу.
+
 <Primary />
 
 <Controls of={DialogStories.Controlled} />

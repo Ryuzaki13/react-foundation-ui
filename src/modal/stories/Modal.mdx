@@ -18,6 +18,18 @@ Modal уже имеет живые stories, а эта страница соби�
 
 ## Основной сценарий
 
+Modal root привязан к visual viewport, а не только к layout viewport: при открытии
+экранной клавиатуры учитываются доступная высота и смещение видимой области.
+`ModalManagerProvider` использует общий foundation-lib document lock; вложенный
+Dialog не разблокирует документ родителя. Закрытие последней панели, включая
+unmount provider, возвращает прежние inline styles и scroll X/Y.
+
+Существующая inert-граница остаётся `#app-root`: consumer должен предоставить
+этот контейнер для фонового приложения, оставив portal roots снаружи. Наличие
+scroll lock само по себе не делает фон недоступным для assistive technology.
+Проверяйте клавиатуру на физическом устройстве — изменение viewport Storybook
+не воспроизводит iOS keyboard pan.
+
 <Primary />
 
 <Controls of={ModalStories.Controlled} />

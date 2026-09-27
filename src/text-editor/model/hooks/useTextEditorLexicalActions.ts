@@ -32,6 +32,7 @@ import { $createSemanticTagNode, $isSemanticTagNode, type SemanticTagNode } from
 import { LinkTypes, TagTypes } from "../../toolbar";
 import { type SemanticDialogState } from "../semanticDialogState";
 import { type LexicalToolbarState, type LinkType, type TextAlignment } from "../textEditorTypes";
+import { useDeferredTextEditorFocus } from "../useDeferredTextEditorFocus";
 
 interface InsertLinkPayload {
 	url: string;
@@ -56,6 +57,7 @@ export function useTextEditorLexicalActions({
 	onOpenLinkDialog,
 	onOpenTagDialog
 }: UseTextEditorLexicalActionsParams) {
+	const { restoreFocus } = useDeferredTextEditorFocus(editor);
 	// Snapshot принадлежит одной сессии ссылки и конкретному editor, не внешнему
 	// каталогу. Каждое открытие заменяет его, в том числе после отмены диалога.
 	const linkSelectionRef = useRef<{ editor: LexicalEditor; selection: RangeSelection | null; key: string | null; local: boolean } | null>(
@@ -193,11 +195,9 @@ export function useTextEditorLexicalActions({
 				{ tag: HISTORY_PUSH_TAG }
 			);
 
-			requestAnimationFrame(() => {
-				editor.focus();
-			});
+			restoreFocus();
 		},
-		[editor]
+		[editor, restoreFocus]
 	);
 
 	const handleAddLink = useCallback(
@@ -319,9 +319,9 @@ export function useTextEditorLexicalActions({
 				},
 				{ tag: HISTORY_PUSH_TAG }
 			);
-			requestAnimationFrame(() => editor.focus());
+			restoreFocus();
 		},
-		[editor]
+		[editor, restoreFocus]
 	);
 
 	const handleCleanSemanticTag = useCallback(() => {

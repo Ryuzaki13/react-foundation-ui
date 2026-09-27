@@ -21,6 +21,7 @@ export function LinkButtons({ disabled, onClick, linkTypes }: LinkButtonsProps) 
 			)}
 			{(!linkTypes || linkTypes.includes(LinkTypes.LINK)) && (
 				<ToolbarControl
+					style={LinkTypes.LINK}
 					title="Добавить ссылку"
 					disabled={disabled}
 					icon={<ExternalLink />}

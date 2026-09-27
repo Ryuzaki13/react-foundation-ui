@@ -19,3 +19,21 @@
 .wrapper {
 	font-size: inherit;
 }
+
+// Встраиваемый ввод не задаёт рамку родительского сценария. Высота растёт вместе
+// с текстом до ограничителя; длинный черновик прокручивается внутри editable.
+.textEditorContent.compact {
+	padding: 0;
+	border: 0;
+	background: transparent;
+
+	.compactEditable {
+		padding: var(--space-xs) var(--space-sm);
+		min-height: calc(2em * var(--line-height) + 2 * var(--space-xs));
+		// Viewport-frame может быть ниже layout viewport при открытой клавиатуре.
+		max-height: min(12rem, calc(var(--visual-viewport-height, 100dvh) * 0.3));
+		overflow-y: auto;
+		overscroll-behavior-y: contain;
+		overflow-wrap: anywhere;
+	}
+}

@@ -2,6 +2,7 @@ import { fn } from "storybook/test";
 
 import { Button } from "../../button";
 import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
+import { Input } from "../../input";
 import { Dialog } from "../Dialog";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -137,4 +138,16 @@ export const Sizes: Story = {
 		size: "sm"
 	},
 	render: createDialogStoryRender(() => <div>Измените size в Controls, чтобы сравнить ширину с одноимённым пресетом Modal.</div>)
+};
+
+/** Проверяется на телефоне: узкий desktop viewport не открывает программную клавиатуру. */
+export const KeyboardViewport: Story = {
+	args: { open: true },
+	render: createDialogStoryRender((close) => (
+		<div className="flex flexColumn gapMd">
+			<Input label="Поле для проверки экранной клавиатуры" defaultValue="" />
+			<p>После открытия клавиатуры заголовок и действия должны оставаться в доступной области.</p>
+			<Button onClick={close}>Закрыть диалог</Button>
+		</div>
+	))
 };

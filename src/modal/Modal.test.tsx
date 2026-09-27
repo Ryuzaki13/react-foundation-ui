@@ -1,11 +1,13 @@
 import { useState } from "react";
 
-import { act, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
 import { Button } from "../button";
 
-import { Modal, ModalContent, ModalFooter } from "./Modal";
+import { Modal } from "./Modal";
+import { ModalContent } from "./ModalContent";
+import { ModalFooter } from "./ModalFooter";
 import { ModalManagerProvider } from "./ModalManagerProvider";
 
 beforeEach(() => {
@@ -21,6 +23,7 @@ beforeEach(() => {
 });
 
 afterEach(() => {
+	cleanup();
 	vi.unstubAllGlobals();
 	document.getElementById("modal-root")?.remove();
 	document.getElementById("app-root")?.remove();
@@ -43,6 +46,22 @@ function ControlledModal() {
 }
 
 describe("Modal", () => {
+	it("передаёт keyboard frame общему portal-root и освобождает его после unmount", async () => {
+		vi.stubGlobal("visualViewport", Object.assign(new EventTarget(), { width: 390, height: 320, offsetTop: 90, offsetLeft: 0 }));
+		const view = render(
+			<ModalManagerProvider>
+				<Modal isOpen onClose={() => undefined}>
+					<ModalContent>Содержимое</ModalContent>
+				</Modal>
+			</ModalManagerProvider>
+		);
+		const portalRoot = document.getElementById("modal-root");
+		await waitFor(() => expect(portalRoot?.style.getPropertyValue("--visual-viewport-height")).toBe("320px"));
+		expect(portalRoot?.style.getPropertyValue("--visual-viewport-top")).toBe("90px");
+		view.unmount();
+		expect(portalRoot?.style.getPropertyValue("--visual-viewport-height")).toBe("");
+	});
+
 	it("передает пользовательскую высоту только в desktop CSS-переменную", async () => {
 		render(
 			<Modal isOpen title="Проверка высоты" height="min(34rem, 70dvh)" onClose={() => undefined}>

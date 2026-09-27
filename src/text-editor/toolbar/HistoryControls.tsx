@@ -14,8 +14,8 @@ interface HistoryControlsProps {
 export function HistoryControls({ onUndo, onRedo }: HistoryControlsProps) {
 	return (
 		<div className={ToolbarStyle.groupControls}>
-			<ToolbarControl title="Отменить последнее действие" icon={<Undo />} onClick={onUndo} />
-			<ToolbarControl title="Повторить предыдущее действие" icon={<Redo />} onClick={onRedo} />
+			<ToolbarControl style="undo" title="Отменить последнее действие" icon={<Undo />} onClick={onUndo} />
+			<ToolbarControl style="redo" title="Повторить предыдущее действие" icon={<Redo />} onClick={onRedo} />
 		</div>
 	);
 }

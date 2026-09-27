@@ -1,16 +1,10 @@
-import { useCallback, type ReactNode } from "react";
+import { useCallback, useRef, type ReactNode } from "react";
 
-import {
-	FloatingFocusManager,
-	FloatingOverlay,
-	FloatingPortal,
-	useDismiss,
-	useFloating,
-	useInteractions,
-	useRole
-} from "@floating-ui/react";
+import { FloatingFocusManager, FloatingPortal, useDismiss, useFloating, useInteractions, useRole } from "@floating-ui/react";
+import { useDocumentScrollLock, useVisualViewportFrame } from "@ryuzaki13/react-foundation-lib/dom";
 
 import styles from "./FullscreenPortal.module.scss";
+import { resolveFullscreenAriaLabel } from "./lib/resolveFullscreenAriaLabel";
 
 /** Props полноэкранного портала для поверхностных UI-блоков. */
 export type FullscreenPortalProps = {
@@ -26,14 +20,11 @@ export type FullscreenPortalProps = {
 	children: ReactNode;
 };
 
-/** Формирует доступное имя dialog из заголовка и описания fullscreen-режима. */
-function resolveFullscreenAriaLabel(title: string, description: string): string {
-	const trimmedTitle = title.trim();
-	return trimmedTitle ? `${trimmedTitle}. ${description}` : description;
-}
-
 /** Универсальный fullscreen-портал на базе Floating UI. */
 export function FullscreenPortal({ open, title, description, onOpenChange, children }: FullscreenPortalProps) {
+	const overlayRef = useRef<HTMLDivElement>(null);
+	useDocumentScrollLock({ active: open });
+	useVisualViewportFrame({ active: open, containerRef: overlayRef });
 	const { refs, context } = useFloating({ open, onOpenChange });
 	const dismiss = useDismiss(context, { outsidePress: false });
 	const role = useRole(context, { role: "dialog" });
@@ -50,7 +41,7 @@ export function FullscreenPortal({ open, title, description, onOpenChange, child
 
 	return (
 		<FloatingPortal>
-			<FloatingOverlay lockScroll className={styles.overlay}>
+			<div ref={overlayRef} className={styles.overlay}>
 				<FloatingFocusManager context={context} modal={false} returnFocus>
 					<section
 						ref={setFloating}
@@ -61,7 +52,7 @@ export function FullscreenPortal({ open, title, description, onOpenChange, child
 						{children}
 					</section>
 				</FloatingFocusManager>
-			</FloatingOverlay>
+			</div>
 		</FloatingPortal>
 	);
 }

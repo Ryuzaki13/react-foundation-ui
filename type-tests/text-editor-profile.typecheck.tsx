@@ -35,6 +35,13 @@ const props = {
 } satisfies TextEditorCoreProps;
 const profileEditor = <TextEditorLexical {...props} />;
 const unchangedConsumer = <TextEditorLexical initialData={{ html: "", raw: null }} onChange={() => undefined} />;
+const compactEditor = <TextEditorLexical {...props} presentation="compact" placeholder={null} />;
+const labelledEditor = <TextEditorLexical {...props} presentation="document" placeholder="Черновик" />;
+
+// @ts-expect-error Представление выбирает один устойчивый профиль, а не произвольный CSS-режим.
+const invalidPresentation = <TextEditorLexical {...props} presentation="mobile" />;
+// @ts-expect-error Подсказка является текстом; null убирает её без произвольного React content.
+const invalidPlaceholder = <TextEditorLexical {...props} placeholder={<span />} />;
 
 // @ts-expect-error Профиль принимает только зарегистрированные типы блочных команд.
 const unknownBlock: TextEditorToolbarComponents = { blockStyles: ["image"] };
@@ -51,6 +58,10 @@ const invalidQr: TextEditorExternalLinkOptions = { allowQrCode: "false" };
 
 void profileEditor;
 void unchangedConsumer;
+void compactEditor;
+void labelledEditor;
+void invalidPresentation;
+void invalidPlaceholder;
 void unknownBlock;
 void unknownLink;
 void replaceEditable;

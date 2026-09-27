@@ -13,7 +13,7 @@ import { HeadingNode, QuoteNode } from "@lexical/rich-text";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexical";
 
-import { TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
+import { type TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
 import { InitialHtmlPlugin, SelectionStatePlugin } from "./lexical/plugins";
 import { createLexicalRaw } from "./lib/serialization/createLexicalRaw";
 import { useTextEditorLexicalActions } from "./model/hooks/useTextEditorLexicalActions";
@@ -24,8 +24,9 @@ import TextEditorStyle from "./TextEditor.module.scss";
 import "./TextEditor.scss";
 import { TextEditorDialogs } from "./TextEditorDialogs";
 import { type LinkTypes, type TagTypes, TextEditorToolbarLexical } from "./toolbar";
+import { TextEditorCompactToolbar } from "./toolbar/TextEditorCompactToolbar";
 
-type TextEditorProps = TextEditorCoreProps;
+type TextEditorLexicalClientProps = TextEditorCoreProps;
 
 /**
  * Редактор форматированного текста на базе Lexical. Поддерживает тулбар, бизнес-адаптеры и сериализацию контента в единый формат данных.
@@ -36,9 +37,12 @@ export function TextEditorLexicalClient({
 	toolbarComponents,
 	businessAdapters,
 	editableProps,
-	externalLinkOptions
-}: TextEditorProps) {
+	externalLinkOptions,
+	presentation = "document",
+	placeholder = "Введите текст"
+}: TextEditorLexicalClientProps) {
 	const LocalLinkDialogComponent = businessAdapters?.LocalLinkDialogComponent;
+	const Toolbar = presentation === "compact" ? TextEditorCompactToolbar : TextEditorToolbarLexical;
 	const [isFocused, setIsFocused] = useState(false);
 	const [toolbarState, setToolbarState] = useState<LexicalToolbarState>(DEFAULT_TOOLBAR_STATE);
 	const [editor, setEditor] = useState<LexicalEditor | null>(null);
@@ -109,10 +113,11 @@ export function TextEditorLexicalClient({
 		<div className={TextEditorStyle.textEditor}>
 			<div
 				className={cn(TextEditorStyle.textEditorContent, {
-					[TextEditorStyle.focused]: isFocused
+					[TextEditorStyle.focused]: isFocused,
+					[TextEditorStyle.compact]: presentation === "compact"
 				})}>
 				<LexicalComposer initialConfig={initialConfig}>
-					<TextEditorToolbarLexical
+					<Toolbar
 						toolbarComponents={toolbarComponents}
 						state={toolbarState}
 						onBlockStyleToggle={actions.handleBlockStyleToggle}
@@ -133,12 +138,15 @@ export function TextEditorLexicalClient({
 								aria-describedby={editableProps?.["aria-describedby"]}
 								aria-invalid={editableProps?.["aria-invalid"]}
 								aria-required={editableProps?.["aria-required"]}
-								className="lexicalEditorContentEditable"
+								className={cn(
+									"lexicalEditorContentEditable",
+									presentation === "compact" && TextEditorStyle.compactEditable
+								)}
 								onFocus={() => setIsFocused(true)}
 								onBlur={() => setIsFocused(false)}
 							/>
 						}
-						placeholder={<div className="lexicalEditorPlaceholder">Введите текст...</div>}
+						placeholder={placeholder ? <div className="lexicalEditorPlaceholder">{placeholder}</div> : null}
 						ErrorBoundary={LexicalErrorBoundary}
 					/>
 					<HistoryPlugin />
