@@ -7,17 +7,25 @@ import { LinkTypes } from "./types";
 interface LinkButtonsProps {
 	linkTypes?: readonly LinkTypes[];
 	disabled: boolean;
+	/** Предметная ссылка допускает вставку без выделения, но не в readOnly. */
+	disabledLocalLink?: boolean;
 	onClick: (type: LinkTypes) => void;
 }
 
 /**
  * Набор кнопок для вставки ссылок и связанных сущностей в текстовом редакторе. Используется в составе тулбара редактора.
  */
-export function LinkButtons({ disabled, onClick, linkTypes }: LinkButtonsProps) {
+export function LinkButtons({ disabled, disabledLocalLink, onClick, linkTypes }: LinkButtonsProps) {
 	return (
 		<div className={ToolbarStyle.groupControls}>
 			{(!linkTypes || linkTypes.includes(LinkTypes.LOCAL_LINK)) && (
-				<ToolbarControl title="Добавить ссылку на статью" icon={<Link />} onClick={() => onClick(LinkTypes.LOCAL_LINK)} />
+				<ToolbarControl
+					style={LinkTypes.LOCAL_LINK}
+					disabled={disabledLocalLink}
+					title="Добавить ссылку на статью"
+					icon={<Link />}
+					onClick={() => onClick(LinkTypes.LOCAL_LINK)}
+				/>
 			)}
 			{(!linkTypes || linkTypes.includes(LinkTypes.LINK)) && (
 				<ToolbarControl

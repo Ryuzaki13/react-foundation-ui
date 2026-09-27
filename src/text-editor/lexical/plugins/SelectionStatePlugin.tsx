@@ -8,7 +8,7 @@ import { resolveToolbarState } from "../../lib/toolbar/resolveToolbarState";
 import type { LexicalToolbarState } from "../../model/textEditorTypes";
 
 interface SelectionStatePluginProps {
-	onEditorReady: (editor: LexicalEditor) => void;
+	onEditorReady?: (editor: LexicalEditor) => void;
 	onStateChange: (state: LexicalToolbarState) => void;
 }
 
@@ -19,7 +19,7 @@ export function SelectionStatePlugin({ onEditorReady, onStateChange }: Selection
 	const [editor] = useLexicalComposerContext();
 
 	useEffect(() => {
-		onEditorReady(editor);
+		onEditorReady?.(editor);
 
 		return editor.registerUpdateListener(({ editorState }) => {
 			editorState.read(() => {

@@ -3,6 +3,8 @@ import { fn } from "storybook/test";
 
 import { LinkTypes, type TextEditorCoreProps, TextEditorLexical } from "../index";
 
+import { TextEditorLifecycleExample } from "./TextEditorLifecycleExample";
+
 const meta = {
 	title: "Text/TextEditorLexical",
 	component: TextEditorLexical,
@@ -26,6 +28,11 @@ const meta = {
 		}
 	},
 	argTypes: {
+		readOnly: { description: "Блокирует пользовательский ввод и команды без замены документа. По умолчанию false.", control: false },
+		ref: {
+			description: "TextEditorHandle с единственной операцией clear(): пустой документ и новая история без remount.",
+			control: false
+		},
 		initialData: { description: "Начальные HTML или TextEditorLexicalRaw. Это не controlled value.", control: false },
 		onChange: { description: "Получает новый snapshot документа без сохранения в storage или отправки на сервер.", control: false },
 		toolbarComponents: { description: "Видимые группы панели и доступные в них стили блоков и типы ссылок.", control: false },
@@ -93,4 +100,23 @@ export const Compact: Story = {
 			}
 		}
 	}
+};
+
+export const Lifecycle: Story = {
+	name: "Чтение и очистка документа",
+	args: Restricted.args,
+	render: (args) => <TextEditorLifecycleExample {...args} />,
+	parameters: {
+		docs: {
+			description: {
+				story: "Измените текст, переключите readOnly и очистите документ. Undo/redo не восстанавливают очищенный текст. Отмена диалога ссылки возвращает фокус и выделение; очистка или readOnly отзывают открытые сессии инструментов. Физическое поведение клавиатуры зависит от браузера."
+			}
+		}
+	}
+};
+
+export const CompactLifecycle: Story = {
+	...Lifecycle,
+	name: "Компактный ввод: чтение и очистка",
+	args: { ...Restricted.args, presentation: "compact", placeholder: null }
 };

@@ -48,6 +48,7 @@ interface UseTextEditorLexicalActionsParams {
 	hasLocalLinkDialog: boolean;
 	onOpenLinkDialog: (type: LinkTypes) => void;
 	onOpenTagDialog: (type: TagTypes) => void;
+	canEdit: () => boolean;
 }
 
 export function useTextEditorLexicalActions({
@@ -55,9 +56,10 @@ export function useTextEditorLexicalActions({
 	toolbarState,
 	hasLocalLinkDialog,
 	onOpenLinkDialog,
-	onOpenTagDialog
+	onOpenTagDialog,
+	canEdit
 }: UseTextEditorLexicalActionsParams) {
-	const { restoreFocus } = useDeferredTextEditorFocus(editor);
+	const { restoreFocus } = useDeferredTextEditorFocus(editor, canEdit);
 	// Snapshot принадлежит одной сессии ссылки и конкретному editor, не внешнему
 	// каталогу. Каждое открытие заменяет его, в том числе после отмены диалога.
 	const linkSelectionRef = useRef<{ editor: LexicalEditor; selection: RangeSelection | null; key: string | null; local: boolean } | null>(
@@ -68,7 +70,7 @@ export function useTextEditorLexicalActions({
 	const [semanticDialogState, setSemanticDialogState] = useState<SemanticDialogState>({ text: "", attributes: {} });
 	const handleBlockStyleToggle = useCallback(
 		(style: string) => {
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 
 			if (style === "unordered-list-item") {
 				if (toolbarState.blockType === "unordered-list-item") {
@@ -89,6 +91,7 @@ export function useTextEditorLexicalActions({
 			}
 
 			editor.update(() => {
+				if (!canEdit()) return;
 				const selection = $getSelection();
 				if (!$isRangeSelection(selection)) return;
 
@@ -108,56 +111,59 @@ export function useTextEditorLexicalActions({
 				}
 			});
 		},
-		[editor, toolbarState.blockType]
+		[canEdit, editor, toolbarState.blockType]
 	);
 
 	const handleInlineStyleToggle = useCallback(
 		(style: string) => {
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 
 			const lexicalStyle = getLexicalInlineStyle(style);
 			if (!lexicalStyle) return;
 
 			editor.dispatchCommand(FORMAT_TEXT_COMMAND, lexicalStyle as never);
 		},
-		[editor]
+		[canEdit, editor]
 	);
 
 	const handleAlignmentChange = useCallback(
 		(alignment: TextAlignment) => {
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 			editor.dispatchCommand(FORMAT_ELEMENT_COMMAND, alignment as ElementFormatType);
 		},
-		[editor]
+		[canEdit, editor]
 	);
 
 	const handleUndo = useCallback(() => {
-		if (!editor) return;
+		if (!editor || !canEdit()) return;
 		editor.dispatchCommand(UNDO_COMMAND, undefined);
-	}, [editor]);
+	}, [canEdit, editor]);
 
 	const handleRedo = useCallback(() => {
-		if (!editor) return;
+		if (!editor || !canEdit()) return;
 		editor.dispatchCommand(REDO_COMMAND, undefined);
-	}, [editor]);
+	}, [canEdit, editor]);
 
 	const insertLinkAtSelection = useCallback(
 		(payload: InsertLinkPayload) => {
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 
 			const snapshot = linkSelectionRef.current;
+			if (!snapshot || snapshot.editor !== editor) return;
 			linkSelectionRef.current = null;
 			// Отдельный selection-only commit создаёт baseline HistoryPlugin даже
 			// до первого ввода. Вставка затем отменяется одним undo и не сливается
 			// с предыдущим набором текста; фокус передаём только после закрытия диалога.
 			editor.update(
 				() => {
+					if (!canEdit()) return;
 					$restoreEditorDialogSelection(snapshot?.editor === editor ? snapshot.selection : null);
 				},
 				{ discrete: true, tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG] }
 			);
 			editor.update(
 				() => {
+					if (!canEdit()) return;
 					const selection = $getSelection();
 					if (!$isRangeSelection(selection)) return;
 					const existing = snapshot?.editor === editor && snapshot.key ? $getNodeByKey(snapshot.key) : null;
@@ -192,12 +198,12 @@ export function useTextEditorLexicalActions({
 					linkNode.append(textNode);
 					selection.insertNodes([linkNode]);
 				},
-				{ tag: HISTORY_PUSH_TAG }
+				{ discrete: true, tag: HISTORY_PUSH_TAG }
 			);
 
 			restoreFocus();
 		},
-		[editor, restoreFocus]
+		[canEdit, editor, restoreFocus]
 	);
 
 	const handleAddLink = useCallback(
@@ -273,7 +279,7 @@ export function useTextEditorLexicalActions({
 			if (type === LinkTypes.LOCAL_LINK && !hasLocalLinkDialog) {
 				return;
 			}
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 			editor.getEditorState().read(() => {
 				const selection = $getSelection();
 				linkSelectionRef.current = {
@@ -286,22 +292,25 @@ export function useTextEditorLexicalActions({
 			setLinkDialogState(readSelectedLinkState());
 			onOpenLinkDialog(type);
 		},
-		[editor, hasLocalLinkDialog, onOpenLinkDialog, readSelectedLinkState]
+		[canEdit, editor, hasLocalLinkDialog, onOpenLinkDialog, readSelectedLinkState]
 	);
 
 	const insertSemanticTagAtSelection = useCallback(
 		(tag: string, text: string, attributes: Record<string, string>) => {
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 			const snapshot = semanticSelectionRef.current;
+			if (!snapshot || snapshot.editor !== editor) return;
 			semanticSelectionRef.current = null;
 			editor.update(
 				() => {
+					if (!canEdit()) return;
 					$restoreEditorDialogSelection(snapshot?.editor === editor ? snapshot.selection : null);
 				},
 				{ discrete: true, tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG] }
 			);
 			editor.update(
 				() => {
+					if (!canEdit()) return;
 					const selection = $getSelection();
 					if (!$isRangeSelection(selection) || !text.trim()) return;
 					const existing = snapshot?.editor === editor && snapshot.key ? $getNodeByKey(snapshot.key) : null;
@@ -317,17 +326,18 @@ export function useTextEditorLexicalActions({
 						selection.insertNodes([node]);
 					}
 				},
-				{ tag: HISTORY_PUSH_TAG }
+				{ discrete: true, tag: HISTORY_PUSH_TAG }
 			);
 			restoreFocus();
 		},
-		[editor, restoreFocus]
+		[canEdit, editor, restoreFocus]
 	);
 
 	const handleCleanSemanticTag = useCallback(() => {
-		if (!editor) return;
+		if (!editor || !canEdit()) return;
 
 		editor.update(() => {
+			if (!canEdit()) return;
 			const selection = $getSelection();
 			if (!$isRangeSelection(selection) || selection.isCollapsed()) return;
 
@@ -352,11 +362,11 @@ export function useTextEditorLexicalActions({
 				node.remove();
 			});
 		});
-	}, [editor]);
+	}, [canEdit, editor]);
 
 	const handleTagClick = useCallback(
 		(type: TagTypes) => {
-			if (!editor) return;
+			if (!editor || !canEdit()) return;
 			editor.getEditorState().read(() => {
 				const selection = $getSelection();
 				const node = $findSelectedInlineNode($isSemanticTagNode);
@@ -373,10 +383,34 @@ export function useTextEditorLexicalActions({
 			});
 			onOpenTagDialog(type);
 		},
-		[editor, onOpenTagDialog]
+		[canEdit, editor, onOpenTagDialog]
 	);
 
+	const closeLinkDialog = useCallback(() => {
+		const snapshot = linkSelectionRef.current;
+		linkSelectionRef.current = null;
+		if (!editor || !snapshot || !canEdit()) return;
+		editor.update(() => $restoreEditorDialogSelection(snapshot.selection), {
+			discrete: true,
+			tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG]
+		});
+		restoreFocus();
+	}, [canEdit, editor, restoreFocus]);
+
+	const closeTagDialog = useCallback(() => {
+		const snapshot = semanticSelectionRef.current;
+		semanticSelectionRef.current = null;
+		if (!editor || !snapshot || !canEdit()) return;
+		editor.update(() => $restoreEditorDialogSelection(snapshot.selection), {
+			discrete: true,
+			tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG]
+		});
+		restoreFocus();
+	}, [canEdit, editor, restoreFocus]);
+
 	return {
+		closeLinkDialog,
+		closeTagDialog,
 		handleAddLink,
 		handleAddLocalLink,
 		handleAlignmentChange,

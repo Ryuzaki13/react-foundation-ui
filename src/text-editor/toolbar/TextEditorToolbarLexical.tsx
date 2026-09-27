@@ -12,6 +12,7 @@ import { ToolbarControl } from "./ToolbarControl";
 import { LinkTypes, TagTypes, TextEditorBlockControls, TextEditorInlineControls } from "./types";
 
 export interface TextEditorToolbarLexicalProps {
+	disabled?: boolean;
 	toolbarComponents?: TextEditorToolbarComponents;
 	state: LexicalToolbarState;
 	onBlockStyleToggle: (style: string) => void;
@@ -28,6 +29,7 @@ export interface TextEditorToolbarLexicalProps {
  * Основная панель инструментов редактора Lexical. Собирает управляющие блоки и синхронизирует их с текущим состоянием выделения.
  */
 export function TextEditorToolbarLexical({
+	disabled,
 	toolbarComponents,
 	state,
 	onBlockStyleToggle,
@@ -54,6 +56,7 @@ export function TextEditorToolbarLexical({
 						{blockControls.map((control) => (
 							<ToolbarControl
 								key={control.style}
+								disabled={disabled}
 								isActive={control.style === state.blockType}
 								style={control.style}
 								title={control.label}
@@ -76,7 +79,7 @@ export function TextEditorToolbarLexical({
 								title={control.label}
 								style={control.style}
 								icon={control.icon}
-								disabled={state.isTextUnselected}
+								disabled={disabled || state.isTextUnselected}
 								onClick={onInlineStyleToggle}
 							/>
 						))}
@@ -87,35 +90,40 @@ export function TextEditorToolbarLexical({
 
 			{components.alignment && (
 				<>
-					<AlignmentControls activeAlignment={state.activeAlignment} onAlignmentChange={onAlignmentChange} />
+					<AlignmentControls disabled={disabled} activeAlignment={state.activeAlignment} onAlignmentChange={onAlignmentChange} />
 					<hr />
 				</>
 			)}
 
 			{hasLinks && (
 				<>
-					<LinkButtons disabled={state.isTextUnselected} onClick={onLinkClick} linkTypes={components.linkTypes} />
+					<LinkButtons
+						disabled={disabled || state.isTextUnselected}
+						disabledLocalLink={disabled}
+						onClick={onLinkClick}
+						linkTypes={components.linkTypes}
+					/>
 					<hr />
 				</>
 			)}
 
 			{components.tags && (
 				<>
-					<TagButtons onClick={onTagClick} />
+					<TagButtons disabled={disabled} onClick={onTagClick} />
 					<hr />
 				</>
 			)}
 
 			{components.history && (
 				<>
-					<HistoryControls onUndo={onUndo} onRedo={onRedo} />
+					<HistoryControls disabled={disabled} onUndo={onUndo} onRedo={onRedo} />
 					<hr />
 				</>
 			)}
 
 			{(components.clearSemanticTag ?? true) && (
 				<ToolbarControl
-					disabled={state.isTextUnselected}
+					disabled={disabled || state.isTextUnselected}
 					title="Очистить выбранный тег"
 					icon={<BrushCleaning />}
 					onClick={onCleanTag}

@@ -1,4 +1,4 @@
-import { type ComponentProps, type ComponentType } from "react";
+import { type ComponentProps, type ComponentType, type Ref } from "react";
 
 import { type TextEditorBlockStyle } from "./model/textEditorTypes";
 import { type LinkTypes } from "./toolbar/types";
@@ -40,6 +40,11 @@ export type TextEditorExternalLinkOptions = Readonly<{
 	allowQrCode?: boolean;
 }>;
 
+/** Очистка текущего документа без remount; история предыдущего текста также удаляется. */
+export type TextEditorHandle = Readonly<{
+	clear: () => void;
+}>;
+
 export interface LocalLinkDialogAdapterProps {
 	isOpen: boolean;
 	onClose: () => void;
@@ -51,6 +56,9 @@ export interface TextEditorBusinessAdapters {
 }
 
 export interface TextEditorCoreProps<TRaw = unknown> {
+	/** Блокирует пользовательские изменения, но не imperative clear после подтверждения consumer. */
+	readOnly?: boolean;
+	ref?: Ref<TextEditorHandle>;
 	initialData: TextEditorData<TRaw>;
 	onChange: (data: TextEditorData<TextEditorLexicalRaw>) => void;
 	/** document сохраняет обычную панель; compact предназначен для встроенного короткого ввода без внешней рамки. */

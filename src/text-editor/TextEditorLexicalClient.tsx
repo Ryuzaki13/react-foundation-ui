@@ -1,4 +1,4 @@
-import { useCallback, useMemo, useState } from "react";
+import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 
 import { $generateHtmlFromNodes } from "@lexical/html";
 import { ListItemNode, ListNode } from "@lexical/list";
@@ -14,17 +14,18 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexical";
 
 import { type TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
-import { InitialHtmlPlugin, SelectionStatePlugin } from "./lexical/plugins";
+import { SelectionStatePlugin } from "./lexical/plugins";
+import { TextEditorLifecyclePlugin } from "./lexical/plugins/TextEditorLifecyclePlugin";
 import { createLexicalRaw } from "./lib/serialization/createLexicalRaw";
-import { useTextEditorLexicalActions } from "./model/hooks/useTextEditorLexicalActions";
+import { initializeTextEditorHtml } from "./lib/serialization/initializeTextEditorHtml";
+import { createTextEditorHistory } from "./model/createTextEditorHistory";
+import { createTextEditorLifecycle } from "./model/createTextEditorLifecycle";
 import { DEFAULT_TOOLBAR_STATE, type LexicalToolbarState } from "./model/textEditorTypes";
 import { AccessibleLinkNode } from "./nodes/AccessibleLinkNode";
 import { SemanticTagNode } from "./nodes/SemanticTagNode";
 import TextEditorStyle from "./TextEditor.module.scss";
 import "./TextEditor.scss";
-import { TextEditorDialogs } from "./TextEditorDialogs";
-import { type LinkTypes, type TagTypes, TextEditorToolbarLexical } from "./toolbar";
-import { TextEditorCompactToolbar } from "./toolbar/TextEditorCompactToolbar";
+import { TextEditorInteractions } from "./TextEditorInteractions";
 
 type TextEditorLexicalClientProps = TextEditorCoreProps;
 
@@ -38,24 +39,25 @@ export function TextEditorLexicalClient({
 	businessAdapters,
 	editableProps,
 	externalLinkOptions,
+	readOnly = false,
+	ref,
 	presentation = "document",
 	placeholder = "Введите текст"
 }: TextEditorLexicalClientProps) {
-	const LocalLinkDialogComponent = businessAdapters?.LocalLinkDialogComponent;
-	const Toolbar = presentation === "compact" ? TextEditorCompactToolbar : TextEditorToolbarLexical;
 	const [isFocused, setIsFocused] = useState(false);
 	const [toolbarState, setToolbarState] = useState<LexicalToolbarState>(DEFAULT_TOOLBAR_STATE);
-	const [editor, setEditor] = useState<LexicalEditor | null>(null);
-	const [linkTypeDialog, setLinkTypeDialog] = useState<LinkTypes | null>(null);
-	const [tagTypeDialog, setTagTypeDialog] = useState<TagTypes | null>(null);
+	const [lifecycle] = useState(createTextEditorLifecycle);
+	const [history] = useState(createTextEditorHistory);
+	const generation = useSyncExternalStore(lifecycle.subscribe, lifecycle.getSnapshot, lifecycle.getSnapshot);
 
 	const lexicalRaw = isLexicalTextRaw(initialData?.raw) ? initialData.raw : null;
-	const hasLexicalRaw = !!lexicalRaw;
 
 	const initialEditorState = useMemo(() => {
-		if (!lexicalRaw) return undefined;
-		return JSON.stringify(lexicalRaw.editorState);
-	}, [lexicalRaw]);
+		if (lexicalRaw) return JSON.stringify(lexicalRaw.editorState);
+		// HTML инициализируется в самом Composer до публикации imperative ref.
+		// Поздний effect больше не может восстановить исходный текст после clear.
+		return (editor: LexicalEditor) => initializeTextEditorHtml(editor, initialData.html);
+	}, [initialData.html, lexicalRaw]);
 
 	const handleError = useCallback((error: Error) => {
 		console.error("Ошибка редактора Lexical", error);
@@ -74,24 +76,9 @@ export function TextEditorLexicalClient({
 		[onChange]
 	);
 
-	const openLinkDialog = useCallback((type: LinkTypes) => {
-		setLinkTypeDialog(type);
-	}, []);
-
-	const openTagDialog = useCallback((type: TagTypes) => {
-		setTagTypeDialog(type);
-	}, []);
-
-	const actions = useTextEditorLexicalActions({
-		editor,
-		toolbarState,
-		hasLocalLinkDialog: !!LocalLinkDialogComponent,
-		onOpenLinkDialog: openLinkDialog,
-		onOpenTagDialog: openTagDialog
-	});
-
 	const initialConfig = useMemo(
 		() => ({
+			editable: !readOnly,
 			namespace: "KtkTextEditorLexical",
 			onError: handleError,
 			theme: {
@@ -106,7 +93,7 @@ export function TextEditorLexicalClient({
 			nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, AccessibleLinkNode, SemanticTagNode],
 			editorState: initialEditorState
 		}),
-		[handleError, initialEditorState]
+		[handleError, initialEditorState, readOnly]
 	);
 
 	return (
@@ -117,17 +104,16 @@ export function TextEditorLexicalClient({
 					[TextEditorStyle.compact]: presentation === "compact"
 				})}>
 				<LexicalComposer initialConfig={initialConfig}>
-					<Toolbar
+					<TextEditorInteractions
+						key={`${generation}:${readOnly}`}
+						lifecycle={lifecycle}
+						generation={generation}
+						readOnly={readOnly}
+						presentation={presentation}
+						businessAdapters={businessAdapters}
+						externalLinkOptions={externalLinkOptions}
 						toolbarComponents={toolbarComponents}
 						state={toolbarState}
-						onBlockStyleToggle={actions.handleBlockStyleToggle}
-						onInlineStyleToggle={actions.handleInlineStyleToggle}
-						onAlignmentChange={actions.handleAlignmentChange}
-						onLinkClick={actions.handleLinkClick}
-						onTagClick={actions.handleTagClick}
-						onUndo={actions.handleUndo}
-						onRedo={actions.handleRedo}
-						onCleanTag={actions.handleCleanSemanticTag}
 					/>
 					<RichTextPlugin
 						contentEditable={
@@ -149,27 +135,13 @@ export function TextEditorLexicalClient({
 						placeholder={placeholder ? <div className="lexicalEditorPlaceholder">{placeholder}</div> : null}
 						ErrorBoundary={LexicalErrorBoundary}
 					/>
-					<HistoryPlugin />
+					<HistoryPlugin externalHistoryState={history.state} />
 					<ListPlugin />
-					<SelectionStatePlugin onEditorReady={setEditor} onStateChange={setToolbarState} />
-					<InitialHtmlPlugin initialHTML={initialData?.html} shouldSkip={hasLexicalRaw} />
+					<SelectionStatePlugin onStateChange={setToolbarState} />
 					<OnChangePlugin onChange={handleChange} ignoreSelectionChange />
+					<TextEditorLifecyclePlugin lifecycle={lifecycle} history={history} readOnly={readOnly} editorRef={ref} />
 				</LexicalComposer>
 			</div>
-
-			<TextEditorDialogs
-				externalLinkOptions={externalLinkOptions}
-				linkTypeDialog={linkTypeDialog}
-				tagTypeDialog={tagTypeDialog}
-				localLinkDialogComponent={LocalLinkDialogComponent}
-				onCloseLinkDialog={() => setLinkTypeDialog(null)}
-				onCloseTagDialog={() => setTagTypeDialog(null)}
-				onAddLink={actions.handleAddLink}
-				onAddLocalLink={actions.handleAddLocalLink}
-				onInsertSemanticTag={actions.insertSemanticTagAtSelection}
-				semanticDialogState={actions.semanticDialogState}
-				linkDialogState={actions.linkDialogState}
-			/>
 		</div>
 	);
 }

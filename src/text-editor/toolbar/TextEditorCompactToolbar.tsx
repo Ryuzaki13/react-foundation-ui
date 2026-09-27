@@ -7,11 +7,11 @@ import { useCompactTextEditorToolbar } from "../model/useCompactTextEditorToolba
 import { TextEditorToolbarLexical, type TextEditorToolbarLexicalProps } from "./TextEditorToolbarLexical";
 import styles from "./Toolbar.module.scss";
 
-type TextEditorCompactToolbarProps = TextEditorToolbarLexicalProps;
+type TextEditorCompactToolbarProps = TextEditorToolbarLexicalProps & Readonly<{ canEdit: () => boolean }>;
 
 /** Один вход в прежние команды: компактность не уменьшает touch-target и не меняет профиль raw. */
-export function TextEditorCompactToolbar({ state, ...props }: TextEditorCompactToolbarProps) {
-	const panel = useCompactTextEditorToolbar();
+export function TextEditorCompactToolbar({ state, canEdit, ...props }: TextEditorCompactToolbarProps) {
+	const panel = useCompactTextEditorToolbar(canEdit);
 
 	return (
 		<div className={styles.compactToolbar}>
@@ -19,6 +19,7 @@ export function TextEditorCompactToolbar({ state, ...props }: TextEditorCompactT
 				<Popover.Trigger>
 					<Button
 						data-action="toggle-text-editor-formatting"
+						disabled={props.disabled}
 						appearance="ghost"
 						icon={<TextCursorInput />}
 						onMouseDown={(event) => event.preventDefault()}>

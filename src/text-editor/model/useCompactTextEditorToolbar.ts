@@ -18,10 +18,10 @@ type FormattingSession = Readonly<{
  * Панель переносит DOM-фокус из editable, но команда должна относиться к месту
  * открытия. Snapshot живёт только до выбора/закрытия и не меняет документ при отмене.
  */
-export function useCompactTextEditorToolbar() {
+export function useCompactTextEditorToolbar(canEdit: () => boolean) {
 	const [editor] = useLexicalComposerContext();
 	const [session, setSession] = useState<FormattingSession | null>(null);
-	const { cancelPendingFocus, restoreFocus } = useDeferredTextEditorFocus(editor);
+	const { cancelPendingFocus, restoreFocus } = useDeferredTextEditorFocus(editor, canEdit);
 
 	const onOpenChange = useCallback(
 		(open: boolean) => {
@@ -30,6 +30,7 @@ export function useCompactTextEditorToolbar() {
 				setSession(null);
 				return;
 			}
+			if (!canEdit()) return;
 			editor.getEditorState().read(() => {
 				const selection = $getSelection();
 				setSession({
@@ -38,12 +39,12 @@ export function useCompactTextEditorToolbar() {
 				});
 			});
 		},
-		[cancelPendingFocus, editor]
+		[cancelPendingFocus, canEdit, editor]
 	);
 
 	const runCommand = useCallback(
 		(command: () => void, nextFocus: "editor" | "dialog" = "editor") => {
-			if (!session) return;
+			if (!session || !canEdit()) return;
 			cancelPendingFocus();
 			// Selection-only commit не создаёт отдельный undo-шаг. SKIP_DOM_SELECTION
 			// оставляет фокус popup до его закрытия и не борется с открываемым диалогом.
@@ -57,7 +58,7 @@ export function useCompactTextEditorToolbar() {
 			// удаляемую кнопку как return-focus target или спорить с его focus restore.
 			restoreFocus(nextFocus === "dialog" ? command : undefined);
 		},
-		[cancelPendingFocus, editor, restoreFocus, session]
+		[cancelPendingFocus, canEdit, editor, restoreFocus, session]
 	);
 
 	return { open: session !== null, state: session?.state, onOpenChange, runCommand };

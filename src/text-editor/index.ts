@@ -7,6 +7,7 @@ export type {
 	TextEditorData,
 	TextEditorEditableProps,
 	TextEditorExternalLinkOptions,
+	TextEditorHandle,
 	TextEditorLexicalRaw,
 	TextEditorToolbarComponents
 } from "./editorModel";
