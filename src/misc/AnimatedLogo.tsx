@@ -14,8 +14,8 @@ type AnimatedLogoProps = Omit<ComponentPropsWithoutRef<"div">, "children"> & {
  */
 export function AnimatedLogo({ children, className, ...htmlProps }: AnimatedLogoProps) {
 	return (
-		<div {...htmlProps} className={cn(styles.logo, className)}>
+		<span {...htmlProps} className={cn(styles.logo, className)}>
 			{children}
-		</div>
+		</span>
 	);
 }
