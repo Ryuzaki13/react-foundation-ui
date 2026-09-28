@@ -58,6 +58,8 @@ export interface TextEditorBusinessAdapters {
 export interface TextEditorCoreProps<TRaw = unknown> {
 	/** Блокирует пользовательские изменения, но не imperative clear после подтверждения consumer. */
 	readOnly?: boolean;
+	/** Один начальный фокус новой сессии документа; по умолчанию false. Не действует при начальном readOnly. */
+	autoFocus?: boolean;
 	ref?: Ref<TextEditorHandle>;
 	initialData: TextEditorData<TRaw>;
 	onChange: (data: TextEditorData<TextEditorLexicalRaw>) => void;

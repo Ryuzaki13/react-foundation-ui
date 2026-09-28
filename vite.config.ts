@@ -41,6 +41,10 @@ function collectEntries(): Record<string, string> {
 
 	entries["styles-entry"] = resolve("src/styles-entry.ts");
 	entries["types"] = resolve("src/types.ts");
+	// Эти nested entrypoints уже объявлены в public exports. Явный список
+	// обеспечивает доставку JS, не превращая приватные index.ts в новое API.
+	entries["text-editor/lexical/plugins/index"] = resolve("src/text-editor/lexical/plugins/index.ts");
+	entries["text-editor/toolbar/index"] = resolve("src/text-editor/toolbar/index.ts");
 
 	for (const entry of readdirSync(sourceRoot, { withFileTypes: true })) {
 		if (!entry.isDirectory()) continue;

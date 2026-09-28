@@ -3,6 +3,7 @@ import { fn } from "storybook/test";
 
 import { LinkTypes, type TextEditorCoreProps, TextEditorLexical } from "../index";
 
+import { TextEditorInitialFocusExample } from "./TextEditorInitialFocusExample";
 import { TextEditorLifecycleExample } from "./TextEditorLifecycleExample";
 
 const meta = {
@@ -29,6 +30,10 @@ const meta = {
 	},
 	argTypes: {
 		readOnly: { description: "Блокирует пользовательский ввод и команды без замены документа. По умолчанию false.", control: false },
+		autoFocus: {
+			description: "Один начальный фокус новой редактируемой сессии с кареткой в конце. По умолчанию false; readOnly блокирует его.",
+			control: false
+		},
 		ref: {
 			description: "TextEditorHandle с единственной операцией clear(): пустой документ и новая история без remount.",
 			control: false
@@ -119,4 +124,17 @@ export const CompactLifecycle: Story = {
 	...Lifecycle,
 	name: "Компактный ввод: чтение и очистка",
 	args: { ...Restricted.args, presentation: "compact", placeholder: null }
+};
+
+export const InitialFocus: Story = {
+	name: "Начальный фокус новой сессии",
+	args: { ...Restricted.args, presentation: "compact", placeholder: null },
+	render: (args) => <TextEditorInitialFocusExample {...args} />,
+	parameters: {
+		docs: {
+			description: {
+				story: "Нажмите «Открыть новый документ»: новый editable получает фокус и каретку в конце без программной прокрутки host-экрана. Очистка и повторное разрешение ввода не повторяют autoFocus. Открытие в режиме чтения не фокусирует поле. Проверка физической экранной клавиатуры остаётся отдельным browser/device gate."
+			}
+		}
+	}
 };

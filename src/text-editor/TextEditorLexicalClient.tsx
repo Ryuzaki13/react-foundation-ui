@@ -15,6 +15,7 @@ import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexi
 
 import { type TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
 import { SelectionStatePlugin } from "./lexical/plugins";
+import { TextEditorInitialFocusPlugin } from "./lexical/plugins/TextEditorInitialFocusPlugin";
 import { TextEditorLifecyclePlugin } from "./lexical/plugins/TextEditorLifecyclePlugin";
 import { createLexicalRaw } from "./lib/serialization/createLexicalRaw";
 import { initializeTextEditorHtml } from "./lib/serialization/initializeTextEditorHtml";
@@ -40,6 +41,7 @@ export function TextEditorLexicalClient({
 	editableProps,
 	externalLinkOptions,
 	readOnly = false,
+	autoFocus = false,
 	ref,
 	presentation = "document",
 	placeholder = "Введите текст"
@@ -140,6 +142,7 @@ export function TextEditorLexicalClient({
 					<SelectionStatePlugin onStateChange={setToolbarState} />
 					<OnChangePlugin onChange={handleChange} ignoreSelectionChange />
 					<TextEditorLifecyclePlugin lifecycle={lifecycle} history={history} readOnly={readOnly} editorRef={ref} />
+					<TextEditorInitialFocusPlugin autoFocus={autoFocus} readOnly={readOnly} />
 				</LexicalComposer>
 			</div>
 		</div>
