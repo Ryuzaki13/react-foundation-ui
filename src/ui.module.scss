@@ -379,8 +379,10 @@
 	// Active идёт после hover, чтобы нажатие не теряло своё состояние у мыши и touch-устройств.
 	&.uiPopupOptionActive,
 	&:active {
-		color: var(--accent-text-active);
-		background-color: var(--accent-fill-active);
+		// color: var(--accent-text-active);
+		// background-color: var(--accent-fill-active);
+		outline: 1px dashed var(--accent-border);
+		outline-offset: -1px;
 
 		.uiOptionCode {
 			color: inherit;
