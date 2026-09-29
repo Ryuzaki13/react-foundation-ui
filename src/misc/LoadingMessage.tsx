@@ -2,6 +2,8 @@ import { type ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { GridContainer } from "../grid";
+
 import styles from "./LoadingMessage.module.scss";
 import { Message } from "./Message";
 
@@ -15,9 +17,10 @@ type LoadingMessageProps = {
 export function LoadingMessage({ className, logo, text }: LoadingMessageProps) {
 	return (
 		<Message className={cn(styles.componentLoader, logo ? undefined : "skeletonLine", className)}>
-			{logo}
-
-			{text || "Загрузка..."}
+			<GridContainer as="span" justify="center" justifyContent="center">
+				{logo}
+				{text || "Загрузка..."}
+			</GridContainer>
 		</Message>
 	);
 }
