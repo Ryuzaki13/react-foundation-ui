@@ -1,54 +1,29 @@
-.interactiveSurface {
-	--c: inherit;
-	--s: transparent;
-	--b: transparent;
-
-	--ch: var(--accent-on-fill);
-	--sh: var(--accent-fill-hover);
-	--bh: var(--accent-border-hover);
-
-	--ca: var(--accent-on-fill);
-	--sa: var(--accent-fill-active);
-	--ba: var(--accent-border-active);
-
-	--cs: var(--accent-on-fill);
-	--ss: var(--accent-fill);
-	--bs: var(--accent-border);
-
-	// color: var(--c);
-	// background-color: var(--s);
-
-	// &.interactiveSurfaceFrame {
-	// 	border-color: var(--b);
-	// }
-}
-
 @media (any-hover: hover) {
 	.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):hover {
-		color: var(--ch);
-		background-color: var(--sh);
+		color: var(--accent-text-hover);
+		background-color: var(--accent-fill-hover);
 
 		&.interactiveSurfaceFrame {
-			border-color: var(--bh);
+			border-color: var(--accent-border-hover);
 		}
 	}
 }
 
 .interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):active {
-	color: var(--ca);
-	background-color: var(--sa);
+	color: var(--accent-text-active);
+	background-color: var(--accent-fill-active);
 
 	&.interactiveSurfaceFrame {
-		border-color: var(--ba);
+		border-color: var(--accent-border-active);
 	}
 }
 
 .interactiveSurface[data-selected="true"] {
-	color: var(--cs);
-	background-color: var(--ss);
+	color: var(--accent-on-fill);
+	background-color: var(--accent-fill);
 
 	&.interactiveSurfaceFrame {
-		border-color: var(--bs);
+		border-color: var(--accent-border);
 	}
 }
 
