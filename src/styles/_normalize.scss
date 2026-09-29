@@ -137,7 +137,7 @@ html,
 	color: var(--link-color, var(--accent-text));
 
 	&:visited {
-		color: inherit;
+		color: var(--link-color, var(--accent-text));
 	}
 
 	&:hover {
