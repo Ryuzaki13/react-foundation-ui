@@ -10,6 +10,7 @@
 }
 
 .text {
+	color: var(--content-2);
 	// Без поддержки text clipping остаётся обычный текст унаследованного цвета.
 	@supports ((-webkit-background-clip: text) or (background-clip: text)) {
 		background-image: linear-gradient(
