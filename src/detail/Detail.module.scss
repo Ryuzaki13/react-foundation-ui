@@ -23,14 +23,13 @@
 
 	.dt {
 		color: var(--content-1);
-		font-size: var(--font-size-xs);
-		font-weight: 300;
 		font-variation-settings: "wght" 300;
+		font-weight: 300;
 	}
 
 	.dd {
-		font-weight: 500;
 		font-variation-settings: "wght" 500;
+		font-weight: 500;
 	}
 
 	&.textCenter {
@@ -46,7 +45,6 @@
 		display: flex;
 
 		.dt {
-			font-size: var(--font-size-md);
 			text-align: right;
 			padding-right: var(--space-sm);
 		}
