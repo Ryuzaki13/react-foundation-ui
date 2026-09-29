@@ -27,7 +27,7 @@
 .options {
 	width: 100%;
 	min-height: 0;
-	max-height: 75vh;
+	max-height: var(--options-max-height, 75vh);
 
 	padding: var(--space-sm);
 	background-color: var(--surface-0);
