@@ -169,10 +169,10 @@ describe("interactive surface", () => {
 		}).css;
 
 		expect(css).toContain(".interactiveSurface");
-		expect(css).toContain("--ch: var(--accent-text-hover)");
+		expect(css).toContain("--ch: var(--accent-on-fill)");
 		expect(css).toContain("--sh: var(--accent-fill-hover)");
 		expect(css).toContain("--bh: var(--accent-border-hover)");
-		expect(css).toContain("--ca: var(--accent-text-active)");
+		expect(css).toContain("--ca: var(--accent-on-fill)");
 		expect(css).toContain("--sa: var(--accent-fill-active)");
 		expect(css).toContain("--ba: var(--accent-border-active)");
 		expect(css).toContain("--cs: var(--accent-on-fill)");
