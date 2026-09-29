@@ -121,8 +121,7 @@ export function PickerPopup({
 								toolbar={toolbar}
 								selectionActions={selectionActions}
 								bodyRef={isDialog ? undefined : compositeRef}
-								bodyProps={isDialog ? undefined : compositeProps}
-								scrollable={false}>
+								bodyProps={isDialog ? undefined : compositeProps}>
 								{children}
 							</PickerOptions>
 						</motion.div>
