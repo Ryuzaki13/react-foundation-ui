@@ -134,24 +134,24 @@ html,
 }
 
 .link {
-	color: var(--accent-text);
+	color: var(--link-color, var(--accent-text));
 
 	&:visited {
-		color: var(--accent-text);
+		color: inherit;
 	}
 
 	&:hover {
-		color: var(--accent-text-hover);
+		color: var(--link-color-hover, var(--accent-text-hover));
 	}
 
 	&:active {
-		color: var(--accent-text-active);
+		color: var(--link-color-active, var(--accent-text-active));
 	}
 }
 
 .actionLink {
 	@extend .link;
-	
+
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
