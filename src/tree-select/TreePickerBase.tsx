@@ -235,7 +235,7 @@ export function TreePickerBase({
 		close,
 		toggleOpen
 	});
-	const showBulkActions = optionsLayout === "columns" && selectionMode === "multi" && bulkActions;
+	const showBulkActions = (optionsLayout === "columns" || selectionMode === "multi") && bulkActions;
 	const showPopupSearch = triggerMode === "display";
 	const popupHeader =
 		showBulkActions || showPopupSearch ? (
