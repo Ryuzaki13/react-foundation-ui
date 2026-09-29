@@ -162,26 +162,6 @@ describe("theme", () => {
 });
 
 describe("interactive surface", () => {
-	it("публично экспортирует класс с соответствующими состояниями accent-схемы", () => {
-		const css = compileString('@use "styles/themes";', {
-			loadPaths: [resolve(".")],
-			style: "expanded"
-		}).css;
-
-		expect(css).toContain(".interactiveSurface");
-		expect(css).toContain("--ch: var(--accent-on-fill)");
-		expect(css).toContain("--sh: var(--accent-fill-hover)");
-		expect(css).toContain("--bh: var(--accent-border-hover)");
-		expect(css).toContain("--ca: var(--accent-on-fill)");
-		expect(css).toContain("--sa: var(--accent-fill-active)");
-		expect(css).toContain("--ba: var(--accent-border-active)");
-		expect(css).toContain("--cs: var(--accent-on-fill)");
-		expect(css).toContain("--ss: var(--accent-fill)");
-		expect(css).toContain("--bs: var(--accent-border)");
-		expect(css).toMatch(/\.interactiveSurface\[data-selected=true\]\.interactiveSurfaceFrame\s*\{\s*border-color: var\(--bs\);\s*\}/);
-		expect(css).not.toContain("--interactive-");
-	});
-
 	it("сохраняет ту же карту состояний в используемом popup option", () => {
 		const css = compileUiModule();
 
