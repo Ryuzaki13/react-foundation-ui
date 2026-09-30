@@ -31,17 +31,19 @@
 	height: var(--control-height);
 	cursor: pointer;
 	border-radius: var(--radius-xs);
-	// font-size: var(--font-size-sm);
-
+	border: var(--border-width) solid transparent;
 	background-color: var(--surface-1);
 
 	&:hover:not(.disabled) {
-		background-color: var(--accent-fill);
+		background-color: var(--accent-fill-hover);
+		color: var(--accent-text-hover);
+		border-color: var(--accent-border-hover);
 	}
 
 	&.outsideMonth {
 		background-color: transparent;
 		color: var(--content-2);
+		font-size: var(--font-size-sm);
 	}
 
 	&.periodSelection:hover:not(.disabled):not(.periodPreview):not(.selected) {
@@ -59,17 +61,17 @@
 
 	&.range {
 		background-color: var(--accent-fill);
-		color: var(--content-0);
+		color: var(--accent-text);
 	}
 
 	&.rangeStart {
-		// border-top-left-radius: var(--range-radius);
-		// border-bottom-left-radius: var(--range-radius);
+		border-top-left-radius: var(--range-radius);
+		border-bottom-left-radius: var(--range-radius);
 	}
 
 	&.rangeEnd {
-		// border-top-right-radius: var(--range-radius);
-		// border-bottom-right-radius: var(--range-radius);
+		border-top-right-radius: var(--range-radius);
+		border-bottom-right-radius: var(--range-radius);
 	}
 
 	&.selected,
@@ -95,8 +97,8 @@
 	}
 
 	&.now {
-		border: var(--border);
-		color: var(--info-text);
-		border-color: var(--info-text);
+		background-color: var(--accent-soft);
+		color: var(--accent-text);
+		border-color: var(--accent-border);
 	}
 }

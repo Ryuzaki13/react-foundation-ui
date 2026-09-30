@@ -91,12 +91,12 @@
 
 	&:hover {
 		cursor: pointer;
-		color: var(--accent-text);
+		color: var(--accent-text-hover);
 		background-color: var(--accent-fill-hover);
 	}
 
 	&.selected {
-		color: var(--brand-text);
+		color: var(--accent-text);
 		// color: var(--content-0);
 		background-color: var(--accent-fill);
 	}
