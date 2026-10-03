@@ -1,168 +1,28 @@
-import React, { Children, PropsWithChildren, useRef } from "react";
+import type { PropsWithChildren } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { useFetchNextPageEffect } from "@ryuzaki13/react-foundation-lib/virtualizer";
 
 import { Grid } from "../grid";
-import { LoadingMessage, Scrollable } from "../misc";
 
-import { useListVirtualizer } from "./useListVirtualizer";
+import { ListContent } from "./ListContent";
+import { ListFooter } from "./ListFooter";
+import { ListToolbar } from "./ListToolbar";
+import { ListVirtualizedContent } from "./ListVirtualizedContent";
 
-interface ListToolbarProps {
-	children: React.ReactNode;
-	className?: string;
+export interface ListProps extends PropsWithChildren {
+	readonly className?: string;
 }
 
-function ListToolbar({ children, className }: ListToolbarProps) {
-	if (Children.count(children) === 0) {
-		// Пустой блок для корректной работы родительского шаблона auto 1fr auto
-		return <div></div>;
-	}
-
-	return (
-		<Grid.Container gap="sm" className={cn("paddingSm borderBottom", className)}>
-			{children}
-		</Grid.Container>
-	);
-}
-
-interface ListFooterProps {
-	children: React.ReactNode;
-	className?: string;
-}
-
-function ListFooter({ children, className }: ListFooterProps) {
-	if (Children.count(children) === 0) {
-		// Пустой блок для корректной работы родительского шаблона auto 1fr auto
-		return <div></div>;
-	}
-
-	return (
-		<Grid.Container gap="sm" className={cn("paddingSm borderTop", className)}>
-			{children}
-		</Grid.Container>
-	);
-}
-
-interface ListItemProps<T> {
-	item: T;
-	render: (item: T) => React.ReactNode;
-	separated?: boolean;
-}
-
-function ListItem<T>({ item, render, separated }: ListItemProps<T>) {
-	return (
-		<React.Fragment>
-			<li className={cn(separated && "borderBottom")}>{render(item)}</li>
-			{/* {separated && <Separator as="li" />} */}
-		</React.Fragment>
-	);
-}
-
-interface ListContentProps<T> {
-	items: T[];
-	getKey: (item: T, index: number) => string;
-	render: (item: T) => React.ReactNode;
-	separated?: boolean;
-	className?: string;
-}
-
-function ListContent<T>({ items, getKey, render, separated, className }: ListContentProps<T>) {
-	return (
-		<Scrollable className={className}>
-			<ul className="">
-				{items.map((item, index) => (
-					<ListItem<T> key={getKey(item, index)} item={item} render={render} separated={separated} />
-				))}
-			</ul>
-		</Scrollable>
-	);
-}
-
-interface ListVirtualizedContentProps<T> {
-	items: T[];
-	getKey: (item: T, index: number) => string;
-	render: (item: T) => React.ReactNode;
-	isLoading?: boolean;
-	separated?: boolean;
-	className?: string;
-	/** Параметры для бесконечной подгрузки */
-	hasNextPage: boolean;
-	fetchNextPage: () => Promise<unknown>;
-}
-
-function ListVirtualizedContent<T>({
-	items,
-	getKey,
-	render,
-	separated,
-	className,
-	isLoading,
-	hasNextPage,
-	fetchNextPage
-}: ListVirtualizedContentProps<T>) {
-	"use no memo";
-
-	const parentRef = useRef<HTMLDivElement | null>(null);
-	const rowVirtualizer = useListVirtualizer({
-		count: hasNextPage ? items.length + 1 : items.length,
-		getScrollElement: () => parentRef.current,
-		measureElement: (element) => Math.ceil(element.getBoundingClientRect().height),
-		estimateSize: () => 120,
-		overscan: 5
-	});
-
-	const virtualItems = rowVirtualizer.getVirtualItems();
-
-	useFetchNextPageEffect({ virtualItems, currentItemsCount: items.length, hasNextPage, fetchNextPage });
-
-	return (
-		<Scrollable ref={parentRef} className={className}>
-			{isLoading ? (
-				<LoadingMessage />
-			) : (
-				<ul style={{ height: rowVirtualizer.getTotalSize() }} className="relative w100">
-					{virtualItems.map((virtualRow) => {
-						const isLoaderRow = virtualRow.index > items.length - 1;
-						const item = items[virtualRow.index];
-
-						return (
-							<React.Fragment key={isLoaderRow ? "loader" : getKey(item, virtualRow.index)}>
-								<li
-									ref={rowVirtualizer.measureElement}
-									style={{
-										position: "absolute",
-										top: 0,
-										left: 0,
-										width: "100%",
-										transform: `translateY(${Math.round(virtualRow.start)}px)`
-									}}
-									data-index={virtualRow.index}
-									className={cn(separated && "borderBottom")}>
-									{isLoaderRow ? <LoadingMessage /> : render(item)}
-								</li>
-							</React.Fragment>
-						);
-					})}
-				</ul>
-			)}
-		</Scrollable>
-	);
-}
-
-interface ListProps extends PropsWithChildren {
-	className?: string;
-}
-
+/** Компоновка списка: неподвижные toolbar/footer и единственная прокручиваемая область. */
 export function List({ className, children }: ListProps) {
 	return (
-		<Grid.Container templateRows="auto 1fr auto" className={cn("h100", className)}>
+		<Grid.Container templateRows="auto minmax(0, 1fr) auto" className={cn("h100", className)}>
 			{children}
 		</Grid.Container>
 	);
 }
 
-// Компоновка остаётся отдельным экспортным слоем, а все React-реализации объявлены через function declaration.
+// Опубликованный compound API сохраняется; поведение частей принадлежит отдельным компонентам.
 List.Toolbar = ListToolbar;
 List.Content = ListContent;
 List.Footer = ListFooter;

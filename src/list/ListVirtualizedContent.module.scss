@@ -1,0 +1,4 @@
+.viewport {
+	// Позицию по устойчивому ключу восстанавливает virtualizer, не параллельный browser anchoring.
+	overflow-anchor: none;
+}
