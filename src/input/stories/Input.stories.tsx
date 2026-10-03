@@ -1,7 +1,7 @@
+import { type Meta, type StoryObj } from "@storybook/react-vite";
+
 import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
 import { InputNumber, InputText, type BaseInputProps, type InputTextProps } from "../Input";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type InputTextStoryArgs = InputTextProps;
 type InputNumberStoryArgs = BaseInputProps<number | undefined>;
@@ -177,6 +177,28 @@ export const PatternValidation: TextStory = {
 		placeholder: "12345",
 		value: "",
 		allowedPattern: /^\d*$/
+	}
+};
+
+export const SearchWithClear: TextStory = {
+	render: renderInputTextStory,
+	args: {
+		type: "search",
+		label: "Поиск с очисткой foundation",
+		description: "Живой ввод и одна доступная кнопка очистки; браузерный крестик скрыт.",
+		value: "Поисковый запрос",
+		onClear: () => {}
+	}
+};
+
+export const SearchNativeClear: TextStory = {
+	render: renderInputTextStory,
+	args: {
+		type: "search",
+		label: "Поиск с нативной очисткой",
+		description: "Без onClear сохраняется встроенная кнопка браузера, если браузер её поддерживает.",
+		value: "Поисковый запрос",
+		onClear: undefined
 	}
 };
 

@@ -25,18 +25,21 @@ Input уже имеет живые stories, а эта страница соби�
 ```tsx
 import { useState } from "react";
 
-import { Input } from "@ryuzaki13/react-foundation-ui";
+import { InputText } from "@ryuzaki13/react-foundation-ui/input";
 
 export function Example() {
 	const [value, setValue] = useState("");
 
-	return <Input label="Название" value={value} onChange={setValue} placeholder="Введите значение" />;
+	return <InputText label="Название" value={value} onChange={setValue} placeholder="Введите значение" />;
 }
 ```
 
 ## Практические рекомендации
 
 - Начните с базового сценария ниже, а затем проверьте в stories те состояния, которые реально используются в вашем экране.
+- Для живого поиска используйте `InputText type="search"`: `onChange` вызывается при вводе, без ожидания Enter или потери фокуса. `InputSearch` имеет другой контракт — подтверждение поискового запроса.
+- `onClear` добавляет одну доступную кнопку «Очистить значение». Только в этом режиме скрывается встроенный крестик WebKit/Blink; без `onClear` нативная очистка остаётся доступной, если её предоставляет браузер. Семантика `type="search"` сохраняется в обоих режимах.
+- Поле остаётся controlled: callback `onClear` должен обновить `value` у потребителя. Нажатие этой кнопки не вызывает `onChange` дополнительно.
 
 ## Сценарии использования
 
@@ -45,6 +48,30 @@ export function Example() {
 Контролируемое текстовое поле.
 
 <Canvas of={InputStories.TextControlled} />
+
+### Живой поиск с одной кнопкой очистки
+
+При переданном `onClear` очищает значение кнопка foundation, а браузерный крестик не дублируется.
+
+<Canvas of={InputStories.SearchWithClear} />
+
+```tsx
+import { useState } from "react";
+
+import { InputText } from "@ryuzaki13/react-foundation-ui/input";
+
+export function SearchExample() {
+	const [search, setSearch] = useState("");
+
+	return <InputText type="search" aria-label="Поиск" value={search} onChange={setSearch} onClear={() => setSearch("")} />;
+}
+```
+
+### Живой поиск с нативной очисткой
+
+Без `onClear` компонент не скрывает встроенное действие браузера. Его внешний вид и наличие определяет браузер.
+
+<Canvas of={InputStories.SearchNativeClear} />
 
 ### Контролируемое числовое поле
 

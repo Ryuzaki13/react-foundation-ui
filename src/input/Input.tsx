@@ -292,7 +292,14 @@ export function InputText({
 						aria-labelledby={labelId}
 						aria-describedby={describedBy}
 						data-invalid={isInvalid ? "" : undefined}
-						className={cn(uiStyles.uiInputControl, styles.input, controlClassName)}
+						className={cn(
+							uiStyles.uiInputControl,
+							styles.input,
+							// Собственная доступная очистка заменяет браузерный крестик,
+							// не меняя семантику search или нативный режим без onClear.
+							type === "search" && onClear !== undefined && styles.searchWithCustomClear,
+							controlClassName
+						)}
 						onChange={handleInput}
 					/>
 				)}

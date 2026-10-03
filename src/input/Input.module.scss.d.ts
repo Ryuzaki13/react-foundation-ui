@@ -3,6 +3,7 @@ declare const styles: {
   readonly inputUI: "inputUI";
   readonly input: "input";
   readonly inputNumber: "inputNumber";
+  readonly searchWithCustomClear: "searchWithCustomClear";
   readonly controlWithEndAdornment: "controlWithEndAdornment";
   readonly controlEndAdornment: "controlEndAdornment";
   readonly endAdornmentGroup: "endAdornmentGroup";

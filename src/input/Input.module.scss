@@ -31,6 +31,14 @@
 	}
 }
 
+.searchWithCustomClear {
+	// WebKit/Blink иначе добавляют второй крестик рядом с InputClearButton.
+	// Класс применяется только к search-полю с явно переданным onClear.
+	&::-webkit-search-cancel-button {
+		display: none;
+	}
+}
+
 .controlWithEndAdornment {
 	padding-right: calc(var(--input-end-adornment-width, var(--control-height)) + var(--space-sm));
 }
