@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useLayoutEffect, useRef } from "react";
 
 import {
 	assertValidAccept,
@@ -21,6 +21,8 @@ interface InputFileCommonProps extends Omit<UiBaseProps<undefined>, "value" | "o
 	onClear?: () => void;
 	/** Callback ошибки чтения файла (невалидный MIME, превышение размера и т.д.) */
 	onReadError?: (error: ReadFileError) => void;
+	/** Текущее чтение: новый выбор сохраняет true, очистка, блокировка и unmount завершают его с false. */
+	onReadingChange?: (isReading: boolean) => void;
 
 	/** HTML-атрибут accept для нативного input[type="file"] (например `[".pdf", ".docx"]`) */
 	accept?: readonly string[];
@@ -76,19 +78,22 @@ export type InputFileProps =
  * InputFile позволяет выбрать один файл и передаёт наружу типизированный результат чтения.
  * Если `readMode` не задан или равен `"data-url"`, в `onChange` приходит объект с `dataUrl`.
  * Если `readMode` равен `"array-buffer"`, в `onChange` приходит объект с `buffer`.
+ * Новый выбор отменяет прежнее чтение: результат и ошибка относятся только к последнему выбору.
+ * `onReadingChange` позволяет форме заблокировать отправку прежнего value, пока читается новый файл.
  */
 export function InputFile(props: InputFileProps) {
 	const {
 		value,
 		onClear,
 		onReadError,
+		onReadingChange,
 		accept,
 		allowedMime,
 		maxBytes,
 		label,
 		description,
 		placeholder = "Выберите файл",
-		disabled,
+		disabled = false,
 		size,
 		error,
 		onClearError,
@@ -100,6 +105,33 @@ export function InputFile(props: InputFileProps) {
 
 	/** Реф на скрытый нативный input[type="file"] */
 	const inputRef = useRef<HTMLInputElement>(null);
+	const readMode = props.readMode ?? "data-url";
+	const activeRead = useRef<AbortController | null>(null);
+	const isReading = useRef(false);
+	const readingCallback = useRef(onReadingChange);
+	useLayoutEffect(() => {
+		// Обычный rerender формы не отменяет чтение и не удерживает устаревший callback.
+		readingCallback.current = onReadingChange;
+	}, [onReadingChange]);
+	const updateReading = useCallback((next: boolean) => {
+		if (isReading.current === next) return;
+		isReading.current = next;
+		readingCallback.current?.(next);
+	}, []);
+	const invalidatePendingRead = useCallback(() => {
+		// Сначала отзываем право на callback, затем отменяем public readFile. Даже
+		// уже завершившийся Promise не сможет восстановить очищенное или закрытое поле.
+		const previousRead = activeRead.current;
+		activeRead.current = null;
+		previousRead?.abort();
+		updateReading(false);
+	}, [updateReading]);
+	useLayoutEffect(() => {
+		if (disabled) invalidatePendingRead();
+		// Commit блокировки/смены режима и unmount отзывают прежнее чтение до того,
+		// как его microtask сможет вызвать consumer. Повторный mount получает новый ref.
+		return invalidatePendingRead;
+	}, [disabled, invalidatePendingRead, readMode]);
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
 		hasLabel: label !== undefined && label !== null,
 		hasDescription: !!description,
@@ -113,37 +145,59 @@ export function InputFile(props: InputFileProps) {
 	 */
 	const handleChange = useCallback(
 		async (e: React.ChangeEvent<HTMLInputElement>) => {
-			const file = e.target.files?.[0];
+			if (disabled || e.currentTarget.disabled) return;
+			const file = e.currentTarget.files?.[0];
 			if (!file) return;
 
 			// Сбрасываем значение input чтобы можно было выбрать тот же файл повторно
-			e.target.value = "";
+			e.currentTarget.value = "";
+			const previousRead = activeRead.current;
+			const currentRead = new AbortController();
+			activeRead.current = currentRead;
+			previousRead?.abort();
+			// A → B не публикует промежуточный false: отправка старого value остаётся
+			// заблокированной до завершения именно B. Чтение bytes остаётся у foundation-lib.
+			updateReading(true);
 
 			// Сбрасываем ошибку при повторном выборе
 			if (error && onClearError) onClearError();
 
 			try {
 				if (props.readMode === "array-buffer") {
-					const result = await readFile(file, { allowedMime, maxBytes, mode: "array-buffer" });
+					const result = await readFile(file, { allowedMime, maxBytes, mode: "array-buffer", signal: currentRead.signal });
+					if (activeRead.current !== currentRead || currentRead.signal.aborted) return;
 					props.onChange(result);
 					return;
 				}
 
-				const result = await readFile(file, { allowedMime, maxBytes });
+				const result = await readFile(file, { allowedMime, maxBytes, signal: currentRead.signal });
+				if (activeRead.current !== currentRead || currentRead.signal.aborted) return;
 				props.onChange(result);
 			} catch (err) {
+				if (activeRead.current !== currentRead || currentRead.signal.aborted) return;
 				if (err instanceof ReadFileError && onReadError) {
 					onReadError(err);
 				}
+			} finally {
+				if (activeRead.current === currentRead) {
+					activeRead.current = null;
+					updateReading(false);
+				}
 			}
 		},
-		[props, allowedMime, maxBytes, onReadError, error, onClearError]
+		[props, allowedMime, maxBytes, onReadError, error, onClearError, disabled, updateReading]
 	);
+	const handleClear = useCallback(() => {
+		if (disabled) return;
+		invalidatePendingRead();
+		onClear?.();
+	}, [disabled, invalidatePendingRead, onClear]);
 
 	/** Клик по видимому контролу открывает нативный диалог */
 	const handleClick = useCallback(() => {
+		if (disabled) return;
 		inputRef.current?.click();
-	}, []);
+	}, [disabled]);
 
 	return (
 		<InputUI
@@ -169,7 +223,7 @@ export function InputFile(props: InputFileProps) {
 			/>
 
 			<InputControl
-				endAdornment={onClear ? <InputClearButton onClick={onClear} disabled={disabled} /> : undefined}
+				endAdornment={onClear ? <InputClearButton onClick={handleClear} disabled={disabled} /> : undefined}
 				endAdornmentWidth={onClear ? "var(--control-height)" : undefined}>
 				{({ controlClassName }) => (
 					<div

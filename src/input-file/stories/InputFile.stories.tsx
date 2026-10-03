@@ -55,15 +55,20 @@ const meta = {
 			control: false
 		},
 		onChange: {
-			description: "Вызывается после успешного чтения файла.",
+			description: "Вызывается после успешного чтения последнего выбора; запоздалый результат прежнего выбора игнорируется.",
 			control: false
 		},
 		onReadError: {
-			description: "Вызывается при ошибке чтения или валидации файла.",
+			description: "Ошибка чтения или валидации актуального выбора; отменённые и прежние чтения не публикуют ошибку.",
+			control: false
+		},
+		onReadingChange: {
+			description:
+				"true до начала чтения; false после его завершения, очистки, блокировки или unmount. Новый выбор не снимает reading прежним finally.",
 			control: false
 		},
 		onClear: {
-			description: "Очищает выбранный файл и показывает кнопку очистки.",
+			description: "Показывает кнопку очистки; перед callback текущее чтение отменяется и reading завершается.",
 			control: false
 		},
 		accept: {
@@ -92,7 +97,7 @@ const meta = {
 			control: false
 		},
 		disabled: {
-			description: "Блокирует выбор файла.",
+			description: "Блокирует выбор файла и отменяет его незавершённое чтение.",
 			control: "boolean"
 		},
 		size: {

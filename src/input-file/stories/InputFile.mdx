@@ -25,12 +25,19 @@ InputFile уже имеет живые stories, а эта страница со�
 ```tsx
 import { useState } from "react";
 
-import { InputFile } from "@ryuzaki13/react-foundation-ui";
+import { InputFile } from "@ryuzaki13/react-foundation-ui/input-file";
+import type { ReadFileAsDataUrlResult } from "@ryuzaki13/react-foundation-lib/file";
 
 export function Example() {
-	const [value, setValue] = useState(null);
+	const [value, setValue] = useState<ReadFileAsDataUrlResult>();
+	const [isReading, setReading] = useState(false);
 
-	return <InputFile label="Файл" value={value} onChange={setValue} />;
+	return (
+		<>
+			<InputFile label="Файл" value={value} onChange={setValue} onReadingChange={setReading} onClear={() => setValue(undefined)} />
+			<button disabled={isReading || !value}>Отправить</button>
+		</>
+	);
 }
 ```
 
@@ -38,6 +45,11 @@ export function Example() {
 
 - Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
 - При редактировании сущностей проверьте сценарий инициализации компонента уже существующими данными.
+- `onReadingChange(true)` вызывается синхронно до начала чтения нового выбора. Пока он читается, `value` может содержать прежний файл: блокируйте отправку через этот callback.
+- Новый выбор отменяет предыдущий через публичный `readFile` и его `AbortSignal`. Только последний выбор вызывает `onChange` или `onReadError`; запоздалые результаты и ошибки игнорируются.
+- Последовательный выбор A → B оставляет reading в `true` до завершения B. Очистка, `disabled`, смена `readMode` и unmount завершают актуальное чтение с `false`; старый `finally` не снимает reading нового выбора.
+- Обычный rerender не отменяет чтение. Уведомление reading использует актуальный callback; его отсутствие сохраняет прежний API выбора файла.
+- Не связывайте `disabled` самого поля с его reading: блокировка отменяет чтение. Используйте reading для запрета отправки, сохраняя возможность выбрать другой файл.
 
 ## Сценарии использования
 
