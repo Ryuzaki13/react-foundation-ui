@@ -7,10 +7,11 @@ type ListTestContentProps = Readonly<{
 	resetKey?: string | number | null;
 	preserveScrollAnchor?: boolean;
 	isLoading?: boolean;
+	onVisibleKeysChange?: (keys: readonly string[]) => void;
 }>;
 
 /** Общая композиция fixture, а не замена движка: renderer оставляет устойчивые identity-метки строк. */
-export function ListTestContent({ items, resetKey, preserveScrollAnchor, isLoading }: ListTestContentProps) {
+export function ListTestContent({ items, resetKey, preserveScrollAnchor, isLoading, onVisibleKeysChange }: ListTestContentProps) {
 	return (
 		<List.VirtualizedContent
 			items={items}
@@ -20,6 +21,7 @@ export function ListTestContent({ items, resetKey, preserveScrollAnchor, isLoadi
 			resetKey={resetKey}
 			preserveScrollAnchor={preserveScrollAnchor}
 			isLoading={isLoading}
+			onVisibleKeysChange={onVisibleKeysChange}
 			emptyContent={<span data-list-test-empty />}
 		/>
 	);

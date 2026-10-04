@@ -10,6 +10,7 @@ import {
 import { captureListScrollAnchor } from "../lib/captureListScrollAnchor";
 import { type ListScrollAnchor } from "../lib/listScrollAnchorTypes";
 import { resolveListScrollAnchor } from "../lib/resolveListScrollAnchor";
+import { selectListVisibleKeys } from "../lib/selectListVisibleKeys";
 
 import { type ListVirtualizerDriver, type ListVirtualizerOptions, type ListVirtualizerSnapshot } from "./listVirtualizerTypes";
 
@@ -27,6 +28,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 	let committedKeys = initialOptions.items.map(initialOptions.getKey);
 	let scrollElement: HTMLDivElement | null = null;
 	let mounted = false;
+	let mountRevision = 0;
 	let committing = false;
 	let pendingAnchor: ListScrollAnchor | null = null;
 	let receiveScrollOffset: ((offset: number, isScrolling: boolean) => void) | null = null;
@@ -39,6 +41,8 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 		totalSize: (initialOptions.items.length + Number(initialOptions.hasNextPage ?? false)) * (initialOptions.estimateSize ?? 120)
 	});
 	let snapshot = serverSnapshot;
+	let visibleKeys: readonly string[] | null = null;
+	let visibleCallback: ListVirtualizerOptions<T>["onVisibleKeysChange"];
 	const getScrollElement = () => scrollElement;
 	const estimateSize = () => committedOptions.estimateSize ?? 120;
 	const observeScrollOffset: VirtualizerOptions<HTMLDivElement, HTMLElement>["observeElementOffset"] = (core, callback) => {
@@ -50,8 +54,39 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 		};
 	};
 
+	/** Baseline устанавливается до callback: reentrant commit не повторяет тот же набор и не получает старую геометрию. */
+	function publishVisibleKeys(virtualItems: ListVirtualizerSnapshot["virtualItems"]): void {
+		const callback = committedOptions.onVisibleKeysChange;
+		if (callback === undefined) {
+			const previous = visibleCallback;
+			const hadVisibleKeys = (visibleKeys?.length ?? 0) > 0;
+			visibleCallback = undefined;
+			visibleKeys = null;
+			if (previous && hadVisibleKeys) previous(Object.freeze([]));
+			return;
+		}
+		if (visibleCallback && visibleCallback !== callback) {
+			const revision = mountRevision;
+			const previous = visibleCallback;
+			const hadVisibleKeys = (visibleKeys?.length ?? 0) > 0;
+			visibleCallback = undefined;
+			visibleKeys = null;
+			if (hadVisibleKeys) previous(Object.freeze([]));
+			if (!mounted || revision !== mountRevision || committedOptions.onVisibleKeysChange !== callback) return;
+			// Освобождение прежнего consumer допускает reentrant commit; используем уже текущий core.
+			virtualItems = instance.getVirtualItems();
+		}
+		const next = selectListVisibleKeys(virtualItems, instance.scrollOffset ?? 0, instance.scrollRect?.height ?? 0);
+		if (callback === visibleCallback && visibleKeys?.length === next.length && visibleKeys.every((key, index) => key === next[index]))
+			return;
+		visibleCallback = callback;
+		visibleKeys = next;
+		callback(next);
+	}
+
 	function publishSnapshot(): void {
 		if (!mounted || committing) return;
+		const revision = mountRevision;
 		const virtualItems = instance.getVirtualItems();
 		const totalSize = instance.getTotalSize();
 		const sameGeometry =
@@ -69,12 +104,16 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 					previous.lane === current.lane
 				);
 			});
-		if (sameGeometry) return;
-
-		snapshot = Object.freeze({
-			virtualItems: Object.freeze(virtualItems.map((item) => Object.freeze({ ...item }))),
-			totalSize
-		});
+		if (!sameGeometry) {
+			snapshot = Object.freeze({
+				virtualItems: Object.freeze(virtualItems.map((item) => Object.freeze({ ...item }))),
+				totalSize
+			});
+		}
+		// Scroll/resize может сменить пересечение строк, не меняя overscan-геометрию.
+		// Поэтому range уведомляется даже при прежнем cached React snapshot.
+		publishVisibleKeys(virtualItems);
+		if (!mounted || revision !== mountRevision || sameGeometry) return;
 		for (const listener of listeners) listener();
 	}
 
@@ -135,10 +174,19 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 		},
 		mount: () => {
 			mounted = true;
+			const revision = ++mountRevision;
 			const cleanup = instance._didMount();
 			return () => {
+				if (!mounted || revision !== mountRevision) return;
 				mounted = false;
+				mountRevision += 1;
+				const callback = visibleCallback;
+				const hadVisibleKeys = (visibleKeys?.length ?? 0) > 0;
+				visibleCallback = undefined;
+				visibleKeys = null;
 				cleanup();
+				// Consumer освобождает interests после закрытия observers; повторный cleanup ничего не публикует.
+				if (callback && hadVisibleKeys) callback(Object.freeze([]));
 			};
 		},
 		commit: (options) => {

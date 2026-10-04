@@ -1,11 +1,12 @@
 // @vitest-environment node
 import { renderToStaticMarkup } from "react-dom/server";
-import { describe, expect, it } from "vitest";
+import { describe, expect, it, vi } from "vitest";
 
 import { List } from "./index";
 
 describe("List: SSR-safe published compound contract", () => {
 	it("сохраняет Toolbar/Content/Footer/VirtualizedContent и SSR region/list без browser API", () => {
+		const onVisibleKeysChange = vi.fn();
 		const html = renderToStaticMarkup(
 			<List>
 				<List.Toolbar>
@@ -16,6 +17,7 @@ describe("List: SSR-safe published compound contract", () => {
 					getKey={(item) => item.id}
 					render={(item) => <span data-list-test-item={item.id} />}
 					aria-label="server-source"
+					onVisibleKeysChange={onVisibleKeysChange}
 				/>
 				<List.Footer>
 					<span data-list-footer />
@@ -28,5 +30,6 @@ describe("List: SSR-safe published compound contract", () => {
 		expect(html).toContain('data-list-action="filter"');
 		expect(html).toContain("data-list-footer");
 		expect(typeof List.Content).toBe("function");
+		expect(onVisibleKeysChange).not.toHaveBeenCalled();
 	});
 });

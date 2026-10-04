@@ -6,6 +6,7 @@ import { vi } from "vitest";
  */
 export function installListTestEnvironment() {
 	const rowHeights = new Map<string, number>();
+	let viewportHeight = 240;
 	const observers = new Map<ResizeObserver, Readonly<{ callback: ResizeObserverCallback; targets: Set<Element> }>>();
 	const originalRect = HTMLElement.prototype.getBoundingClientRect;
 	const originalScrollTo = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollTo");
@@ -27,7 +28,7 @@ export function installListTestEnvironment() {
 
 	vi.stubGlobal("ResizeObserver", ListResizeObserver);
 	vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
-		if (this.getAttribute("role") === "region") return new DOMRect(0, 0, 400, 240);
+		if (this.getAttribute("role") === "region") return new DOMRect(0, 0, 400, viewportHeight);
 		const item = this.querySelector<HTMLElement>("[data-list-test-item]");
 		const key = item?.dataset.listTestItem;
 		if (this.tagName === "LI" && key !== undefined) {
@@ -42,7 +43,7 @@ export function installListTestEnvironment() {
 		return this.getBoundingClientRect().width;
 	});
 	vi.spyOn(HTMLElement.prototype, "clientHeight", "get").mockImplementation(function (this: HTMLElement) {
-		return this.getAttribute("role") === "region" ? 240 : 0;
+		return this.getAttribute("role") === "region" ? viewportHeight : 0;
 	});
 	vi.spyOn(HTMLElement.prototype, "clientWidth", "get").mockImplementation(function (this: HTMLElement) {
 		return this.getAttribute("role") === "region" ? 400 : 0;
@@ -58,6 +59,9 @@ export function installListTestEnvironment() {
 	return {
 		setRowHeight(key: string, height: number) {
 			rowHeights.set(key, height);
+		},
+		setViewportHeight(height: number) {
+			viewportHeight = height;
 		},
 		activeObservedTargets() {
 			return [...observers.values()].reduce((count, observer) => count + observer.targets.size, 0);

@@ -38,13 +38,14 @@ export function InteractiveVirtualizedListExample() {
 				</List.Toolbar>
 				<List.VirtualizedContent
 					items={example.items}
-					getKey={(item) => item.id}
+					getKey={example.getKey}
 					render={(item) => (
 						<VirtualizedListDemoRow item={item} selected={item.id === example.selectedId} onSelect={example.setSelectedId} />
 					)}
 					estimateSize={220}
 					overscan={5}
 					resetKey={example.resetKey}
+					onVisibleKeysChange={example.onVisibleKeysChange}
 					emptyContent={<Text as="p">Поиск не нашёл элементов в локальном наборе.</Text>}
 					aria-label="Большой локальный список"
 					separated
@@ -52,6 +53,9 @@ export function InteractiveVirtualizedListExample() {
 				<List.Footer>
 					<Text size="sm">
 						Доступно {example.items.length} из {example.sourceCount}; выбран {example.selectedId ?? "ни один"}.
+					</Text>
+					<Text size="sm" data-list-demo-visible-keys={example.visibleKeys.join(",")}>
+						В viewport: {example.visibleKeys.length}; {example.visibleKeys.join(", ") || "нет видимых записей"}.
 					</Text>
 				</List.Footer>
 			</List>

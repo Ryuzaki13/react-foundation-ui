@@ -6,9 +6,8 @@ import { LoadingMessage, Scrollable } from "../misc";
 
 import { ListPaginationEffect } from "./ListPaginationEffect";
 import styles from "./ListVirtualizedContent.module.scss";
+import { type ListVirtualizedContentProps } from "./listVirtualizedContentTypes";
 import { useListVirtualizer } from "./model/useListVirtualizer";
-
-import type { ListVirtualizedContentProps } from "./listVirtualizedContentTypes";
 
 /** Отображает DOM-окно полного или постраничного набора, не управляя данными потребителя. */
 export function ListVirtualizedContent<T>({
@@ -24,6 +23,7 @@ export function ListVirtualizedContent<T>({
 	overscan = 5,
 	preserveScrollAnchor = true,
 	resetKey,
+	onVisibleKeysChange,
 	emptyContent,
 	"aria-label": ariaLabel = "Список"
 }: ListVirtualizedContentProps<T>) {
@@ -37,7 +37,8 @@ export function ListVirtualizedContent<T>({
 		estimateSize,
 		overscan,
 		preserveScrollAnchor,
-		resetKey
+		resetKey,
+		onVisibleKeysChange
 	});
 
 	return (

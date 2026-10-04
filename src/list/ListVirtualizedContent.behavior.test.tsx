@@ -1,6 +1,9 @@
-import { act, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { StrictMode } from "react";
 
+import { act, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+
+import { type ListVirtualizedContentProps } from "./listVirtualizedContentTypes";
 import { createListTestItems } from "./test-fixtures/createListTestItems";
 import { installListTestEnvironment } from "./test-fixtures/installListTestEnvironment";
 import { ListStatefulTestRow } from "./test-fixtures/ListStatefulTestRow";
@@ -134,5 +137,37 @@ describe("List.VirtualizedContent: stable-key scroll anchor", () => {
 		expect(viewport.querySelector("[data-list-test-empty]")).not.toBeNull();
 		mounted.rerender(<ListTestContent items={items} resetKey="next-dataset" />);
 		expect(viewport.querySelector('[data-list-test-item="item-0"]')).not.toBeNull();
+	});
+
+	it("public callback сообщает реальное окно, replacement и cleanup через фактический driver", () => {
+		const first = vi.fn<NonNullable<ListVirtualizedContentProps<string>["onVisibleKeysChange"]>>();
+		const second = vi.fn<NonNullable<ListVirtualizedContentProps<string>["onVisibleKeysChange"]>>();
+		const items = createListTestItems(40);
+		const mounted = render(<ListTestContent items={items} onVisibleKeysChange={first} />);
+		expect(first).toHaveBeenLastCalledWith(["item-0", "item-1"]);
+		const viewport = screen.getByRole("region");
+		fireEvent.scroll(viewport, { target: { scrollTop: 1237 } });
+		expect(first).toHaveBeenLastCalledWith(["item-10", "item-11", "item-12"]);
+		mounted.rerender(<ListTestContent items={items} onVisibleKeysChange={second} />);
+		expect(first).toHaveBeenLastCalledWith([]);
+		expect(second).toHaveBeenLastCalledWith(["item-10", "item-11", "item-12"]);
+		expect(Object.isFrozen(second.mock.lastCall?.[0])).toBe(true);
+		second.mockClear();
+		mounted.rerender(<ListTestContent items={items} onVisibleKeysChange={second} />);
+		expect(second).not.toHaveBeenCalled();
+		mounted.unmount();
+		expect(second).toHaveBeenCalledExactlyOnceWith([]);
+	});
+
+	it("StrictMode симметрично освобождает и восстанавливает visible interest после commit", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizedContentProps<string>["onVisibleKeysChange"]>>();
+		const mounted = render(
+			<StrictMode>
+				<ListTestContent items={createListTestItems(40)} onVisibleKeysChange={onVisibleKeysChange} />
+			</StrictMode>
+		);
+		expect(onVisibleKeysChange.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], [], ["item-0", "item-1"]]);
+		mounted.unmount();
+		expect(onVisibleKeysChange.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], [], ["item-0", "item-1"], []]);
 	});
 });

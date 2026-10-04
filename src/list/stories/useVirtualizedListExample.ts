@@ -1,7 +1,7 @@
 import { useCallback, useMemo, useState } from "react";
 
 import { createListDemoItems } from "./createListDemoItems";
-import { type ListDemoSource } from "./listDemoTypes";
+import { type ListDemoItem, type ListDemoSource } from "./listDemoTypes";
 
 /** Локальный сценарий демонстрации: источник загружен один раз, поиск явно задаёт identity нового набора. */
 export function useVirtualizedListExample() {
@@ -9,6 +9,9 @@ export function useVirtualizedListExample() {
 	const [search, setSearch] = useState("");
 	const [selectedId, setSelectedId] = useState<string | null>(null);
 	const [resetRevision, setResetRevision] = useState(0);
+	const [visibleKeys, setVisibleKeys] = useState<readonly string[]>([]);
+	// Видимость меняет только footer: стабильный extractor не пересчитывает ключи полного источника при scroll.
+	const getKey = useCallback((item: ListDemoItem) => item.id, []);
 	const items = useMemo(() => {
 		const query = search.trim().toLocaleLowerCase("ru");
 		return query === "" ? source.items : source.items.filter((item) => item.label.toLocaleLowerCase("ru").includes(query));
@@ -41,11 +44,14 @@ export function useVirtualizedListExample() {
 	const resetPosition = useCallback(() => setResetRevision((revision) => revision + 1), []);
 	return {
 		items,
+		getKey,
 		sourceCount: source.items.length,
 		search,
 		setSearch,
 		resetKey: `${search}:${resetRevision}`,
 		resetPosition,
+		visibleKeys,
+		onVisibleKeysChange: setVisibleKeys,
 		selectedId,
 		setSelectedId,
 		prepend,

@@ -223,4 +223,154 @@ describe("createListVirtualizerDriver", () => {
 		environment.flushResizeObservers();
 		expect(listener).not.toHaveBeenCalled();
 	});
+
+	it("SSR/factory не вызывают visible callback и не читают DOM", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const readGeometry = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect");
+		readGeometry.mockClear();
+		const driver = createListVirtualizerDriver({ items, getKey: (item) => item, onVisibleKeysChange });
+		driver.getSnapshot();
+		driver.getServerSnapshot();
+		expect(onVisibleKeysChange).not.toHaveBeenCalled();
+		expect(readGeometry).not.toHaveBeenCalled();
+	});
+
+	it("visible keys не включают overscan и меняются при прежней cached геометрии без новых DOM reads", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const { driver, viewport } = createDriverHost(items, { onVisibleKeysChange });
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1"]);
+		expect(driver.getSnapshot().virtualItems.length).toBeGreaterThan(2);
+		viewport.scrollTop = 1;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1", "item-2"]);
+		const snapshot = driver.getSnapshot();
+		const listener = vi.fn();
+		driver.subscribe(listener);
+		const readGeometry = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect");
+		readGeometry.mockClear();
+		onVisibleKeysChange.mockClear();
+		viewport.scrollTop = 120;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenCalledExactlyOnceWith(["item-1", "item-2"]);
+		expect(driver.getSnapshot()).toBe(snapshot);
+		expect(listener).not.toHaveBeenCalled();
+		expect(readGeometry).not.toHaveBeenCalled();
+	});
+
+	it("дедуплицирует одинаковые keys при scroll/commit и передаёт immutable массив", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const { viewport, commit } = createDriverHost(items, { onVisibleKeysChange });
+		const keys = onVisibleKeysChange.mock.lastCall?.[0];
+		expect(Object.isFrozen(keys)).toBe(true);
+		onVisibleKeysChange.mockClear();
+		commit(items);
+		viewport.dispatchEvent(new Event("scroll"));
+		environment.flushResizeObservers();
+		expect(onVisibleKeysChange).not.toHaveBeenCalled();
+	});
+
+	it("resize/измерение обновляют пересечение, а скрытие viewport публикует пустой диапазон", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		createDriverHost(items, { onVisibleKeysChange });
+		environment.setViewportHeight(360);
+		environment.flushResizeObservers();
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1", "item-2"]);
+		environment.setRowHeight("item-0", 240);
+		environment.flushResizeObservers();
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1"]);
+		environment.setViewportHeight(0);
+		environment.flushResizeObservers();
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
+		environment.setViewportHeight(240);
+		environment.flushResizeObservers();
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0"]);
+	});
+
+	it("замена/удаление callback закрывают старый consumer и новый получает current range", () => {
+		const first = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const second = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const { commit, cleanup } = createDriverHost(items, { onVisibleKeysChange: first });
+		commit(items, { onVisibleKeysChange: second });
+		expect(first.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], []]);
+		expect(second).toHaveBeenCalledExactlyOnceWith(["item-0", "item-1"]);
+		commit(items, { onVisibleKeysChange: second });
+		expect(second).toHaveBeenCalledTimes(1);
+		commit(items, { onVisibleKeysChange: undefined });
+		expect(second.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], []]);
+		cleanup();
+		expect(second).toHaveBeenCalledTimes(2);
+	});
+
+	it("cleanup закрывает range ровно один раз и старый cleanup не закрывает remount", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const { driver, getKey, cleanup } = createDriverHost(items, { onVisibleKeysChange });
+		cleanup();
+		cleanup();
+		expect(onVisibleKeysChange.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], []]);
+		const remountCleanup = driver.mount();
+		cleanupCallbacks.add(remountCleanup);
+		driver.commit({ items, getKey, onVisibleKeysChange });
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1"]);
+		onVisibleKeysChange.mockClear();
+		cleanup();
+		expect(onVisibleKeysChange).not.toHaveBeenCalled();
+		expect(environment.activeObservedTargets()).toBeGreaterThan(0);
+	});
+
+	it("reentrant commit из callback не повторяет текущую последовательность", () => {
+		const { driver, getKey } = createDriverHost(items);
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
+			if (keys.length > 0) driver.commit({ items, getKey, onVisibleKeysChange });
+		});
+		driver.commit({ items, getKey, onVisibleKeysChange });
+		expect(onVisibleKeysChange).toHaveBeenCalledExactlyOnceWith(["item-0", "item-1"]);
+	});
+
+	it("reentrant replacement при освобождении старого consumer не публикует уже отменённый callback", () => {
+		const { driver, getKey } = createDriverHost(items);
+		const replacement = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const superseded = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const first = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
+			if (keys.length === 0) driver.commit({ items, getKey, onVisibleKeysChange: replacement });
+		});
+		driver.commit({ items, getKey, onVisibleKeysChange: first });
+		driver.commit({ items, getKey, onVisibleKeysChange: superseded });
+		expect(first.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], []]);
+		expect(superseded).not.toHaveBeenCalled();
+		expect(replacement).toHaveBeenCalledExactlyOnceWith(["item-0", "item-1"]);
+	});
+
+	it("cleanup из visible callback закрывает интерес до любых последующих событий core", () => {
+		const { driver, viewport, getKey, cleanup } = createDriverHost(items);
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
+			if (keys.length > 0) cleanup();
+		});
+		driver.commit({ items, getKey, onVisibleKeysChange });
+		expect(onVisibleKeysChange.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], []]);
+		viewport.scrollTop = 120;
+		viewport.dispatchEvent(new Event("scroll"));
+		environment.flushResizeObservers();
+		expect(onVisibleKeysChange).toHaveBeenCalledTimes(2);
+		expect(environment.activeObservedTargets()).toBe(0);
+	});
+
+	it("empty, sentinel-only и reset/prepend не передают чужие или технические ключи", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const { viewport, commit } = createDriverHost(["-1"], { hasNextPage: true, onVisibleKeysChange });
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["-1"]);
+		viewport.scrollTop = 120;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
+		commit([], { hasNextPage: false });
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
+		commit(items, { hasNextPage: false, resetKey: "initial" });
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-10", "item-11", "item-12"]);
+		onVisibleKeysChange.mockClear();
+		commit(["new", ...items], { hasNextPage: false, resetKey: "initial" });
+		expect(onVisibleKeysChange).not.toHaveBeenCalled();
+		commit(["new", ...items], { hasNextPage: false, resetKey: "reset" });
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["new", "item-0"]);
+	});
 });
