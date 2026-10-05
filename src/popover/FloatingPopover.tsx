@@ -82,6 +82,9 @@ export function FloatingPopover({
 
 	const hover = useHover(context, {
 		enabled: openOnHover,
+		// Touch не имеет устойчивого hover: совместимые mouse-события после tap
+		// не должны оставлять подсказку над открытым диалогом.
+		mouseOnly: tooltip === true,
 		move: false,
 		delay: {
 			open: openDelay,
@@ -92,7 +95,9 @@ export function FloatingPopover({
 	// Связываем focus с тем же флагом, чтобы `openOnHover={false}` не менял
 	// управляемые сценарии, которые не запрашивали автоматическое открытие.
 	const focus = useFocus(context, { enabled: openOnHover });
-	const dismiss = useDismiss(context);
+	// Штатный reference-press закрывает подсказку и отменяет отложенное hover-открытие,
+	// сохраняя событие активации children и открытие с клавиатурного фокуса.
+	const dismiss = useDismiss(context, { referencePress: tooltip === true });
 	const role = useRole(context, { role: "tooltip" });
 
 	const { getReferenceProps, getFloatingProps } = useInteractions([hover, focus, dismiss, role]);
