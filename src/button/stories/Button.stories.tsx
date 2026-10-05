@@ -3,6 +3,8 @@ import { useArgs } from "storybook/preview-api";
 
 import { Button, type ButtonProps } from "../Button";
 
+import { ButtonSchemeGrid } from "./ButtonSchemeGrid";
+
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
@@ -10,7 +12,8 @@ const meta = {
 	component: Button,
 	args: {
 		children: "Действие",
-		variant: "neutralOutline",
+		tone: "neutral",
+		appearance: "outline",
 		disabled: false,
 		iconEnd: false
 	},
@@ -23,35 +26,14 @@ const meta = {
 			description: "Текстовое содержимое кнопки.",
 			control: "text"
 		},
-		variant: {
-			description: "Готовая схема для обратной совместимости. Если заданы `tone` или `appearance`, они имеют приоритет.",
-			control: "select",
-			options: [
-				"neutral",
-				"neutralOutline",
-				"ghost",
-				"accent",
-				"accentOutline",
-				"brand",
-				"error",
-				"warning",
-				"success",
-				"info",
-				"brandOutline",
-				"errorOutline",
-				"warningOutline",
-				"successOutline",
-				"infoOutline",
-				"transparent"
-			]
-		},
 		tone: {
-			description: "Цветовой тон кнопки.",
+			description:
+				"Цветовой тон для solid и outline. Если задан только tone, используется outline; ghost и transparent всегда нейтральные.",
 			control: "inline-radio",
 			options: ["neutral", "accent", "brand", "error", "warning", "success", "info"]
 		},
 		appearance: {
-			description: "Визуальная форма кнопки.",
+			description: "Визуальная форма кнопки. Без tone и appearance используется нейтральная схема без отдельной формы.",
 			control: "inline-radio",
 			options: ["solid", "outline", "ghost", "transparent"]
 		},
@@ -78,41 +60,6 @@ const meta = {
 export default meta;
 type Story = StoryObj<ButtonProps>;
 
-const variantExamples = [
-	["neutral", "Neutral Solid"],
-	["neutralOutline", "Neutral Outline"],
-	["ghost", "Ghost"],
-	["accent", "Accent Solid"],
-	["accentOutline", "Accent Outline"],
-	["brand", "Brand Solid"],
-	["brandOutline", "Brand Outline"],
-	["info", "Info Solid"],
-	["success", "Success Solid"],
-	["warning", "Warning Solid"],
-	["error", "Error Solid"],
-	["infoOutline", "Info Outline"],
-	["successOutline", "Success Outline"],
-	["warningOutline", "Warning Outline"],
-	["errorOutline", "Error Outline"],
-	["transparent", "Transparent"]
-] as const satisfies ReadonlyArray<readonly [NonNullable<ButtonProps["variant"]>, string]>;
-
-/**
- * Один набор данных гарантирует, что в Storybook обычные и disabled-кнопки
- * всегда содержат одинаковый полный набор готовых вариантов.
- */
-function ButtonVariantGrid({ disabled = false }: { disabled?: boolean }) {
-	return (
-		<div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-			{variantExamples.map(([variant, label]) => (
-				<Button key={variant} variant={variant} disabled={disabled}>
-					{label}
-				</Button>
-			))}
-		</div>
-	);
-}
-
 export const Basic: Story = {
 	render: function Render() {
 		const [args] = useArgs<ButtonProps>();
@@ -134,12 +81,12 @@ export const Variants: Story = {
 		<div style={{ display: "grid", gap: 24 }}>
 			<section style={{ display: "grid", gap: 12 }}>
 				<h3 style={{ margin: 0 }}>Обычное состояние</h3>
-				<ButtonVariantGrid />
+				<ButtonSchemeGrid />
 			</section>
 
 			<section style={{ display: "grid", gap: 12 }}>
 				<h3 style={{ margin: 0 }}>Отключённое состояние</h3>
-				<ButtonVariantGrid disabled />
+				<ButtonSchemeGrid disabled />
 			</section>
 		</div>
 	),
@@ -152,43 +99,43 @@ export const ComposableScheme: Story = {
 	render: () => (
 		<div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
 			<Button tone="neutral" appearance="solid">
-				Neutral Solid
+				Нейтральная с заливкой
 			</Button>
 			<Button tone="neutral" appearance="outline">
-				Neutral Outline
+				Нейтральная с контуром
 			</Button>
 			<Button tone="neutral" appearance="ghost">
-				Neutral Ghost
+				Нейтральная ghost
 			</Button>
 			<Button tone="accent" appearance="solid">
-				Accent Solid
+				Акцентная с заливкой
 			</Button>
 			<Button tone="accent" appearance="outline">
-				Accent Outline
+				Акцентная с контуром
 			</Button>
 			<Button tone="accent" appearance="ghost">
-				Accent Ghost
+				Ghost остаётся нейтральной
 			</Button>
 			<Button tone="brand" appearance="solid">
-				Brand Solid
+				Brand с заливкой
 			</Button>
 			<Button tone="brand" appearance="outline">
-				Brand Outline
+				Brand с контуром
 			</Button>
 			<Button tone="brand" appearance="ghost">
-				Brand Ghost
+				Ghost остаётся нейтральной
 			</Button>
 			<Button tone="brand" appearance="transparent">
-				Brand Transparent
+				Transparent нейтральная
 			</Button>
 			<Button tone="info" appearance="outline">
-				Info Outline
+				Информация с контуром
 			</Button>
 			<Button tone="success" appearance="solid">
-				Success Solid
+				Успех с заливкой
 			</Button>
 			<Button tone="error" appearance="transparent">
-				Error Transparent
+				Transparent нейтральная
 			</Button>
 		</div>
 	)

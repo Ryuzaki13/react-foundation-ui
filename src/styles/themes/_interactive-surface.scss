@@ -1,21 +1,13 @@
 @media (any-hover: hover) {
 	.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):hover {
-		color: var(--accent-text-hover);
-		background-color: var(--accent-fill-hover);
-
-		&.interactiveSurfaceFrame {
-			border-color: var(--accent-border-hover);
-		}
+		color: var(--selection-text);
+		background-color: var(--selection-bg-hover);
 	}
 }
 
 .interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):active {
 	color: var(--accent-text-active);
 	background-color: var(--accent-fill-active);
-
-	&.interactiveSurfaceFrame {
-		border-color: var(--accent-border-active);
-	}
 }
 
 .interactiveSurface[data-selected="true"] {
@@ -23,7 +15,7 @@
 	background-color: var(--accent-fill);
 
 	&.interactiveSurfaceFrame {
-		border-color: var(--accent-border);
+		border-color: var(--selection-border);
 	}
 }
 
@@ -33,10 +25,10 @@
 	cursor: default;
 	pointer-events: none;
 
-	color: var(--content-2);
-	background-color: var(--surface-2);
+	color: var(--text-disabled);
+	background-color: var(--bg-disabled);
 
 	&.interactiveSurfaceFrame {
-		border-color: var(--overlay-backdrop);
+		border-color: transparent;
 	}
 }

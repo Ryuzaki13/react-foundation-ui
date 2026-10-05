@@ -3,6 +3,7 @@ import { type ComponentPropsWithRef, type ReactElement, useRef, useState } from 
 import { type Placement } from "@floating-ui/react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { FlexContainer } from "../../flex";
 import { Option } from "../../option";
 import { OptionContentContainer } from "../../option/OptionContentContainer";
 import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
@@ -178,14 +179,14 @@ export function LayoutPicker({
 								value={triggerLabel}
 								selectedValue={
 									selectedPreset ? (
-										<>
+										<FlexContainer as="span" gap="sm">
 											<LayoutPresetPreview preset={selectedPreset} compact />
 											{showPlaceholder ? (
 												<span className={styles.triggerText} data-ui="layout-picker-selected-label">
 													{selectedPreset.label}
 												</span>
 											) : null}
-										</>
+										</FlexContainer>
 									) : undefined
 								}
 								hasSelection={selectedPreset !== undefined}

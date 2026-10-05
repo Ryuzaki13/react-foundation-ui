@@ -1,8 +1,6 @@
 @use "sass:map";
-@use "sass:string";
 
 @use "../config" as stylesConfig;
-@use "../tone-derived" as toneDerived;
 
 @function _theme-base($mode) {
 	@if $mode == light {
@@ -16,65 +14,12 @@
 	@error "Цветовая схема темы должна иметь значение light или dark, получено: #{$mode}.";
 }
 
-/// Формирует четыре настраиваемые роли цветовой схемы.
-@function _status-palette-tokens($name, $status) {
-	@return (
-		"--#{$name}-text": map.get($status, text),
-		"--#{$name}-border": map.get($status, border),
-		"--#{$name}-fill": map.get($status, fill),
-		"--#{$name}-on-fill": map.get($status, on-fill)
-	);
-}
-
-/// Формирует базовые роли и общие границы темы.
-@function _theme-palette-tokens($theme) {
-	$tokens: ();
-
-	@each $name, $status in map.get($theme, status) {
-		$tokens: map.merge($tokens, _status-palette-tokens($name, $status));
-	}
-
-	// Базовые границы остаются общими layout-токенами, но получают цвет из neutral-схемы.
-	@return map.merge(
-		$tokens,
-		(
-			"--border-0": string.unquote("var(--hc-border-0, var(--neutral-border))"),
-			"--border-1": string.unquote("var(--hc-border-1, color-mix(in srgb, var(--neutral-border) 82%, var(--content-0)))"),
-			"--border-2": string.unquote("var(--hc-border-2, color-mix(in srgb, var(--neutral-border) 64%, var(--content-0)))"),
-			"--border-focus": string.unquote("var(--hc-border-focus, var(--focus-ring))")
-		)
-	);
-}
-
-/// Формирует переиспользуемые состояния из уже разрешённых базовых ролей.
-/// Host не настраивает эти токены через карту status: их единые формулы автоматически
-/// учитывают обычные, переопределённые и high-contrast значения базовой схемы.
-@function _theme-derived-tokens($theme) {
-	$tokens: ();
-
-	@each $name in map.keys(map.get($theme, status)) {
-		$tokens: map.merge($tokens, toneDerived.derived-tone-tokens($name, $name));
-	}
-
-	@return $tokens;
-}
-
-/// Собирает итоговую карту до вывода CSS. Карта tokens получает наивысший
-/// compile-time приоритет и заменяет совпадающие status, border и derived ключи.
-@function _theme-declarations($theme) {
-	$declarations: map.merge(_theme-palette-tokens($theme), _theme-derived-tokens($theme));
-
-	@return map.merge($declarations, stylesConfig.theme-tokens($theme));
-}
-
-/// Формирует полную тему из baseline выбранной схемы и точечных переопределений.
-/// Карта `status` содержит `accent`, `brand`, `neutral`, `error`, `warning`,
-/// `success` и `info`; у каждой схемы ровно четыре настраиваемые роли: `text`,
-/// `border`, `fill` и `on-fill`. Производные состояния выводятся из базовых
-/// переменных. Карта `tokens` имеет наивысший compile-time приоритет, после
-/// чего каждое итоговое CSS-свойство выводится ровно один раз.
+/// Выводит явную палитру выбранного режима в selector, которым владеет host.
+/// Приоритет: defaults режима < config overrides < overrides этого вызова.
+/// Все роли, включая hover/pressed, передаются в `tokens` независимо: mixin
+/// не рассчитывает цвета и выводит каждое итоговое свойство ровно один раз.
 @mixin theme($mode, $overrides: ()) {
 	$resolved-theme: map.deep-merge(_theme-base($mode), $overrides);
 
-	@include stylesConfig.emit-declarations(_theme-declarations($resolved-theme));
+	@include stylesConfig.emit-declarations(stylesConfig.theme-tokens($resolved-theme));
 }

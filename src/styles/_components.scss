@@ -1,5 +1,5 @@
 .listItem {
-	background-color: var(--surface-0);
+	background-color: var(--bg-canvas);
 
 	&:hover:not(.selected) {
 		// filter: contrast(0.9);
@@ -9,6 +9,6 @@
 	&.selected {
 		cursor: default;
 		// color: var(--accent-text);
-		background-color: var(--surface-1);
+		background-color: var(--bg-surface);
 	}
 }

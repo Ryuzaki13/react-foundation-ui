@@ -29,22 +29,4 @@ export type UiTone = "accent" | "neutral" | "brand" | "error" | "warning" | "suc
 
 export type UiAppearance = "solid" | "outline" | "ghost" | "transparent";
 
-export type UiVariant =
-	| "transparent"
-	| "ghost"
-	| "neutral"
-	| "accent"
-	| "brand"
-	| "error"
-	| "warning"
-	| "success"
-	| "info"
-	| "neutralOutline"
-	| "accentOutline"
-	| "brandOutline"
-	| "errorOutline"
-	| "warningOutline"
-	| "successOutline"
-	| "infoOutline";
-
 export type UiPanelTone = "primary" | "secondary" | "tertiary";

@@ -17,7 +17,7 @@
 
 	min-width: 0;
 	z-index: var(--z-dropdown);
-	box-shadow: var(--shadow-md);
+	box-shadow: var(--shadow-popover);
 
 	.options {
 		min-width: var(--input-width);
@@ -30,7 +30,7 @@
 	max-height: var(--options-max-height, 75vh);
 
 	padding: var(--space-sm);
-	background-color: var(--surface-0);
+	background-color: var(--bg-surface);
 	border: var(--border);
 
 	&:empty {
@@ -54,7 +54,7 @@
 
 .status {
 	padding: var(--space-xs) var(--space-sm);
-	color: var(--content-2);
+	color: var(--text-muted);
 }
 
 .statusError {
@@ -108,6 +108,6 @@
 	border-radius: var(--radius-sm);
 
 	&:hover {
-		background-color: var(--surface-2);
+		background-color: var(--bg-elevated);
 	}
 }

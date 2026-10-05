@@ -169,9 +169,9 @@ function ContextMenuBasicCanvas({ args, updateArgs }: { args: ContextMenuStoryAr
 						height: 180,
 						display: "grid",
 						placeItems: "center",
-						border: "1px dashed var(--border-1)",
+						border: "1px dashed var(--border-thin)",
 						borderRadius: "var(--radius-sm)",
-						background: "var(--surface-1)",
+						background: "var(--bg-surface)",
 						padding: 16,
 						textAlign: "center"
 					}}>
@@ -214,9 +214,9 @@ function ContextMenuRadialCanvas({
 						height: 220,
 						display: "grid",
 						placeItems: "center",
-						border: "1px dashed var(--border-1)",
+						border: "1px dashed var(--border-thin)",
 						borderRadius: "var(--radius-sm)",
-						background: "var(--surface-1)",
+						background: "var(--bg-surface)",
 						padding: 16,
 						textAlign: "center"
 					}}>

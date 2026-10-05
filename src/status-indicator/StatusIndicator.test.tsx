@@ -14,7 +14,10 @@ describe("StatusIndicator", () => {
 		expect(indicator.getAttribute("aria-hidden")).toBe("true");
 		expect(indicator.getAttribute("data-ui")).toBe("status-indicator");
 		expect(indicator.getAttribute("title")).toBe("Состояние");
-		expect(indicator.classList).toContain(styles.statusIndicator, styles.neutral, styles.sizeMd, "custom-class");
+		expect(indicator.classList).toContain(styles.statusIndicator);
+		expect(indicator.classList).toContain(styles.neutral);
+		expect(indicator.classList).toContain(styles.sizeMd);
+		expect(indicator.classList).toContain("custom-class");
 		expect(indicator.classList).not.toContain(styles.animated);
 	});
 
@@ -23,7 +26,9 @@ describe("StatusIndicator", () => {
 
 		const indicator = screen.getByTestId("indicator");
 
-		expect(indicator.classList).toContain(styles.success, styles.sizeLg, styles.animated);
+		expect(indicator.classList).toContain(styles.success);
+		expect(indicator.classList).toContain(styles.sizeLg);
+		expect(indicator.classList).toContain(styles.animated);
 		expect(indicator.getAttribute("role")).toBe("img");
 		expect(indicator.getAttribute("aria-label")).toBe("Синхронизировано");
 		expect(indicator.hasAttribute("aria-hidden")).toBe(false);

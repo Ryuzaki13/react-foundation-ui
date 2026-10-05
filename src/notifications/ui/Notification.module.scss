@@ -1,5 +1,4 @@
 @use "@/styles/mixins" as *;
-@use "@/styles/tone-derived" as toneDerived;
 
 .container {
 	position: fixed;
@@ -14,8 +13,8 @@
 }
 
 .card {
-	--notify-accent: var(--border-1);
-	--notify-accent-surface: var(--surface-1);
+	--notify-accent: var(--border-thin);
+	--notify-accent-surface: var(--bg-surface);
 	--notify-accent-text: var(--accent-text);
 
 	position: relative;
@@ -26,32 +25,32 @@
 	// border: var(--border);
 	border-left: 0.3125em solid var(--notify-accent);
 	border-radius: var(--radius-md);
-	background: linear-gradient(37deg, var(--notify-accent-surface), var(--surface-0));
-	color: var(--content-0);
-	box-shadow: var(--shadow-md);
+	background: linear-gradient(37deg, var(--notify-accent-surface), var(--bg-canvas));
+	color: var(--text-primary);
+	box-shadow: var(--shadow-card);
 }
 
 .info {
 	--notify-accent: var(--info-border);
-	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "info");
+	--notify-accent-surface: var(--info-fill);
 	--notify-accent-text: var(--info-text);
 }
 
 .success {
 	--notify-accent: var(--success-border);
-	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "success");
+	--notify-accent-surface: var(--success-fill);
 	--notify-accent-text: var(--success-text);
 }
 
 .warning {
 	--notify-accent: var(--warning-border);
-	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "warning");
+	--notify-accent-surface: var(--warning-fill);
 	--notify-accent-text: var(--warning-text);
 }
 
 .error {
 	--notify-accent: var(--error-border);
-	@include toneDerived.tone-soft-declaration("--notify-accent-surface", "error");
+	--notify-accent-surface: var(--error-fill);
 	--notify-accent-text: var(--error-text);
 }
 
@@ -102,7 +101,7 @@
 
 .message {
 	margin-top: var(--space-xs);
-	color: var(--content-0);
+	color: var(--text-primary);
 	white-space: pre-wrap;
 	word-break: break-word;
 }

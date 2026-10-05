@@ -156,7 +156,7 @@ export function CalendarView({
 				<Button
 					icon={<ChevronLeft />}
 					onClick={goToPrevious}
-					variant="ghost"
+					appearance="ghost"
 					aria-label={previousLabel}
 					data-action="calendar-previous"
 				/>
@@ -166,7 +166,7 @@ export function CalendarView({
 						if (view === "day") onViewChange("month");
 						else if (view === "month") onViewChange("year");
 					}}
-					variant="ghost"
+					appearance="ghost"
 					className="flex1"
 					aria-label={
 						view === "day" ? `Выбрать месяц, сейчас ${title}` : view === "month" ? `Выбрать год, сейчас ${title}` : title
@@ -180,7 +180,7 @@ export function CalendarView({
 				<Button
 					icon={<ChevronRight />}
 					onClick={goToNext}
-					variant="ghost"
+					appearance="ghost"
 					aria-label={nextLabel}
 					data-ui="calendar-next-button"
 					data-action="calendar-next"

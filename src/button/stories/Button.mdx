@@ -20,8 +20,7 @@ import * as ButtonStories from "./Button.stories";
 Ключевые особенности компонента:
 
 - безопасный `type="button"` по умолчанию;
-- готовые схемы через `variant`;
-- составная настройка через `tone + appearance`;
+- явная настройка схемы через `tone + appearance`;
 - поддержка иконки слева и справа;
 - автоматический режим icon-only;
 - всплывающая подсказка через `title`.
@@ -31,7 +30,7 @@ import * as ButtonStories from "./Button.stories";
 <Primary />
 
 ```tsx
-import { Button } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
 
 export function Example() {
 	return <Button>Сохранить</Button>;
@@ -42,13 +41,16 @@ export function Example() {
 
 ## Как выбирать схему оформления
 
-Для большинства сценариев достаточно `variant`: это готовые, согласованные значения дизайн-системы.
+Схема задаётся двумя независимыми свойствами: `tone` выбирает цветовой тон, а `appearance` — форму оформления.
+Для основного действия можно выбрать `solid`, для действия с контуром — `outline`.
 
-Если нужна более гибкая настройка, можно передать `tone` и `appearance`. У них приоритет выше, чем у `variant`, поэтому они подходят для точной донастройки без создания нового варианта.
+Без обоих свойств кнопка использует нейтральный тон без отдельного `appearance`. Если задан только `tone`, применяется `outline`.
+Если задан только `appearance`, используется нейтральный тон.
 
-`accent` обозначает выбранное или текущее интерактивное действие, а `brand` выделяет фирменное действие. Для главного действия используйте `brand + solid` (или `variant="brand"`), а для вторичного — `brand + outline` (или `variant="brandOutline"`). Отдельные `primary` и `secondary` тоны не нужны: эту иерархию уже задаёт `appearance`.
+`ghost` и `transparent` всегда используют нейтральный тон, даже если передан другой `tone`.
+Цветовые тоны `accent`, `brand`, `error`, `warning`, `success` и `info` применяются к `solid` и `outline`.
 
-### Готовые варианты
+### Каталог схем
 
 <Canvas of={ButtonStories.Variants} />
 
@@ -56,21 +58,41 @@ export function Example() {
 `appearance`: у `solid` нет видимой рамки, а у `ghost` и `transparent` не появляется фон.
 
 ```tsx
-import { Button } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
 
 export function ActionVariants() {
 	return (
 		<>
-			<Button variant="neutral">Основное действие</Button>
-			<Button variant="neutralOutline">Вторичное действие</Button>
-			<Button variant="ghost">Легкое действие</Button>
-			<Button variant="accent">Выбранное действие</Button>
-			<Button variant="accentOutline">Акцентный контур</Button>
-			<Button variant="brand">Сохранить</Button>
-			<Button variant="brandOutline">Предпросмотр</Button>
-			<Button variant="success">Подтвердить</Button>
-			<Button variant="errorOutline">Отменить</Button>
-			<Button variant="transparent">Действие в плотном интерфейсе</Button>
+			<Button tone="neutral" appearance="solid">
+				Основное действие
+			</Button>
+			<Button tone="neutral" appearance="outline">
+				Вторичное действие
+			</Button>
+			<Button tone="neutral" appearance="ghost">
+				Лёгкое действие
+			</Button>
+			<Button tone="accent" appearance="solid">
+				Акцентное действие
+			</Button>
+			<Button tone="accent" appearance="outline">
+				Акцентный контур
+			</Button>
+			<Button tone="brand" appearance="solid">
+				Сохранить
+			</Button>
+			<Button tone="brand" appearance="outline">
+				Предпросмотр
+			</Button>
+			<Button tone="success" appearance="solid">
+				Подтвердить
+			</Button>
+			<Button tone="error" appearance="outline">
+				Отменить
+			</Button>
+			<Button tone="neutral" appearance="transparent">
+				Действие в плотном интерфейсе
+			</Button>
 		</>
 	);
 }
@@ -81,27 +103,27 @@ export function ActionVariants() {
 <Canvas of={ButtonStories.ComposableScheme} />
 
 ```tsx
-import { Button } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
 
 export function CustomScheme() {
 	return (
 		<>
 			<Button tone="neutral" appearance="solid">
-				Neutral Solid
+				Нейтральная с заливкой
 			</Button>
 			<Button tone="neutral" appearance="outline">
-				Neutral Outline
+				Нейтральная с контуром
 			</Button>
 			<Button tone="accent" appearance="solid">
-				Accent Solid
+				Акцентная с заливкой
 			</Button>
-			<Button tone="accent" appearance="ghost">
-				Accent Ghost
+			<Button tone="neutral" appearance="ghost">
+				Лёгкое действие
 			</Button>
 			<Button tone="brand" appearance="solid">
 				Сохранить
 			</Button>
-			<Button tone="brand" appearance="ghost">
+			<Button tone="neutral" appearance="ghost">
 				Подробнее
 			</Button>
 			<Button tone="info" appearance="outline">
@@ -110,7 +132,7 @@ export function CustomScheme() {
 			<Button tone="success" appearance="solid">
 				Применить
 			</Button>
-			<Button tone="error" appearance="transparent">
+			<Button tone="neutral" appearance="transparent">
 				Сбросить
 			</Button>
 		</>
@@ -132,7 +154,7 @@ export function CustomScheme() {
 ```tsx
 import { BellIcon, CheckIcon, DownloadIcon, PlusIcon } from "lucide-react";
 
-import { Button } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
 
 export function ButtonsWithIcons() {
 	return (
@@ -155,15 +177,15 @@ export function ButtonsWithIcons() {
 По умолчанию компонент рендерится как `type="button"`, поэтому он не отправляет форму случайно. Для submit-сценариев тип нужно указывать явно.
 
 ```tsx
-import { Button } from "@ryuzaki13/react-foundation-ui";
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
 
 export function FormActions() {
 	return (
 		<form onSubmit={handleSubmit}>
-			<Button type="button" variant="transparent" onClick={handleReset}>
+			<Button type="button" tone="neutral" appearance="transparent" onClick={handleReset}>
 				Сбросить
 			</Button>
-			<Button type="submit" variant="success">
+			<Button type="submit" tone="success" appearance="solid">
 				Сохранить
 			</Button>
 		</form>
@@ -173,9 +195,9 @@ export function FormActions() {
 
 ## Практические рекомендации
 
-- Для типовых сценариев сначала выбирай `variant`, а не комбинацию отдельных пропсов.
-- Для фирменного основного действия используй `brand`, а его вторичную и компактную формы выражай через `outline` и `ghost`.
-- Для destructive-операций лучше использовать семантически явные схемы `error` или `errorOutline`.
+- Для явного оформления выбирай сочетание `tone` и `appearance`.
+- Для основного действия используй `solid`, для вторичного — `outline`; компактные `ghost` и `transparent` всегда нейтральные.
+- Для операций удаления или других опасных действий используй `tone="error"` с `solid` или `outline`.
 - Для иконки без текста всегда задавай `title` или `aria-label`.
 - Если нужна кнопка удаления с подтверждением в два шага, стоит рассмотреть `ButtonRemove` из того же модуля.
 - `disabled` блокирует нажатие, но не должен заменять явное объяснение пользователю, почему действие недоступно.

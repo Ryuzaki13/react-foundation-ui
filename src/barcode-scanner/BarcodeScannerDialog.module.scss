@@ -31,8 +31,8 @@
 	gap: var(--space-md);
 	min-block-size: 100%;
 	padding: var(--space-lg);
-	background: var(--surface-0);
-	color: var(--content-0);
+	background: var(--bg-canvas);
+	color: var(--text-primary);
 	text-align: center;
 
 	p {
@@ -42,7 +42,7 @@
 
 .hint {
 	margin: 0;
-	color: var(--content-1);
+	color: var(--text-secondary);
 	font-size: var(--font-size-sm);
 	text-align: center;
 }

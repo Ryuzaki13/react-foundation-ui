@@ -58,7 +58,7 @@ export function Textarea({
 				aria-labelledby={labelId}
 				aria-describedby={describedBy}
 				data-invalid={error ? "" : undefined}
-				className={cn(uiStyles.uiControl, styles.textarea, "scrollable", className)}
+				className={cn(uiStyles.uiInputControl, styles.textarea, "scrollable", className)}
 				onChange={(event) => {
 					onChange?.(event.target.value);
 					if (error && onClearError) {

@@ -37,7 +37,7 @@ function Panel({ title, description, items = [] }: { title: string; description:
 							style={{
 								padding: "var(--space-sm) var(--space-md)",
 								borderRadius: "var(--radius-sm)",
-								background: "var(--surface-1)"
+								background: "var(--bg-surface)"
 							}}>
 							{item}
 						</div>

@@ -18,7 +18,7 @@
 	padding: var(--space-sm);
 	border: var(--border);
 	border-radius: var(--radius-sm);
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 }
 
 .summaryItem {
@@ -29,7 +29,7 @@
 
 .summaryValue {
 	overflow: hidden;
-	color: var(--content-1);
+	color: var(--text-secondary);
 	font-weight: 300;
 	font-variation-settings: "wght" 300;
 	text-overflow: ellipsis;
@@ -37,7 +37,7 @@
 }
 
 .muted {
-	color: var(--content-2);
+	color: var(--text-muted);
 	font-size: var(--font-size-sm);
 }
 
@@ -54,11 +54,11 @@
 	padding: var(--space-sm);
 	border: var(--border);
 	border-radius: var(--radius-sm);
-	background-color: var(--surface-1);
+	background-color: var(--bg-surface);
 }
 
 .layoutCellTitle {
-	color: var(--content-0);
+	color: var(--text-primary);
 	font-weight: 600;
 	font-variation-settings: "wght" 600;
 }

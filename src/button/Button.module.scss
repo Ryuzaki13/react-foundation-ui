@@ -11,30 +11,30 @@
 		aspect-ratio: 1;
 	}
 
-	&::after {
-		content: "";
-		position: absolute;
-		z-index: 0;
-		inset: 0;
-		border-radius: inherit;
-		pointer-events: none;
+	// &::after {
+	// 	content: "";
+	// 	position: absolute;
+	// 	z-index: 0;
+	// 	inset: 0;
+	// 	border-radius: inherit;
+	// 	pointer-events: none;
 
-		background-color: currentColor;
-		opacity: 0;
-		transition: opacity var(--transition-fast) ease;
-	}
+	// 	background-color: currentColor;
+	// 	opacity: 0;
+	// 	transition: opacity var(--transition-fast) ease;
+	// }
 
-	&:not(:disabled):active::after {
-		opacity: 0.12;
-		transition-duration: 70ms;
-		transition-timing-function: ease-out;
-	}
+	// &:not(:disabled):active::after {
+	// 	opacity: 0.12;
+	// 	transition-duration: 70ms;
+	// 	transition-timing-function: ease-out;
+	// }
 
-	@media (prefers-reduced-motion: reduce) {
-		&::after {
-			transition-duration: 0.01ms;
-		}
-	}
+	// @media (prefers-reduced-motion: reduce) {
+	// 	&::after {
+	// 		transition-duration: 0.01ms;
+	// 	}
+	// }
 }
 
 .buttonInner {

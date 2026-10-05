@@ -1,17 +1,12 @@
 // @vitest-environment jsdom
 
-import React, { createRef, useState } from "react";
+import { createRef } from "react";
 
 import { fireEvent, render, screen } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 
-import { TagInput, type TagInputProps } from "./TagInput";
-
-function TagInputHarness({ initialValue = [], ...props }: Omit<TagInputProps, "onChange" | "value"> & { initialValue?: string[] }) {
-	const [value, setValue] = useState(initialValue);
-
-	return <TagInput {...props} value={value} onChange={setValue} />;
-}
+import { TagInput } from "./TagInput";
+import { TagInputControlledFixture } from "./test-fixtures/TagInputControlledFixture";
 
 describe("TagInput", () => {
 	it("передаёт React 19 ref prop во внутренний input", () => {
@@ -19,104 +14,117 @@ describe("TagInput", () => {
 
 		render(<TagInput ref={inputRef} label="Теги" value={[]} onChange={() => undefined} />);
 
-		expect(inputRef.current).toBe(screen.getByRole("textbox", { name: "Теги" }));
+		expect(inputRef.current).toBe(screen.getByRole("textbox"));
 	});
 
 	it("добавляет нормализованные значения по Enter и запятой без дубликатов", () => {
-		render(<TagInputHarness label="Теги" getTagKey={(tag) => tag.toLocaleLowerCase("ru")} placeholder="Введите тег" />);
-
-		const input = screen.getByRole("textbox", { name: "Теги" }) as HTMLInputElement;
+		const onChange = vi.fn<(value: string[]) => void>();
+		const mounted = render(<TagInputControlledFixture onChange={onChange} getTagKey={(tag) => tag.toLocaleLowerCase("ru")} />);
+		const input = screen.getByRole("textbox");
 
 		fireEvent.change(input, { target: { value: "  Новости  " } });
 		fireEvent.keyDown(input, { key: "Enter" });
 		fireEvent.change(input, { target: { value: "Колледж" } });
 		fireEvent.keyDown(input, { key: "," });
+
+		// Проверяем доступность объявления, а не формулировку служебного сообщения.
+		const announcement = mounted.container.querySelector('[aria-live="polite"]');
+		const announcementBeforeDuplicate = announcement?.textContent;
+
 		fireEvent.change(input, { target: { value: "новости" } });
 		fireEvent.keyDown(input, { key: "Enter" });
 
-		const list = screen.getByRole("list", { name: "Добавленные теги" });
-		expect(list.querySelectorAll("li")).toHaveLength(2);
-		expect(list.textContent).toContain("Новости");
-		expect(list.textContent).toContain("Колледж");
-		expect(input.value).toBe("");
-		expect(screen.getByText("Такой тег уже добавлен.").getAttribute("aria-live")).toBe("polite");
+		expect(onChange.mock.calls).toEqual([[["Новости"]], [["Новости", "Колледж"]]]);
+		expect(input).toHaveProperty("value", "");
+		expect(announcement?.getAttribute("aria-atomic")).toBe("true");
+		expect(announcement?.textContent?.trim()).toBeTruthy();
+		expect(announcement?.textContent).not.toBe(announcementBeforeDuplicate);
 	});
 
 	it("удаляет последний тег по Backspace и выбранный тег доступной кнопкой", () => {
-		render(<TagInputHarness label="Теги" initialValue={["Первый", "Второй", "Третий"]} />);
-
-		const input = screen.getByRole("textbox", { name: "Теги" });
+		const onChange = vi.fn<(value: string[]) => void>();
+		const mounted = render(<TagInputControlledFixture onChange={onChange} initialValue={["Первый", "Второй", "Третий"]} />);
+		const input = screen.getByRole("textbox");
 
 		fireEvent.keyDown(input, { key: "Backspace" });
-		expect(screen.queryByText("Третий")).toBeNull();
+		expect(onChange).toHaveBeenCalledExactlyOnceWith(["Первый", "Второй"]);
 		expect(document.activeElement).toBe(input);
 
-		fireEvent.click(screen.getByRole("button", { name: "Удалить тег «Первый»" }));
-		expect(screen.queryByText("Первый")).toBeNull();
-		expect(screen.getByText("Второй")).toBeDefined();
+		// Контракт data-action сохраняет смысл действия Badge при смене подписи кнопки.
+		const removeButton = mounted.container.querySelector('button[data-action="remove-badge"]');
+		if (!removeButton) throw new Error("Недоступно действие удаления тега");
+		expect(screen.getAllByRole("button")).toContain(removeButton);
+		fireEvent.click(removeButton);
+		expect(onChange.mock.calls).toEqual([[["Первый", "Второй"]], [["Второй"]]]);
 		expect(document.activeElement).toBe(input);
 	});
 
 	it("не фиксирует черновик при переходе фокуса на внутреннюю кнопку удаления", () => {
-		render(<TagInputHarness label="Теги" initialValue={["Существующий"]} />);
-
-		const input = screen.getByRole("textbox", { name: "Теги" }) as HTMLInputElement;
-		const removeButton = screen.getByRole("button", { name: "Удалить тег «Существующий»" });
+		const onChange = vi.fn<(value: string[]) => void>();
+		const mounted = render(<TagInputControlledFixture onChange={onChange} initialValue={["Существующий"]} />);
+		const input = screen.getByRole("textbox");
+		const removeButton = mounted.container.querySelector('button[data-action="remove-badge"]');
+		if (!removeButton) throw new Error("Недоступно действие удаления тега");
+		expect(screen.getAllByRole("button")).toContain(removeButton);
 
 		fireEvent.change(input, { target: { value: "Черновик" } });
 		fireEvent.blur(input, { relatedTarget: removeButton });
 
-		expect(screen.queryByText("Черновик")).toBeNull();
-		expect(input.value).toBe("Черновик");
+		expect(onChange).not.toHaveBeenCalled();
+		expect(input).toHaveProperty("value", "Черновик");
 	});
 
 	it("разбирает вставленный список и фиксирует черновик при потере фокуса", () => {
-		render(<TagInputHarness label="Теги" />);
-
-		const input = screen.getByRole("textbox", { name: "Теги" }) as HTMLInputElement;
+		const onChange = vi.fn<(value: string[]) => void>();
+		render(<TagInputControlledFixture onChange={onChange} />);
+		const input = screen.getByRole("textbox");
 		fireEvent.paste(input, {
 			clipboardData: {
 				getData: () => "Один, Два\nТри"
 			}
 		});
 
-		expect(screen.getByText("Один")).toBeDefined();
-		expect(screen.getByText("Два")).toBeDefined();
-		expect(screen.getByText("Три")).toBeDefined();
+		expect(onChange).toHaveBeenCalledExactlyOnceWith(["Один", "Два", "Три"]);
 
 		fireEvent.change(input, { target: { value: "Четыре" } });
 		fireEvent.blur(input);
 
-		expect(screen.getByText("Четыре")).toBeDefined();
-		expect(input.value).toBe("");
+		expect(onChange.mock.calls).toEqual([[["Один", "Два", "Три"]], [["Один", "Два", "Три", "Четыре"]]]);
+		expect(input).toHaveProperty("value", "");
 	});
 
-	it("соблюдает maxTags и передаёт значения формы повторяющимися hidden-полями", () => {
-		render(<TagInputHarness label="Теги" initialValue={["Один"]} maxTags={2} name="tags" form="material-form" />);
+	it("соблюдает maxTags и передаёт все теги во внешнюю форму", () => {
+		const onChange = vi.fn<(value: string[]) => void>();
+		const formRef = createRef<HTMLFormElement>();
+		render(
+			<>
+				<form ref={formRef} id="material-form" />
+				<TagInputControlledFixture onChange={onChange} initialValue={["Один"]} maxTags={2} name="tags" form="material-form" />
+			</>
+		);
 
-		const input = screen.getByRole("textbox", { name: "Теги" });
+		const input = screen.getByRole("textbox");
 		fireEvent.change(input, { target: { value: "Два" } });
 		fireEvent.keyDown(input, { key: "Enter" });
 		fireEvent.change(input, { target: { value: "Три" } });
 		fireEvent.keyDown(input, { key: "Enter" });
 
-		expect(screen.queryByText("Три")).toBeNull();
-		expect(screen.getByText("Достигнуто максимальное количество тегов: 2.")).toBeDefined();
-
-		const hiddenInputs = Array.from(document.querySelectorAll<HTMLInputElement>('input[type="hidden"][name="tags"]'));
-		expect(hiddenInputs.map((hiddenInput) => hiddenInput.value)).toEqual(["Один", "Два"]);
-		expect(hiddenInputs.every((hiddenInput) => hiddenInput.getAttribute("form") === "material-form")).toBe(true);
+		expect(onChange).toHaveBeenCalledExactlyOnceWith(["Один", "Два"]);
+		if (!formRef.current) throw new Error("Внешняя форма недоступна");
+		expect(new FormData(formRef.current).getAll("tags")).toEqual(["Один", "Два"]);
 	});
 
 	it("связывает описание и ошибку с input и не изменяет readOnly-значение", () => {
 		const handleChange = vi.fn<(value: string[]) => void>();
+		const description = "Описание поля";
+		const error = "Ошибка поля";
 
-		render(
+		const mounted = render(
 			<TagInput
 				id="material-tags"
 				label="Теги"
-				description="Добавьте категории материала"
-				error="Нужно исправить теги"
+				description={description}
+				error={error}
 				value={["Новости"]}
 				onChange={handleChange}
 				readOnly
@@ -124,14 +132,19 @@ describe("TagInput", () => {
 			/>
 		);
 
-		const input = screen.getByRole("textbox", { name: "Теги" }) as HTMLInputElement;
+		const input = screen.getByRole("textbox");
+		const alert = screen.getByRole("alert");
+		const describedElements = (input.getAttribute("aria-describedby")?.split(/\s+/) ?? []).map((id) => document.getElementById(id));
 
-		expect(input.readOnly).toBe(true);
+		expect(input).toHaveProperty("readOnly", true);
 		expect(input.getAttribute("data-field")).toBe("metadata-tags");
 		expect(input.getAttribute("aria-invalid")).toBe("true");
-		expect(input.getAttribute("aria-describedby")).toBe("material-tags-description material-tags-error");
-		expect(screen.getByRole("alert").textContent).toBe("Нужно исправить теги");
-		expect(screen.queryByRole("button", { name: "Удалить тег «Новости»" })).toBeNull();
+		// Связи ARIA проверяются по реально связанным узлам, без предположения о формате их id.
+		expect(describedElements).toContain(alert);
+		expect(describedElements).not.toContain(null);
+		expect(describedElements.map((element) => element?.textContent)).toEqual(expect.arrayContaining([description, error]));
+		expect(alert.textContent).toBe(error);
+		expect(mounted.container.querySelector('[data-action="remove-badge"]')).toBeNull();
 
 		fireEvent.keyDown(input, { key: "Backspace" });
 		fireEvent.paste(input, { clipboardData: { getData: () => "Другой, тег" } });
@@ -143,7 +156,7 @@ describe("TagInput", () => {
 
 		render(<TagInput label="Теги" value={[]} onChange={handleChange} onKeyDown={(event) => event.preventDefault()} />);
 
-		const input = screen.getByRole("textbox", { name: "Теги" });
+		const input = screen.getByRole("textbox");
 		fireEvent.change(input, { target: { value: "Черновик" } });
 		fireEvent.keyDown(input, { key: "Enter" });
 

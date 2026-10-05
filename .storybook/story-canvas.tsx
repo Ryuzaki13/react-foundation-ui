@@ -13,8 +13,8 @@ const DEFAULT_THEME_MODE = "default";
 const shellStyle: CSSProperties = {
 	width: "100%",
 	padding: 16,
-	background: "var(--surface-1)",
-	color: "var(--content-0)",
+	background: "var(--bg-surface)",
+	color: "var(--text-primary)",
 	boxSizing: "border-box"
 };
 
@@ -23,8 +23,8 @@ const frameStyle: CSSProperties = {
 	overflow: "hidden",
 	border: "var(--border)",
 	borderRadius: "var(--radius-lg)",
-	background: "var(--surface-1)",
-	boxShadow: "var(--shadow-lg)"
+	background: "var(--bg-surface)",
+	boxShadow: "var(--shadow-card)"
 };
 
 const toolbarStyle: CSSProperties = {
@@ -33,7 +33,7 @@ const toolbarStyle: CSSProperties = {
 	justifyContent: "space-between",
 	padding: 8,
 	borderBottom: "var(--border)",
-	background: "var(--surface-1)"
+	background: "var(--bg-surface)"
 };
 
 const toggleButtonStyle: CSSProperties = {
@@ -41,8 +41,8 @@ const toggleButtonStyle: CSSProperties = {
 	alignItems: "center",
 	padding: 8,
 	borderRadius: "var(--radius-lg)",
-	background: "var(--surface-0)",
-	color: "var(--content-0)",
+	background: "var(--bg-canvas)",
+	color: "var(--text-primary)",
 	font: "inherit",
 	cursor: "pointer",
 	transition: "background-color var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast)"
@@ -138,8 +138,8 @@ export const applyDocumentTheme = (theme: DemoTheme, themeMode = resolveDocument
 	html.setAttribute("data-letter-spacing", "normal");
 	html.setAttribute("data-word-spacing", "normal");
 	html.setAttribute("data-paragraph-spacing", "normal");
-	document.body.style.backgroundColor = "var(--surface-1)";
-	document.body.style.color = "var(--content-0)";
+	document.body.style.backgroundColor = "var(--bg-surface)";
+	document.body.style.color = "var(--text-primary)";
 	document.body.style.transition = "background-color var(--transition-fast), color var(--transition-fast)";
 };
 

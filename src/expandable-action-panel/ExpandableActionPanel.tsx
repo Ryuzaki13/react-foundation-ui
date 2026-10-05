@@ -72,7 +72,6 @@ export function ExpandableActionPanel({
 				icon={<ToggleIcon />}
 				title={open ? collapseLabel : expandLabel}
 				disabled={disabled}
-				variant="neutralOutline"
 				aria-expanded={open}
 				aria-controls={panelId}
 				data-ui="expandable-action-panel-toggle"

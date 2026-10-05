@@ -7,9 +7,9 @@
 
 	&[data-disabled] {
 		.rail {
-			color: var(--content-2);
-			background-color: var(--surface-2);
-			border-color: var(--overlay-backdrop);
+			color: var(--text-disabled);
+			background-color: var(--bg-disabled);
+			border-color: transparent;
 		}
 
 		.fill {
@@ -17,15 +17,14 @@
 		}
 
 		.thumb {
-			border-color: var(--overlay-backdrop);
-			background-color: var(--surface-2);
-			color: var(--content-2);
+			border-color: transparent;
+			background-color: var(--bg-disabled);
 			box-shadow: none;
 		}
 
 		.mark,
 		.compactMark {
-			color: var(--overlay-backdrop);
+			color: var(--bg-disabled);
 		}
 	}
 }
@@ -67,12 +66,12 @@
 .rail {
 	left: 0;
 	right: 0;
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 	border: var(--border);
 }
 
 .fill {
-	background-color: var(--accent-fill);
+	background-color: var(--accent-selection);
 }
 
 .thumb {
@@ -84,9 +83,9 @@
 	height: calc(var(--control-height) - var(--space-md));
 	border: var(--border);
 	border-radius: 50%;
-	background-color: var(--surface-0);
-	color: var(--content-0);
-	box-shadow: var(--shadow-sm);
+	background-color: var(--bg-sunken);
+	color: var(--text-primary);
+	box-shadow: var(--shadow-popover);
 	cursor: grab;
 	z-index: 2;
 	transition:
@@ -95,9 +94,12 @@
 		box-shadow var(--transition-fast) ease,
 		background-color var(--transition-fast) ease;
 
-	&:active,
 	&:hover {
-		border-color: var(--border-1);
+		background-color: var(--bg-hover);
+	}
+
+	&:active {
+		background-color: var(--bg-pressed);
 	}
 
 	&:focus-visible {
@@ -107,7 +109,7 @@
 	&[data-dragging] {
 		cursor: grabbing;
 		transform: translate(-50%, -50%) scale(1.04);
-		box-shadow: var(--shadow-md);
+		box-shadow: var(--shadow-popover);
 	}
 }
 
@@ -125,7 +127,7 @@
 	border: none;
 	background: transparent;
 	padding: 0;
-	color: var(--content-2);
+	color: var(--text-muted);
 	cursor: pointer;
 
 	&:focus-visible {
@@ -134,7 +136,7 @@
 	}
 
 	&[data-active] {
-		color: var(--content-0);
+		color: var(--text-primary);
 	}
 
 	&:disabled {
@@ -194,13 +196,13 @@
 	font-family: var(--font-family-mono);
 	color: inherit;
 	text-align: center;
-	caret-color: var(--content-0);
+	caret-color: var(--text-primary);
 	font-variant-numeric: tabular-nums;
 
-	&::selection {
-		background-color: var(--focus-ring);
-		color: var(--surface-0);
-	}
+	// &::selection {
+	// 	background-color: var(--focus-ring);
+	// 	color: var(--bg-canvas);
+	// }
 
 	&:disabled {
 		opacity: 0.25;
@@ -209,7 +211,7 @@
 
 .rangeSeparator {
 	user-select: none;
-	color: var(--content-2);
+	color: var(--text-muted);
 	flex-shrink: 0;
 
 	&[data-disabled] {

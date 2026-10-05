@@ -28,7 +28,7 @@ function ODataTreeSelectStoryCanvas({
 					updateArgs({ value });
 				}}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
 				Текущее значение: {args.value ? `${args.value.codeKey}=${args.value.value}` : "пусто"}
 			</div>
 		</div>

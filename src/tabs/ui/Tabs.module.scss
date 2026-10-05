@@ -1,5 +1,5 @@
 .tabsContainer {
-	--tabs-background: var(--surface-1);
+	--tabs-background: var(--bg-surface);
 	--tabs-border: var(--border);
 	--tabs-radius: var(--radius-sm);
 	--tabs-panel-padding: var(--space-md);
@@ -82,29 +82,29 @@
 	position: relative;
 	min-height: var(--control-height);
 	padding: var(--space-xs) var(--space-md);
-	color: var(--content-1);
+	color: var(--text-secondary);
 	border-radius: var(--radius-sm);
-	font-weight: 700;
+	border: var(--border-width) solid transparent;
 	font-variation-settings: "wght" 700;
+	font-weight: 700;
 
 	flex-shrink: 0;
 
 	&:hover {
 		cursor: pointer;
-		color: var(--accent-text-hover);
-		background-color: var(--accent-fill-hover);
+		background-color: var(--bg-hover);
 	}
 
 	&.selected {
-		color: var(--accent-text);
-		// color: var(--content-0);
-		background-color: var(--accent-fill);
+		color: var(--selection-text);
+		border-color: var(--border-accent);
+		background-color: var(--selection-bg);
 	}
 
 	&:disabled {
 		cursor: not-allowed;
-		color: var(--content-2);
-		// background-color: var(--surface-2);
+		color: var(--text-disabled);
+		background-color: var(--bg-disabled);
 	}
 }
 

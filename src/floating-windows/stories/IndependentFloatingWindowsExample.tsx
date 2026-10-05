@@ -10,7 +10,7 @@ export function IndependentFloatingWindowsExample() {
 			<GridContainer gap="md" templateColumns="repeat(auto-fit, minmax(min(100%, 22rem), 1fr))">
 				<FlexContainer as="section" column gap="sm" aria-label="Первая область" data-floating-windows-example-host="first">
 					<h3>Первая область</h3>
-					<FloatingWindows style={{ height: "22rem", background: "var(--surface-2)" }}>
+					<FloatingWindows style={{ height: "22rem", background: "var(--bg-elevated)" }}>
 						<FloatingWindow
 							id="shared-window"
 							title="Окно первой области"
@@ -23,7 +23,7 @@ export function IndependentFloatingWindowsExample() {
 				</FlexContainer>
 				<FlexContainer as="section" column gap="sm" aria-label="Вторая область" data-floating-windows-example-host="second">
 					<h3>Вторая область</h3>
-					<FloatingWindows style={{ height: "22rem", background: "var(--surface-2)" }}>
+					<FloatingWindows style={{ height: "22rem", background: "var(--bg-elevated)" }}>
 						<FloatingWindow
 							id="shared-window"
 							title="Окно второй области"

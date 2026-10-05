@@ -101,7 +101,7 @@
 .scrollable {
 	min-height: 0;
 
-	scrollbar-color: var(--border-0) transparent;
+	scrollbar-color: var(--border-default) transparent;
 	transition: scrollbar-color 0.1s ease-out;
 
 	overflow: auto;

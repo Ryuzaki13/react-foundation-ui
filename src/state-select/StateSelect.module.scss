@@ -19,12 +19,18 @@
 	flex-shrink: 0;
 	display: inline-block;
 	border-radius: var(--radius-xs);
-	border: var(--border-width) solid var(--border-0);
+	border: var(--border-width) solid var(--border-default);
 	background-color: var(--state-color);
 
 	&[data-empty] {
-		background-color: var(--surface-0);
-		background-image: repeating-linear-gradient(135deg, var(--border-0), var(--border-0) 0.25em, transparent 0.25em, transparent 0.5em);
+		background-color: var(--bg-canvas);
+		background-image: repeating-linear-gradient(
+			135deg,
+			var(--border-default),
+			var(--border-default) 0.25em,
+			transparent 0.25em,
+			transparent 0.5em
+		);
 	}
 }
 

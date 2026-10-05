@@ -43,7 +43,9 @@ function TreeMultiSelectStoryCanvas({
 					});
 				}}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(args.value)}</div>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
+				Текущее значение: {JSON.stringify(args.value)}
+			</div>
 		</div>
 	);
 }

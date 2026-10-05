@@ -4,8 +4,8 @@ body {
 	@include stepped-font();
 	font-family: var(--font-family-base);
 
-	// color: var(--content-0);
-	// background-color: var(--surface-1);
+	// color: var(--text-primary);
+	// background-color: var(--bg-surface);
 
 	letter-spacing: var(--letter-spacing);
 	word-spacing: var(--word-spacing);
@@ -15,15 +15,24 @@ body {
 	-moz-osx-font-smoothing: auto;
 }
 
+::selection {
+	color: var(--text-selection-text);
+	background: var(--text-selection-bg);
+}
+
+::placeholder {
+	color: var(--text-muted);
+}
+
 /* Для WebKit браузеров (Chrome, Safari, Edge) */
 input:-webkit-autofill {
-	-webkit-text-fill-color: var(--content-1) !important;
-	-webkit-box-shadow: 0 0 0 1000px var(--surface-1) inset !important;
+	-webkit-text-fill-color: var(--text-secondary) !important;
+	-webkit-box-shadow: 0 0 0 1000px var(--bg-surface) inset !important;
 }
 
 /* Для Firefox */
 input:autofill {
-	background: var(--surface-1) !important;
+	background: var(--bg-surface) !important;
 }
 
 #modal-root {
@@ -111,12 +120,12 @@ h6 {
 	margin: 0;
 	// text-wrap-mode: wrap;
 	// text-wrap-style: balance;
-	color: var(--content-1);
+	color: var(--text-secondary);
 }
 
 .h0 {
 	margin: 0;
-	color: var(--content-1);
+	color: var(--text-secondary);
 	// @include fluid-font(17, 15);
 	font-size: inherit;
 	font-weight: 400;
@@ -174,7 +183,7 @@ table {
 		}
 
 		th {
-			background-color: var(--surface-1);
+			background-color: var(--bg-surface);
 			font-weight: 400;
 			font-variation-settings: "wght" 400;
 		}
@@ -188,7 +197,7 @@ table {
 caption {
 	text-align: left;
 	margin-block: var(--space-sm);
-	color: var(--content-1);
+	color: var(--text-secondary);
 	@include stepped-font(20);
 }
 
@@ -244,45 +253,17 @@ table {
 		}
 	}
 }
-// TODO: unused
-.opacity80 {
-	opacity: 0.8;
-
-	&.opacityHover {
-		&:hover {
-			opacity: 1;
-		}
-	}
-}
-// TODO: unused
-.opacityTransition {
-	transition: opacity var(--transition-fast) ease;
-}
 
 // BOX-SHADOW
 
-.shadowLg {
-	box-shadow: var(--shadow-lg);
-}
-.shadowMd {
-	box-shadow: var(--shadow-md);
-}
-.shadowSm {
-	box-shadow: var(--shadow-sm);
+.shadowCard {
+	box-shadow: var(--shadow-card);
 }
 
 // CURSOR
 
 .cursorPointer {
 	cursor: pointer;
-}
-// TODO: unused
-.cursorDefault {
-	cursor: default;
-}
-// TODO: unused
-.cursorNotAllowed {
-	cursor: not-allowed;
 }
 
 // POINTER-EVENTS
@@ -299,7 +280,7 @@ table {
 
 	cursor: default;
 	opacity: var(--disabled-opacity);
-	color: var(--content-2);
+	color: var(--text-muted);
 }
 
 // TODO: unused
@@ -312,14 +293,14 @@ table {
 }
 
 .skeletonLine {
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 	background-image: linear-gradient(
 		90deg,
-		var(--surface-2) 0%,
-		var(--surface-2) 40%,
-		var(--surface-0) 50%,
-		var(--surface-2) 52%,
-		var(--surface-2) 100%
+		var(--bg-elevated) 0%,
+		var(--bg-elevated) 40%,
+		var(--bg-canvas) 50%,
+		var(--bg-elevated) 52%,
+		var(--bg-elevated) 100%
 	);
 }
 
@@ -330,14 +311,14 @@ table {
 }
 
 .skeletonLineInverse {
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 	background-image: linear-gradient(
 		135deg,
-		var(--surface-2) 0%,
-		var(--surface-2) 40%,
-		var(--surface-0) 50%,
-		var(--surface-2) 52%,
-		var(--surface-2) 100%
+		var(--bg-elevated) 0%,
+		var(--bg-elevated) 40%,
+		var(--bg-canvas) 50%,
+		var(--bg-elevated) 52%,
+		var(--bg-elevated) 100%
 	);
 }
 

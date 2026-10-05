@@ -2,11 +2,10 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { XIcon } from "lucide-react";
 
 import { TextOverflow } from "../text";
+import { type UiAppearance, UiSize, UiTone } from "../types";
 import { getUiAppearanceClassName, getUiToneClassName, resolveUiScheme } from "../uiClasses";
 
 import styles from "./Badge.module.scss";
-
-import type { UiAppearance, UiSize, UiTone } from "../types";
 
 type BadgeSize = UiSize;
 type BadgeAppearance = UiAppearance;
@@ -32,14 +31,7 @@ const sizeClasses: Record<BadgeSize, string> = {
  * Компактный индикатор для статусов, категорий и коротких служебных меток.
  */
 export function Badge({ children, size = "sm", tone, appearance, className, onRemove }: BadgeProps) {
-	const fallbackTone = tone ?? "neutral";
-	const fallbackAppearance = fallbackTone !== "neutral" ? "solid" : "outline";
-	const scheme = resolveUiScheme({
-		tone,
-		appearance,
-		fallbackTone,
-		fallbackAppearance
-	});
+	const scheme = resolveUiScheme({ tone, appearance });
 
 	return (
 		<div

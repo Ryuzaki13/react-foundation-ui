@@ -33,15 +33,15 @@
 	padding: var(--space-sm);
 	// border: var(--border);
 	border-radius: var(--radius-sm);
-	// background-color: var(--surface-1);
+	background-color: var(--bg-elevated);
 	transition:
 		background-color var(--transition-fast) ease,
 		border-color var(--transition-fast) ease,
 		color var(--transition-fast) ease;
 
 	@include hover(true) {
-		background-color: var(--surface-2);
-		border-color: var(--border-2);
+		background-color: var(--bg-hover);
+		border-color: var(--border-strong);
 	}
 
 	&:disabled {
@@ -51,12 +51,12 @@
 }
 
 .option[data-selected] {
-	border-color: var(--border-1);
-	background-color: var(--surface-1);
+	border-color: var(--accent-border);
+	background-color: var(--selection-bg);
 
 	.previewCell {
 		background-color: var(--accent-fill);
-		border: var(--border-width) solid var(--accent-border);
+		border-color: var(--accent-border);
 	}
 }
 
@@ -89,13 +89,13 @@
 	min-width: 0;
 	min-height: 0;
 	border-radius: var(--radius-xs);
-	background-color: var(--surface-1);
-	border: var(--border-width) solid var(--border-1);
+	background-color: var(--bg-surface);
+	border: var(--border);
 }
 
 .previewCompact {
 	.previewCell {
-		background-color: var(--accent-fill);
-		border-color: var(--accent-border);
+		background-color: var(--selection-bg);
+		border-color: var(--border-accent);
 	}
 }

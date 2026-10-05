@@ -20,15 +20,15 @@
 }
 
 .surface0 {
-	background-color: var(--surface-0);
+	background-color: var(--bg-canvas);
 }
 
 .surface1 {
-	background-color: var(--surface-1);
+	background-color: var(--bg-surface);
 }
 
 .surface2 {
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 }
 
 // TODO: unused
@@ -50,15 +50,19 @@
 }
 
 .content0 {
-	color: var(--content-0);
+	color: var(--text-primary);
 }
 
 .content1 {
-	color: var(--content-1);
+	color: var(--text-secondary);
 }
 
 .content2 {
-	color: var(--content-2);
+	color: var(--text-muted);
+}
+
+.contentDisabled {
+	color: var(--text-disabled);
 }
 
 .contentAccent {
@@ -90,76 +94,5 @@
 }
 
 .statusNone {
-	color: var(--content-1);
-}
-
-// Состояния
-// TODO: unused
-.colorSchemeNeutral {
-	@include ui-tone("neutral");
-	@include ui-appearance-solid;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
-}
-
-// TODO: unused
-.colorSchemeSuccess {
-	@include ui-tone("success");
-	@include ui-appearance-solid;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
-}
-
-.colorSchemeError {
-	@include ui-tone("error");
-	@include ui-appearance-solid;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
-}
-
-// TODO: unused
-.colorSchemeWarning {
-	@include ui-tone("warning");
-	@include ui-appearance-solid;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
-}
-
-// TODO: unused
-.colorSchemeInfo {
-	@include ui-tone("info");
-	@include ui-appearance-solid;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
-}
-
-// Нейтральные схемы
-// TODO: unused
-.colorSchemeGhost {
-	@include ui-tone("neutral");
-	@include ui-appearance-ghost;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
-}
-
-// TODO: unused
-.colorSchemeLight {
-	@include ui-tone("neutral");
-	@include ui-appearance-outline;
-
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border-color: var(--ui-border-color);
+	color: var(--text-secondary);
 }

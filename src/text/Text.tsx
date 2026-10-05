@@ -3,7 +3,7 @@ import { type AriaAttributes, type AriaRole, type CSSProperties, type ReactNode,
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 export type TextSize = "xs" | "sm" | "md" | "lg" | "xl";
-export type TextColor = "primary" | "secondary" | "muted" | "error" | "warning" | "success" | "info" | "brand" | "accent";
+export type TextColor = "primary" | "secondary" | "muted" | "disabled" | "error" | "warning" | "success" | "info" | "brand" | "accent";
 export type TextWeight = "lighter" | "light" | "regular" | "medium" | "bold" | "bolder";
 export type TextWrap = "wrap" | "noWrap";
 
@@ -11,6 +11,7 @@ const textColors: Record<TextColor, string> = {
 	primary: "content0",
 	secondary: "content1",
 	muted: "content2",
+	disabled: "contentDisabled",
 	info: "statusInfo",
 	success: "statusSuccess",
 	warning: "statusWarning",

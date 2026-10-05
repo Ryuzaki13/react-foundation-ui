@@ -19,8 +19,8 @@
 	padding: var(--space-md);
 	border: var(--border);
 	border-radius: var(--radius-md);
-	background: var(--surface-1);
-	box-shadow: var(--shadow-lg);
+	background: var(--bg-surface);
+	box-shadow: var(--shadow-popover);
 	overflow: hidden;
 
 	&:focus-visible {

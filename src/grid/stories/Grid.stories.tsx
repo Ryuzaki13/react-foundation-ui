@@ -11,7 +11,7 @@ import { type GridContainerProps } from "../types";
 // Стили для демонстрационных блоков (аналогично Flex)
 const demoStyles = {
 	container: {
-		border: "2px dashed var(--border-0)",
+		border: "2px dashed var(--border-default)",
 		padding: "2em",
 		marginBlock: "1em"
 	},

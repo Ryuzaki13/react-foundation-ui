@@ -38,8 +38,8 @@ function DemoFormContent() {
 				style={{
 					padding: 12,
 					borderRadius: 8,
-					background: "var(--surface-1)",
-					border: "1px solid var(--border-1)"
+					background: "var(--bg-surface)",
+					border: "1px solid var(--border-thin)"
 				}}>
 				Текущие значения: {name || "не указано"}, {department || "не указано"}
 			</div>
@@ -79,7 +79,7 @@ const meta = {
 					<DemoFormContent />
 				</ModalContent>
 				<ModalFooter>
-					<Button variant="transparent">Отмена</Button>
+					<Button appearance="transparent">Отмена</Button>
 					<Button>Сохранить</Button>
 				</ModalFooter>
 			</>
@@ -143,7 +143,7 @@ export const Controlled: Story = {
 						<DemoFormContent />
 					</ModalContent>
 					<ModalFooter>
-						<Button variant="transparent" onClick={close}>
+						<Button appearance="transparent" onClick={close}>
 							Отмена
 						</Button>
 						<Button onClick={close}>Сохранить</Button>
@@ -176,24 +176,24 @@ export const WithToolbarAndFooter: Story = {
 								gap: 12,
 								padding: 12,
 								borderRadius: 8,
-								background: "var(--surface-1)",
-								border: "1px solid var(--border-1)"
+								background: "var(--bg-surface)",
+								border: "1px solid var(--border-thin)"
 							}}>
 							<div>
 								<div style={{ fontWeight: 600 }}>Черновик обновлён автоматически</div>
 								<div style={{ opacity: 0.72 }}>Последнее сохранение: 2 минуты назад</div>
 							</div>
-							<Button variant="transparent">Сбросить</Button>
+							<Button appearance="transparent">Сбросить</Button>
 						</div>
 					</ModalToolbar>
 					<ModalContent>
 						<DemoFormContent />
 					</ModalContent>
 					<ModalFooter>
-						<Button variant="transparent" onClick={close}>
+						<Button appearance="transparent" onClick={close}>
 							Отмена
 						</Button>
-						<Button variant="success" onClick={close}>
+						<Button tone="success" appearance="solid" onClick={close}>
 							Применить
 						</Button>
 					</ModalFooter>
@@ -224,8 +224,8 @@ export const ScrollableContent: Story = {
 									style={{
 										padding: 12,
 										borderRadius: 8,
-										border: "1px solid var(--border-1)",
-										background: "var(--surface-1)"
+										border: "1px solid var(--border-thin)",
+										background: "var(--bg-surface)"
 									}}>
 									<div style={{ fontWeight: 600 }}>Событие #{index + 1}</div>
 									<div style={{ opacity: 0.72 }}>
@@ -259,7 +259,7 @@ export const Sizes: Story = {
 					{(["sm", "md", "lg", "xl", "xxl", "inside"] as const).map((size) => (
 						<Button
 							key={size}
-							variant="transparent"
+							appearance="transparent"
 							onClick={() => updateArgs({ isOpen: true, size, title: `Размер ${size.toUpperCase()}` })}>
 							{size.toUpperCase()}
 						</Button>
@@ -305,13 +305,13 @@ export const StackedModals: Story = {
 					<ModalContent>
 						<div style={{ display: "grid", gap: 16 }}>
 							<div>Откройте вторую модалку и проверьте, что `Escape` закрывает только верхний слой.</div>
-							<Button variant="transparent" onClick={() => setInnerOpen(true)}>
+							<Button appearance="transparent" onClick={() => setInnerOpen(true)}>
 								Открыть вторую модалку
 							</Button>
 						</div>
 					</ModalContent>
 					<ModalFooter>
-						<Button variant="transparent" onClick={closeOuter}>
+						<Button appearance="transparent" onClick={closeOuter}>
 							Закрыть первую
 						</Button>
 					</ModalFooter>

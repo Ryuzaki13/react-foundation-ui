@@ -2,7 +2,7 @@
 	min-width: 0;
 	max-width: 100%;
 	overflow-wrap: anywhere;
-	color: var(--content-0);
+	color: var(--text-primary);
 
 	p,
 	blockquote,
@@ -52,13 +52,13 @@
 		margin-inline: 0;
 		padding-inline-start: var(--space-md);
 		border-inline-start: var(--border);
-		color: var(--content-1);
+		color: var(--text-secondary);
 	}
 
 	code {
 		border-radius: var(--radius-xs);
 		padding-inline: var(--space-xs);
-		background: var(--surface-2);
+		background: var(--bg-elevated);
 	}
 
 	mark {

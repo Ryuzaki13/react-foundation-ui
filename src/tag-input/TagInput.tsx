@@ -10,8 +10,8 @@ import {
 } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { XIcon } from "lucide-react";
 
+import { Badge } from "../badge";
 import { InputUI, useInputFieldIds } from "../input";
 import uiStyles from "../ui.module.scss";
 
@@ -252,7 +252,7 @@ export function TagInput({
 			errorId={errorId}>
 			<div
 				ref={controlRef}
-				className={cn(uiStyles.uiControl, error && uiStyles.invalid, styles.control)}
+				className={cn(uiStyles.uiInputControl, error && uiStyles.invalid, styles.control)}
 				data-disabled={disabled ? "" : undefined}
 				data-readonly={readOnly ? "" : undefined}
 				data-invalid={error ? "" : undefined}
@@ -260,20 +260,12 @@ export function TagInput({
 				{value.length > 0 && (
 					<ul className={styles.tagList} aria-label={tokensAriaLabel}>
 						{value.map((tag, index) => (
-							<li className={styles.tag} key={`${getTagKey(tag)}-${index}`}>
-								<span className={styles.tagText}>{tag}</span>
-								{!isEditingDisabled && (
-									<button
-										type="button"
-										className={styles.removeButton}
-										onClick={(event) => {
-											event.stopPropagation();
-											removeTag(index);
-										}}
-										aria-label={getRemoveButtonAriaLabel(tag, index)}>
-										<XIcon aria-hidden="true" />
-									</button>
-								)}
+							<li key={`${getTagKey(tag)}-${index}`}>
+								<Badge
+									aria-label={getRemoveButtonAriaLabel(tag, index)}
+									onRemove={!isEditingDisabled ? () => removeTag(index) : undefined}>
+									{tag}
+								</Badge>
 							</li>
 						))}
 					</ul>

@@ -40,7 +40,7 @@ export function PersistentFloatingWindowsExample() {
 				key={generation}
 				storageKey={storageKey}
 				onStorageError={() => setStorageMessage("Сохранение недоступно; окна продолжают работать в текущей области.")}
-				style={{ height: "min(70dvh, 30rem)", background: "var(--surface-2)" }}>
+				style={{ height: "min(70dvh, 30rem)", background: "var(--bg-elevated)" }}>
 				<FloatingWindow
 					id="persisted-notes"
 					title="Сохранённое положение"

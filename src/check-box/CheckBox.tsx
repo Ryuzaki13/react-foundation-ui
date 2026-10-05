@@ -8,11 +8,10 @@ import { getUiToneClassName } from "../uiClasses";
 
 import styles from "./CheckBox.module.scss";
 
-import type { UiBaseProps, UiTone } from "../types";
+import type { UiBaseProps } from "../types";
 
 interface CheckBoxProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "checked" | "value" | "onChange" | "type">, UiBaseProps<boolean> {
-	tone?: UiTone;
 	noWrap?: boolean;
 	/** Показывает частично выбранную группу и публикует `aria-checked="mixed"`. */
 	indeterminate?: boolean;
@@ -33,7 +32,6 @@ export function CheckBox({
 	value,
 	noWrap,
 	id: externalId,
-	tone = "neutral",
 	indeterminate = false,
 	...props
 }: CheckBoxProps) {
@@ -53,7 +51,7 @@ export function CheckBox({
 			className={cn(uiStyles.uiElement, size && uiStyles.uiSizable, size && uiStyles[size], disabled && uiStyles.disabled, className)}
 			aria-disabled={disabled || undefined}>
 			<div className={styles.row}>
-				<div className={cn(styles.wrapper, getUiToneClassName(tone))}>
+				<div className={cn(styles.wrapper, getUiToneClassName("neutral"))}>
 					<input
 						{...props}
 						ref={setInputNode}

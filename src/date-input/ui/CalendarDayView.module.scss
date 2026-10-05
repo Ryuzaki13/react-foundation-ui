@@ -7,11 +7,12 @@
 	grid-template-columns: repeat(7, 1fr);
 	text-align: center;
 	margin-bottom: var(--space-sm);
-	color: var(--content-1);
+	color: var(--text-secondary);
 }
 
 .weekday {
 	font-size: var(--font-size-xs);
+	color: var(--text-disabled);
 }
 
 .daysGrid {
@@ -26,28 +27,27 @@
 }
 
 .day {
-	--range-radius: calc(var(--control-height) / 2);
+	// --range-radius: calc(var(--control-height) / 2);
 
 	height: var(--control-height);
 	cursor: pointer;
 	border-radius: var(--radius-xs);
 	border: var(--border-width) solid transparent;
-	background-color: var(--surface-1);
+	background-color: var(--bg-elevated);
 
 	&:hover:not(.disabled) {
-		background-color: var(--accent-fill-hover);
-		color: var(--accent-text-hover);
-		border-color: var(--accent-border-hover);
+		background-color: var(--bg-hover);
+		border-color: var(--border-interactive);
+		color: var(--text-primary);
 	}
 
 	&.outsideMonth {
 		background-color: transparent;
-		color: var(--content-2);
-		font-size: var(--font-size-sm);
+		color: var(--text-muted);
 	}
 
 	&.periodSelection:hover:not(.disabled):not(.periodPreview):not(.selected) {
-		background-color: var(--surface-1);
+		background-color: var(--bg-hover);
 	}
 
 	&.periodSelection.outsideMonth:hover:not(.disabled):not(.periodPreview):not(.selected) {
@@ -55,40 +55,40 @@
 	}
 
 	&.periodPreview {
-		background-color: var(--accent-fill);
-		color: var(--content-0);
+		background-color: var(--bg-hover);
+		color: var(--text-primary);
 	}
 
 	&.range {
-		background-color: var(--accent-fill);
-		color: var(--accent-text);
+		border-color: var(--border-accent);
+		background-color: var(--selection-bg);
+		color: var(--selection-text);
 	}
 
-	&.rangeStart {
-		border-top-left-radius: var(--range-radius);
-		border-bottom-left-radius: var(--range-radius);
-	}
+	// &.rangeStart {
+	// 	border-top-left-radius: var(--range-radius);
+	// 	border-bottom-left-radius: var(--range-radius);
+	// }
 
-	&.rangeEnd {
-		border-top-right-radius: var(--range-radius);
-		border-bottom-right-radius: var(--range-radius);
-	}
+	// &.rangeEnd {
+	// 	border-top-right-radius: var(--range-radius);
+	// 	border-bottom-right-radius: var(--range-radius);
+	// }
 
 	&.selected,
 	&.rangeStart,
 	&.rangeEnd {
-		background-color: var(--accent-fill);
-		color: var(--accent-text);
-		font-weight: 600;
-		font-variation-settings: "wght" 600;
+		border-color: var(--border-accent);
+		background-color: var(--selection-bg);
+		color: var(--selection-text);
 	}
 
 	&.weekend:not(.selected):not(.range):not(.rangeStart):not(.rangeEnd) {
-		color: var(--error-fill);
+		color: var(--error-text);
 	}
 
 	&.disabled {
-		color: var(--content-2);
+		color: var(--text-muted);
 		cursor: not-allowed;
 
 		&:hover {
@@ -97,8 +97,7 @@
 	}
 
 	&.now {
-		background-color: var(--accent-soft);
-		color: var(--accent-text);
-		border-color: var(--accent-border);
+		background-color: var(--accent-brand);
+		color: var(--text-inverse);
 	}
 }

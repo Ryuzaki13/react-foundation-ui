@@ -96,10 +96,10 @@ export const Controlled: Story = {
 		<div>
 			<p>Подтвердите выполнение действия.</p>
 			<div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-				<Button variant="transparent" onClick={close}>
+				<Button appearance="transparent" onClick={close}>
 					Отмена
 				</Button>
-				<Button variant="success" onClick={close}>
+				<Button tone="success" appearance="solid" onClick={close}>
 					Подтвердить
 				</Button>
 			</div>

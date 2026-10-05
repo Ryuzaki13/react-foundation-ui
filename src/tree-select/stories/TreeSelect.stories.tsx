@@ -15,7 +15,7 @@ function TreeSelectStoryCanvas({ args, updateArgs }: { args: TreeSelectProps; up
 					updateArgs({ value, fieldError: value ? undefined : args.fieldError });
 				}}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
 				Текущее значение: {args.value ? `${args.value.codeKey}=${args.value.value}` : "пусто"}
 			</div>
 		</div>

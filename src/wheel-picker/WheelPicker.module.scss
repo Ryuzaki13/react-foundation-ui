@@ -11,7 +11,7 @@
 	height: 100%;
 	border: var(--border);
 	border-radius: var(--radius-sm);
-	background: linear-gradient(to bottom, var(--surface-0), transparent 18%, transparent 82%, var(--surface-0)), var(--surface-1);
+	background: linear-gradient(to bottom, var(--bg-canvas), transparent 18%, transparent 82%, var(--bg-canvas)), var(--bg-surface);
 	overflow: hidden;
 }
 
@@ -50,7 +50,7 @@
 	justify-content: center;
 	scroll-snap-align: center;
 	background: transparent;
-	color: var(--content-2);
+	color: var(--text-muted);
 	font-family: var(--font-family-mono);
 	font-variant-numeric: tabular-nums;
 	transition:
@@ -59,7 +59,7 @@
 		font-variation-settings var(--transition-fast) ease;
 
 	&[data-selected] {
-		color: var(--content-0);
+		color: var(--text-primary);
 		font-weight: 600;
 		font-variation-settings: "wght" 600;
 	}

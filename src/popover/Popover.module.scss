@@ -1,23 +1,23 @@
 .tooltipPanel {
 	padding: var(--space-sm);
-	// background-image: radial-gradient(var(--surface-0) 50%, var(--surface-1) 100%);
-	background-color: var(--surface-1);
-	border: var(--border-width) solid var(--border-2);
+	// background-image: radial-gradient(var(--bg-canvas) 50%, var(--bg-surface) 100%);
+	background-color: var(--bg-surface);
+	border: var(--border-width) solid var(--border-strong);
 	border-radius: var(--radius-sm);
-	color: var(--content-0);
+	color: var(--text-primary);
 
-	filter: drop-shadow(var(--shadow-sm));
+	filter: drop-shadow(var(--shadow-popover));
 
 	&.negative {
-		--border-1: var(--content-0);
+		--border-thin: var(--text-primary);
 
-		background-color: var(--content-0);
-		border-color: var(--border-1);
-		color: var(--surface-1);
+		background-color: var(--text-primary);
+		border-color: var(--border-thin);
+		color: var(--bg-surface);
 	}
 
 	&.information {
-		--border-1: var(--info-text);
+		--border-thin: var(--info-text);
 
 		background-color: var(--info-text);
 		border-color: var(--info-text);
@@ -25,7 +25,7 @@
 	}
 
 	&.error {
-		--border-1: var(--error-text);
+		--border-thin: var(--error-text);
 
 		background-color: var(--error-text);
 		border-color: var(--error-text);
@@ -33,7 +33,7 @@
 	}
 
 	&.warning {
-		--border-1: var(--warning-text);
+		--border-thin: var(--warning-text);
 
 		background-color: var(--warning-text);
 		border-color: var(--warning-text);
@@ -41,7 +41,7 @@
 	}
 
 	&.success {
-		--border-1: var(--success-text);
+		--border-thin: var(--success-text);
 
 		background-color: var(--success-text);
 		border-color: var(--success-text);

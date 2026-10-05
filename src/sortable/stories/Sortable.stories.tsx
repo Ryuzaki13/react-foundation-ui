@@ -16,7 +16,7 @@ const itemStyle: CSSProperties = {
 	padding: "var(--space-sm)",
 	border: "var(--border)",
 	borderRadius: "var(--radius-sm)",
-	background: "var(--surface-0)"
+	background: "var(--bg-canvas)"
 };
 
 const verticalItems = ["Alpha", "Bravo", "Charlie", "Delta"];
@@ -249,7 +249,7 @@ function NestedContainersCanvas({ args, onTopItemsChange }: { args: SortablePrev
 													id={item}
 													style={{
 														...itemStyle,
-														background: "var(--surface-1)"
+														background: "var(--bg-surface)"
 													}}>
 													<Sortable.DragHandle as="button" title={`Перетащить ${item}`} />
 													<div>{item}</div>

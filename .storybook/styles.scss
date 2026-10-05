@@ -7,35 +7,15 @@
  * пользовательскую тему при встраивании опубликованного Storybook в host.
  */
 :root[data-theme="light:default"] {
-	@include foundationThemes.theme(
-		light,
-		(
-			status: (
-				accent: (
-					text: #a16200,
-					border: #f19a4c,
-					fill: #ffdc8a,
-					on-fill: #000000
-				)
-			)
-		)
-	);
+	color-scheme: light;
+
+	@include foundationThemes.theme(light);
 }
 
 :root[data-theme="dark:default"] {
-	@include foundationThemes.theme(
-		dark,
-		(
-			status: (
-				accent: (
-					text: #00bdff,
-					border: #00bdff,
-					fill: #05263f,
-					on-fill: #ffffff
-				)
-			)
-		)
-	);
+	color-scheme: dark;
+
+	@include foundationThemes.theme(dark);
 }
 
 :root {
@@ -45,16 +25,16 @@
 		--hc-white: #ffffff;
 		--hc-black: #000000;
 
-		--hc-surface-0: #ffffff;
-		--hc-surface-1: #ffffff;
-		--hc-surface-2: #ffffff;
-		--hc-content-0: #000000;
-		--hc-content-1: #000000;
-		--hc-content-2: #000000;
+		--hc-bg-canvas: #ffffff;
+		--hc-bg-surface: #ffffff;
+		--hc-bg-elevated: #ffffff;
+		--hc-text-primary: #000000;
+		--hc-text-secondary: #000000;
+		--hc-text-muted: #000000;
 
-		--hc-border-0: #595959;
-		--hc-border-1: #595959;
-		--hc-border-2: #595959;
+		--hc-border-default: #595959;
+		--hc-border-subtle: #595959;
+		--hc-border-strong: #595959;
 		--hc-border-focus: #0044ff;
 		--hc-focus-ring: #0044ff;
 

@@ -32,8 +32,8 @@ type Story = StoryObj<typeof meta>;
 const shellStyle: CSSProperties = {
 	minHeight: "100vh",
 	padding: "32px 24px 160px",
-	background: "linear-gradient(180deg, color-mix(in srgb, var(--surface-1) 82%, transparent) 0%, var(--surface-0) 100%)",
-	color: "var(--content-0)"
+	background: "linear-gradient(180deg, color-mix(in srgb, var(--bg-surface) 82%, transparent) 0%, var(--bg-canvas) 100%)",
+	color: "var(--text-primary)"
 };
 
 const contentStyle: CSSProperties = {
@@ -47,8 +47,8 @@ const introStyle: CSSProperties = {
 	padding: 20,
 	border: "var(--border)",
 	borderRadius: "var(--radius-md)",
-	background: "var(--surface-0)",
-	boxShadow: "var(--shadow-sm)"
+	background: "var(--bg-canvas)",
+	boxShadow: "var(--shadow-card)"
 };
 
 const panelGridStyle: CSSProperties = {
@@ -61,8 +61,8 @@ const panelStyle: CSSProperties = {
 	padding: 20,
 	border: "var(--border)",
 	borderRadius: "var(--radius-md)",
-	background: "var(--surface-0)",
-	boxShadow: "var(--shadow-sm)",
+	background: "var(--bg-canvas)",
+	boxShadow: "var(--shadow-card)",
 	display: "grid",
 	gap: 12,
 	alignContent: "start"
@@ -99,7 +99,7 @@ function NotificationsStoryShell({ children, hostProps }: PropsWithChildren<{ ho
 				<div style={contentStyle}>
 					<div style={introStyle}>
 						<h2 style={{ margin: 0, fontSize: "var(--font-size-xl)" }}>Демонстрация очереди уведомлений</h2>
-						<p style={{ margin: "12px 0 0", color: "var(--content-1)" }}>
+						<p style={{ margin: "12px 0 0", color: "var(--text-secondary)" }}>
 							Хост закреплён в левом нижнем углу и использует общие токены проекта: `surface`, `content`, `status` и
 							семантические `tone-*`. Внутри историй можно проверить лимит очереди, sticky-уведомления и сценарий длительной
 							операции с обновлением одного уведомления.
@@ -152,7 +152,7 @@ function ShowcaseSeed() {
 	return (
 		<div style={panelStyle}>
 			<h3 style={{ margin: 0 }}>Снимок состояний</h3>
-			<p style={{ margin: 0, color: "var(--content-1)" }}>
+			<p style={{ margin: 0, color: "var(--text-secondary)" }}>
 				История сразу заполняет очередь всеми типами уведомлений, чтобы оценить цвет, иконки, контраст и читаемость текста.
 			</p>
 		</div>
@@ -188,7 +188,7 @@ function PlaygroundPanel() {
 		<div style={panelGridStyle}>
 			<section style={panelStyle}>
 				<h3 style={{ margin: 0 }}>Базовые сценарии</h3>
-				<p style={{ margin: 0, color: "var(--content-1)" }}>
+				<p style={{ margin: 0, color: "var(--text-secondary)" }}>
 					Вызовы через `useNotify` подходят для UI-логики внутри React-компонентов.
 				</p>
 
@@ -248,13 +248,14 @@ function PlaygroundPanel() {
 
 			<section style={panelStyle}>
 				<h3 style={{ margin: 0 }}>Долгая операция</h3>
-				<p style={{ margin: 0, color: "var(--content-1)" }}>
+				<p style={{ margin: 0, color: "var(--text-secondary)" }}>
 					Сценарий имитирует `notify.progress`: создаёт одно sticky-уведомление и затем обновляет его по тому же `id`.
 				</p>
 
 				<div style={buttonGridStyle}>
 					<Button
-						variant="neutralOutline"
+						tone="neutral"
+						appearance="outline"
 						icon={<BellRingIcon />}
 						onClick={() => {
 							const progressId = api.push({
@@ -271,7 +272,8 @@ function PlaygroundPanel() {
 					</Button>
 
 					<Button
-						variant="neutralOutline"
+						tone="neutral"
+						appearance="outline"
 						icon={<RefreshCwIcon />}
 						onClick={() => {
 							updateProgress("Обработано 68% записей. Формирую итоговый архив...");
@@ -314,14 +316,15 @@ function PlaygroundPanel() {
 
 			<section style={panelStyle}>
 				<h3 style={{ margin: 0 }}>Toast-стек и история</h3>
-				<p style={{ margin: 0, color: "var(--content-1)" }}>
+				<p style={{ margin: 0, color: "var(--text-secondary)" }}>
 					Toast-host отображает не более 6 уведомлений, а история сохраняет все записи. Кнопка ниже создаёт 8 элементов для
 					проверки обоих представлений. Сейчас в истории: {history.length}.
 				</p>
 
 				<div style={buttonGridStyle}>
 					<Button
-						variant="neutralOutline"
+						tone="neutral"
+						appearance="outline"
 						icon={<RefreshCwIcon />}
 						onClick={() => {
 							for (let index = 1; index <= 8; index += 1) {
@@ -348,7 +351,7 @@ function PlaygroundPanel() {
 					</Button>
 
 					<Button
-						variant="transparent"
+						appearance="transparent"
 						icon={<Trash2Icon />}
 						onClick={() => {
 							resetProgress();
@@ -357,7 +360,7 @@ function PlaygroundPanel() {
 						Скрыть toast
 					</Button>
 
-					<Button variant="transparent" icon={<Trash2Icon />} onClick={() => api.clearHistory()}>
+					<Button appearance="transparent" icon={<Trash2Icon />} onClick={() => api.clearHistory()}>
 						Очистить историю
 					</Button>
 				</div>

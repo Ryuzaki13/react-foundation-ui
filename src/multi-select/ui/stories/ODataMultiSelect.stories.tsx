@@ -47,7 +47,7 @@ function ODataMultiSelectStoryCanvas({
 					updateArgs({ value });
 				}}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
 				Текущее значение: {args.value.length ? args.value.join(", ") : "пусто"}
 			</div>
 		</div>
@@ -81,7 +81,7 @@ function LinkedFiltersDemo() {
 					width={30}
 				/>
 			))}
-			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
+			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
 				<div>Общий снимок: {JSON.stringify(selection.values)}</div>
 			</div>
 		</div>

@@ -6,7 +6,7 @@ import styles from "./StatusIndicator.module.scss";
 
 import type { UiSize, UiTone } from "../types";
 
-export type StatusIndicatorTone = Exclude<UiTone, "brand">;
+export type StatusIndicatorTone = Exclude<UiTone, "accent" | "brand">;
 export type StatusIndicatorSize = Extract<UiSize, "sm" | "md" | "lg">;
 
 export interface StatusIndicatorProps extends Omit<HTMLAttributes<HTMLSpanElement>, "children"> {
@@ -16,7 +16,6 @@ export interface StatusIndicatorProps extends Omit<HTMLAttributes<HTMLSpanElemen
 }
 
 const toneClasses: Record<StatusIndicatorTone, string> = {
-	accent: styles.accent,
 	neutral: styles.neutral,
 	info: styles.info,
 	success: styles.success,

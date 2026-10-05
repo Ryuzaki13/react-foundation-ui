@@ -64,7 +64,7 @@ export const FixedContain: Story = {
 		layout: "contain",
 		width: "min(100%, 48rem)",
 		height: "24rem",
-		wrapperStyle: { background: "var(--surface-1)" }
+		wrapperStyle: { background: "var(--bg-surface)" }
 	}
 };
 

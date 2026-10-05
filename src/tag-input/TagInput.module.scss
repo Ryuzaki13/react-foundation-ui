@@ -1,5 +1,4 @@
 @use "@/styles/mixins" as *;
-@use "@/styles/tone-derived" as toneDerived;
 
 .control {
 	min-height: var(--control-height);
@@ -10,13 +9,9 @@
 	padding: calc(var(--space-xs) / 2) var(--space-sm);
 	cursor: text;
 
-	--ui-color: var(--content-0);
-	--ui-color-hover: var(--content-0);
-	--ui-color-active: var(--content-0);
-
 	&[data-readonly] {
 		cursor: default;
-		background-color: var(--surface-1);
+		background-color: var(--bg-surface);
 	}
 }
 
@@ -33,59 +28,6 @@
 	padding: 0;
 }
 
-.tag {
-	@include ui-static-surface;
-
-	--ui-color: var(--content-0);
-	--ui-background: var(--surface-2);
-	--ui-border-color: var(--border-0);
-
-	min-width: 0;
-	max-width: 100%;
-	display: inline-flex;
-	align-items: center;
-	gap: var(--space-xs);
-	padding: calc(var(--space-xs) / 2) var(--space-xs);
-	font-size: var(--font-size-sm);
-}
-
-.tagText {
-	min-width: 0;
-	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-}
-
-.removeButton {
-	display: inline-flex;
-	align-items: center;
-	justify-content: center;
-	flex-shrink: 0;
-	width: 1.25em;
-	height: 1.25em;
-	padding: 0;
-	border: none;
-	border-radius: var(--radius-xs);
-	background: transparent;
-	color: inherit;
-	transition:
-		color var(--transition-fast) ease,
-		background-color var(--transition-fast) ease;
-
-	&:hover {
-		@include toneDerived.tone-soft-declaration("background-color", "error");
-		color: var(--error-text);
-	}
-
-	&:focus-visible {
-		@include focusVisible;
-	}
-
-	svg {
-		display: block;
-	}
-}
-
 .input {
 	min-width: 8ch;
 	min-height: calc(var(--control-height) - var(--space-xs) - (var(--border-width) * 2));
@@ -98,7 +40,7 @@
 	font: inherit;
 
 	&::placeholder {
-		color: var(--content-2);
+		color: var(--text-muted);
 	}
 
 	&:read-only {

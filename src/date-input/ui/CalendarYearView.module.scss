@@ -12,30 +12,31 @@
 	height: var(--control-height);
 	cursor: pointer;
 	border-radius: var(--radius-xs);
-	// font-size: var(--font-size-sm);
-
-	background-color: var(--surface-1);
+	border: var(--border-width) solid transparent;
+	background-color: var(--bg-elevated);
 
 	&:hover:not(.disabled) {
-		background-color: var(--accent-fill);
+		background-color: var(--bg-hover);
+		border-color: var(--border-interactive);
+		color: var(--text-primary);
 	}
 
 	&.range {
-		background-color: var(--accent-fill);
-		color: var(--content-0);
+		border-color: var(--border-accent);
+		background-color: var(--selection-bg);
+		color: var(--selection-text);
 	}
 
 	&.selected,
 	&.rangeStart,
 	&.rangeEnd {
-		background-color: var(--accent-fill);
-		color: var(--accent-text);
-		font-weight: 600;
-		font-variation-settings: "wght" 600;
+		border-color: var(--border-accent);
+		background-color: var(--selection-bg);
+		color: var(--selection-text);
 	}
 
 	&.disabled {
-		color: var(--content-2);
+		color: var(--text-muted);
 		cursor: not-allowed;
 
 		&:hover {

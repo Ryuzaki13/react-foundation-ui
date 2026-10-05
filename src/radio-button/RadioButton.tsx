@@ -9,12 +9,10 @@ import { getUiToneClassName } from "../uiClasses";
 
 import styles from "./RadioButton.module.scss";
 
-import type { UiBaseProps, UiTone } from "../types";
+import type { UiBaseProps } from "../types";
 
 export interface RadioButtonProps
-	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "checked" | "value" | "onChange" | "type">, UiBaseProps<boolean> {
-	tone?: UiTone;
-}
+	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "checked" | "value" | "onChange" | "type">, UiBaseProps<boolean> {}
 
 /**
  * Компонент радиокнопки для выбора одного варианта.
@@ -32,7 +30,6 @@ export function RadioButton({
 	onChange,
 	value,
 	id: externalId,
-	tone = "neutral",
 	...props
 }: RadioButtonProps) {
 	const autoId = useId();
@@ -51,7 +48,7 @@ export function RadioButton({
 				className
 			)}>
 			<div className={baseStyles.row}>
-				<div className={cn(baseStyles.wrapper, getUiToneClassName(tone))}>
+				<div className={cn(baseStyles.wrapper, getUiToneClassName("neutral"))}>
 					<input
 						{...props}
 						id={id}

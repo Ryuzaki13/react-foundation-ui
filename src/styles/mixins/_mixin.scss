@@ -127,7 +127,7 @@
 		@error "resize-handle-dots поддерживает только horizontal, vertical или null.";
 	}
 
-	// background-color: var(--border-0);
+	// background-color: var(--border-default);
 	overflow: hidden;
 
 	&::after {
@@ -138,7 +138,7 @@
 		width: $width;
 		height: $height;
 		transform: translate(-50%, -50%);
-		background-image: radial-gradient(circle, var(--content-1) 1px, transparent 1px);
+		background-image: radial-gradient(circle, var(--text-secondary) 1px, transparent 1px);
 		background-size: 4px 4px;
 		background-repeat: repeat;
 		pointer-events: none;
@@ -157,10 +157,10 @@
 
 	&:hover,
 	&:focus-visible {
-		background-color: var(--border-1);
+		background-color: var(--border-thin);
 	}
 
 	&:active {
-		background-color: var(--border-2);
+		background-color: var(--border-strong);
 	}
 }

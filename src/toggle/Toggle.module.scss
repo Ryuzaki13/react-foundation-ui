@@ -20,17 +20,23 @@
 	appearance: none;
 	cursor: pointer;
 
+	background-color: var(--bg-elevated);
+
+	&:hover {
+		background-color: var(--bg-hover);
+	}
+
 	&:checked + .track {
 		.thumb {
 			transform: translateX(100%);
 		}
 
 		.unchecked {
-			color: var(--content-2);
+			color: var(--text-muted);
 		}
 
 		.checked {
-			color: var(--accent-on-fill);
+			color: var(--selection-text);
 		}
 	}
 
@@ -41,11 +47,11 @@
 
 .track {
 	.unchecked {
-		color: var(--accent-on-fill);
+		color: var(--selection-text);
 	}
 
 	.checked {
-		color: var(--content-2);
+		color: var(--text-muted);
 	}
 
 	position: absolute;
@@ -86,7 +92,7 @@
 	width: 50%; // calc(50% - var(--border-width));
 	height: 100%; // calc(100% - var(--border-width) * 2);
 	border-radius: var(--radius-xs);
-	background-color: var(--accent-fill);
+	background-color: var(--selection-bg);
 	transition:
 		transform var(--transition-fast) ease-in-out,
 		opacity var(--transition-fast) ease-in-out;

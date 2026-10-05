@@ -10,8 +10,8 @@
 
 	border: var(--border);
 	border-radius: var(--modal-border-radius);
-	background-color: var(--surface-1);
-	box-shadow: var(--shadow-lg);
+	background-color: var(--bg-surface);
+	box-shadow: var(--shadow-popover);
 
 	&:not(:last-child) {
 		pointer-events: none;
@@ -26,24 +26,23 @@
 }
 
 .header {
+	padding: var(--space-sm) var(--space-md);
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 	border-top-left-radius: var(--modal-border-radius);
 	border-top-right-radius: var(--modal-border-radius);
 }
 
 .headerText {
 	margin: 0;
-	padding-inline: var(--space-md);
 	font-size: var(--font-size-md);
 	font-variation-settings: "wght" 600;
+	font-weight: 600;
 }
 
 .headerButton {
-	margin-block: var(--space-xs);
-	margin-inline: var(--space-sm);
 	flex: 0;
 }
 

@@ -23,7 +23,7 @@ export const Basic: Story = {
 
 		return (
 			<div style={{ display: "grid", gap: "var(--space-md)", justifyItems: "start" }}>
-				<Button type="button" variant="infoOutline" onClick={() => setOpened(true)}>
+				<Button type="button" tone="info" appearance="outline" onClick={() => setOpened(true)}>
 					Открыть сканер
 				</Button>
 				{result ? (

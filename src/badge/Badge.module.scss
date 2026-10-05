@@ -1,9 +1,9 @@
 @use "@/styles/mixins" as *;
-@use "@/styles/tone-derived" as toneDerived;
 
 .badge {
 	@include ui-static-surface;
 
+	border-radius: var(--radius-xs);
 	display: inline-flex;
 	align-items: center;
 	gap: var(--space-xs);
@@ -62,7 +62,7 @@
 		scale var(--transition-fast) ease;
 
 	&:hover {
-		@include toneDerived.tone-soft-declaration("background-color", "error");
+		background-color: var(--error-fill);
 		color: var(--error-text);
 		scale: 1.1;
 	}

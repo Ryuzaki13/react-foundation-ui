@@ -18,7 +18,7 @@ import { Disclosure, DisclosureGroup } from "../../disclosure";
 import { DropZone } from "../../drop-zone";
 import { ExpandableActionPanel } from "../../expandable-action-panel";
 import { GridContainer } from "../../grid";
-import { InputNumber, InputText } from "../../input";
+import { InputErrorComponent, InputNumber, InputText } from "../../input";
 import { InputFile } from "../../input-file";
 import { InputFiles } from "../../input-files";
 import { InputImage } from "../../input-image";
@@ -50,7 +50,7 @@ const gridStyle = {
 	alignItems: "start",
 	gap: "2em",
 	padding: "2em",
-	background: "var(--surface-2)"
+	background: "var(--bg-canvas)"
 } satisfies CSSProperties;
 
 const cardStyle = {
@@ -60,19 +60,19 @@ const cardStyle = {
 	gap: "0.5em",
 	padding: "1em",
 	overflow: "hidden",
-	// border: "var(--border)",
+	border: "var(--border)",
 	borderRadius: "var(--radius-md)",
-	background: "var(--surface-1)",
-	boxShadow: "var(--shadow-lg)"
+	background: "var(--bg-surface)",
+	boxShadow: "var(--shadow-card)"
 
-	// backgroundImage: "radial-gradient(#e8e8e8 1.5px, transparent 1.5px), radial-gradient(#e8e8e8 1.5px, var(--surface-1) 1.5px)",
+	// backgroundImage: "radial-gradient(#e8e8e8 1.5px, transparent 1.5px), radial-gradient(#e8e8e8 1.5px, var(--bg-surface) 1.5px)",
 	// backgroundSize: "20px 20px",
 	// backgroundPosition: "0 0,10px 10px"
 } satisfies CSSProperties;
 
 const cardTitleStyle = {
 	fontWeight: 700,
-	color: "var(--content-0)"
+	color: "var(--text-primary)"
 } satisfies CSSProperties;
 
 const compactButtonStyle = {
@@ -150,7 +150,7 @@ function StatefulTreeMultiSelect({
 				optionsLayout={optionsLayout}
 				defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {JSON.stringify(value)}</div>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>Текущее значение: {JSON.stringify(value)}</div>
 		</div>
 	);
 }
@@ -195,6 +195,7 @@ export function InteractiveComponents() {
 				<Text color="primary">Основной</Text>
 				<Text color="secondary">Дополнительный</Text>
 				<Text color="muted">Приглушенный</Text>
+				<Text color="disabled">Отключенный</Text>
 				<Text color="accent">Акцентированный</Text>
 				<Text color="brand">Брендовый</Text>
 				<Text color="info">Информация</Text>
@@ -225,23 +226,44 @@ export function InteractiveComponents() {
 
 			<ComponentCard title="Button">
 				<GridContainer gap="sm" templateColumns="1fr 1fr">
-					<Button variant="transparent">Действие</Button>
-					<Button variant="ghost">Действие</Button>
-					<Button variant="neutralOutline">Действие</Button>
-					<Button variant="infoOutline">Действие</Button>
-					<Button variant="successOutline">Действие</Button>
-					<Button variant="warningOutline">Действие</Button>
-					<Button variant="errorOutline">Действие</Button>
+					<Button appearance="transparent" tone="neutral">
+						transparent
+					</Button>
+					<Button appearance="ghost" tone="neutral">
+						ghost
+					</Button>
+					<Button>neutral</Button>
+					<Button tone="accent">accent</Button>
+					<Button tone="brand">brand</Button>
+					<Button tone="info">infoOutline</Button>
+					<Button tone="success">successOutline</Button>
+					<Button tone="warning">warningOutline</Button>
+					<Button tone="error">errorOutline</Button>
 
-					<Button variant="neutral">Действие</Button>
-					<Button variant="info">Действие</Button>
-					<Button variant="success">Действие</Button>
-					<Button variant="warning">Действие</Button>
-					<Button variant="error">Действие</Button>
+					<Button appearance="solid" tone="accent">
+						accent
+					</Button>
+					<Button appearance="solid" tone="brand">
+						brand
+					</Button>
+					<Button appearance="solid" tone="info">
+						info
+					</Button>
+					<Button appearance="solid" tone="success">
+						success
+					</Button>
+					<Button appearance="solid" tone="warning">
+						warning
+					</Button>
+					<Button appearance="solid" tone="error">
+						error
+					</Button>
 				</GridContainer>
 			</ComponentCard>
 
 			<ComponentCard title="InputText">
+				<InputErrorComponent text="Ошибка элемента" />
+
 				<InputText
 					label="Текст"
 					description="Поле ввода текста"
@@ -681,7 +703,7 @@ export function InteractiveComponents() {
 
 			<ComponentCard title="ExpandableActionPanel">
 				<ExpandableActionPanel>
-					<Button variant="transparent">Действие</Button>
+					<Button appearance="transparent">Действие</Button>
 				</ExpandableActionPanel>
 			</ComponentCard>
 

@@ -36,7 +36,7 @@ export function InteractiveFloatingWindowsExample() {
 					Открыть сведения
 				</Button>
 			</FlexContainer>
-			<FloatingWindows style={{ height: "min(70dvh, 36rem)", background: "var(--surface-2)" }}>
+			<FloatingWindows style={{ height: "min(70dvh, 36rem)", background: "var(--bg-elevated)" }}>
 				{notesOpen && (
 					<FloatingWindow
 						id="notes"

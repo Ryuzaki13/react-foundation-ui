@@ -1,5 +1,4 @@
 @use "@/styles/mixins" as *;
-@use "@/styles/tone-derived" as toneDerived;
 
 .uiSizable {
 	--base-width: 100%;
@@ -31,7 +30,6 @@
 .uiErrorElement {
 	--grid-size: var(--space-sm);
 	--grid-line-size: var(--border-width);
-	@include toneDerived.tone-soft-declaration("--grid-line-color", "error");
 
 	height: var(--control-height);
 	width: 100%; // calc(10em - var(--width-add));
@@ -41,26 +39,18 @@
 	align-items: center;
 	justify-content: center;
 
-	border: var(--focus-width) solid var(--error-border);
 	border-radius: var(--radius-sm);
 	outline: none;
 
-	font-weight: 700;
 	font-variation-settings: "wght" 700;
+	font-weight: 700;
 
 	color: var(--error-text);
-	background-color: var(--surface-0);
+	border: var(--focus-width) dashed var(--error-text);
+	background-color: var(--bg-canvas);
 	background-image:
-		repeating-linear-gradient(
-			45deg,
-			var(--grid-line-color) 0 var(--grid-line-size),
-			transparent var(--grid-line-size) var(--grid-size)
-		),
-		repeating-linear-gradient(
-			-45deg,
-			var(--grid-line-color) 0 var(--grid-line-size),
-			transparent var(--grid-line-size) var(--grid-size)
-		);
+		repeating-linear-gradient(45deg, var(--error-fill) 0 var(--grid-line-size), transparent var(--grid-line-size) var(--grid-size)),
+		repeating-linear-gradient(-45deg, var(--error-fill) 0 var(--grid-line-size), transparent var(--grid-line-size) var(--grid-size));
 }
 
 .uiContainer {
@@ -76,13 +66,14 @@
 
 .uiLabelBase {
 	display: inline-block;
-	font-weight: 400;
 	font-variation-settings: "wght" 400;
+	font-weight: 400;
 }
 
 .uiLabel {
 	@extend .uiLabelBase;
 
+	color: var(--text-secondary);
 	margin-block: var(--space-xs);
 }
 
@@ -90,9 +81,9 @@
 	--paragraph-margin: 0;
 
 	padding-bottom: var(--space-xs);
-	color: var(--content-1);
-	font-weight: 300;
+	color: var(--text-muted);
 	font-variation-settings: "wght" 300;
+	font-weight: 300;
 }
 
 .uiLabel,
@@ -101,10 +92,9 @@
 }
 
 .uiPlaceholder {
-	color: var(--content-2);
-	font-weight: 100;
-	font-variation-settings: "wght" 100;
-	// font-size: var(--font-size-sm);
+	color: var(--text-muted);
+	font-variation-settings: "wght" 300;
+	font-weight: 300;
 
 	overflow: hidden;
 	text-overflow: ellipsis;
@@ -118,17 +108,32 @@
 	}
 }
 
+// общая форма для всех: поля ввода, кнопка
 .uiControl {
-	@include ui-tone("neutral");
-	@include ui-appearance-outline;
 	@include ui-control-base;
 
 	--ui-radius: var(--radius-sm);
+	height: var(--control-height);
+}
+
+// поля ввода - один единственный стиль
+.uiInputControl {
+	@extend .uiControl;
+
+	--ui-background: var(--bg-sunken);
+	--ui-color: var(--text-primary);
+	--ui-border: var(--border-interactive);
+	--ui-border-hover: var(--border-hover);
+
+	&:focus {
+		border-color: var(--focus-ring);
+	}
 
 	&.invalid,
 	&:invalid {
-		@include ui-tone("error");
-		@include ui-appearance-outline;
+		--ui-background: var(--error-fill);
+		--ui-border: var(--error-text);
+		--ui-border-hover: var(--error-hover);
 	}
 
 	&::placeholder {
@@ -136,104 +141,33 @@
 	}
 }
 
-.uiToneNeutral {
-	@include ui-tone("neutral");
-}
-
-.uiToneAccent {
-	@include ui-tone("accent");
-}
-
-.uiToneBrand {
-	@include ui-tone("brand");
-}
-
-.uiToneError {
-	@include ui-tone("error");
-}
-
-.uiToneWarning {
-	@include ui-tone("warning");
-}
-
-.uiToneSuccess {
-	@include ui-tone("success");
-}
-
-.uiToneInfo {
-	@include ui-tone("info");
-}
-
-.uiAppearanceSolid {
-	@include ui-appearance-solid;
-}
-
-.uiAppearanceOutline {
-	@include ui-appearance-outline;
-}
-
-.uiAppearanceGhost {
-	@include ui-appearance-ghost;
-}
-
-.uiAppearanceTransparent {
-	@include ui-appearance-transparent;
-}
-
-.uiInputControl {
-	@extend .uiControl;
-
-	height: var(--control-height);
-}
-
 .uiInputWithToggle {
 	@extend .uiInputControl;
-
-	color: var(--content-0);
 
 	padding: 0 var(--padding-right) 0 var(--space-sm);
 	width: 100%;
 	text-align: left;
-
-	// &[type="button"] {
-	// 	white-space: nowrap;
-	// }
 }
 
 .uiSelectionControl {
 	@include ui-control-base;
-
-	--ui-color: var(--content-0);
-	--ui-color-hover: var(--content-0);
-	--ui-color-active: var(--content-0);
-	--ui-background: var(--surface-0);
-	--ui-background-hover: var(--ui-tone-soft);
-	--ui-background-active: var(--ui-tone-soft);
-	--ui-border-color: var(--ui-tone-border);
-	--ui-border-hover: var(--ui-tone-border-hover);
-	--ui-border-active: var(--ui-tone-border-active);
-	--ui-border-focus: var(--ui-tone-border-focus);
 
 	appearance: none;
 	margin: 0;
 	cursor: pointer;
 
 	&:checked {
-		border-color: var(--ui-tone-border-active);
-
 		& + .uiSelectionIcon {
-			color: var(--ui-tone-text);
+			color: var(--text-primary);
 		}
 	}
 
 	&:disabled {
 		cursor: default;
 
-		border-color: var(--border-0);
-
 		&:checked {
 			& + .uiSelectionIcon {
-				color: var(--border-0);
+				color: var(--text-disabled);
 			}
 		}
 	}
@@ -262,7 +196,7 @@
 
 		.uiLabel,
 		.uiDescription {
-			color: var(--content-2);
+			color: var(--text-disabled);
 		}
 
 		.uiPlaceholder,
@@ -285,19 +219,19 @@
 }
 
 .uiPanelTonePrimary {
-	--ui-panel-background: var(--surface-0);
+	--ui-panel-background: var(--bg-canvas);
 }
 
 .uiPanelToneSecondary {
-	--ui-panel-background: var(--surface-1);
+	--ui-panel-background: var(--bg-surface);
 }
 
 .uiPanelToneTertiary {
-	--ui-panel-background: var(--surface-2);
+	--ui-panel-background: var(--bg-elevated);
 }
 
 .uiFilledPanel {
-	background-color: var(--ui-panel-background, var(--surface-0));
+	background-color: var(--ui-panel-background, var(--bg-canvas));
 }
 
 .uiFramedPanel {
@@ -309,14 +243,6 @@
 .uiPanel {
 	@extend .uiFramedPanel;
 	@extend .uiFilledPanel;
-}
-
-.uiStateFocus {
-	@include focusVisible;
-
-	background-color: var(--surface-1);
-	border-color: var(--border-1);
-	cursor: pointer;
 }
 
 .uiOptionBase {
@@ -340,7 +266,7 @@
 	border-radius: var(--radius-sm);
 	border: none;
 	background-color: transparent;
-	color: var(--content-0);
+	color: var(--text-primary);
 
 	transition:
 		background-color var(--transition-fast) ease,
@@ -356,12 +282,12 @@
 
 	.uiMenuOptionIcon,
 	.keyboard {
-		color: var(--content-2);
+		color: var(--text-muted);
 	}
 
 	&.selected {
-		color: var(--accent-on-fill);
-		background-color: var(--accent-fill);
+		color: var(--selection-text);
+		background-color: var(--selection-bg);
 		cursor: default;
 
 		// Вторичный код должен сохранять контраст выбранной строки, а не брать приглушённый content-цвет.
@@ -371,17 +297,14 @@
 	}
 
 	@include hover(true, false) {
-		color: var(--accent-text-hover);
-		background-color: var(--accent-fill-hover);
+		background-color: var(--selection-bg-hover);
 		cursor: pointer;
 	}
 
 	// Active идёт после hover, чтобы нажатие не теряло своё состояние у мыши и touch-устройств.
 	&.uiPopupOptionActive,
 	&:active {
-		// color: var(--accent-text-active);
-		// background-color: var(--accent-fill-active);
-		outline: 1px dashed var(--accent-border);
+		outline: 1px dashed var(--selection-border);
 		outline-offset: -1px;
 
 		.uiOptionCode {
@@ -390,12 +313,11 @@
 	}
 
 	&.disabled {
-		// background-color: var(--surface-2);
-		color: var(--content-2);
+		// background-color: var(--bg-elevated);
+		color: var(--text-muted);
 	}
 
 	&:focus-within {
-		// @extend .uiStateFocus;
 		@include focusVisible;
 	}
 }
@@ -424,7 +346,8 @@
 
 .uiPopupGroupLabel {
 	padding: var(--space-xs) var(--space-sm);
-	color: var(--content-2);
+	color: var(--text-muted);
+	font-variation-settings: "wght" 300;
 	font-weight: 300;
 	text-transform: uppercase;
 	font-size: var(--font-size-sm);
@@ -436,7 +359,6 @@
 }
 
 .uiOptionText {
-	// font-size: var(--font-size-sm);
 	flex: 1;
 	min-width: 0;
 	overflow: hidden;
@@ -445,16 +367,15 @@
 }
 
 .uiOptionCode {
-	// font-size: var(--font-size-sm);
 	font-variant-numeric: tabular-nums;
-	color: var(--content-1);
-	font-weight: 300;
+	color: var(--text-secondary);
 	font-variation-settings: "wght" 300;
+	font-weight: 300;
 }
 
 .uiOptionContentEmphasize {
-	font-weight: 600;
 	font-variation-settings: "wght" 600;
+	font-weight: 600;
 }
 
 .uiToggleButtonContainer {
@@ -489,10 +410,11 @@
 }
 
 .uiToggleButton {
-	color: var(--content-2);
+	color: var(--text-muted);
+	transition: color var(--transition-fast) ease-in-out;
 
 	&:hover {
-		color: var(--content-0);
+		color: var(--text-primary);
 	}
 }
 
@@ -537,4 +459,97 @@
 .uiButtonSeparator {
 	border-left: var(--border);
 	height: calc(100% - var(--space-sm));
+}
+
+// ---
+
+.uiToneNeutral {
+	--ui-background: var(--bg-elevated);
+	--ui-color: var(--text-primary);
+	--ui-border: var(--border-interactive);
+
+	--ui-background-hover: var(--bg-hover);
+	--ui-background-pressed: var(--bg-pressed);
+}
+
+.uiToneAccent {
+	--tone-fill: var(--accent-brand);
+	--tone-on-fill: var(--text-inverse);
+	--tone-border: var(--accent-brand);
+
+	--tone-fill-hover: var(--accent-brand-hover);
+	--tone-fill-pressed: var(--accent-brand-pressed);
+}
+
+.uiToneBrand {
+	--tone-fill: var(--accent-selection);
+	--tone-on-fill: var(--text-inverse);
+	--tone-border: var(--accent-selection);
+
+	--tone-fill-hover: var(--accent-selection-hover);
+	--tone-fill-pressed: var(--accent-selection-pressed);
+}
+
+.uiToneError {
+	--tone-fill: var(--error-text);
+	--tone-on-fill: var(--error-fill);
+	--tone-border: var(--error-text);
+
+	--tone-fill-hover: var(--error-hover);
+	--tone-fill-pressed: var(--error-pressed);
+}
+
+.uiToneWarning {
+	--tone-fill: var(--warning-text);
+	--tone-on-fill: var(--warning-fill);
+	--tone-border: var(--warning-text);
+
+	--tone-fill-hover: var(--warning-hover);
+	--tone-fill-pressed: var(--warning-pressed);
+}
+
+.uiToneSuccess {
+	--tone-fill: var(--success-text);
+	--tone-on-fill: var(--success-fill);
+	--tone-border: var(--success-text);
+
+	--tone-fill-hover: var(--success-hover);
+	--tone-fill-pressed: var(--success-pressed);
+}
+
+.uiToneInfo {
+	--tone-fill: var(--info-text);
+	--tone-on-fill: var(--info-fill);
+	--tone-border: var(--info-text);
+
+	--tone-fill-hover: var(--info-hover);
+	--tone-fill-pressed: var(--info-pressed);
+}
+
+.uiAppearanceSolid {
+	--ui-background: var(--tone-fill);
+	--ui-color: var(--tone-on-fill);
+	--ui-border: transparent;
+
+	--ui-background-hover: var(--tone-fill-hover);
+	--ui-background-pressed: var(--tone-fill-pressed);
+}
+
+.uiAppearanceOutline {
+	--ui-background: var(--tone-on-fill);
+	--ui-color: var(--tone-fill);
+	--ui-border: var(--tone-border);
+
+	--ui-background-hover: color-mix(in srgb, var(--ui-background) 90%, var(--ui-color));
+	--ui-background-pressed: color-mix(in srgb, var(--ui-background) 80%, var(--ui-color));
+}
+
+.uiAppearanceTransparent,
+.uiAppearanceGhost {
+	--ui-background: transparent;
+	--ui-color: var(--text-secondary);
+	--ui-border: transparent;
+
+	--ui-background-hover: var(--bg-hover);
+	--ui-background-pressed: var(--bg-pressed);
 }

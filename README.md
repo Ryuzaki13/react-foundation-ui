@@ -64,12 +64,12 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 	),
 	$light-theme-overrides: (
 		tokens: (
-			"--surface-0": #ffffff,
-			"--surface-1": #f6f7f9,
-			"--surface-2": #eceff3,
-			"--content-0": #111827,
-			"--content-1": #374151,
-			"--content-2": #6b7280
+			"--bg-canvas": #ffffff,
+			"--bg-surface": #f6f7f9,
+			"--bg-elevated": #eceff3,
+			"--text-primary": #111827,
+			"--text-secondary": #374151,
+			"--text-muted": #6b7280
 		)
 	)
 );
@@ -93,16 +93,16 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 	),
 	$light-theme-overrides: (
 		tokens: (
-			"--surface-0": #ffffff,
-			"--surface-1": #f6f7f9,
-			"--surface-2": #eceff3
+			"--bg-canvas": #ffffff,
+			"--bg-surface": #f6f7f9,
+			"--bg-elevated": #eceff3
 		)
 	),
 	$dark-theme-overrides: (
 		tokens: (
-			"--surface-0": #0b0b0b,
-			"--surface-1": #151515,
-			"--surface-2": #202020
+			"--bg-canvas": #0b0b0b,
+			"--bg-surface": #151515,
+			"--bg-elevated": #202020
 		)
 	)
 );
@@ -125,46 +125,42 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 ### Точные палитры host-приложения
 
-Публичный mixin `theme` принимает обычные hex-цвета для семантических схем `accent`, `brand`, `neutral`, `error`, `warning`, `success` и `info`. У каждой схемы четыре обязательные настраиваемые роли: `text`, `border`, `fill` и `on-fill`. Неуказанные значения наследуются из baseline выбранного light/dark-режима, поэтому host может переопределить одну роль без копирования всей палитры.
+Публичный mixin `theme($mode, $overrides: ())` принимает `light` или `dark` и карту `tokens` с явными CSS-переменными. У обоих режимов одинаковый набор ролей: поверхности, текст, границы, акценты, выделение, статусы, градиенты и тени. Тёмная палитра совпадает с авторской палитрой Storybook; светлая является начальной версией для дальнейшей настройки.
 
-Из четырёх ролей тема автоматически выводит переиспользуемые токены `--<tone>-text-hover`, `--<tone>-text-active`, `--<tone>-border-hover`, `--<tone>-border-active`, `--<tone>-fill-hover`, `--<tone>-fill-active` и `--<tone>-soft`. Host не передаёт их в карту `status`: единые формулы остаются владельцем UI-пакета, а прикладные стили используют готовые переменные без локального повторения `color-mix(...)`. Appearance-specific состояния вроде ghost и disabled остаются внутри соответствующих UI-компонентов.
+Каждый цвет и каждое состояние настраиваются независимо. Пакет не рассчитывает hover/pressed, границы и мягкие заливки из других цветов. Раздел `status` больше не поддерживается: его использование завершает Sass-компиляцию с указанием передать явные значения в `tokens`.
 
-Mixin `ui-tone()` применяет те же формулы локально, а не ссылается на унаследованное вычисленное значение. Благодаря этому component-scoped переопределение базовой роли, например `--brand-fill`, продолжает влиять на состояния конкретного контрола.
-
-Каждый первичный цветовой токен использует одноимённый high-contrast token перед hex fallback: например, `--error-text: var(--hc-error-text, #b91c1c)`. Цветовые значения из карты `tokens` получают такой wrapper автоматически. Это позволяет будущему contrast-режиму заменить палитру без повторной компиляции темы. Производные состояния ссылаются на базовые CSS-переменные, поэтому учитывают их переопределения в том же theme selector. Карта `tokens` имеет наивысший compile-time приоритет и остаётся escape hatch для редкого точного override любого токена. UI-пакет объединяет базовые роли, границы, производные состояния и `tokens` до генерации CSS, поэтому каждое итоговое custom property объявляется в theme selector ровно один раз.
+Приоритет значений: палитра режима → `$light-theme-overrides` / `$dark-theme-overrides` из `styles/config` → overrides конкретного вызова `theme`. Неуказанные токены наследуются из палитры выбранного режима; итоговое CSS-свойство выводится один раз. Переопределение одного вызова не изменяет конфигурацию других тем.
 
 ```scss
 @use "@ryuzaki13/react-foundation-ui/styles/themes" as foundationThemes;
 
-:root[data-theme="light:brand"] {
+:root[data-theme="dark:brand"] {
+	color-scheme: dark;
+
 	@include foundationThemes.theme(
-		light,
+		dark,
 		(
 			tokens: (
-				"--surface-0": #fffaf2,
-				"--surface-1": #f8ecd9,
-				"--focus-ring": #c2410c
-			),
-			status: (
-				accent: (
-					text: #9a3412,
-					border: #ea580c,
-					fill: #ffedd5,
-					on-fill: #431407
-				),
-				error: (
-					text: #b91c1c,
-					border: #b91c1c,
-					fill: #dc2626,
-					on-fill: #ffffff
-				)
+				"--bg-canvas": #12111c,
+				"--accent-selection": #dc78c8,
+				"--accent-selection-hover": #ef9ddd,
+				"--accent-selection-pressed": #b95ca7,
+				"--selection-bg": #35243f,
+				"--selection-bg-hover": #493052,
+				"--error-fill": #34151f,
+				"--error-fill-hover": #ff90a4,
+				"--error-fill-pressed": #ec7087
 			)
 		)
 	);
 }
 ```
 
-`accent` больше не является отдельной экспериментальной системой `--interactive-*`: это полноценная семантическая схема с теми же четырьмя ролями. Интерактивные поверхности используют её производные роли для hover/active и базовые роли для устойчивого selected-состояния. Полная карта переименований вынесена в `COLOR_TOKENS_MIGRATION.md`.
+`--border-accent`, `--focus-ring`, `--selection-border` и токены выделения текста в базовой палитре используют явные `var(...)`-ссылки. Эти ссылки сохраняются в CSS, поэтому изменение соответствующего акцента влияет на связанные роли без вычисления новых цветов. Host может заменить любую ссылку самостоятельным цветом.
+
+Цветовые Sass-значения сохраняют поддержку high contrast: например, `--error-text: var(--hc-error-text, #ff8198)`. Этот wrapper выбирает явно заданный runtime-цвет и не рассчитывает палитру. CSS-ссылки, градиенты и тени выводятся как переданы; при необходимости host задаёт их варианты контрастности явно.
+
+Mixin не выбирает selector и не выставляет `color-scheme`: ими управляет host. `light-theme` и `dark-theme` остаются сокращёнными вызовами соответствующего режима. Состав ролей и правила перехода описаны в [COLOR_TOKENS_MIGRATION.md](./COLOR_TOKENS_MIGRATION.md).
 
 ## Плавающие окна
 

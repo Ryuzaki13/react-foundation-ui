@@ -291,7 +291,7 @@ function DateInput({
 				}
 			/>
 
-			<Popover.Content background="primary" role="dialog" aria-label={props.selectsRange ? "Выбор диапазона дат" : "Выбор даты"}>
+			<Popover.Content role="dialog" aria-label={props.selectsRange ? "Выбор диапазона дат" : "Выбор даты"}>
 				<CalendarView
 					view={calendarType}
 					datePickerLevel={minDatePickerLevel}

@@ -26,30 +26,34 @@
 	align-items: center;
 	gap: var(--space-sm);
 
-	color: var(--content-2);
-	// border: var(--border-width) solid transparent;
+	color: var(--text-muted);
 	border-radius: var(--radius-xs);
 	padding: 0 var(--space-md);
 	margin: var(--border-width);
+	// border: var(--border-width) solid transparent;
 	// baseInputControl = --control-height, + borderTop/Bottom + transparentLineTop/Bottom
 	min-height: calc(var(--control-height) - calc(var(--border-width) * 4));
 
 	cursor: pointer;
 
+	background-color: var(--bg-elevated);
+	color: var(--text-muted);
+
 	&:hover {
-		color: var(--content-1);
-		background-color: var(--surface-2);
-		// border-color: var(--border-1);
+		background-color: var(--bg-hover);
+		color: var(--text-secondary);
 	}
 
 	&.checked {
-		color: var(--accent-on-fill);
-		background-color: var(--accent-fill);
-		// border-color: var(--border-0);
+		color: var(--selection-text);
+		background-color: var(--selection-bg);
+		// border-color: var(--border-accent);
 	}
 
 	&:disabled {
-		opacity: var(--disabled-opacity);
+		color: var(--ui-disabled-color, var(--text-disabled));
+		background-color: var(--ui-disabled-background, var(--bg-disabled));
+		// border-color: var(--ui-disabled-border, transparent);
 	}
 }
 
@@ -60,12 +64,3 @@
 	align-content: center;
 	gap: var(--space-sm);
 }
-
-// .radioItemIcon {
-// 	flex: 0 0 0%;
-
-// 	svg {
-// 		width: 1em;
-// 		height: 1em;
-// 	}
-// }

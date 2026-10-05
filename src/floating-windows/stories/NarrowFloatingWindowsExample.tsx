@@ -21,7 +21,7 @@ export function NarrowFloatingWindowsExample() {
 					width: "100%",
 					maxWidth: compact ? "17rem" : "24rem",
 					height: compact ? "18rem" : "27rem",
-					background: "var(--surface-2)"
+					background: "var(--bg-elevated)"
 				}}>
 				<FloatingWindow
 					id="narrow-content"

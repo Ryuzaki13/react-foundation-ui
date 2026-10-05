@@ -18,19 +18,19 @@
 }
 
 .pinnedStartBoundary {
-	box-shadow: inset var(--focus-offset) 0 0 var(--border-0);
+	box-shadow: inset var(--focus-offset) 0 0 var(--border-default);
 }
 
 .headerRow {
-	background-color: var(--surface-0);
+	background-color: var(--bg-canvas);
 }
 
 .headerCell {
 	position: relative;
 	padding: var(--space-sm) var(--space-md);
-	background-color: var(--surface-2);
+	background-color: var(--bg-elevated);
 	border-bottom: var(--border);
-	color: var(--content-0);
+	color: var(--text-primary);
 	vertical-align: middle;
 }
 
@@ -66,19 +66,19 @@
 
 	&:hover .bodyCell,
 	&:focus-visible .bodyCell {
-		background-color: var(--surface-1);
+		background-color: var(--bg-surface);
 	}
 }
 
 .bodyRowSelected {
 	.bodyCell {
-		background-color: var(--surface-1);
+		background-color: var(--bg-surface);
 	}
 }
 
 .bodyCell {
 	padding: var(--space-sm) var(--space-md);
-	background-color: var(--surface-0);
+	background-color: var(--bg-canvas);
 	border-bottom: var(--border);
 	vertical-align: middle;
 }
@@ -94,7 +94,7 @@
 
 .feedbackCell {
 	padding: var(--space-md);
-	background-color: var(--surface-0);
+	background-color: var(--bg-canvas);
 }
 
 .fetchingRow .feedbackCell {

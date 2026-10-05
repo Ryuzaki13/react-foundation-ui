@@ -30,7 +30,7 @@ export function PopoverContent({
 	closeOnOutside = true,
 	closeOnEscape = true,
 	disableOutsideClick = false,
-	background = "secondary",
+	background = "primary",
 	role,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy,

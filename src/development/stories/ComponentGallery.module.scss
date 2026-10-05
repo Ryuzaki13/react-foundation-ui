@@ -1,0 +1,52 @@
+// Витрины используют общую геометрию и токены темы, чтобы сравнение компонентов
+// оставалось одинаковым в светлом/тёмном режиме и на узком экране.
+.gallery {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 22em), 1fr));
+	align-items: start;
+	gap: 1.5em;
+	padding: 1.5em;
+	background: var(--bg-canvas);
+}
+
+.section {
+	display: grid;
+	align-content: start;
+	min-width: 0;
+	gap: 1em;
+	padding: 1em;
+	border: var(--border);
+	border-radius: var(--radius-md);
+	background: var(--bg-surface);
+
+	> h3,
+	> p {
+		margin: 0;
+	}
+}
+
+.stack {
+	display: grid;
+	min-width: 0;
+	gap: 1em;
+}
+
+.row {
+	display: flex;
+	flex-wrap: wrap;
+	align-items: center;
+	gap: 0.75em;
+	min-width: 0;
+}
+
+.subheading {
+	margin: 0;
+	color: var(--text-primary);
+	font-size: 1em;
+}
+
+// Низкоуровневая композиция picker оставляет действие на строке Option;
+// неинтерактивному содержимому нужны отступы из общей шкалы UI.
+.pickerOptionContent {
+	padding: var(--space-xs) var(--space-sm);
+}

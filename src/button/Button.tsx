@@ -8,10 +8,9 @@ import { getUiAppearanceClassName, getUiToneClassName, resolveUiScheme } from ".
 
 import styles from "./Button.module.scss";
 
-import type { UiAppearance, UiTone, UiVariant } from "../types";
+import type { UiAppearance, UiTone } from "../types";
 
 export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
-	variant?: UiVariant;
 	tone?: UiTone;
 	appearance?: UiAppearance;
 	icon?: React.ReactNode;
@@ -35,7 +34,6 @@ export function Button({
 	icon,
 	iconEnd,
 	title,
-	variant,
 	tone,
 	appearance,
 	type = "button",
@@ -44,8 +42,7 @@ export function Button({
 }: ButtonProps & { ref?: Ref<HTMLButtonElement> }) {
 	const hasChildren = Children.count(children) > 0;
 	const iconOnly = !!icon && !hasChildren;
-	const fallbackAppearance = tone && tone !== "neutral" ? "solid" : "outline";
-	const scheme = resolveUiScheme({ variant, tone, appearance, fallbackAppearance });
+	const scheme = resolveUiScheme({ tone, appearance });
 
 	// Если кнопка только с иконкой, нужен aria-label или title.
 	const computedAriaLabel = iconOnly ? (ariaLabel ?? title) : ariaLabel;
@@ -59,7 +56,7 @@ export function Button({
 			aria-label={computedAriaLabel}
 			className={cn(
 				uiStyles.uiElement,
-				uiStyles.uiInputControl,
+				uiStyles.uiControl,
 				styles.button,
 				getUiToneClassName(scheme.tone),
 				getUiAppearanceClassName(scheme.appearance),

@@ -88,7 +88,7 @@ export function Dialog({ title, description, open, onClose, size, minWidth, chil
 					styles.panel,
 					size && styles.sized,
 					size && styles[size],
-					"scrollable overscroll surface0 shadowMd paddingLg radiusMd"
+					"scrollable overscroll surface1 shadowMd paddingLg radiusMd"
 				)}
 				style={dialogStyle}>
 				{title && (

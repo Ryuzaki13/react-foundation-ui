@@ -42,7 +42,7 @@ function ODataSelectStoryCanvas({ args, updateArgs }: { args: ODataSelectStoryAr
 					updateArgs({ value });
 				}}
 			/>
-			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>Текущее значение: {args.value || "пусто"}</div>
+			<div style={{ fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>Текущее значение: {args.value || "пусто"}</div>
 		</div>
 	);
 }
@@ -75,7 +75,7 @@ export function LinkedFiltersDemo() {
 					clearable
 				/>
 			))}
-			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--content-1)" }}>
+			<div style={{ display: "grid", gap: 4, fontSize: "var(--font-size-sm)", color: "var(--text-secondary)" }}>
 				<div>Общий снимок: {JSON.stringify(selection.values)}</div>
 			</div>
 		</div>

@@ -8,11 +8,11 @@
 	position: relative;
 	padding: var(--space-md);
 	border-radius: var(--radius-md);
-	background-color: var(--surface-secondary);
+	background-color: var(--bg-elevated);
 	border: var(--border);
 
 	&.focused {
-		border-color: var(--accent-border);
+		border-color: var(--focus-ring);
 	}
 }
 

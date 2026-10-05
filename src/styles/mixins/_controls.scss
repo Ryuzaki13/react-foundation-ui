@@ -1,111 +1,33 @@
 @use "./mixin" as *;
-@use "../tone-derived" as toneDerived;
 
-@mixin ui-tone($tone) {
-	--ui-tone-text: var(--#{$tone}-text);
-	--ui-tone-fill: var(--#{$tone}-fill);
-	--ui-tone-on-fill: var(--#{$tone}-on-fill);
-	--ui-tone-border: var(--#{$tone}-border);
-	// Локальный вывод сохраняет реакцию компонента на subtree overrides базовых ролей.
-	@include toneDerived.derived-tone-declarations("ui-tone", $tone);
-	--ui-tone-border-focus: var(--focus-ring);
-	--ui-tone-ghost-hover: color-mix(in srgb, var(--#{$tone}-fill) 10%, var(--surface-0));
-	--ui-tone-ghost-active: color-mix(in srgb, var(--#{$tone}-fill) 20%, var(--surface-0));
-}
-
-@mixin ui-appearance-solid {
-	--ui-color: var(--ui-tone-on-fill);
-	--ui-color-hover: var(--ui-tone-on-fill);
-	--ui-color-active: var(--ui-tone-on-fill);
-	--ui-background: var(--ui-tone-fill);
-	--ui-background-hover: var(--ui-tone-fill-hover);
-	--ui-background-active: var(--ui-tone-fill-active);
-	--ui-border-color: transparent;
-	--ui-border-hover: transparent;
-	--ui-border-active: transparent;
-	--ui-border-focus: transparent;
-	--ui-disabled-color: var(--content-1);
-	--ui-disabled-background: color-mix(in srgb, var(--ui-tone-fill) 14%, var(--surface-2));
-	--ui-disabled-border: transparent;
-}
-
-@mixin ui-appearance-outline {
-	--ui-color: var(--ui-tone-text);
-	--ui-color-hover: var(--ui-tone-text-hover);
-	--ui-color-active: var(--ui-tone-text-active);
-	--ui-background: var(--surface-0);
-	--ui-background-hover: var(--surface-0);
-	--ui-background-active: var(--surface-0);
-	--ui-border-color: var(--ui-tone-border);
-	--ui-border-hover: var(--ui-tone-border-hover);
-	--ui-border-active: var(--ui-tone-border-active);
-	--ui-border-focus: var(--ui-tone-border-focus);
-	--ui-disabled-color: color-mix(in srgb, var(--ui-tone-text) 32%, var(--content-2));
-	--ui-disabled-background: var(--surface-0);
-	--ui-disabled-border: color-mix(in srgb, var(--ui-tone-border) 28%, var(--border-0));
-}
-
-@mixin ui-appearance-ghost {
-	--ui-color: var(--ui-tone-text);
-	--ui-color-hover: var(--ui-tone-text-hover);
-	--ui-color-active: var(--ui-tone-text-active);
-	--ui-background: transparent;
-	--ui-background-hover: var(--ui-tone-ghost-hover);
-	--ui-background-active: var(--ui-tone-ghost-active);
-	--ui-border-color: transparent;
-	--ui-border-hover: transparent;
-	--ui-border-active: transparent;
-	--ui-border-focus: transparent;
-	--ui-disabled-color: color-mix(in srgb, var(--ui-tone-text) 32%, var(--content-2));
-	--ui-disabled-background: transparent;
-	--ui-disabled-border: transparent;
-}
-
-@mixin ui-appearance-transparent {
-	--ui-color: var(--ui-tone-text);
-	--ui-color-hover: var(--ui-tone-text-hover);
-	--ui-color-active: var(--ui-tone-text-active);
-	--ui-background: transparent;
-	--ui-background-hover: transparent;
-	--ui-background-active: transparent;
-	--ui-border-color: transparent;
-	--ui-border-hover: transparent;
-	--ui-border-active: transparent;
-	--ui-border-focus: transparent;
-	--ui-disabled-color: color-mix(in srgb, var(--ui-tone-text) 32%, var(--content-2));
-	--ui-disabled-background: transparent;
-	--ui-disabled-border: transparent;
-}
-
-@mixin ui-control-base {
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border: var(--border-width) solid var(--ui-border-color);
-	border-radius: var(--ui-radius, var(--radius-sm));
-	outline: none;
-
+@mixin ui-static-surface {
+	color: var(--ui-color, inherit);
+	background-color: var(--ui-background, transparent);
+	border: var(--border-width) solid var(--ui-border, transparent);
+	border-radius: var(--ui-radius, 0);
 	transition-property: border-color, color, background-color, box-shadow, padding, opacity, transform;
 	transition-duration: var(--transition-fast);
 	transition-timing-function: ease;
+}
+
+@mixin ui-control-base {
+	@include ui-static-surface;
+
+	outline: none;
 
 	// Hover-схема применяется только там, где устройство действительно поддерживает наведение.
 	// На touch-экранах это не даёт браузеру удерживать визуальное состояние после касания.
 	@include hover(false, false) {
-		color: var(--ui-color-hover);
-		background-color: var(--ui-background-hover);
-		border-color: var(--ui-border-hover);
+		color: var(--ui-color-hover, var(--ui-color));
+		border-color: var(--ui-border-hover, var(--ui-border));
+		background-color: var(--ui-background-hover, var(--ui-background));
 	}
 
 	&:active {
-		color: var(--ui-color-active);
-		border-color: var(--ui-border-active);
-		background-color: var(--ui-background-active);
+		color: var(--ui-color-pressed, var(--ui-color));
+		border-color: var(--ui-border-pressed, var(--ui-border));
+		background-color: var(--ui-background-pressed, var(--ui-background));
 	}
-
-	// &:focus,
-	// &:focus-within {
-	// 	border-color: var(--ui-border-focus);
-	// }
 
 	&:focus-visible {
 		@include focusVisible;
@@ -115,9 +37,9 @@
 	// а ghost/transparent — без фона. Цвета задаются явно, чтобы не накапливать opacity родителей.
 	&:disabled,
 	&[data-disabled] {
-		color: var(--ui-disabled-color, var(--content-2));
-		background-color: var(--ui-disabled-background, var(--surface-2));
-		border-color: var(--ui-disabled-border, var(--overlay-backdrop));
+		color: var(--ui-disabled-color, var(--text-disabled));
+		background-color: var(--ui-disabled-background, var(--bg-disabled));
+		border-color: var(--ui-disabled-border, transparent);
 	}
 
 	&:disabled {
@@ -129,14 +51,4 @@
 		cursor: default;
 		pointer-events: none;
 	}
-}
-
-@mixin ui-static-surface {
-	color: var(--ui-color);
-	background-color: var(--ui-background);
-	border: var(--border-width) solid var(--ui-border-color);
-	border-radius: var(--ui-radius, var(--radius-sm));
-	transition-property: border-color, color, background-color, opacity;
-	transition-duration: var(--transition-fast);
-	transition-timing-function: ease;
 }

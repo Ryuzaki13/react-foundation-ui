@@ -155,13 +155,7 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 						<h3 className={styles.headerText} id={titleId}>
 							{title}
 						</h3>
-						<Button
-							icon={<X />}
-							className={styles.headerButton}
-							variant={"ghost"}
-							aria-label={"Закрыть модальное окно"}
-							onClick={onClose}
-						/>
+						<Button icon={<X />} className={styles.headerButton} aria-label={"Закрыть модальное окно"} onClick={onClose} />
 					</div>
 
 					<GridContainer

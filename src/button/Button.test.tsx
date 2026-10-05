@@ -1,53 +1,92 @@
 // @vitest-environment jsdom
 
-import { render, screen } from "@testing-library/react";
-import { describe, expect, it } from "vitest";
+import { createRef, type SyntheticEvent } from "react";
 
-import uiStyles from "../ui.module.scss";
+import { fireEvent, render, screen } from "@testing-library/react";
+import { describe, expect, it, vi } from "vitest";
 
 import { Button } from "./Button";
 
 /**
- * Цвета вычисляются браузером из CSS-переменных, поэтому здесь закреплён публичный
- * contract выбора brand-схемы, а визуальные состояния проверяются в Storybook.
+ * Проверяем контракт действия и доступности. Цветовые состояния представлены
+ * в Storybook, поэтому функциональные тесты не зависят от состава CSS-классов.
  */
-describe("Button brand scheme", () => {
-	it("по умолчанию применяет solid brand-тон и безопасный button type", () => {
-		render(<Button tone="brand">Сохранить</Button>);
+describe("Button", () => {
+	it("передаёт ref и по умолчанию не отправляет форму", () => {
+		const buttonRef = createRef<HTMLButtonElement>();
+		const onSubmit = vi.fn();
 
-		const button = screen.getByRole("button", { name: "Сохранить" });
+		render(
+			<form
+				onSubmit={(event) => {
+					event.preventDefault();
+					onSubmit();
+				}}>
+				<Button ref={buttonRef} tone="brand">
+					Действие
+				</Button>
+			</form>
+		);
 
-		expect(button).toBeInstanceOf(HTMLButtonElement);
-		expect(button.getAttribute("type")).toBe("button");
-		expect(button.classList.contains(uiStyles.uiToneBrand)).toBe(true);
-		expect(button.classList.contains(uiStyles.uiAppearanceSolid)).toBe(true);
+		const button = screen.getByRole("button");
+		expect(buttonRef.current).toBe(button);
+		expect(button).toHaveProperty("type", "button");
+
+		fireEvent.click(button);
+		expect(onSubmit).not.toHaveBeenCalled();
 	});
 
-	it("разрешает brand-варианты и отдаёт tone с appearance приоритет над variant", () => {
-		const { rerender } = render(<Button variant="brandOutline">Предпросмотр</Button>);
-		const button = screen.getByRole("button", { name: "Предпросмотр" });
+	it.each(["submit", "reset"] as const)("поддерживает явный тип %s и действие формы", (type) => {
+		const onFormAction = vi.fn();
+		const preventDefault = (event: SyntheticEvent<HTMLFormElement>) => {
+			event.preventDefault();
+			onFormAction(event.type);
+		};
 
-		expect(button.classList.contains(uiStyles.uiToneBrand)).toBe(true);
-		expect(button.classList.contains(uiStyles.uiAppearanceOutline)).toBe(true);
+		render(
+			<form onSubmit={preventDefault} onReset={preventDefault}>
+				<Button type={type}>Действие</Button>
+			</form>
+		);
 
-		rerender(
-			<Button variant="error" tone="brand" appearance="ghost">
-				Предпросмотр
+		const button = screen.getByRole("button");
+		expect(button).toHaveProperty("type", type);
+		fireEvent.click(button);
+		expect(onFormAction).toHaveBeenCalledExactlyOnceWith(type);
+	});
+
+	it("вызывает onClick только у доступной кнопки", () => {
+		const onClick = vi.fn();
+		const { rerender } = render(
+			<Button onClick={onClick} tone="brand" appearance="outline">
+				Действие
 			</Button>
 		);
 
-		expect(button.classList.contains(uiStyles.uiToneBrand)).toBe(true);
-		expect(button.classList.contains(uiStyles.uiAppearanceGhost)).toBe(true);
-		expect(button.classList.contains(uiStyles.uiToneError)).toBe(false);
+		fireEvent.click(screen.getByRole("button"));
+		expect(onClick).toHaveBeenCalledTimes(1);
+
+		rerender(
+			<Button disabled onClick={onClick} tone="brand" appearance="ghost">
+				Действие
+			</Button>
+		);
+		const button = screen.getByRole("button");
+		expect(button).toHaveProperty("disabled", true);
+		fireEvent.click(button);
+		expect(onClick).toHaveBeenCalledTimes(1);
 	});
 
-	it("сохраняет доступное имя и disabled-state у icon-only brand-кнопки", () => {
-		render(<Button aria-label="Открыть уведомления" disabled icon={<span />} tone="brand" />);
+	it.each([
+		{ ariaLabel: "Название действия", title: undefined, expectedName: "Название действия" },
+		{ ariaLabel: undefined, title: "Подсказка действия", expectedName: "Подсказка действия" },
+		{ ariaLabel: "Название действия", title: "Подсказка действия", expectedName: "Название действия" }
+	])("задаёт доступное имя icon-only кнопки из переданных props: $expectedName", ({ ariaLabel, title, expectedName }) => {
+		render(<Button aria-label={ariaLabel} title={title} icon={<span role="img" />} />);
 
-		const button = screen.getByRole("button", { name: "Открыть уведомления" });
-
-		expect(button).toBeInstanceOf(HTMLButtonElement);
-		expect((button as HTMLButtonElement).disabled).toBe(true);
-		expect(button.classList.contains(uiStyles.uiToneBrand)).toBe(true);
+		// Имя задано потребителем; проверяем его приоритет над декоративной иконкой.
+		expect(screen.getByRole("button", { name: expectedName }).getAttribute("aria-label")).toBe(expectedName);
+		expect(screen.getByRole("img", { hidden: true })).toBeInstanceOf(HTMLElement);
+		expect(screen.queryByRole("img")).toBeNull();
 	});
 });

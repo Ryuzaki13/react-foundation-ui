@@ -197,7 +197,7 @@ export function BarcodeScannerDialog({
 						{error ? (
 							<div className={styles.error}>
 								<p role="alert">{visibleErrorMessage}</p>
-								<Button type="button" variant="infoOutline" onClick={retryScanning}>
+								<Button type="button" tone="info" appearance="outline" onClick={retryScanning}>
 									{retryLabel}
 								</Button>
 							</div>

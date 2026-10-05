@@ -32,12 +32,12 @@
 	border: 0;
 	border-radius: var(--radius-xs);
 	background: transparent;
-	color: var(--content-0);
+	color: var(--text-primary);
 	cursor: pointer;
 
 	&:hover,
 	&:focus-visible {
-		background-color: var(--surface-2);
+		background-color: var(--bg-elevated);
 	}
 }
 

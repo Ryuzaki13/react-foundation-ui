@@ -41,8 +41,8 @@
 	justify-content: center;
 	// border: var(--border);
 	border-radius: var(--radius-sm);
-	color: var(--content-2);
-	// background-color: var(--surface-0);
+	color: var(--text-muted);
+	// background-color: var(--bg-canvas);
 	// opacity: 0.75;
 
 	transition-property: opacity, color;
@@ -50,7 +50,7 @@
 
 	&:hover {
 		opacity: 1;
-		color: var(--content-0);
+		color: var(--text-primary);
 	}
 
 	&:disabled {

@@ -16,8 +16,8 @@ export function FloatingArrow({ ref, placement, middlewareData }: TooltipArrowPr
 				width="16"
 				height="16"
 				viewBox="0 0 16 16"
-				fill="var(--border-2)"
-				stroke="var(--border-2)"
+				fill="var(--border-strong)"
+				stroke="var(--border-strong)"
 				strokeWidth="var(--border-width)"
 				style={{ display: "block" }}>
 				<polygon points="8,8 16,16 0,16" />

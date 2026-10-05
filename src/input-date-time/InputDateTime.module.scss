@@ -9,17 +9,17 @@
 	font-family: var(--font-family-mono);
 	color: inherit;
 	text-align: center;
-	caret-color: var(--content-0);
+	caret-color: var(--text-primary);
 	font-variant-numeric: tabular-nums;
 
 	&::placeholder {
-		color: var(--content-2);
+		color: var(--text-muted);
 		// font-size: var(--font-size-sm);
 	}
 
 	&::selection {
 		background-color: var(--focus-ring);
-		color: var(--surface-0);
+		color: var(--bg-canvas);
 	}
 
 	// Remove spin buttons
@@ -36,7 +36,7 @@
 
 .separator {
 	user-select: none;
-	color: var(--content-2);
+	color: var(--text-muted);
 	flex-shrink: 0;
 
 	&[data-disabled] {

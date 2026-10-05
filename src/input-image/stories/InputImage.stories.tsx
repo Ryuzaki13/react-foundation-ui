@@ -160,7 +160,7 @@ export const WithInitialImage: Story = {
 					<img
 						src={value.dataUrl}
 						alt="Предпросмотр"
-						style={{ width: 96, height: 96, objectFit: "cover", border: "1px solid var(--border-0)" }}
+						style={{ width: 96, height: 96, objectFit: "cover", border: "1px solid var(--border-default)" }}
 					/>
 				)}
 			</div>
