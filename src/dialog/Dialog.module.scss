@@ -15,6 +15,7 @@
 	padding-block: max(var(--space-md), env(safe-area-inset-top, 0px)) max(var(--space-md), env(safe-area-inset-bottom, 0px));
 	padding-inline: max(var(--space-md), env(safe-area-inset-left, 0px)) max(var(--space-md), env(safe-area-inset-right, 0px));
 	overflow: hidden;
+	background: var(--bg-overlay);
 }
 
 .panel {
@@ -30,6 +31,7 @@
 	max-width: min(var(--dialog-max-width), 100%);
 	max-height: 100%;
 	overflow-wrap: anywhere;
+	box-shadow: var(--shadow-popover);
 }
 
 .sized {

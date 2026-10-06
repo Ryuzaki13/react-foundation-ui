@@ -44,7 +44,7 @@ describe("Dialog", () => {
 		expect(dialog.style.getPropertyValue("--dialog-min-width")).toBe("640px");
 		expect(dialog.classList.contains(styles.sized)).toBe(true);
 		expect(dialog.classList.contains(styles.lg)).toBe(true);
-		expect(dialog.classList.contains("scrollable")).toBe(true);
+		expect(dialog.classList.contains("scrollableY")).toBe(true);
 		expect(dialog.classList.contains("overscroll")).toBe(true);
 	});
 

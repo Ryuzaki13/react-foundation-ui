@@ -73,10 +73,7 @@ export function Dialog({ title, description, open, onClose, size, minWidth, chil
 	}
 
 	return createPortal(
-		<div
-			ref={overlayRef}
-			className={`${styles.overlay} surfaceBackdrop`}
-			onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+		<div ref={overlayRef} className={styles.overlay} onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
 			<div
 				ref={panelRef}
 				role="dialog"
@@ -88,13 +85,13 @@ export function Dialog({ title, description, open, onClose, size, minWidth, chil
 					styles.panel,
 					size && styles.sized,
 					size && styles[size],
-					"scrollable overscroll bgSurface shadowMd paddingLg radiusMd"
+					"scrollableY overscroll bgSurface paddingMd radiusMd"
 				)}
 				style={dialogStyle}>
 				{title && (
-					<h2 id={titleId} className="margin0">
+					<h3 id={titleId} className="margin0">
 						{title}
-					</h2>
+					</h3>
 				)}
 				{description && <p id={descriptionId}>{description}</p>}
 				{children}
