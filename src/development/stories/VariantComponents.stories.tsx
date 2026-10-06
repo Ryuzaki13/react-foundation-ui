@@ -3,7 +3,7 @@ import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { Badge } from "../../badge";
 import { Button } from "../../button";
 import { Section } from "../../panel";
-import { StatusIndicator, type StatusIndicatorTone } from "../../status-indicator";
+import { StatusIndicator } from "../../status-indicator";
 import { type UiTone } from "../../types";
 
 import styles from "./ComponentGallery.module.scss";
@@ -17,16 +17,6 @@ const tones = [
 	{ tone: "warning", label: "Предупреждение" },
 	{ tone: "error", label: "Ошибка" }
 ] as const satisfies ReadonlyArray<{ tone: UiTone; label: string }>;
-
-// У декоративного индикатора нет тона brand: список отражает его публичный
-// контракт, а видимая подпись передаёт смысл цвета независимо от темы.
-const indicatorTones = [
-	{ tone: "neutral", label: "Нейтральный" },
-	{ tone: "info", label: "Информация" },
-	{ tone: "success", label: "Успех" },
-	{ tone: "warning", label: "Предупреждение" },
-	{ tone: "error", label: "Ошибка" }
-] as const satisfies ReadonlyArray<{ tone: StatusIndicatorTone; label: string }>;
 
 const meta = {
 	title: "Development/1. Solid и Outline",
@@ -71,7 +61,7 @@ export const All: Story = {
 				</div>
 				<h4 className={styles.subheading}>status-indicator</h4>
 				<div className={styles.row}>
-					{indicatorTones.map(({ tone, label }) => (
+					{tones.map(({ tone, label }) => (
 						<span key={tone} className={styles.row}>
 							<StatusIndicator tone={tone} />
 							{label}

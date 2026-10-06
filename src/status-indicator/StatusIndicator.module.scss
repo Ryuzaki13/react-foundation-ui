@@ -11,6 +11,14 @@
 	background-color: var(--status-indicator-fill);
 }
 
+.brand {
+	--status-indicator-fill: var(--accent-brand);
+}
+
+.accent {
+	--status-indicator-fill: var(--accent-selection);
+}
+
 .neutral {
 	--status-indicator-fill: var(--text-secondary);
 }
