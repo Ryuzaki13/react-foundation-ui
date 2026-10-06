@@ -4,6 +4,38 @@
 	font-size: inherit;
 }
 
+.lexicalEditorContentEditable {
+	padding: var(--space-md);
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background-color: var(--bg-surface);
+	min-height: 6rem;
+	overscroll-behavior-y: contain;
+	overflow-wrap: anywhere;
+}
+
+.lexicalEditorPlaceholder {
+	padding: var(--space-md);
+	color: var(--text-secondary);
+	pointer-events: none;
+}
+
+.lexicalTextCode {
+	line-height: 1;
+}
+
+.lexicalTextHighlight {
+	padding-inline: 0.15em;
+}
+
+.lexicalTextUnderline {
+	text-decoration: underline;
+}
+
+.lexicalTextStrikethrough {
+	text-decoration: line-through;
+}
+
 .textEditorContent {
 	position: relative;
 	padding: var(--space-md);
@@ -26,14 +58,15 @@
 	padding: 0;
 	border: 0;
 	background: transparent;
+	display: grid;
+	grid-template-columns: auto 1fr;
+	min-width: 0;
+	gap: var(--space-sm);
 
 	.compactEditable {
 		padding: var(--space-xs) var(--space-sm);
 		min-height: calc(2em * var(--line-height) + 2 * var(--space-xs));
 		// Viewport-frame может быть ниже layout viewport при открытой клавиатуре.
 		max-height: min(12rem, calc(var(--visual-viewport-height, 100dvh) * 0.3));
-		overflow-y: auto;
-		overscroll-behavior-y: contain;
-		overflow-wrap: anywhere;
 	}
 }

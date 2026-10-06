@@ -138,6 +138,8 @@ strong {
 }
 
 code {
+	font-size: 87.5%;
+	border: var(--border-width) solid var(--highlight-border);
 	border-radius: var(--radius-xs);
 	padding-inline: var(--space-xs);
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;

@@ -24,7 +24,7 @@ import { createTextEditorLifecycle } from "./model/createTextEditorLifecycle";
 import { DEFAULT_TOOLBAR_STATE, type LexicalToolbarState } from "./model/textEditorTypes";
 import { AccessibleLinkNode } from "./nodes/AccessibleLinkNode";
 import { SemanticTagNode } from "./nodes/SemanticTagNode";
-import TextEditorStyle from "./TextEditor.module.scss";
+import styles from "./TextEditor.module.scss";
 import "./TextEditor.scss";
 import { TextEditorInteractions } from "./TextEditorInteractions";
 
@@ -44,7 +44,7 @@ export function TextEditorLexicalClient({
 	autoFocus = false,
 	ref,
 	presentation = "document",
-	placeholder = "Введите текст"
+	placeholder
 }: TextEditorLexicalClientProps) {
 	const [isFocused, setIsFocused] = useState(false);
 	const [toolbarState, setToolbarState] = useState<LexicalToolbarState>(DEFAULT_TOOLBAR_STATE);
@@ -81,15 +81,15 @@ export function TextEditorLexicalClient({
 	const initialConfig = useMemo(
 		() => ({
 			editable: !readOnly,
-			namespace: "KtkTextEditorLexical",
+			namespace: "TextEditorLexical",
 			onError: handleError,
 			theme: {
 				paragraph: "paragraph",
 				text: {
-					code: "lexicalTextCode",
-					highlight: "lexicalTextHighlight",
-					underline: "lexicalTextUnderline",
-					strikethrough: "lexicalTextStrikethrough"
+					code: styles.lexicalTextCode,
+					highlight: styles.lexicalTextHighlight,
+					underline: styles.lexicalTextUnderline,
+					strikethrough: styles.lexicalTextStrikethrough
 				}
 			},
 			nodes: [HeadingNode, QuoteNode, ListNode, ListItemNode, AccessibleLinkNode, SemanticTagNode],
@@ -99,11 +99,11 @@ export function TextEditorLexicalClient({
 	);
 
 	return (
-		<div className={TextEditorStyle.textEditor}>
+		<div className={styles.textEditor}>
 			<div
-				className={cn(TextEditorStyle.textEditorContent, {
-					[TextEditorStyle.focused]: isFocused,
-					[TextEditorStyle.compact]: presentation === "compact"
+				className={cn(styles.textEditorContent, {
+					[styles.focused]: isFocused,
+					[styles.compact]: presentation === "compact"
 				})}>
 				<LexicalComposer initialConfig={initialConfig}>
 					<TextEditorInteractions
@@ -127,14 +127,15 @@ export function TextEditorLexicalClient({
 								aria-invalid={editableProps?.["aria-invalid"]}
 								aria-required={editableProps?.["aria-required"]}
 								className={cn(
-									"lexicalEditorContentEditable",
-									presentation === "compact" && TextEditorStyle.compactEditable
+									styles.lexicalEditorContentEditable,
+									"scrollableY",
+									presentation === "compact" && styles.compactEditable
 								)}
 								onFocus={() => setIsFocused(true)}
 								onBlur={() => setIsFocused(false)}
 							/>
 						}
-						placeholder={placeholder ? <div className="lexicalEditorPlaceholder">{placeholder}</div> : null}
+						placeholder={placeholder ? <div className={styles.lexicalEditorPlaceholder}>{placeholder}</div> : null}
 						ErrorBoundary={LexicalErrorBoundary}
 					/>
 					<HistoryPlugin externalHistoryState={history.state} />

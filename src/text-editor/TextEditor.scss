@@ -21,44 +21,6 @@
 	background-color: var(--bg-surface);
 }
 
-.lexicalEditorContentEditable {
-	padding: var(--space-md);
-	border: var(--border);
-	border-radius: var(--radius-sm);
-	background-color: var(--bg-surface);
-	min-height: 6rem;
-}
-
-.lexicalEditorPlaceholder {
-	padding: var(--space-md);
-	color: var(--text-secondary);
-	pointer-events: none;
-}
-
-.lexicalTextCode {
-	color: var(--selection-text);
-	background-color: var(--bg-accent);
-	padding: 0.15em 0.4em;
-	font-family: monospace;
-	font-size: 85%;
-	border-radius: var(--radius-md);
-	line-height: 1;
-}
-
-.lexicalTextHighlight {
-	padding-inline: 0.15em;
-	background-color: rgb(234, 255, 142);
-	border-radius: var(--radius-md);
-}
-
-.lexicalTextUnderline {
-	text-decoration: underline;
-}
-
-.lexicalTextStrikethrough {
-	text-decoration: line-through;
-}
-
 .custom-tag-highlight {
 	outline: var(--border-width) dashed var(--text-accent);
 	padding: 0 0.125em;

@@ -20,11 +20,10 @@ export function TextEditorCompactToolbar({ state, canEdit, ...props }: TextEdito
 					<Button
 						data-action="toggle-text-editor-formatting"
 						disabled={props.disabled}
+						title="Форматирование"
 						appearance="ghost"
 						icon={<TextCursorInput />}
-						onMouseDown={(event) => event.preventDefault()}>
-						Форматирование
-					</Button>
+						onMouseDown={(event) => event.preventDefault()}></Button>
 				</Popover.Trigger>
 				<Popover.Content role="group" aria-label="Форматирование текста">
 					<div className={styles.compactPanel}>
