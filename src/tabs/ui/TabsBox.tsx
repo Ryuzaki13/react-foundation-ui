@@ -28,7 +28,7 @@ export function TabsBox({
 	activationMode = "automatic",
 	mountStrategy = "unmount",
 	loop = true,
-	tone = "primary",
+	tone = "surface",
 	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy

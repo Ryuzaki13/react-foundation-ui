@@ -171,7 +171,7 @@ export function TabsLayout({
 	activationMode = "manual",
 	mountStrategy = "lazy",
 	loop = true,
-	tone = "primary",
+	tone = "surface",
 	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy
