@@ -5,14 +5,9 @@
 	}
 }
 
-.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):active {
-	color: var(--accent-text-active);
-	background-color: var(--accent-fill-active);
-}
-
 .interactiveSurface[data-selected="true"] {
-	color: var(--accent-on-fill);
-	background-color: var(--accent-fill);
+	color: var(--selection-text);
+	background-color: var(--selection-bg);
 
 	&.interactiveSurfaceFrame {
 		border-color: var(--selection-border);
