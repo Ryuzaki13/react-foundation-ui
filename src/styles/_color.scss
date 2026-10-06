@@ -1,72 +1,59 @@
 @use "./mixins" as *;
 
-// TODO: unused
-.overlayBackdrop {
-	background-color: var(--overlay-backdrop);
-}
-
-.overlayGlass {
-	background-color: var(--overlay-glass);
-}
-
-@supports (backdrop-filter: blur(0.5em)) {
-	.overlayBackdrop {
-		backdrop-filter: blur(0.5em);
-	}
-
-	.overlayGlass {
-		backdrop-filter: blur(0.5em);
-	}
-}
-
-.surface0 {
+.bgCanvas {
 	background-color: var(--bg-canvas);
 }
 
-.surface1 {
+.bgSurface {
 	background-color: var(--bg-surface);
 }
 
-.surface2 {
+.bgElevated {
 	background-color: var(--bg-elevated);
 }
 
-// TODO: unused
-.surfaceAccent {
-	background-color: var(--accent-fill);
+.bgSunken {
+	background-color: var(--bg-sunken);
 }
 
-.surfaceBackdrop {
-	background-color: var(--overlay-backdrop);
+.bgAccent {
+	background-color: var(--bg-accent);
 }
 
-// TODO: unused
-.surfaceGlass {
-	background-color: var(--overlay-glass);
+.bgDisabled {
+	background-color: var(--bg-disabled);
+}
+
+.bgOverlay {
+	background-color: var(--bg-overlay);
 }
 
 .colorTransparent {
 	color: transparent;
 }
 
-.content0 {
+.textPrimary {
 	color: var(--text-primary);
 }
 
-.content1 {
+.textSecondary {
 	color: var(--text-secondary);
 }
 
-.content2 {
+.textMuted {
 	color: var(--text-muted);
 }
 
-.contentDisabled {
+.textDisabled {
 	color: var(--text-disabled);
 }
 
-.contentAccent {
-	color: var(--accent-text);
+.textInverse {
+	color: var(--accent-inverse);
+}
+
+.textAccent {
+	color: var(--accent-selection);
 }
 
 .statusSuccess {
@@ -74,10 +61,6 @@
 }
 
 .statusError {
-	color: var(--error-text);
-}
-
-.textColorDanger {
 	color: var(--error-text);
 }
 

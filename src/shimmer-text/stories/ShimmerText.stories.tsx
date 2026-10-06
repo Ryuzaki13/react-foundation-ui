@@ -27,7 +27,7 @@ export const Basic: Story = {};
 
 export const InContext: Story = {
 	render: () => (
-		<p style={{ color: "var(--content1)", margin: 0 }} role="status">
+		<p style={{ color: "var(--textSecondary)", margin: 0 }} role="status">
 			<ShimmerText>Загружаем актуальные данные</ShimmerText>
 		</p>
 	)

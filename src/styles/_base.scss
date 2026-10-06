@@ -128,36 +128,61 @@ h6 {
 	color: var(--text-secondary);
 	// @include fluid-font(17, 15);
 	font-size: inherit;
-	font-weight: 400;
 	font-variation-settings: "wght" 400;
+	font-weight: 400;
 }
 
 strong {
-	font-weight: 700;
 	font-variation-settings: "wght" 700;
+	font-weight: 700;
 }
 
 code {
+	border-radius: var(--radius-xs);
+	padding-inline: var(--space-xs);
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
 }
 
+mark {
+	box-shadow: inset 0 -1px 0 var(--highlight-border);
+}
+
+code,
+mark {
+	color: var(--highlight-text);
+	background: var(--highlight-bg);
+}
+
+// выкинуть в отдельный компонент с настройкой status
+blockquote {
+	color: var(--text-secondary);
+	background: var(--bg-surface);
+
+	padding: var(--space-md);
+	margin: var(--space-md) 0;
+	border-inline-start: 0.3rem solid var(--border-strong);
+}
+
 table {
+	--table-border: var(--border-width) solid var(--border-thin);
+
 	min-width: 100%;
 	border-collapse: separate;
 	border-spacing: 0;
 	table-layout: fixed;
-	// font-size: var(--font-size-sm);
 	text-align: left;
+	font-variant-numeric: tabular-nums;
+	hyphens: auto;
 
 	&:not([data-clear-table]) {
 		td,
 		th {
-			border-bottom: var(--border);
-			border-right: var(--border);
+			border-bottom: var(--table-border);
+			border-right: var(--table-border);
 			padding: var(--space-sm);
 
 			&:first-child {
-				border-left: var(--border);
+				border-left: var(--table-border);
 			}
 		}
 
@@ -165,7 +190,7 @@ table {
 			&:first-child {
 				td,
 				th {
-					border-top: var(--border);
+					border-top: var(--table-border);
 				}
 			}
 		}
@@ -183,13 +208,17 @@ table {
 		}
 
 		th {
-			background-color: var(--bg-surface);
-			font-weight: 400;
+			background-color: var(--bg-elevated);
 			font-variation-settings: "wght" 400;
+			font-weight: 400;
+		}
+
+		td {
+			background-color: var(--bg-surface);
 		}
 
 		tr > td {
-			vertical-align: top;
+			vertical-align: middle;
 		}
 	}
 }

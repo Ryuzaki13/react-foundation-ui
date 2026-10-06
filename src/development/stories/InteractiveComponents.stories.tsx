@@ -202,6 +202,11 @@ export function InteractiveComponents() {
 				<Text color="success">Успешно</Text>
 				<Text color="warning">Предупреждение</Text>
 				<Text color="error">Ошибка</Text>
+				<Text color="primary">
+					Основной с <mark>выделением</mark> слова
+				</Text>
+				<code>Основной code</code>
+				<blockquote>Основной blockquote</blockquote>
 			</ComponentCard>
 
 			<ComponentCard title="Badge">

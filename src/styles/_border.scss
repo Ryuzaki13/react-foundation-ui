@@ -18,35 +18,6 @@
 }
 
 // TODO: unused
-.borderTransition {
-	transition: border var(--transition-fast) ease;
-}
-
-// TODO: unused
-.borderInline {
-	@extend .borderLeft;
-	@extend .borderRight;
-}
-
-// TODO: unused
-.borderBlock {
-	@extend .borderTop;
-	@extend .borderBottom;
-}
-
-// TODO: unused
-.borderTransparent {
-	border-color: transparent;
-}
-
-// TODO: unused
-.borderHover {
-	&:hover {
-		border-color: var(--border-thin);
-	}
-}
-
-// TODO: unused
 .radiusXs {
 	border-radius: var(--radius-xs);
 }
@@ -63,36 +34,12 @@
 .radiusXl {
 	border-radius: var(--radius-xl);
 }
-// TODO: unused
-.radiusCircle {
-	border-radius: 50%;
-}
-
-// TODO: unused
-.outlineSolid {
-	outline: var(--border-width) solid var(--accent-text);
-	outline-offset: var(--focus-offset);
-}
-
-// TODO: unused
-.outlineDashed {
-	outline: var(--border-width) dashed var(--accent-text);
-	outline-offset: var(--focus-offset);
-}
 
 .separator {
-	// margin: var(--space-xs) 0;
 	border-top: var(--border);
 }
 
-// TODO: unused
-.separatorDashed {
-	@extend .separator;
-	border-top-style: dashed;
-}
-
 .separatorVertical {
-	// margin: 0 var(--space-xs);
 	border-left: var(--border);
 	height: 100%;
 	min-height: 1em;

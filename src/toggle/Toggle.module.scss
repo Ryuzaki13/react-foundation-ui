@@ -7,6 +7,8 @@
 }
 
 .wrapper {
+	--thumb-color: var(--selection-text);
+
 	position: relative;
 	display: flex;
 	flex: 1 0 auto;
@@ -36,7 +38,7 @@
 		}
 
 		.checked {
-			color: var(--selection-text);
+			color: var(--thumb-color);
 		}
 	}
 
@@ -47,7 +49,7 @@
 
 .track {
 	.unchecked {
-		color: var(--selection-text);
+		color: var(--thumb-color);
 	}
 
 	.checked {
@@ -65,8 +67,11 @@
 	overflow: hidden;
 
 	&[data-disabled] {
+		--thumb-color: var(--ui-disabled-color, var(--text-disabled));
+
 		.thumb {
-			opacity: var(--disabled-opacity);
+			background-color: var(--ui-disabled-background, var(--bg-disabled));
+			border-color: var(--ui-disabled-border, transparent);
 		}
 	}
 }
@@ -93,6 +98,7 @@
 	height: 100%; // calc(100% - var(--border-width) * 2);
 	border-radius: var(--radius-xs);
 	background-color: var(--selection-bg);
+	border: var(--border-width) solid var(--border-accent);
 	transition:
 		transform var(--transition-fast) ease-in-out,
 		opacity var(--transition-fast) ease-in-out;

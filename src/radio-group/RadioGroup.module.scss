@@ -30,7 +30,7 @@
 	border-radius: var(--radius-xs);
 	padding: 0 var(--space-md);
 	margin: var(--border-width);
-	// border: var(--border-width) solid transparent;
+	border: var(--border-width) solid transparent;
 	// baseInputControl = --control-height, + borderTop/Bottom + transparentLineTop/Bottom
 	min-height: calc(var(--control-height) - calc(var(--border-width) * 4));
 
@@ -47,13 +47,13 @@
 	&.checked {
 		color: var(--selection-text);
 		background-color: var(--selection-bg);
-		// border-color: var(--border-accent);
+		border-color: var(--border-accent);
 	}
 
 	&:disabled {
 		color: var(--ui-disabled-color, var(--text-disabled));
 		background-color: var(--ui-disabled-background, var(--bg-disabled));
-		// border-color: var(--ui-disabled-border, transparent);
+		border-color: var(--ui-disabled-border, transparent);
 	}
 }
 

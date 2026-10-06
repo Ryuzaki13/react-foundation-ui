@@ -283,7 +283,7 @@ export const CustomOptionLayout: Story = {
 					<>
 						<div className="flexEllipsis">
 							<div>{option.name}</div>
-							<div className="fontSizeSm content2">{option.manager}</div>
+							<div className="fontSizeSm textMuted">{option.manager}</div>
 						</div>
 						<div style={{ opacity: state.selected ? 1 : 0.5 }}>{option.code}</div>
 					</>

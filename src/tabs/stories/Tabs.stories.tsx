@@ -206,11 +206,11 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 				aria-labelledby={args["aria-labelledby"]}>
 				<TabsLayout.Tab id="details" title="Детали">
 					<TabsLayout.Toolbar>
-						<div className="surface0 border radiusSm paddingSm">Панель инструментов вне scroll-области.</div>
+						<div className="bgCanvas border radiusSm paddingSm">Панель инструментов вне scroll-области.</div>
 					</TabsLayout.Toolbar>
 					<TabsLayout.Content>
 						<div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 12, height: "100%" }}>
-							<Scrollable className="surface0 border radiusSm paddingSm h100">
+							<Scrollable className="bgCanvas border radiusSm paddingSm h100">
 								<div role="region" aria-label="Содержимое левой колонки" tabIndex={0}>
 									{longLines.map((line) => (
 										<div key={`left-${line}`} className="paddingBlockXs">
@@ -219,7 +219,7 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 									))}
 								</div>
 							</Scrollable>
-							<Scrollable className="surface0 border radiusSm paddingSm h100">
+							<Scrollable className="bgCanvas border radiusSm paddingSm h100">
 								<div role="region" aria-label="Содержимое правой колонки" tabIndex={0}>
 									{longLines.map((line) => (
 										<div key={`right-${line}`} className="paddingBlockXs">
@@ -231,13 +231,13 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 						</div>
 					</TabsLayout.Content>
 					<TabsLayout.Footer>
-						<div className="surface0 border radiusSm paddingSm">Футер тоже исключён из scroll-контента.</div>
+						<div className="bgCanvas border radiusSm paddingSm">Футер тоже исключён из scroll-контента.</div>
 					</TabsLayout.Footer>
 				</TabsLayout.Tab>
 
 				<TabsLayout.Tab id="history" title="История">
 					<TabsLayout.Content>
-						<Scrollable className="surface0 border radiusSm paddingSm h100">
+						<Scrollable className="bgCanvas border radiusSm paddingSm h100">
 							<div role="region" aria-label="История изменений" tabIndex={0}>
 								{longLines.map((line) => (
 									<div key={`history-${line}`} className="paddingBlockXs">

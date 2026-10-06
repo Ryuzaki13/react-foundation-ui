@@ -5,12 +5,6 @@
 
 .table {
 	width: 100%;
-	border-collapse: separate;
-	border-spacing: 0;
-	table-layout: fixed;
-	font-variant-numeric: tabular-nums;
-
-	hyphens: auto;
 }
 
 .head {
@@ -18,20 +12,11 @@
 }
 
 .pinnedStartBoundary {
-	box-shadow: inset var(--focus-offset) 0 0 var(--border-default);
-}
-
-.headerRow {
-	background-color: var(--bg-canvas);
+	box-shadow: inset var(--focus-offset) 0 0 var(--border-strong);
 }
 
 .headerCell {
 	position: relative;
-	padding: var(--space-sm) var(--space-md);
-	background-color: var(--bg-elevated);
-	border-bottom: var(--border);
-	color: var(--text-primary);
-	vertical-align: middle;
 }
 
 .headerCellContent {
@@ -66,21 +51,14 @@
 
 	&:hover .bodyCell,
 	&:focus-visible .bodyCell {
-		background-color: var(--bg-surface);
+		background-color: var(--bg-hover);
 	}
 }
 
 .bodyRowSelected {
 	.bodyCell {
-		background-color: var(--bg-surface);
+		background-color: var(--selection-bg);
 	}
-}
-
-.bodyCell {
-	padding: var(--space-sm) var(--space-md);
-	background-color: var(--bg-canvas);
-	border-bottom: var(--border);
-	vertical-align: middle;
 }
 
 .bodyCellPinnedStart {
@@ -90,20 +68,4 @@
 
 .bodyCellMergedWithNext {
 	border-bottom-color: transparent;
-}
-
-.feedbackCell {
-	padding: var(--space-md);
-	background-color: var(--bg-canvas);
-}
-
-.fetchingRow .feedbackCell {
-	border-bottom: 0;
-}
-
-.noData {
-	pointer-events: none;
-	position: absolute;
-	inset: 0;
-	z-index: 40;
 }

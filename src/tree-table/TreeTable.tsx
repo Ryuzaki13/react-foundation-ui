@@ -2,15 +2,15 @@ import { useEffect, useEffectEvent, useMemo, useRef, useState, type ReactNode } 
 
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import {
-	type FoundationTableRow,
 	foundationTableFeatures,
 	resolveTableLength,
 	TableColumnDef,
+	TableSelectionMode,
+	useTableRowSelection,
+	type FoundationTableRow,
 	type TableColumnOrderState,
 	type TableColumnSizingState,
-	type TableColumnVisibilityState,
-	TableSelectionMode,
-	useTableRowSelection
+	type TableColumnVisibilityState
 } from "@ryuzaki13/react-foundation-lib/table";
 import { buildTreeTableRows, type TreeTableFlatHierarchy, type TreeTableRowNode } from "@ryuzaki13/react-foundation-lib/tree-table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -260,7 +260,7 @@ function renderTreeCellContent<TData extends object>(
 						event.stopPropagation();
 						args.row.toggleExpanded();
 					}}>
-					{args.row.getIsExpanded() ? <ChevronDownIcon size={16} /> : <ChevronRightIcon size={16} />}
+					{args.row.getIsExpanded() ? <ChevronDownIcon /> : <ChevronRightIcon />}
 				</button>
 			) : (
 				<span className={styles.expanderSpacer} aria-hidden="true" />

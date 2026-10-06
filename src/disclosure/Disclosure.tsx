@@ -21,7 +21,7 @@ export interface DisclosureProps extends PropsWithChildren {
 /**
  * Раскрывающийся блок с заголовком и скрываемым содержимым. Используется для FAQ, настроек и компактного размещения второстепенной информации.
  */
-export function Disclosure({ label, defaultOpen, headerActions, tone = "primary", children }: DisclosureProps) {
+export function Disclosure({ label, defaultOpen, headerActions, tone = "surface", children }: DisclosureProps) {
 	const [open, setOpen] = useState(defaultOpen === true);
 	const panelId = useId();
 	const buttonId = useId();

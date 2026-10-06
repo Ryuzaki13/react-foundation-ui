@@ -1,13 +1,5 @@
-@use "align";
-
 .flex {
 	display: flex;
-}
-
-// TODO: unused
-.flexInline {
-	display: inline-flex;
-	vertical-align: middle;
 }
 
 .flexWrap {
@@ -15,21 +7,9 @@
 	flex-wrap: wrap;
 }
 
-// TODO: unused
-.flexNoWrap {
-	@extend .flex;
-	flex-wrap: nowrap;
-}
-
 .flexWrapReverse {
 	@extend .flex;
 	flex-wrap: wrap-reverse;
-}
-
-// TODO: unused
-.flexRow {
-	@extend .flex;
-	flex-direction: row;
 }
 
 .flexColumn {
@@ -37,20 +17,9 @@
 	flex-direction: column;
 }
 
-// TODO: unused
-.flexRowReverse {
-	@extend .flex;
-	flex-direction: row-reverse;
-}
-
 .flexColumnReverse {
 	@extend .flex;
 	flex-direction: column-reverse;
-}
-
-// TODO: unused
-.flexBasis0 {
-	flex-basis: 0;
 }
 
 .flexBasisAuto {
@@ -87,12 +56,12 @@
 
 .flexCenter {
 	@extend .flex;
-	@extend .alignItemsCenter;
-	@extend .justifyContentCenter;
+	align-items: center;
+	justify-content: center;
 }
 
 .flexCenterBetween {
 	@extend .flex;
-	@extend .alignItemsCenter;
-	@extend .justifyContentBetween;
+	align-items: center;
+	justify-content: space-between;
 }

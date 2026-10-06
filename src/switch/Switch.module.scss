@@ -6,12 +6,13 @@
 }
 
 .switch {
-	width: calc(var(--control-height) * 2);
+	width: calc(var(--control-height) * 3);
 	display: flex;
 	justify-content: space-between;
 
 	&[data-disabled] .iconWrapper {
 		background-color: var(--ui-disabled-background, var(--bg-disabled));
+		border-color: var(--ui-disabled-border, transparent);
 
 		svg {
 			color: var(--ui-disabled-color, var(--text-disabled));
@@ -28,7 +29,7 @@
 	align-items: center;
 	justify-content: center;
 
-	// border: var(--border-width) solid transparent;
+	border: var(--border-width) solid transparent;
 	background-color: var(--bg-elevated);
 	// opacity: 0.25;
 
@@ -47,8 +48,9 @@
 	}
 
 	&.checked {
-		background-color: var(--selection-bg);
 		color: var(--selection-text);
+		background-color: var(--selection-bg);
+		border-color: var(--border-accent);
 		opacity: 1;
 
 		svg {

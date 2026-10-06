@@ -12,16 +12,16 @@ import { DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
 import { restrictToHorizontalAxis, restrictToVerticalAxis } from "@dnd-kit/modifiers";
 import { useDndSortableSensors } from "@ryuzaki13/react-foundation-lib/hooks";
 import {
-	type FoundationTableCell,
-	type FoundationTableHeader,
-	type FoundationTableInstance,
-	type FoundationTableRow,
 	getTableColumnMeta,
 	isTableInteractiveElement,
 	patchTableColumnWidth,
 	removeTableColumnWidth,
 	resolveReorderedTableHeaderColumns,
 	resolveTableColumnOrder,
+	type FoundationTableCell,
+	type FoundationTableHeader,
+	type FoundationTableInstance,
+	type FoundationTableRow,
 	type TableColumnMeta,
 	type TableSelectionMode
 } from "@ryuzaki13/react-foundation-lib/table";
@@ -399,7 +399,7 @@ export function BaseTable<TData extends object>({
 			style={{ minHeight }}>
 			{hasTitle && <h3 className="marginBottomXs">{title}</h3>}
 
-			<div className="surface0 overflowHidden relative w100 h100">
+			<div className="overflowHidden relative w100 h100">
 				<Scrollable ref={scrollableRef} className="w100 h100">
 					<>
 						<table className={cn(styles.table, tableClassName)}>
@@ -417,7 +417,7 @@ export function BaseTable<TData extends object>({
 										onDragEnd={handleHeaderColumnDragEnd}>
 										<Sortable.Container containerId="base-table-header" items={visibleColumnIds} layout="horizontal">
 											{orderedHeaderGroups.map((headers, headerGroupIndex) => (
-												<tr key={`header-group-${headerGroupIndex}`} className={styles.headerRow}>
+												<tr key={`header-group-${headerGroupIndex}`}>
 													{headers.map((header) => {
 														const { isPinnedStart, insetInlineStart, isPinnedBoundary } =
 															resolveHeaderPinnedStartState(header, startPinnedOffsets, lastPinnedColumnId);
@@ -449,7 +449,7 @@ export function BaseTable<TData extends object>({
 									</Sortable.Root>
 								) : (
 									orderedHeaderGroups.map((headers, headerGroupIndex) => (
-										<tr key={`header-group-${headerGroupIndex}`} className={styles.headerRow}>
+										<tr key={`header-group-${headerGroupIndex}`}>
 											{headers.map((header) => {
 												const { isPinnedStart, insetInlineStart, isPinnedBoundary } = resolveHeaderPinnedStartState(
 													header,
@@ -497,8 +497,8 @@ export function BaseTable<TData extends object>({
 								)}
 
 								{isFetching && hasRows && (
-									<tr className={styles.fetchingRow}>
-										<td colSpan={Math.max(visibleColumns.length, 1)} className={styles.feedbackCell}>
+									<tr>
+										<td colSpan={Math.max(visibleColumns.length, 1)}>
 											<LoadingMessage />
 										</td>
 									</tr>
@@ -511,7 +511,7 @@ export function BaseTable<TData extends object>({
 				</Scrollable>
 
 				<div className="absolute inset0 border" style={{ pointerEvents: "none", zIndex: 20 }}>
-					{!isLoading && !isFetching && !hasRows && <NoData className={styles.noData} />}
+					{!isLoading && !isFetching && !hasRows && <NoData />}
 					{isLoading && !hasRows && <LoadingMessage className="h100 w100" />}
 				</div>
 			</div>

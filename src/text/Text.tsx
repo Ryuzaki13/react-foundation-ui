@@ -8,16 +8,16 @@ export type TextWeight = "lighter" | "light" | "regular" | "medium" | "bold" | "
 export type TextWrap = "wrap" | "noWrap";
 
 const textColors: Record<TextColor, string> = {
-	primary: "content0",
-	secondary: "content1",
-	muted: "content2",
-	disabled: "contentDisabled",
+	primary: "textPrimary",
+	secondary: "textSecondary",
+	muted: "textMuted",
+	disabled: "textDisabled",
 	info: "statusInfo",
 	success: "statusSuccess",
 	warning: "statusWarning",
 	error: "statusError",
 	brand: "statusBrand",
-	accent: "contentAccent"
+	accent: "textAccent"
 };
 
 const textSizes: Record<TextSize, string> = {

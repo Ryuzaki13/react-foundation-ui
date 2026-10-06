@@ -7,19 +7,16 @@
 .textRight {
 	text-align: right;
 }
-// TODO: unused
 .textJustify {
 	text-align: justify;
 }
 
-// TODO: unused
 .verticalTop {
 	vertical-align: top;
 }
 .verticalMiddle {
 	vertical-align: middle;
 }
-// TODO: unused
 .verticalBottom {
 	vertical-align: bottom;
 }
@@ -51,11 +48,9 @@
 .fontItalic {
 	font-style: italic;
 }
-// TODO: unused
 .fontNormal {
 	font-style: normal;
 }
-// TODO: unused
 .fontUnderline {
 	text-decoration: underline;
 }
@@ -76,7 +71,6 @@
 	font-size: var(--font-size-xl);
 }
 
-// TODO: unused
 .textLineHeight {
 	height: calc(1em * var(--line-height));
 }
@@ -98,13 +92,11 @@
 	text-overflow: ellipsis;
 }
 
-.scrollable {
+.overflowBase {
 	min-height: 0;
 
 	scrollbar-color: var(--border-default) transparent;
 	transition: scrollbar-color 0.1s ease-out;
-
-	overflow: auto;
 
 	&.stable {
 		scrollbar-gutter: stable;
@@ -119,29 +111,33 @@
 	}
 }
 
-.scrollableY {
-	@extend .scrollable;
-
-	overflow-x: hidden;
-}
-// TODO: unused
-.scrollableX {
-	@extend .scrollable;
-
-	overflow-y: hidden;
-}
-
 .overflowHidden {
 	overflow: hidden;
 }
-// TODO: unused
+
 .overflowScroll {
-	@extend .scrollable;
+	@extend .overflowBase;
 	overflow: scroll;
 }
-.overflowAuto {
-	@extend .scrollable;
+
+.overflowAuto,
+.scrollable {
+	@extend .overflowBase;
 	overflow: auto;
+}
+
+.scrollableY {
+	@extend .overflowBase;
+
+	overflow-x: hidden;
+	overflow-y: auto;
+}
+
+.scrollableX {
+	@extend .overflowBase;
+
+	overflow-x: auto;
+	overflow-y: hidden;
 }
 
 .textOverflow {
@@ -188,31 +184,26 @@
 }
 
 // Конкретные реализации
-// TODO: unused
 .textClamp2Lines {
 	@extend .textClampBase;
 	@include textClamp(2);
 }
 
-// TODO: unused
 .textClamp3Lines {
 	@extend .textClampBase;
 	@include textClamp(3);
 }
 
-// TODO: unused
 .textClamp4Lines {
 	@extend .textClampBase;
 	@include textClamp(4);
 }
 
-// TODO: unused
 .textClamp6Lines {
 	@extend .textClampBase;
 	@include textClamp(6);
 }
 
-// TODO: unused
 .textStriked {
 	text-decoration: line-through;
 }

@@ -9,7 +9,7 @@ type ModalFooterProps = ModalCompositionProps;
 /** Нижние действия не участвуют в прокрутке основного содержимого. */
 export function ModalFooter({ children, className }: ModalFooterProps) {
 	return (
-		<div className={cn("surface2 borderTop paddingBlockSm paddingInlineMd", className)}>
+		<div className={cn("bgElevated borderTop paddingBlockSm paddingInlineMd", className)}>
 			<FlexContainer gap="sm" align="center" justify="end">
 				{children}
 			</FlexContainer>

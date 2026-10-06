@@ -1,10 +1,10 @@
 import { type MouseEvent, useState } from "react";
 
 import { formatPhone } from "@ryuzaki13/react-foundation-lib/formatters";
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { isSafe } from "@ryuzaki13/react-foundation-lib/validators";
 
 import { Button } from "../button";
+import { FlexContainer } from "../flex";
 import { GridContainer } from "../grid";
 import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
@@ -83,7 +83,7 @@ export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogPro
 		<Modal isOpen={true} onClose={handleClose} title="Ссылка на телефон" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
-					<div className={cn("flex", "alignItemsEnd", "gapSm")}>
+					<FlexContainer gap="sm" align="end">
 						<Input
 							label="Номер телефона без 7-ки"
 							description="Вводится только номер (10) цифр без каких-либо дополнительных символов. Ссылка будет привязана к текущему выделенному фрагменту текста. Поэтому текст самой ссылки можно оформить грамотно, например: +7 (3522) 12-34-56 доб. 100"
@@ -93,7 +93,7 @@ export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogPro
 							className="flex1"
 						/>
 						<Input label="Добавочный номер" value={phoneAdd} onChange={setPhoneAdd} placeholder="100" />
-					</div>
+					</FlexContainer>
 					{error && (
 						<div className="textColorDanger">
 							<strong>Ошибка ввода:</strong> <span className="fontItalic">{error}</span>

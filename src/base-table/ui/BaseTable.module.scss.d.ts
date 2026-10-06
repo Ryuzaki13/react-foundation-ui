@@ -4,7 +4,6 @@ declare const styles: {
   readonly table: "table";
   readonly head: "head";
   readonly pinnedStartBoundary: "pinnedStartBoundary";
-  readonly headerRow: "headerRow";
   readonly headerCell: "headerCell";
   readonly headerCellContent: "headerCellContent";
   readonly headerCellDraggable: "headerCellDraggable";
@@ -16,8 +15,5 @@ declare const styles: {
   readonly bodyRowSelected: "bodyRowSelected";
   readonly bodyCellPinnedStart: "bodyCellPinnedStart";
   readonly bodyCellMergedWithNext: "bodyCellMergedWithNext";
-  readonly feedbackCell: "feedbackCell";
-  readonly fetchingRow: "fetchingRow";
-  readonly noData: "noData";
 };
 export default styles;

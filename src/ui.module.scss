@@ -218,20 +218,20 @@
 	}
 }
 
-.uiPanelTonePrimary {
-	--ui-panel-background: var(--bg-canvas);
-}
-
-.uiPanelToneSecondary {
+.uiPanelToneSurface {
 	--ui-panel-background: var(--bg-surface);
 }
 
-.uiPanelToneTertiary {
+.uiPanelToneElevated {
 	--ui-panel-background: var(--bg-elevated);
 }
 
+.uiPanelToneSunken {
+	--ui-panel-background: var(--bg-sunken);
+}
+
 .uiFilledPanel {
-	background-color: var(--ui-panel-background, var(--bg-canvas));
+	background-color: var(--ui-panel-background, var(--bg-surface));
 }
 
 .uiFramedPanel {

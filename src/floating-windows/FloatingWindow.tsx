@@ -58,7 +58,7 @@ export function FloatingWindow({
 			aria-labelledby={titleId}
 			tabIndex={-1}
 			data-floating-window-id={id}
-			className={cn("surface0 radiusMd shadowLg", styles.window, className)}
+			className={cn("bgCanvas radiusMd shadowLg", styles.window, className)}
 			style={getFloatingWindowStyle(snapshot, width, height)}
 			onPointerDownCapture={() => store.getState().bringToFront(id)}
 			onFocusCapture={() => store.getState().bringToFront(id)}

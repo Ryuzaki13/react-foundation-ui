@@ -11,11 +11,7 @@ export const THEME_STORAGE_KEY = "storybook-theme";
 const DEFAULT_THEME_MODE = "default";
 
 const shellStyle: CSSProperties = {
-	width: "100%",
-	padding: 16,
-	background: "var(--bg-surface)",
-	color: "var(--text-primary)",
-	boxSizing: "border-box"
+	width: "100%"
 };
 
 const frameStyle: CSSProperties = {
@@ -23,7 +19,7 @@ const frameStyle: CSSProperties = {
 	overflow: "hidden",
 	border: "var(--border)",
 	borderRadius: "var(--radius-lg)",
-	background: "var(--bg-surface)",
+	background: "var(--bg-canvas)",
 	boxShadow: "var(--shadow-card)"
 };
 
@@ -33,7 +29,7 @@ const toolbarStyle: CSSProperties = {
 	justifyContent: "space-between",
 	padding: 8,
 	borderBottom: "var(--border)",
-	background: "var(--bg-surface)"
+	background: "var(--bg-elevated)"
 };
 
 const toggleButtonStyle: CSSProperties = {
@@ -41,7 +37,7 @@ const toggleButtonStyle: CSSProperties = {
 	alignItems: "center",
 	padding: 8,
 	borderRadius: "var(--radius-lg)",
-	background: "var(--bg-canvas)",
+	background: "var(--bg-surface)",
 	color: "var(--text-primary)",
 	font: "inherit",
 	cursor: "pointer",
@@ -138,7 +134,7 @@ export const applyDocumentTheme = (theme: DemoTheme, themeMode = resolveDocument
 	html.setAttribute("data-letter-spacing", "normal");
 	html.setAttribute("data-word-spacing", "normal");
 	html.setAttribute("data-paragraph-spacing", "normal");
-	document.body.style.backgroundColor = "var(--bg-surface)";
+	document.body.style.backgroundColor = "var(--bg-disabled)";
 	document.body.style.color = "var(--text-primary)";
 	document.body.style.transition = "background-color var(--transition-fast), color var(--transition-fast)";
 };

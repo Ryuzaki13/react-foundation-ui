@@ -137,7 +137,7 @@ export function Option<T>({ value, label, description, className }: OptionProps<
 		return (
 			<div className={cn(styles.radioItem, className)}>
 				<p className="textNoWrap">{label}</p>
-				{description && <div className="fontSizeSm content2">{description}</div>}
+				{description && <div className="fontSizeSm textMuted">{description}</div>}
 			</div>
 		);
 	}

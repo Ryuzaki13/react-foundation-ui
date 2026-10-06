@@ -1,5 +1,7 @@
 import { useState } from "react";
 
+import { FlexContainer } from "../flex";
+
 import { BoomExplosion } from "./BoomExplosion";
 import { ERROR_BOOM_MESSAGES } from "./constants";
 
@@ -24,10 +26,10 @@ export function ErrorExplosion({ header, description }: ErrorExplosionProps) {
 					{ERROR_BOOM_MESSAGES[Math.floor(randomValue * ERROR_BOOM_MESSAGES.length)]}
 				</div>
 			</div>
-			<div className="flexColumn alignItemsCenter textCenter marginBlockMd">
+			<FlexContainer column align="center" className="textCenter marginBlockMd">
 				{header && <h2 className="statusWarning">{header}</h2>}
 				{description && <p>{description}</p>}
-			</div>
+			</FlexContainer>
 		</div>
 	);
 }

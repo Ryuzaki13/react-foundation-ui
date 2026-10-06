@@ -1,5 +1,5 @@
 .selectedIndicatorCell {
-	box-shadow: inset 0.1875rem 0 0 var(--accent-text);
+	box-shadow: inset var(--focus-width) 0 0 var(--selection-border);
 }
 
 .sentinel {

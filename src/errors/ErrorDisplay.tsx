@@ -4,6 +4,8 @@ import { captureRuntimeErrorReport } from "@ryuzaki13/react-foundation-lib/error
 import { logError } from "@ryuzaki13/react-foundation-lib/utils";
 import { useQueryClient } from "@tanstack/react-query";
 
+import { FlexContainer } from "../flex";
+
 import { BadRequestPage } from "./BadRequestPage";
 import { BoomExplosion } from "./BoomExplosion";
 import { ERROR_BOOM_MESSAGES } from "./constants";
@@ -48,7 +50,7 @@ export function ErrorDisplay({ error, componentStack, draftId }: { error: Error;
 	logError(error.stack);
 
 	return (
-		<section className="w100 h100 flexColumn justifyContentCenter paddingMd">
+		<FlexContainer column justify="center" as="section" className="w100 h100 paddingMd">
 			<div aria-hidden="true" className="textCenter relative fontBolded statusError" style={{ fontSize: "4em", marginBlock: "2em" }}>
 				<BoomExplosion />
 				<div
@@ -67,6 +69,6 @@ export function ErrorDisplay({ error, componentStack, draftId }: { error: Error;
 				</p>
 				<p>Попробуйте перезагрузить страницу или вернуться позже.</p>
 			</div>
-		</section>
+		</FlexContainer>
 	);
 }

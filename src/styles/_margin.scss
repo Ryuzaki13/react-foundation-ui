@@ -1,5 +1,3 @@
-// MARGIN
-
 .marginTopXs {
 	margin-top: var(--space-xs);
 }
@@ -106,12 +104,10 @@
 	@extend .marginBottomXl;
 }
 
-// TODO: unused
 .marginXs {
 	@extend .marginBlockXs;
 	@extend .marginInlineXs;
 }
-// TODO: unused
 .marginSm {
 	@extend .marginBlockSm;
 	@extend .marginInlineSm;
@@ -124,7 +120,6 @@
 	@extend .marginBlockLg;
 	@extend .marginInlineLg;
 }
-// TODO: unused
 .marginXl {
 	@extend .marginBlockXl;
 	@extend .marginInlineXl;
@@ -155,12 +150,9 @@
 	@extend .marginInline0;
 }
 
-// TODO: unused
-.paragraph0 {
+.pm0 {
 	--paragraph-margin: 0;
 }
-
-// PADDING
 
 .paddingTopXs {
 	padding-top: var(--space-xs);

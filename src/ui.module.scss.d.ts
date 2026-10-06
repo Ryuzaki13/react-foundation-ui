@@ -25,9 +25,9 @@ declare const styles: {
   readonly disabled: "disabled";
   readonly uiOptionText: "uiOptionText";
   readonly uiOptionCode: "uiOptionCode";
-  readonly uiPanelTonePrimary: "uiPanelTonePrimary";
-  readonly uiPanelToneSecondary: "uiPanelToneSecondary";
-  readonly uiPanelToneTertiary: "uiPanelToneTertiary";
+  readonly uiPanelToneSurface: "uiPanelToneSurface";
+  readonly uiPanelToneElevated: "uiPanelToneElevated";
+  readonly uiPanelToneSunken: "uiPanelToneSunken";
   readonly uiFilledPanel: "uiFilledPanel";
   readonly uiPanel: "uiPanel";
   readonly uiFramedPanel: "uiFramedPanel";

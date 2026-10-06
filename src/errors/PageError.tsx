@@ -9,7 +9,7 @@ interface PageErrorProps {
 export function PageError({ code, title, description }: PageErrorProps) {
 	return (
 		<Flex.Predefined variant="columnCenter" className="paddingXl">
-			<div aria-hidden="true" className="content2 fontBolded" style={{ fontSize: "5em" }}>
+			<div aria-hidden="true" className="textMuted fontBolded" style={{ fontSize: "5em" }}>
 				{code}
 			</div>
 			<h2>{title}</h2>

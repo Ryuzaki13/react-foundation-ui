@@ -17,7 +17,7 @@
 			100deg,
 			currentColor 0%,
 			currentColor 42%,
-			color-mix(in srgb, currentColor 38%, var(--shimmer-color, white)) 50%,
+			color-mix(in srgb, currentColor 38%, var(--shimmer-color, var(--text-primary))) 50%,
 			currentColor 58%,
 			currentColor 100%
 		);

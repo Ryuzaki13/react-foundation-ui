@@ -27,9 +27,9 @@ const appearanceClassNameMap: Record<UiAppearance, string> = Object.freeze({
 });
 
 const panelToneClassNameMap: Record<UiPanelTone, string> = Object.freeze({
-	primary: uiStyles.uiPanelTonePrimary,
-	secondary: uiStyles.uiPanelToneSecondary,
-	tertiary: uiStyles.uiPanelToneTertiary
+	surface: uiStyles.uiPanelToneSurface,
+	elevated: uiStyles.uiPanelToneElevated,
+	sunken: uiStyles.uiPanelToneSunken
 });
 
 export function getUiToneClassName(tone: UiTone): string {
@@ -68,7 +68,7 @@ export function resolveUiScheme({
 
 		return {
 			tone: resolvedTone,
-			appearance: resolvedAppearance
+			appearance: resolvedTone === "neutral" ? undefined : resolvedAppearance
 		};
 	}
 
