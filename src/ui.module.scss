@@ -473,21 +473,21 @@
 }
 
 .uiToneAccent {
-	--tone-fill: var(--accent-brand);
-	--tone-on-fill: var(--text-inverse);
-	--tone-border: var(--accent-brand);
-
-	--tone-fill-hover: var(--accent-brand-hover);
-	--tone-fill-pressed: var(--accent-brand-pressed);
-}
-
-.uiToneBrand {
 	--tone-fill: var(--accent-selection);
 	--tone-on-fill: var(--text-inverse);
 	--tone-border: var(--accent-selection);
 
 	--tone-fill-hover: var(--accent-selection-hover);
 	--tone-fill-pressed: var(--accent-selection-pressed);
+}
+
+.uiToneBrand {
+	--tone-fill: var(--accent-brand);
+	--tone-on-fill: var(--text-inverse);
+	--tone-border: var(--accent-brand);
+
+	--tone-fill-hover: var(--accent-brand-hover);
+	--tone-fill-pressed: var(--accent-brand-pressed);
 }
 
 .uiToneError {
