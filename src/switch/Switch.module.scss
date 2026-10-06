@@ -12,7 +12,6 @@
 
 	&[data-disabled] .iconWrapper {
 		background-color: var(--ui-disabled-background, var(--bg-disabled));
-		border-color: var(--ui-disabled-border, transparent);
 
 		svg {
 			color: var(--ui-disabled-color, var(--text-disabled));
@@ -29,7 +28,6 @@
 	align-items: center;
 	justify-content: center;
 
-	border: var(--border-width) solid transparent;
 	background-color: var(--bg-elevated);
 	// opacity: 0.25;
 
@@ -48,13 +46,12 @@
 	}
 
 	&.checked {
-		color: var(--selection-text);
-		background-color: var(--selection-bg);
-		border-color: var(--border-accent);
+		color: var(--text-primary);
+		background-color: var(--bg-pressed);
 		opacity: 1;
 
 		svg {
-			color: var(--selection-text);
+			color: var(--text-primary);
 		}
 	}
 }

@@ -7,7 +7,7 @@
 }
 
 .wrapper {
-	--thumb-color: var(--selection-text);
+	--thumb-color: var(--text-primary);
 
 	position: relative;
 	display: flex;
@@ -71,7 +71,6 @@
 
 		.thumb {
 			background-color: var(--ui-disabled-background, var(--bg-disabled));
-			border-color: var(--ui-disabled-border, transparent);
 		}
 	}
 }
@@ -97,8 +96,8 @@
 	width: 50%; // calc(50% - var(--border-width));
 	height: 100%; // calc(100% - var(--border-width) * 2);
 	border-radius: var(--radius-xs);
-	background-color: var(--selection-bg);
-	border: var(--border-width) solid var(--border-accent);
+	background-color: var(--bg-pressed);
+	// border: var(--border-width) solid var(--border-accent);
 	transition:
 		transform var(--transition-fast) ease-in-out,
 		opacity var(--transition-fast) ease-in-out;
