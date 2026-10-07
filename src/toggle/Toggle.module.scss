@@ -22,11 +22,11 @@
 	appearance: none;
 	cursor: pointer;
 
-	background-color: var(--bg-elevated);
+	// background-color: var(--bg-elevated);
 
-	&:hover {
-		background-color: var(--bg-hover);
-	}
+	// &:hover {
+	// 	background-color: var(--bg-hover);
+	// }
 
 	&:checked + .track {
 		.thumb {
@@ -57,7 +57,7 @@
 	}
 
 	position: absolute;
-	inset: calc(var(--border-width) * 4);
+	inset: calc(var(--border-width) * 2);
 	pointer-events: none;
 	display: grid;
 	grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -96,7 +96,7 @@
 	width: 50%; // calc(50% - var(--border-width));
 	height: 100%; // calc(100% - var(--border-width) * 2);
 	border-radius: var(--radius-xs);
-	background-color: var(--bg-pressed);
+	background-color: var(--bg-elevated);
 	// border: var(--border-width) solid var(--border-accent);
 	transition:
 		transform var(--transition-fast) ease-in-out,

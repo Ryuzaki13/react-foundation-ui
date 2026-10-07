@@ -29,14 +29,11 @@
 	color: var(--text-muted);
 	border-radius: var(--radius-xs);
 	padding: 0 var(--space-md);
-	margin: calc(var(--border-width) * 2);
+	margin: var(--border-width);
 	// baseInputControl = --control-height, + borderTop/Bottom + transparentLineTop/Bottom
-	min-height: calc(var(--control-height) - calc(var(--border-width) * 8));
+	min-height: calc(var(--control-height) - calc(var(--border-width) * 4));
 
 	cursor: pointer;
-
-	background-color: var(--bg-elevated);
-	color: var(--text-muted);
 
 	&:hover {
 		background-color: var(--bg-hover);
@@ -45,7 +42,7 @@
 
 	&.checked {
 		color: var(--text-primary);
-		background-color: var(--bg-pressed);
+		background-color: var(--bg-elevated);
 	}
 
 	&:disabled {
