@@ -1,8 +1,9 @@
-import { useCallback, useLayoutEffect, useRef } from "react";
+import { useCallback, useLayoutEffect, useMemo, useRef } from "react";
 
 import { captureStablePortalFocus } from "../lib/captureStablePortalFocus";
 import { moveStablePortalContainer } from "../lib/moveStablePortalContainer";
 
+import { createStablePortalScrollTracking } from "./createStablePortalScrollTracking";
 import { type StablePortalFocusSnapshot, type StablePortalTransfer } from "./stablePortalTransferTypes";
 
 /**
@@ -11,8 +12,10 @@ import { type StablePortalFocusSnapshot, type StablePortalTransfer } from "./sta
  */
 export function useStablePortalTransfer(container: HTMLElement | null): StablePortalTransfer {
 	const snapshot = useRef<StablePortalFocusSnapshot | null>(null);
+	const scrollTracking = useMemo(() => (container === null ? null : createStablePortalScrollTracking(container)), [container]);
 	useLayoutEffect(() => {
 		if (container === null) return;
+		const stopScrollTracking = scrollTracking?.connect();
 		const document = container.ownerDocument;
 		const captureFocus = () => {
 			snapshot.current = captureStablePortalFocus(container);
@@ -25,16 +28,17 @@ export function useStablePortalTransfer(container: HTMLElement | null): StablePo
 		document.addEventListener("selectionchange", captureSelection);
 		container.addEventListener("select", captureSelection, true);
 		return () => {
+			stopScrollTracking?.();
 			document.removeEventListener("focusin", captureFocus);
 			document.removeEventListener("selectionchange", captureSelection);
 			container.removeEventListener("select", captureSelection, true);
 		};
-	}, [container]);
+	}, [container, scrollTracking]);
 	return useCallback(
 		(target) => {
-			if (container === null) return;
-			snapshot.current = moveStablePortalContainer(container, target, snapshot.current);
+			if (container === null || scrollTracking === null) return;
+			snapshot.current = moveStablePortalContainer(container, target, snapshot.current, scrollTracking);
 		},
-		[container]
+		[container, scrollTracking]
 	);
 }

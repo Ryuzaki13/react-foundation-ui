@@ -9,7 +9,12 @@ export function StablePortalDraftExample() {
 	const [draft, setDraft] = useState("");
 	const [count, setCount] = useState(0);
 	return (
-		<FlexContainer column gap="md" className="paddingMd bgCanvas radiusMd" style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
+		<FlexContainer
+			column
+			gap="md"
+			data-testid="stable-portal-scroll"
+			className="paddingMd bgCanvas radiusMd"
+			style={{ flex: 1, minHeight: 0, overflow: "auto" }}>
 			<InputText label="Локальный черновик" value={draft} onChange={setDraft} />
 			<Button type="button" onClick={() => setCount(count + 1)}>
 				Изменить локальное состояние: {count}

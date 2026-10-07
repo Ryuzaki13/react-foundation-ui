@@ -1,3 +1,4 @@
+import { type StablePortalScrollTracking } from "../model/stablePortalScrollTrackingTypes";
 import { type StablePortalFocusSnapshot } from "../model/stablePortalTransferTypes";
 
 import { captureStablePortalFocus } from "./captureStablePortalFocus";
@@ -10,7 +11,8 @@ import { restoreStablePortalFocus } from "./restoreStablePortalFocus";
 export function moveStablePortalContainer(
 	container: HTMLElement,
 	target: HTMLElement | null,
-	pendingFocus: StablePortalFocusSnapshot | null
+	pendingFocus: StablePortalFocusSnapshot | null,
+	scrollTracking: Pick<StablePortalScrollTracking, "capture" | "restore">
 ): StablePortalFocusSnapshot | null {
 	const document = container.ownerDocument;
 	if (target !== null && target.ownerDocument !== document) {
@@ -27,9 +29,7 @@ export function moveStablePortalContainer(
 	const focused = captureStablePortalFocus(container) ?? pendingFocus;
 	// Snapshot нужен лишь при смене host: размер новой области может изменить scroll
 	// или browser focus может сбросить его при физическом отключении DOM.
-	const scrollPositions = Array.from(container.querySelectorAll<HTMLElement>("*")).flatMap((element) =>
-		element.scrollTop !== 0 || element.scrollLeft !== 0 ? [{ element, top: element.scrollTop, left: element.scrollLeft }] : []
-	);
+	scrollTracking.capture();
 
 	container.setAttribute("data-stable-portal", "");
 	container.hidden = target === null;
@@ -40,10 +40,7 @@ export function moveStablePortalContainer(
 	const parent = target ?? document.body;
 	if (container.parentNode !== parent) parent.append(container);
 
-	for (const { element, top, left } of scrollPositions) {
-		element.scrollTop = top;
-		element.scrollLeft = left;
-	}
+	scrollTracking.restore();
 	if (target === null) {
 		if (focused?.element === activeElement) focused.element.blur();
 		return focused;

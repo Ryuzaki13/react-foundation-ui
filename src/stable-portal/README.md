@@ -26,7 +26,10 @@ import { StablePortal } from "@ryuzaki13/react-foundation-ui/stable-portal";
 - Технический контейнер имеет `display:contents` и не создаёт layout-box. Размер,
   scroll-policy, z-index, модальность и keyboard-dismiss принадлежат host.
 - Перенос сохраняет DOM-input, локальное состояние и subscriptions; восстанавливает
-  ненулевые scroll positions и focus/selection переносимого содержимого. После
+  scroll positions и focus/selection переносимого содержимого. Нативный scroll
+  capture сохраняет offsets до скрытия или удаления исходного host. Промежуточный
+  parking, нулевая геометрия и временно исчезнувший scroll range не стирают последнее
+  доступное положение; явный scroll к началу видимой области сохраняется как ноль. После
   parking не забирает фокус у другого уже сфокусированного control. Изменение
   размеров нового host может естественно ограничить доступную прокрутку.
 - Содержимое не может стать собственным target; чужой `document` и неподключённый
@@ -45,6 +48,8 @@ import { StablePortal } from "@ryuzaki13/react-foundation-ui/stable-portal";
 ## Проверки
 
 Тесты покрывают state/draft/scroll/focus/selection, однократную subscription,
-parking, вложенный portal, React event ancestry, StrictMode, SSR/hydration и
+скрытие и удаление host до transfer, настоящий scroll к нулю, независимые вложенные
+scroll-области, временное ограничение диапазона, cleanup без обхода DOM на каждом
+scroll-событии, parking, вложенный portal, React event ancestry, StrictMode, SSR/hydration и
 отклонение неверных targets. Storybook `Layout/StablePortal` позволяет проверить
 перенос между обычной ячейкой, `FloatingWindow` и `FullscreenPortal`.

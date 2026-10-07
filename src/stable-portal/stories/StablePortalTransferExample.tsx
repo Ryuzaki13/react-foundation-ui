@@ -19,7 +19,10 @@ export function StablePortalTransferExample() {
 	const target = placement === "cell" ? cell : placement === "floating" ? floating : placement === "fullscreen" ? fullscreen : null;
 	return (
 		<FlexContainer column gap="md" className="paddingMd">
-			<p>Введите черновик и прокрутите содержимое. Перенос сохраняет один редактор, его состояние и прокрутку.</p>
+			<p>
+				Введите черновик и прокрутите содержимое. Перенос сохраняет один редактор, его состояние и прокрутку, даже если прежнее окно
+				скрывается или удаляется до подключения нового host. «Временно скрыть» проверяет возврат из parking.
+			</p>
 			<FlexContainer gap="sm" wrap>
 				<Button type="button" onClick={() => setPlacement("cell")}>
 					Вернуть в ячейку

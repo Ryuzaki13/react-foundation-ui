@@ -6,6 +6,7 @@ import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { moveStablePortalContainer } from "./lib/moveStablePortalContainer";
+import { createStablePortalScrollTracking } from "./model/createStablePortalScrollTracking";
 import { StablePortal } from "./StablePortal";
 import { StablePortalStateProbe } from "./test-fixtures/StablePortalStateProbe";
 
@@ -212,10 +213,11 @@ describe("StablePortal", () => {
 		const container = target.appendChild(document.createElement("div"));
 		const inside = container.appendChild(document.createElement("div"));
 		const foreign = document.implementation.createHTMLDocument().body;
-		expect(() => moveStablePortalContainer(container, foreign, null)).toThrow();
-		expect(() => moveStablePortalContainer(container, document.createElement("div"), null)).toThrow();
-		expect(() => moveStablePortalContainer(container, container, null)).toThrow();
-		expect(() => moveStablePortalContainer(container, inside, null)).toThrow();
+		const scrollTracking = createStablePortalScrollTracking(container);
+		expect(() => moveStablePortalContainer(container, foreign, null, scrollTracking)).toThrow();
+		expect(() => moveStablePortalContainer(container, document.createElement("div"), null, scrollTracking)).toThrow();
+		expect(() => moveStablePortalContainer(container, container, null, scrollTracking)).toThrow();
+		expect(() => moveStablePortalContainer(container, inside, null, scrollTracking)).toThrow();
 		expect(container.parentNode).toBe(target);
 		target.remove();
 	});
