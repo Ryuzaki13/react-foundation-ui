@@ -3,6 +3,14 @@
 Публичный импорт: `@ryuzaki13/react-foundation-ui/fullscreen-portal`.
 Контракт `open`, `title`, `description`, `onOpenChange`, `children` сохранён.
 
+Необязательный `escapeKey` по умолчанию равен `true`: Escape закрывает поверхность
+через `onOpenChange(false)`. Передайте `escapeKey={false}`, когда закрытием управляет
+владелец переносимого содержимого, например внутри `StablePortal`. Это отключает
+только встроенный Escape, не меняя фокус, блокировку документа и геометрию.
+Владелец должен предоставить доступное действие закрытия и единую keyboard policy:
+вложенный dialog/popup сначала обрабатывает свой Escape, не закрывая внешний слой.
+Обработчики React остаются у владельца `StablePortal`, а не у его физического DOM-host.
+
 Поверхность использует общий `useDocumentScrollLock` из foundation-lib, поэтому
 вложенный Dialog или ModalManagerProvider не снимает блокировку родителя.
 Обычный overlay-контейнер не создаёт второй lock. Геометрия overlay следует

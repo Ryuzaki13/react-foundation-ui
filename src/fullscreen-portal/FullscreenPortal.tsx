@@ -16,17 +16,23 @@ export type FullscreenPortalProps = {
 	description: string;
 	/** Callback изменения состояния fullscreen-режима. */
 	onOpenChange: (open: boolean) => void;
+	/**
+	 * Закрывает поверхность по Escape; по умолчанию включено.
+	 * Отключите, если владелец переносимого содержимого самостоятельно координирует
+	 * Escape с вложенными dialog/popup. Остальные взаимодействия и focus policy сохраняются.
+	 */
+	escapeKey?: boolean;
 	/** Содержимое, которое нужно отрендерить в полноэкранном слое. */
 	children: ReactNode;
 };
 
 /** Универсальный fullscreen-портал на базе Floating UI. */
-export function FullscreenPortal({ open, title, description, onOpenChange, children }: FullscreenPortalProps) {
+export function FullscreenPortal({ open, title, description, onOpenChange, escapeKey = true, children }: FullscreenPortalProps) {
 	const overlayRef = useRef<HTMLDivElement>(null);
 	useDocumentScrollLock({ active: open });
 	useVisualViewportFrame({ active: open, containerRef: overlayRef });
 	const { refs, context } = useFloating({ open, onOpenChange });
-	const dismiss = useDismiss(context, { outsidePress: false });
+	const dismiss = useDismiss(context, { outsidePress: false, escapeKey });
 	const role = useRole(context, { role: "dialog" });
 	const { getFloatingProps } = useInteractions([dismiss, role]);
 	/** Передает DOM-узел полноэкранной панели в Floating UI context. */
