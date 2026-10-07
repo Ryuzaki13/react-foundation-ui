@@ -66,6 +66,10 @@ export function ListVirtualizedContent<T>({
 					{virtualItems.map((row) => {
 						const entry = typeof row.key === "string" ? entriesByKey.get(row.key) : undefined;
 						if (entry === undefined && (typeof row.key === "string" || !hasNextPage)) return null;
+						// Последняя строка DOM-окна не обязательно завершает набор. Реальная
+						// последняя запись сохраняет разделитель перед следующей страницей,
+						// а служебный loading sentinel собственного разделителя не получает.
+						const showSeparator = separated && entry !== undefined && (entry.index < items.length - 1 || hasNextPage);
 						return (
 							<li
 								key={row.key}
@@ -74,7 +78,7 @@ export function ListVirtualizedContent<T>({
 								aria-posinset={entry === undefined ? undefined : entry.index + 1}
 								aria-setsize={entry === undefined ? undefined : items.length}
 								style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${row.start}px)` }}
-								className={cn(separated && "borderBottom")}>
+								className={cn(styles.item, showSeparator && styles.separator)}>
 								{entry === undefined ? <LoadingMessage text="Загрузка следующей страницы" /> : render(entry.item)}
 							</li>
 						);

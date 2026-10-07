@@ -29,9 +29,9 @@
 	color: var(--text-muted);
 	border-radius: var(--radius-xs);
 	padding: 0 var(--space-md);
-	margin: var(--border-width);
+	margin: calc(var(--border-width) * 2);
 	// baseInputControl = --control-height, + borderTop/Bottom + transparentLineTop/Bottom
-	min-height: calc(var(--control-height) - calc(var(--border-width) * 4));
+	min-height: calc(var(--control-height) - calc(var(--border-width) * 8));
 
 	cursor: pointer;
 

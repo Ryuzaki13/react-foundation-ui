@@ -3,6 +3,7 @@ import { StrictMode } from "react";
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
+import styles from "./ListVirtualizedContent.module.scss";
 import { type ListVirtualizedContentProps } from "./listVirtualizedContentTypes";
 import { createListTestItems } from "./test-fixtures/createListTestItems";
 import { installListTestEnvironment } from "./test-fixtures/installListTestEnvironment";
@@ -21,6 +22,65 @@ afterEach(() => {
 });
 
 describe("List.VirtualizedContent: stable-key scroll anchor", () => {
+	it("separated использует конец данных, а не конец частичного DOM-окна", () => {
+		const items = createListTestItems(40);
+		const view = render(
+			<List.VirtualizedContent
+				items={items}
+				getKey={(item) => item.id}
+				render={(item) => <span data-list-test-item={item.id} />}
+				separated
+				overscan={0}
+			/>
+		);
+		const viewport = screen.getByRole("region");
+		const partialLast = viewport.querySelector("li:last-child");
+		expect(partialLast?.getAttribute("aria-posinset")).not.toBe(String(items.length));
+		expect(partialLast?.classList.contains(styles.separator)).toBe(true);
+		fireEvent.scroll(viewport, { target: { scrollTop: 40 * 120 - 240 } });
+		const dataLast = viewport.querySelector('[aria-posinset="40"]');
+		expect(dataLast).not.toBeNull();
+		expect(dataLast?.classList.contains(styles.separator)).toBe(false);
+		expect(viewport.querySelector('[aria-posinset="39"]')?.classList.contains(styles.separator)).toBe(true);
+		view.rerender(
+			<List.VirtualizedContent
+				items={items}
+				getKey={(item) => item.id}
+				render={(item) => <span data-list-test-item={item.id} />}
+				overscan={0}
+			/>
+		);
+		expect([...viewport.querySelectorAll("li")].every((row) => !row.classList.contains(styles.separator))).toBe(true);
+	});
+
+	it("последняя запись сохраняет separator перед loading sentinel до завершения пагинации", () => {
+		const items = createListTestItems(1);
+		const view = render(
+			<List.VirtualizedContent
+				items={items}
+				getKey={(item) => item.id}
+				render={(item) => <span data-list-test-item={item.id} />}
+				separated
+				hasNextPage
+				fetchNextPage={async () => undefined}
+			/>
+		);
+		const viewport = screen.getByRole("region");
+		expect(viewport.querySelector('[aria-posinset="1"]')?.classList.contains(styles.separator)).toBe(true);
+		expect(viewport.querySelector("li:not([aria-posinset])")?.classList.contains(styles.separator)).toBe(false);
+		view.rerender(
+			<List.VirtualizedContent
+				items={items}
+				getKey={(item) => item.id}
+				render={(item) => <span data-list-test-item={item.id} />}
+				separated
+				hasNextPage={false}
+			/>
+		);
+		expect(viewport.querySelector('[aria-posinset="1"]')?.classList.contains(styles.separator)).toBe(false);
+		expect(viewport.querySelector("li:not([aria-posinset])")).toBeNull();
+	});
+
 	it("пустая первичная загрузка не объявляет empty-состояние и остаётся именованной областью", () => {
 		const mounted = render(<ListTestContent items={[]} isLoading />);
 		const viewport = screen.getByRole("region", { name: "changing-source" });

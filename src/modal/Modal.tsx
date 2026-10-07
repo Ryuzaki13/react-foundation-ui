@@ -52,6 +52,7 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 	const shouldReduceMotion = useReducedMotion();
 	const restoreFocusTargetRef = useRef<HTMLElement | null>(null);
 	const restoreFocusAnimationFrameRef = useRef(0);
+	const wasOpenRef = useRef(false);
 	const modalStyle: ModalStyle = { "--modal-height": height };
 
 	/**
@@ -62,9 +63,16 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 	useModalViewportFrame(Boolean(isOpen) || modals.includes(modalId));
 
 	useEffect(() => {
-		if (isOpen) {
+		const nextOpen = Boolean(isOpen);
+		if (nextOpen && !wasOpenRef.current) {
+			// StrictMode повторяет setup без нового открытия: исходный trigger нельзя
+			// заменять уже сфокусированной кнопкой внутри Modal. Настоящее повторное
+			// открытие отменяет ожидающий restore прошлого exit и захватывает новый trigger.
+			window.cancelAnimationFrame(restoreFocusAnimationFrameRef.current);
+			restoreFocusAnimationFrameRef.current = 0;
 			restoreFocusTargetRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		}
+		wasOpenRef.current = nextOpen;
 	}, [isOpen]);
 
 	const modalRef = useOverlayFocus<HTMLDivElement>({ active: isOpen || false, trapFocus: true, restoreFocus: false });
@@ -155,7 +163,13 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 						<h3 className={styles.headerText} id={titleId}>
 							{title}
 						</h3>
-						<Button icon={<X />} className={styles.headerButton} aria-label={"Закрыть модальное окно"} onClick={onClose} />
+						<Button
+							icon={<X />}
+							appearance="ghost"
+							className={styles.headerButton}
+							aria-label={"Закрыть модальное окно"}
+							onClick={onClose}
+						/>
 					</div>
 
 					<GridContainer

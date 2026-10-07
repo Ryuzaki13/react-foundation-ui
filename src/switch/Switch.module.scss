@@ -1,5 +1,5 @@
 .switchWrapper {
-	--size: calc(var(--control-height) - calc(var(--border-width) * 4));
+	--size: calc(var(--control-height) - calc(var(--border-width) * 8));
 
 	display: block;
 	padding: 0 var(--border-width);
@@ -23,6 +23,8 @@
 	border-radius: var(--radius-xs);
 	width: 100%;
 	height: var(--size);
+
+	margin-inline: calc(var(--border-width) * 2);
 
 	display: flex;
 	align-items: center;
