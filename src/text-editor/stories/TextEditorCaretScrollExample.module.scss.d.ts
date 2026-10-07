@@ -1,5 +1,5 @@
 declare const styles: {
-	readonly scrollHost: string;
-	readonly spacer: string;
+  readonly scrollHost: "scrollHost";
+  readonly spacer: "spacer";
 };
 export default styles;
