@@ -1,0 +1,10 @@
+.scrollHost {
+	max-block-size: 28rem;
+	overflow-y: auto;
+	border: var(--border-width) solid var(--border-color);
+	padding: var(--space-sm);
+}
+
+.spacer {
+	block-size: 16rem;
+}

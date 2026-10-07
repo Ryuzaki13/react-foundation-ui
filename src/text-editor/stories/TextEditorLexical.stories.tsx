@@ -3,6 +3,7 @@ import { fn } from "storybook/test";
 
 import { LinkTypes, type TextEditorCoreProps, TextEditorLexical } from "../index";
 
+import { TextEditorCaretScrollExample } from "./TextEditorCaretScrollExample";
 import { TextEditorInitialFocusExample } from "./TextEditorInitialFocusExample";
 import { TextEditorLifecycleExample } from "./TextEditorLifecycleExample";
 
@@ -102,6 +103,20 @@ export const Compact: Story = {
 		docs: {
 			description: {
 				story: "Встроенный редактор без внешней рамки и подсказки. Форматирование доступно одной кнопкой с сохранением исходного выделения; размеры целей нажатия не уменьшаются. Длинный текст прокручивается внутри поля. Проверяйте панель и переход к диалогу ссылки также на узком viewport."
+			}
+		}
+	}
+};
+
+export const CompactCaretScroll: Story = {
+	...Compact,
+	name: "Компактный ввод: внешняя прокрутка",
+	args: { ...Compact.args, initialData: { html: "<p>Проверка каретки</p>", raw: null } },
+	render: (args) => <TextEditorCaretScrollExample {...args} />,
+	parameters: {
+		docs: {
+			description: {
+				story: "Прокрутите host не до конца и вводите Enter с паузой около секунды. Внешний scroll не меняется; после ограничителя editable прокручивается только внутри. Проверьте Shift+Enter, стрелки, undo/redo и смену размеров. Пример не отправляет данные."
 			}
 		}
 	}

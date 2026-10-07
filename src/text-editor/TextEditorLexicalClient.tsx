@@ -15,6 +15,7 @@ import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexi
 
 import { type TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
 import { SelectionStatePlugin } from "./lexical/plugins";
+import { TextEditorCompactCaretScrollPlugin } from "./lexical/plugins/TextEditorCompactCaretScrollPlugin";
 import { TextEditorInitialFocusPlugin } from "./lexical/plugins/TextEditorInitialFocusPlugin";
 import { TextEditorLifecyclePlugin } from "./lexical/plugins/TextEditorLifecyclePlugin";
 import { createLexicalRaw } from "./lib/serialization/createLexicalRaw";
@@ -139,6 +140,7 @@ export function TextEditorLexicalClient({
 						ErrorBoundary={LexicalErrorBoundary}
 					/>
 					<HistoryPlugin externalHistoryState={history.state} />
+					{presentation === "compact" && <TextEditorCompactCaretScrollPlugin />}
 					<ListPlugin />
 					<SelectionStatePlugin onStateChange={setToolbarState} />
 					<OnChangePlugin onChange={handleChange} ignoreSelectionChange />
