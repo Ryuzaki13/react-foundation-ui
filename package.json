@@ -139,6 +139,10 @@
 			"types": "./dist/fullscreen-portal/index.d.ts",
 			"import": "./dist/fullscreen-portal/index.js"
 		},
+		"./stable-portal": {
+			"types": "./dist/stable-portal/index.d.ts",
+			"import": "./dist/stable-portal/index.js"
+		},
 		"./grid": {
 			"types": "./dist/grid/index.d.ts",
 			"import": "./dist/grid/index.js"

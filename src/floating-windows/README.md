@@ -84,6 +84,15 @@ props необязательны.
 | `onClose`          | `() => void`                                 | Запрос закрытия. При наличии callback появляется кнопка закрытия. Удаление окна из дерева выполняет приложение. |
 | `onPositionChange` | `(position: FloatingWindowPosition) => void` | Вызывается один раз после завершённого пользовательского перемещения, только если координаты изменились.        |
 | `className`        | `string`                                     | Класс панели окна.                                                                                              |
+| `contentClassName` | `string`                                     | Дополнительный класс content-контейнера для отступов и scroll-policy приложения.                                |
+
+Без `contentClassName` сохраняются штатные отступы `--space-md` и внутренняя
+прокрутка `overflow:auto`. Для контента с собственной прокруткой передайте
+класс через этот public slot и задайте ему `padding:0` / `overflow:hidden`;
+размер и прокручиваемые области внутри контента принадлежат приложению.
+Не обращайтесь к приватным CSS Modules или вложенности окна из внешнего SCSS.
+Consumer CSS подключается после компонентного CSS пакета, как для других
+`className` slots.
 
 ```ts
 type FloatingWindowPosition = Readonly<{ x: number; y: number }>;

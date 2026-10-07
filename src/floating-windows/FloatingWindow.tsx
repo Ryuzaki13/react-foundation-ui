@@ -27,6 +27,8 @@ export type FloatingWindowProps = Readonly<{
 	/** Только завершённый пользователем move; resize-коррекция и восстановление cache не являются командами пользователя. */
 	onPositionChange?: (position: FloatingWindowPosition) => void;
 	className?: string;
+	/** Public content slot: host может задать собственные отступы и scroll-policy без private CSS selectors. */
+	contentClassName?: string;
 }>;
 
 /** Немодальное окно: host управляет его существованием, primitive — геометрией, движением и локальным порядком. */
@@ -40,7 +42,8 @@ export function FloatingWindow({
 	actions,
 	onClose,
 	onPositionChange,
-	className
+	className,
+	contentClassName
 }: FloatingWindowProps) {
 	const store = useFloatingWindowsStore();
 	const snapshot = useFloatingWindowSnapshot(store, id, defaultPosition);
@@ -80,7 +83,7 @@ export function FloatingWindow({
 				Для перемещения нажмите Enter или пробел, затем используйте стрелки. Shift — шаг 1 пиксель. Enter или пробел — сохранить,
 				Escape — отменить.
 			</span>
-			<div className={styles.content}>{children}</div>
+			<div className={cn(styles.content, contentClassName)}>{children}</div>
 		</FlexContainer>
 	);
 }

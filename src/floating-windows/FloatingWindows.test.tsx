@@ -27,6 +27,33 @@ afterEach(() => {
 });
 
 describe("FloatingWindows", () => {
+	it("предоставляет additive contentClassName slot и сохраняет default-контейнер при его удалении", () => {
+		const view = render(
+			<FloatingWindows>
+				<FloatingWindow id="content-slot" title="Окно" contentClassName="public-content-slot">
+					<input data-testid="content-slot-field" />
+				</FloatingWindow>
+			</FloatingWindows>
+		);
+		const input = view.getByTestId("content-slot-field");
+		const content = input.parentElement;
+		// Class placement — явный public contract нового slot, а не snapshot
+		// приватной DOM-вложенности или текущего визуального оформления.
+		expect(content?.classList.contains("public-content-slot")).toBe(true);
+		expect(getFloatingWindowElement("content-slot").classList.contains("public-content-slot")).toBe(false);
+		const defaultClasses = content?.className.replace("public-content-slot", "").trim();
+		view.rerender(
+			<FloatingWindows>
+				<FloatingWindow id="content-slot" title="Окно">
+					<input data-testid="content-slot-field" />
+				</FloatingWindow>
+			</FloatingWindows>
+		);
+		expect(view.getByTestId("content-slot-field")).toBe(input);
+		expect(input.parentElement).toBe(content);
+		expect(content?.className).toBe(defaultClasses);
+	});
+
 	it("связывает немодальное окно с заголовком и предоставляет семантические команды", () => {
 		render(
 			<FloatingWindows>
