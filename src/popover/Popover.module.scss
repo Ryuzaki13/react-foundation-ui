@@ -2,11 +2,11 @@
 	padding: var(--space-sm);
 	// background-image: radial-gradient(var(--bg-canvas) 50%, var(--bg-surface) 100%);
 	background-color: var(--bg-surface);
-	border: var(--border-width) solid var(--border-strong);
+	border: var(--border-width) solid var(--border-default);
 	border-radius: var(--radius-sm);
 	color: var(--text-primary);
 
-	filter: drop-shadow(var(--shadow-popover));
+	box-shadow: var(--shadow-popover);
 
 	&.negative {
 		--border-thin: var(--text-primary);
