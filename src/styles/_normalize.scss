@@ -134,18 +134,18 @@ html,
 }
 
 .link {
-	color: var(--link-color, var(--accent-text));
+	color: var(--text-link, var(--accent-brand));
 
 	&:visited {
-		color: var(--link-color, var(--accent-text));
+		color: var(--text-link, var(--accent-brand));
 	}
 
 	&:hover {
-		color: var(--link-color-hover, var(--accent-text-hover));
+		color: var(--text-link-hover, var(--accent-brand-hover));
 	}
 
 	&:active {
-		color: var(--link-color-active, var(--accent-text-active));
+		color: var(--text-link-active, var(--accent-brand-active));
 	}
 }
 
