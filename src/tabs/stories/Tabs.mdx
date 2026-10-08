@@ -64,6 +64,15 @@ export function Example() {
 
 <Canvas of={TabsStories.LayoutPanels} />
 
+### Узкая область и длинное содержимое
+
+<Canvas of={TabsStories.LayoutNarrowLongContent} />
+
+Горизонтальные вкладки остаются в ширине родителя даже при длинных заголовках.
+Прокрутка заголовков принадлежит списку вкладок, а слишком широкое или высокое
+содержимое `TabsLayout.Content` — переданному `Scrollable`. Пример проверяет
+границы в реальном браузере и переход к последней вкладке с клавиатуры.
+
 ```tsx
 import { Scrollable, TabsLayout } from "@ryuzaki13/react-foundation-ui";
 

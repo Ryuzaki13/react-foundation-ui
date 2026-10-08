@@ -1,9 +1,10 @@
 import { useState, type CSSProperties } from "react";
 
-import { fn } from "storybook/test";
+import { expect, fn, waitFor, within } from "storybook/test";
 
 import { TabsBox, TabsLayout, type TabsBoxItem, type TabsBoxProps, type TabsLayoutProps } from "..";
 import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
+import { GridContainer } from "../../grid";
 import { Scrollable } from "../../misc";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
@@ -306,6 +307,66 @@ export const LayoutPanels: LayoutStory = {
 		"aria-label": "Составные панели документа"
 	},
 	render: renderTabsLayoutStory
+};
+
+/** Узкий host не расширяется ни длинным tablist, ни широкой строкой в scroll-контенте. */
+export const LayoutNarrowLongContent: LayoutStory = {
+	args: {
+		value: undefined,
+		defaultValue: "overview",
+		orientation: "horizontal",
+		mountStrategy: "unmount",
+		activationMode: "manual",
+		"aria-label": "Разделы в узкой области"
+	},
+	render: (args) => (
+		<GridContainer
+			templateColumns="minmax(0, 1fr)"
+			style={{ width: "min(100%, 22rem)", height: "30rem" }}
+			data-tabs-narrow-example="frame">
+			<TabsLayout {...args} className="narrowTabsFixture">
+				{[
+					{ id: "overview", title: "Основные сведения и порядок работы" },
+					{ id: "settings", title: "Настройки и дополнительные возможности" },
+					{ id: "history", title: "История последних изменений" },
+					{ id: "reference", title: "Подробная справочная информация" }
+				].map((tab) => (
+					<TabsLayout.Tab key={tab.id} id={tab.id} title={tab.title}>
+						<TabsLayout.Content>
+							<Scrollable className="h100" data-tabs-narrow-example="content">
+								<p>Горизонтальная прокрутка вкладок не изменяет ширину всей панели.</p>
+								<pre>{"Длинная_неразрывная_строка_".repeat(60)}</pre>
+								{Array.from({ length: 30 }, (_, index) => (
+									<p key={index}>Строка {index + 1}: вертикальная прокрутка принадлежит содержимому панели.</p>
+								))}
+							</Scrollable>
+						</TabsLayout.Content>
+					</TabsLayout.Tab>
+				))}
+			</TabsLayout>
+		</GridContainer>
+	),
+	play: async ({ canvasElement, userEvent }) => {
+		const canvas = within(canvasElement);
+		const frame = canvasElement.querySelector<HTMLElement>('[data-tabs-narrow-example="frame"]');
+		const root = canvasElement.querySelector<HTMLElement>(".narrowTabsFixture");
+		if (!frame || !root) throw new Error("Не найдена область проверки узких Tabs.");
+		// Это browser-проверка измеренных границ, а не попытка получить layout из jsdom.
+		await waitFor(() => {
+			expect(frame.clientWidth).toBeGreaterThan(0);
+			expect(root.scrollWidth).toBeLessThanOrEqual(root.clientWidth + 1);
+			expect(root.getBoundingClientRect().width).toBeLessThanOrEqual(frame.clientWidth + 1);
+		});
+		const tabs = canvas.getAllByRole("tab");
+		await userEvent.click(tabs[0]);
+		await userEvent.keyboard("{End}{Enter}");
+		expect(tabs[tabs.length - 1]).toHaveAttribute("aria-selected", "true");
+		const content = canvasElement.querySelector<HTMLElement>('[data-tabs-narrow-example="content"]');
+		if (!content) throw new Error("Не найден scroll-контент выбранной панели.");
+		expect(content.scrollWidth).toBeGreaterThan(content.clientWidth);
+		expect(content.scrollHeight).toBeGreaterThan(content.clientHeight);
+		expect(content.getBoundingClientRect().right).toBeLessThanOrEqual(root.getBoundingClientRect().right + 1);
+	}
 };
 
 export const Loading: Story = {

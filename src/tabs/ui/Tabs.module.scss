@@ -21,6 +21,8 @@
 }
 
 .tabsWrapper {
+	// Длинные заголовки прокручиваются внутри tablist, а не расширяют grid-панель.
+	min-width: 0;
 	background: var(--tabs-background);
 }
 
@@ -36,6 +38,9 @@
 }
 
 .horizontal {
+	// Неявная auto-колонка наследовала intrinsic minimum вложенного скроллера.
+	// Явная нулевая граница удерживает tabs и панели в ширине родителя, в том числе модалки.
+	grid-template-columns: minmax(0, 1fr);
 	grid-template-rows: auto minmax(0, 1fr);
 
 	.tabsWrapper {
