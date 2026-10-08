@@ -499,7 +499,7 @@
 		"@lexical/selection": "^0.52.0",
 		"@lexical/utils": "^0.52.0",
 		"@ryuzaki13/react-foundation-api": "^2.1.0",
-		"@ryuzaki13/react-foundation-lib": "^2.16.0",
+		"@ryuzaki13/react-foundation-lib": "^2.18.1",
 		"@storybook/addon-a11y": "^10.5.5",
 		"@storybook/addon-docs": "^10.5.5",
 		"@storybook/addon-vitest": "^10.5.5",

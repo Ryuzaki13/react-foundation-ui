@@ -18,8 +18,7 @@
 
 $laptop: 1919.98;
 $tablet: 1151.98;
-$mobile: 767.98;
-$mobile-s: 479.98;
+$mobile: 479.98;
 
 @mixin laptop-above {
 	@media (width > toEm($laptop)) {
@@ -53,18 +52,6 @@ $mobile-s: 479.98;
 
 @mixin mobile {
 	@media (width <= toEm($mobile)) {
-		@content;
-	}
-}
-
-@mixin mobile-s-above {
-	@media (width > toEm($mobile-s)) {
-		@content;
-	}
-}
-
-@mixin mobile-s {
-	@media (width <= toEm($mobile-s)) {
 		@content;
 	}
 }
