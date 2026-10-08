@@ -31,32 +31,12 @@
 .option {
 	position: relative;
 	padding: var(--space-sm);
-	// border: var(--border);
-	border-radius: var(--radius-sm);
-	background-color: var(--bg-elevated);
-	transition:
-		background-color var(--transition-fast) ease,
-		border-color var(--transition-fast) ease,
-		color var(--transition-fast) ease;
 
-	@include hover(true) {
-		background-color: var(--bg-hover);
-		border-color: var(--border-strong);
-	}
-
-	&:disabled {
-		cursor: default;
-		opacity: var(--disabled-opacity);
-	}
-}
-
-.option[data-selected] {
-	border-color: var(--accent-border);
-	background-color: var(--selection-bg);
-
-	.previewCell {
-		background-color: var(--accent-fill);
-		border-color: var(--accent-border);
+	&[data-selected] {
+		.previewCell {
+			background-color: var(--accent-selection);
+			border-color: transparent;
+		}
 	}
 }
 
@@ -89,8 +69,8 @@
 	min-width: 0;
 	min-height: 0;
 	border-radius: var(--radius-xs);
-	background-color: var(--bg-surface);
-	border: var(--border);
+	background-color: var(--bg-sunken);
+	border: var(--border-width) solid var(--border-strong);
 }
 
 .previewCompact {

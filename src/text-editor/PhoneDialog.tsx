@@ -95,7 +95,7 @@ export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogPro
 						<Input label="Добавочный номер" value={phoneAdd} onChange={setPhoneAdd} placeholder="100" />
 					</FlexContainer>
 					{error && (
-						<div className="textColorDanger">
+						<div className="statusError">
 							<strong>Ошибка ввода:</strong> <span className="fontItalic">{error}</span>
 						</div>
 					)}

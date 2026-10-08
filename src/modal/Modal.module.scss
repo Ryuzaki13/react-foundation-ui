@@ -10,7 +10,7 @@
 
 	border: var(--border);
 	border-radius: var(--modal-border-radius);
-	background-color: var(--bg-surface);
+	background-color: var(--bg-elevated);
 	box-shadow: var(--shadow-popover);
 
 	&:not(:last-child) {

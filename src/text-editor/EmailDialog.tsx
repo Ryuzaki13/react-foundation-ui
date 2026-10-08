@@ -66,7 +66,7 @@ export function EmailDialog({ onClose, onConfirm, initialState }: EmailDialogPro
 					<Input label="Email адрес" value={email} onChange={setEmail} placeholder="some_email@mail.ru" />
 
 					{error && (
-						<div className="textColorDanger">
+						<div className="statusError">
 							<strong>Ошибка ввода:</strong> <span className="fontItalic">{error}</span>
 						</div>
 					)}

@@ -8,26 +8,27 @@
 	min-height: 8em;
 	padding: var(--space-lg);
 
-	border: var(--border-width) dashed var(--border-default);
+	border: var(--border-width) dashed var(--border-strong);
 	border-radius: var(--radius-sm);
-	background-color: var(--bg-canvas);
-
+	background-color: var(--bg-sunken);
 	color: var(--text-muted);
+
 	cursor: pointer;
 
 	transition-property: border-color, background-color;
 	transition-duration: var(--transition-fast);
 
 	&.dragOver {
-		border-color: var(--accent-text);
-		background-color: var(--bg-surface);
+		color: var(--selection-text);
+		border-color: var(--selection-border);
+		background-color: var(--selection-bg-hover);
 	}
 
 	&.disabled {
 		cursor: default;
 		pointer-events: none;
-		background-color: var(--bg-elevated);
-		border-color: var(--overlay-backdrop);
+		background-color: var(--bg-disabled);
+		border-color: transparent;
 
 		.icon,
 		.hint {
@@ -39,7 +40,7 @@
 .icon {
 	width: 2em;
 	height: 2em;
-	color: var(--text-muted);
+	color: currentColor;
 }
 
 .hint {

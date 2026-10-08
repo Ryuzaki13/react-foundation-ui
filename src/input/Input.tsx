@@ -1,4 +1,4 @@
-import React, { CSSProperties, InputHTMLAttributes, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import React, { type MouseEvent, CSSProperties, InputHTMLAttributes, ReactNode, useLayoutEffect, useRef, useState } from "react";
 
 import { toFiniteNumber } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -34,9 +34,8 @@ export interface InputControlProps {
 }
 
 export interface InputClearButtonProps {
-	onClick?: () => void;
+	onClick: () => void;
 	disabled?: boolean;
-	className?: string;
 	ariaLabel?: string;
 }
 
@@ -153,13 +152,24 @@ export function InputControl({ className, endAdornment, endAdornmentClassName, e
 	);
 }
 
-export function InputClearButton({ onClick, disabled, className, ariaLabel = "Очистить значение" }: InputClearButtonProps) {
+export function InputClearButton({ onClick, disabled, ariaLabel = "Очистить значение" }: InputClearButtonProps) {
+	const stopTriggerInteraction = (event: MouseEvent<HTMLButtonElement>) => {
+		event.preventDefault();
+		event.stopPropagation();
+	};
+
 	return (
 		<button
 			type="button"
-			disabled={disabled || !onClick}
-			className={cn(styles.clearButton, className)}
-			onClick={onClick}
+			disabled={disabled}
+			className={cn(styles.clearButton, uiStyles.uiClearButton)}
+			data-ui="input-clear-button"
+			data-action="clear-input"
+			onMouseDown={stopTriggerInteraction}
+			onClick={(event) => {
+				stopTriggerInteraction(event);
+				onClick();
+			}}
 			aria-label={ariaLabel}>
 			<XIcon />
 		</button>

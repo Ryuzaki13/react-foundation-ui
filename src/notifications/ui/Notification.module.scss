@@ -14,8 +14,8 @@
 
 .card {
 	--notify-accent: var(--border-thin);
-	--notify-accent-surface: var(--bg-surface);
-	--notify-accent-text: var(--accent-text);
+	--notify-accent-surface: var(--bg-elevated);
+	--notify-accent-text: var(--text-primary);
 
 	position: relative;
 	overflow: hidden;
@@ -25,31 +25,31 @@
 	// border: var(--border);
 	border-left: 0.3125em solid var(--notify-accent);
 	border-radius: var(--radius-md);
-	background: linear-gradient(37deg, var(--notify-accent-surface), var(--bg-canvas));
+	background: linear-gradient(37deg, var(--notify-accent-surface), var(--bg-elevated));
 	color: var(--text-primary);
 	box-shadow: var(--shadow-card);
 }
 
 .info {
-	--notify-accent: var(--info-border);
+	--notify-accent: var(--info-text);
 	--notify-accent-surface: var(--info-fill);
 	--notify-accent-text: var(--info-text);
 }
 
 .success {
-	--notify-accent: var(--success-border);
+	--notify-accent: var(--success-text);
 	--notify-accent-surface: var(--success-fill);
 	--notify-accent-text: var(--success-text);
 }
 
 .warning {
-	--notify-accent: var(--warning-border);
+	--notify-accent: var(--warning-text);
 	--notify-accent-surface: var(--warning-fill);
 	--notify-accent-text: var(--warning-text);
 }
 
 .error {
-	--notify-accent: var(--error-border);
+	--notify-accent: var(--error-text);
 	--notify-accent-surface: var(--error-fill);
 	--notify-accent-text: var(--error-text);
 }
@@ -75,7 +75,7 @@
 	border-radius: 50%;
 	background-color: var(--notify-accent-surface);
 	color: var(--notify-accent-text);
-	border: var(--border-width) solid color-mix(in srgb, var(--notify-accent) 22%, transparent);
+	border: var(--border-width) solid currentColor;
 
 	svg {
 		width: 1.125em;

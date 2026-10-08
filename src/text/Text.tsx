@@ -16,7 +16,7 @@ const textColors: Record<TextColor, string> = {
 	success: "statusSuccess",
 	warning: "statusWarning",
 	error: "statusError",
-	brand: "statusBrand",
+	brand: "textBrand",
 	accent: "textAccent"
 };
 

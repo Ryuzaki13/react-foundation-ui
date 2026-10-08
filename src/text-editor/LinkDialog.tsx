@@ -80,7 +80,7 @@ export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = tru
 					<Input label="Полный URL адрес" value={url} onChange={handleUrlChange} placeholder="https://somesite.ru" />
 
 					{error && (
-						<div className="textColorDanger">
+						<div className="statusError">
 							<strong>Ошибка ввода:</strong> <span className="fontItalic">{error}</span>
 						</div>
 					)}

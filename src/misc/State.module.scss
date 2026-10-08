@@ -32,32 +32,25 @@
 }
 
 .state {
+	stroke: currentColor;
+
 	&.information {
 		color: var(--info-text);
-
 		fill: var(--info-fill);
-		stroke: var(--info-on-fill);
 	}
 
 	&.success {
 		color: var(--success-text);
-
 		fill: var(--success-fill);
-		stroke: var(--success-on-fill);
 	}
 
 	&.warning {
 		color: var(--warning-text);
-
 		fill: var(--warning-fill);
-		stroke: var(--warning-on-fill);
-		stroke-width: 2px;
 	}
 
 	&.error {
 		color: var(--error-text);
-
 		fill: var(--error-fill);
-		stroke: var(--error-on-fill);
 	}
 }

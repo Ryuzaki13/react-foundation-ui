@@ -49,11 +49,15 @@
 }
 
 .textInverse {
-	color: var(--accent-inverse);
+	color: var(--text-inverse);
 }
 
 .textAccent {
 	color: var(--accent-selection);
+}
+
+.textBrand {
+	color: var(--accent-brand);
 }
 
 .statusSuccess {
@@ -70,10 +74,6 @@
 
 .statusInfo {
 	color: var(--info-text);
-}
-
-.statusBrand {
-	color: var(--brand-text);
 }
 
 .statusNone {

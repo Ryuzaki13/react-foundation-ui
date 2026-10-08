@@ -64,26 +64,6 @@
 	justify-content: center;
 	border: none;
 	border-radius: var(--radius-sm);
-
-	background: transparent;
-	color: var(--text-muted);
-
-	transition:
-		color var(--transition-fast) ease,
-		background-color var(--transition-fast) ease;
-
-	&:hover {
-		color: var(--accent-text);
-	}
-
-	&:focus-visible {
-		@include focusVisible;
-	}
-
-	&:disabled {
-		pointer-events: none;
-		opacity: var(--disabled-opacity);
-	}
 }
 
 .error {
@@ -94,7 +74,7 @@
 	right: 0;
 	transform: translateY(100%);
 	// font-size: var(--font-size-sm);
-	color: var(--error-on-fill);
+	color: var(--error-text);
 	background: var(--error-fill);
 	border-radius: var(--radius-sm);
 	padding: var(--space-xs) var(--space-sm);
