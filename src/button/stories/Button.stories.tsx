@@ -27,15 +27,14 @@ const meta = {
 			control: "text"
 		},
 		tone: {
-			description:
-				"Цветовой тон для solid и outline. Если задан только tone, используется outline; ghost и transparent всегда нейтральные.",
+			description: "Цветовой тон для solid и outline. Если задан только tone, используется outline; ghost всегда нейтральный.",
 			control: "inline-radio",
-			options: ["neutral", "accent", "brand", "error", "warning", "success", "info"]
+			options: ["neutral", "accent", "error", "warning", "success", "info"]
 		},
 		appearance: {
-			description: "Визуальная форма кнопки. Без tone и appearance используется нейтральная схема без отдельной формы.",
+			description: "Для accent и статусов доступны solid и outline. Нейтральная кнопка имеет рамку или использует ghost.",
 			control: "inline-radio",
-			options: ["solid", "outline", "ghost", "transparent"]
+			options: ["solid", "outline", "ghost"]
 		},
 		icon: {
 			description: "Иконка слева или справа от текста.",
@@ -98,11 +97,8 @@ export const Variants: Story = {
 export const ComposableScheme: Story = {
 	render: () => (
 		<div style={{ display: "grid", gap: 12, gridTemplateColumns: "repeat(auto-fit, minmax(180px, 1fr))" }}>
-			<Button tone="neutral" appearance="solid">
-				Нейтральная с заливкой
-			</Button>
 			<Button tone="neutral" appearance="outline">
-				Нейтральная с контуром
+				Нейтральная
 			</Button>
 			<Button tone="neutral" appearance="ghost">
 				Нейтральная ghost
@@ -116,26 +112,11 @@ export const ComposableScheme: Story = {
 			<Button tone="accent" appearance="ghost">
 				Ghost остаётся нейтральной
 			</Button>
-			<Button tone="brand" appearance="solid">
-				Brand с заливкой
-			</Button>
-			<Button tone="brand" appearance="outline">
-				Brand с контуром
-			</Button>
-			<Button tone="brand" appearance="ghost">
-				Ghost остаётся нейтральной
-			</Button>
-			<Button tone="brand" appearance="transparent">
-				Transparent нейтральная
-			</Button>
 			<Button tone="info" appearance="outline">
 				Информация с контуром
 			</Button>
 			<Button tone="success" appearance="solid">
 				Успех с заливкой
-			</Button>
-			<Button tone="error" appearance="transparent">
-				Transparent нейтральная
 			</Button>
 		</div>
 	)

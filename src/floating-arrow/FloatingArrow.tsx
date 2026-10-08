@@ -9,6 +9,7 @@ interface TooltipArrowProps {
 	middlewareData: MiddlewareData;
 }
 
+/** Цвета оболочки наследуются от поповера, чтобы стрелка сохраняла его фон и статусный контур. */
 export function FloatingArrow({ ref, placement, middlewareData }: TooltipArrowProps & { ref?: Ref<HTMLDivElement> }) {
 	return (
 		<div ref={ref} style={getArrowStyle(placement, middlewareData)}>
@@ -16,8 +17,8 @@ export function FloatingArrow({ ref, placement, middlewareData }: TooltipArrowPr
 				width="16"
 				height="16"
 				viewBox="0 0 16 16"
-				fill="var(--border-default)"
-				stroke="var(--border-default)"
+				fill="var(--floating-panel-background, var(--bg-elevated))"
+				stroke="var(--floating-panel-border, var(--border-default))"
 				strokeWidth="var(--border-width)"
 				style={{ display: "block" }}>
 				<polygon points="8,8 16,16 0,16" />

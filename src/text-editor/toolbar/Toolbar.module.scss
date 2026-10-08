@@ -1,3 +1,21 @@
+.control {
+	// Сохраняющееся форматирование принадлежит кнопке редактора, а не всем uiControl с aria-pressed.
+	&[aria-pressed="true"] {
+		--ui-background: var(--selection-bg);
+		--ui-background-hover: var(--selection-bg-hover);
+		--ui-background-pressed: var(--selection-bg-pressed);
+		--ui-color: var(--selection-text);
+		--ui-color-hover: var(--selection-text-hover);
+		--ui-color-pressed: var(--selection-text-pressed);
+		--ui-border: var(--selection-border);
+		--ui-border-hover: var(--selection-border-hover);
+		--ui-border-pressed: var(--selection-border-pressed);
+		--ui-disabled-background: var(--selection-bg-disabled);
+		--ui-disabled-color: var(--selection-text-disabled);
+		--ui-disabled-border: var(--selection-border-disabled);
+	}
+}
+
 .toolbar {
 	display: flex;
 	flex-wrap: wrap;

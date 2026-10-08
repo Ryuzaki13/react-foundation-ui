@@ -1,6 +1,5 @@
 declare const styles: {
   readonly statusIndicator: "statusIndicator";
-  readonly brand: "brand";
   readonly accent: "accent";
   readonly neutral: "neutral";
   readonly info: "info";

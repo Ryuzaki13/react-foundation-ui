@@ -58,11 +58,6 @@ const meta = {
 			description: "Размер визуального контрола и подписи.",
 			control: "select",
 			options: ["xs", "sm", "md", "lg", "xl"]
-		},
-		tone: {
-			description: "Цветовой тон радиокнопки.",
-			control: "inline-radio",
-			options: ["neutral", "accent", "brand", "error", "warning", "success", "info"]
 		}
 	}
 } satisfies Meta<RadioButtonStoryArgs>;
@@ -75,8 +70,7 @@ export const Controlled: Story = {
 	args: {
 		label: "Выбрать опцию",
 		description: "Одиночная радиокнопка в controlled-режиме.",
-		value: false,
-		tone: "neutral"
+		value: false
 	}
 };
 
@@ -91,14 +85,12 @@ export const Group: Story = {
 					label="Email"
 					value={selected === "email"}
 					onChange={(checked) => checked && setSelected("email")}
-					tone="info"
 				/>
 				<RadioButton
 					name="notification-channel"
 					label="SMS"
 					value={selected === "sms"}
 					onChange={(checked) => checked && setSelected("sms")}
-					tone="info"
 				/>
 			</div>
 		);
@@ -114,7 +106,6 @@ export const Disabled: Story = {
 		label: "Недоступная опция",
 		description: "Заблокировано политикой конфигурации.",
 		value: true,
-		disabled: true,
-		tone: "neutral"
+		disabled: true
 	}
 };

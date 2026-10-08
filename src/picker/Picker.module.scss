@@ -9,6 +9,8 @@
 }
 
 .popupPositioner {
+	// Встроенный Listbox остаётся surface; floating-оболочка задаёт приподнятый слой.
+	--picker-options-background: var(--bg-elevated);
 	--anchor-gap: var(--space-xs);
 	--anchor-padding: var(--space-xs);
 	--anchor-offset: 0;
@@ -30,7 +32,7 @@
 	max-height: var(--options-max-height, 75vh);
 
 	padding: var(--space-sm);
-	background-color: var(--bg-surface);
+	background-color: var(--picker-options-background, var(--bg-surface));
 	border: var(--border);
 
 	&:empty {
@@ -53,6 +55,10 @@
 }
 
 .status {
+	// Сообщения списка сохраняют цвета текста и ошибки независимо от disabled-опций.
+	display: flex;
+	align-items: center;
+	min-height: var(--control-height);
 	padding: var(--space-xs) var(--space-sm);
 	color: var(--text-muted);
 }
@@ -64,10 +70,19 @@
 .triggerContainer {
 	position: relative;
 
+	// Input владеет состоянием поля; отдельному overlay нужен только соответствующий цвет текста.
+	&:has(> div > input[aria-invalid="true"]) > .selectedToken {
+		color: var(--error-text);
+	}
+
+	&:has(> div > input:disabled) > .selectedToken {
+		color: var(--text-disabled);
+	}
+
 	&[data-has-overlay="true"] input {
 		--ui-color: transparent;
 		--ui-color-hover: transparent;
-		--ui-color-active: transparent;
+		--ui-color-pressed: transparent;
 
 		color: transparent;
 		caret-color: transparent;
@@ -108,6 +123,10 @@
 	border-radius: var(--radius-sm);
 
 	&:hover {
-		background-color: var(--bg-elevated);
+		background-color: var(--bg-hover);
+	}
+
+	&:active {
+		background-color: var(--bg-pressed);
 	}
 }

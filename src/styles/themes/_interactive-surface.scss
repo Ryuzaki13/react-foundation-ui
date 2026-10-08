@@ -1,10 +1,5 @@
-@media (any-hover: hover) {
-	.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):hover {
-		color: var(--selection-text);
-		background-color: var(--selection-bg-hover);
-	}
-}
-
+// Сохраняющийся выбор и недоступность определяют семью цветов;
+// hover/pressed меняют её части согласованно, не заменяя выбранность.
 .interactiveSurface[data-selected="true"] {
 	color: var(--selection-text);
 	background-color: var(--selection-bg);
@@ -14,16 +9,52 @@
 	}
 }
 
+@media (any-hover: hover) {
+	.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):hover {
+		background-color: var(--bg-hover);
+
+		&[data-selected="true"] {
+			color: var(--selection-text-hover);
+			background-color: var(--selection-bg-hover);
+
+			&.interactiveSurfaceFrame {
+				border-color: var(--selection-border-hover);
+			}
+		}
+	}
+}
+
+.interactiveSurface:not(:disabled, [aria-disabled="true"], [data-disabled="true"]):active {
+	background-color: var(--bg-pressed);
+
+	&[data-selected="true"] {
+		color: var(--selection-text-pressed);
+		background-color: var(--selection-bg-pressed);
+
+		&.interactiveSurfaceFrame {
+			border-color: var(--selection-border-pressed);
+		}
+	}
+}
+
 .interactiveSurface:disabled,
 .interactiveSurface[aria-disabled="true"],
 .interactiveSurface[data-disabled="true"] {
 	cursor: default;
 	pointer-events: none;
-
 	color: var(--text-disabled);
 	background-color: var(--bg-disabled);
 
 	&.interactiveSurfaceFrame {
-		border-color: transparent;
+		border-color: var(--border-interactive-disabled);
+	}
+
+	&[data-selected="true"] {
+		color: var(--selection-text-disabled);
+		background-color: var(--selection-bg-disabled);
+
+		&.interactiveSurfaceFrame {
+			border-color: var(--selection-border-disabled);
+		}
 	}
 }

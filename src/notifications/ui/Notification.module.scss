@@ -13,7 +13,7 @@
 }
 
 .card {
-	--notify-accent: var(--border-thin);
+	--notify-accent: var(--border-subtle);
 	--notify-accent-surface: var(--bg-elevated);
 	--notify-accent-text: var(--text-primary);
 
@@ -32,25 +32,25 @@
 
 .info {
 	--notify-accent: var(--info-text);
-	--notify-accent-surface: var(--info-fill);
+	--notify-accent-surface: var(--info-bg);
 	--notify-accent-text: var(--info-text);
 }
 
 .success {
 	--notify-accent: var(--success-text);
-	--notify-accent-surface: var(--success-fill);
+	--notify-accent-surface: var(--success-bg);
 	--notify-accent-text: var(--success-text);
 }
 
 .warning {
 	--notify-accent: var(--warning-text);
-	--notify-accent-surface: var(--warning-fill);
+	--notify-accent-surface: var(--warning-bg);
 	--notify-accent-text: var(--warning-text);
 }
 
 .error {
 	--notify-accent: var(--error-text);
-	--notify-accent-surface: var(--error-fill);
+	--notify-accent-surface: var(--error-bg);
 	--notify-accent-text: var(--error-text);
 }
 

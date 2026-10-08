@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .radioGroup {
 	display: flex;
 	align-content: flex-start;
@@ -35,14 +37,38 @@
 
 	cursor: pointer;
 
-	&:hover {
-		background-color: var(--bg-hover);
-		color: var(--text-secondary);
+	&:enabled {
+		@include hover(false, false) {
+			background-color: var(--bg-hover);
+			color: var(--text-secondary);
+		}
+
+		&:active {
+			background-color: var(--bg-pressed);
+			color: var(--text-secondary);
+		}
 	}
 
 	&.checked {
-		color: var(--text-primary);
-		background-color: var(--bg-elevated);
+		color: var(--selection-text);
+		background-color: var(--selection-bg);
+
+		&:enabled {
+			@include hover(false, false) {
+				background-color: var(--selection-bg-hover);
+				color: var(--selection-text-hover);
+			}
+
+			&:active {
+				background-color: var(--selection-bg-pressed);
+				color: var(--selection-text-pressed);
+			}
+		}
+
+		&:disabled {
+			color: var(--selection-text-disabled);
+			background-color: var(--selection-bg-disabled);
+		}
 	}
 
 	&:disabled {

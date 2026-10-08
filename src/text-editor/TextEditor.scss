@@ -22,7 +22,7 @@
 }
 
 .custom-tag-highlight {
-	outline: var(--border-width) dashed var(--accent-highlight);
+	outline: var(--border-width) dashed var(--highlight-border);
 	padding: 0 0.125em;
 	border-radius: var(--radius-xs);
 }

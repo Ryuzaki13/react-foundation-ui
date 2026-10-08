@@ -8,18 +8,28 @@
 
 Оба режима содержат одинаковый набор цветовых токенов:
 
-| Группа          | Токены                                                                                                                                                                                      |
-| --------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Поверхности     | `--bg-canvas`, `--bg-surface`, `--bg-elevated`, `--bg-sunken`, `--bg-hover`, `--bg-pressed`, `--bg-accent`, `--bg-disabled`, `--bg-overlay`                                                 |
-| Текст           | `--text-primary`, `--text-secondary`, `--text-muted`, `--text-disabled`, `--text-inverse`, `--text-link`, `--text-link-hover`                                                               |
-| Границы и фокус | `--border-subtle`, `--border-default`, `--border-strong`, `--border-interactive`, `--border-hover`, `--border-accent`, `--focus-ring`                                                       |
-| Акценты         | `--accent-brand`, `--accent-brand-hover`, `--accent-brand-pressed`, `--accent-selection`, `--accent-selection-hover`, `--accent-selection-pressed`, `--accent-focus`, `--accent-decorative` |
-| Выделение       | `--selection-bg`, `--selection-bg-hover`, `--selection-text`, `--selection-border`, `--text-selection-bg`, `--text-selection-text`                                                          |
-| Статусы         | Для каждого из `success`, `warning`, `error`, `info`: `--<status>-text`, `--<status>-fill`, `--<status>-fill-hover`, `--<status>-fill-pressed`                                              |
-| Градиенты       | `--gradient-accent`, `--gradient-surface`, `--gradient-page-glow`                                                                                                                           |
-| Тени и свечение | `--shadow-card`, `--shadow-popover`, `--glow-lemon`, `--glow-fuchsia`, `--glow-cyan`, `--glow-title`                                                                                        |
+| Группа | Токены |
+| --- | --- |
+| Поверхности | `--bg-canvas`, `--bg-surface`, `--bg-elevated`, `--bg-sunken`, `--bg-hover`, `--bg-pressed`, `--bg-accent`, `--bg-disabled`, `--bg-overlay` |
+| Текст | `--text-primary`, `--text-secondary`, `--text-muted`, `--text-disabled`, `--text-inverse`, `--text-link`, `--text-link-hover` |
+| Акцент | `--accent-text`, `--accent-border`, `--accent-fill`, их `-hover` / `-pressed`, а также `--accent-on-fill` |
+| Границы | `--border-subtle`, `--border-default`, `--border-strong`, `--border-interactive` и его `-hover` / `-pressed` / `-disabled`, `--border-decorative` |
+| Фокус | `--focus-ring` |
+| Мягкая выбранность | `--selection-bg`, `--selection-text`, `--selection-border`, их `-hover` / `-pressed` / `-disabled` |
+| Насыщенная выбранность | `--selection-fill` и его `-hover` / `-pressed` / `-disabled`, `--selection-on-fill`, `--selection-on-fill-disabled` |
+| Выделение текста | `--text-selection-bg`, `--text-selection-text` |
+| Подсветка | `--highlight-bg`, `--highlight-text`, `--highlight-border`, их `-current` |
+| Статусы | Для каждого из `success`, `warning`, `error`, `info`: `--<status>-text`, `--<status>-bg` и его `-hover` / `-pressed`, `--<status>-fill` и его `-hover` / `-pressed`, `--<status>-on-fill` |
+| Градиенты | `--gradient-accent`, `--gradient-surface`, `--gradient-page-glow` |
+| Тени и свечение | `--shadow-card`, `--shadow-popover`, `--glow-brand`, `--glow-selection`, `--glow-focus`, `--glow-highlight` |
 
-`--<status>-fill` задаёт мягкий фон статуса напрямую. Цвета текста, hover и pressed задаются отдельно и не пересчитываются при изменении fill. Явные ссылки вроде `--border-accent: var(--accent-selection)` сохраняют обычную CSS-зависимость от указанного токена.
+Назначения семантических ролей описаны в [семантическом контракте](src/styles/config/semantic-color-tokens.md). Части и состояния настраиваются независимо: текст на обычной поверхности использует `accent-text`, а содержимое на насыщенной заливке — `accent-on-fill`. Выбранность сохраняется при недоступности через соответствующие `selection-*-disabled`; готовые цвета не умножаются на `--disabled-opacity`.
+
+`--<status>-bg` задаёт мягкий фон outline/soft. Текст и рамка используют один `--<status>-text` во всех состояниях, а меняется только `bg`. Solid использует насыщенный `--<status>-fill` и постоянный `--<status>-on-fill`; меняется только `fill`. Цвета обеих пар и hover/pressed задаются явно и независимо. Недоступный статусный контрол переходит на нейтральные disabled-роли.
+
+`brand` удалён из `UiTone` и `TextColor`: выразительное оформление использует `accent` и `--accent-*`, без автоматической семантики выбранности. `UiAppearance` содержит `solid`, `outline` и `ghost`; дублирующий `transparent` удалён, его прежние использования заменяются на `ghost`.
+
+Нейтральный вариант использует обычную поверхность и интерактивную рамку, либо `ghost` с прозрачными фоном и рамкой. Отдельного нейтрального solid нет: переданные `solid` и `outline` не меняют обычное оформление `neutral`.
 
 Размеры, интервалы, типографика и слои остаются в корневой конфигурации. Для них используются `$root-token-overrides`, `$retina-token-overrides` и карты пресетов, отдельно от палитры режима.
 
@@ -38,9 +48,10 @@
 	$dark-theme-overrides: (
 		tokens: (
 			"--bg-canvas": #101526,
-			"--accent-brand": #f7ff4a,
-			"--accent-brand-hover": #fcff8a,
-			"--accent-brand-pressed": #dbe532
+			"--accent-fill": #f7ff4a,
+			"--accent-fill-hover": #fcff8a,
+			"--accent-fill-pressed": #dbe532,
+			"--accent-on-fill": #0a1020
 		)
 	)
 );
@@ -68,9 +79,10 @@
 		(
 			tokens: (
 				"--bg-canvas": #14102a,
-				"--accent-brand": #e5d0ff,
-				"--accent-brand-hover": #f1e3ff,
-				"--accent-brand-pressed": #c8a8ed
+				"--accent-fill": #e5d0ff,
+				"--accent-fill-hover": #f1e3ff,
+				"--accent-fill-pressed": #c8a8ed,
+				"--accent-on-fill": #14102a
 			)
 		)
 	);
@@ -88,4 +100,4 @@
 3. Задайте нужные hover и pressed явно для каждой темы. Удалите ожидания автоматического расчёта `active`, `soft`, рамок и текста поверх заливки.
 4. Соберите Sass и проверьте обе темы, состояния элементов, выделение и контрастный режим. Светлую палитру отдельно уточните под интерфейс host-проекта.
 
-Наличие новых палитр не означает, что все компоненты и приложения-потребители уже мигрированы. До публикации версии пакета нужно проверить оставшиеся ссылки внутри UI-пакета и обновить использующие его приложения; незавершённые участки требуют отдельной правки.
+Статусные `tone` и их `appearance` используют новый контракт; старые имена `--<status>-hover` и `--<status>-pressed` удалены. Приложения-потребители и их палитры требуют отдельного обновления. До публикации версии пакета нужно проверить оставшиеся ссылки внутри UI-пакета и обновить использующие его приложения; незавершённые участки требуют отдельной правки.

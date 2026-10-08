@@ -49,8 +49,8 @@
 	border: var(--focus-width) dashed var(--error-text);
 	background-color: var(--bg-canvas);
 	background-image:
-		repeating-linear-gradient(45deg, var(--error-fill) 0 var(--grid-line-size), transparent var(--grid-line-size) var(--grid-size)),
-		repeating-linear-gradient(-45deg, var(--error-fill) 0 var(--grid-line-size), transparent var(--grid-line-size) var(--grid-size));
+		repeating-linear-gradient(45deg, var(--error-bg) 0 var(--grid-line-size), transparent var(--grid-line-size) var(--grid-size)),
+		repeating-linear-gradient(-45deg, var(--error-bg) 0 var(--grid-line-size), transparent var(--grid-line-size) var(--grid-size));
 }
 
 .uiContainer {
@@ -123,17 +123,33 @@
 	--ui-background: var(--bg-sunken);
 	--ui-color: var(--text-primary);
 	--ui-border: var(--border-interactive);
-	--ui-border-hover: var(--border-hover);
-
-	&:focus {
-		border-color: var(--focus-ring);
-	}
+	--ui-border-hover: var(--border-interactive-hover);
+	--ui-border-pressed: var(--border-interactive-pressed);
 
 	&.invalid,
+	&[data-invalid],
 	&:invalid {
-		--ui-background: var(--error-fill);
+		--ui-background: var(--error-bg);
+		--ui-background-hover: var(--error-bg-hover);
+		--ui-background-pressed: var(--error-bg-pressed);
+		--ui-color: var(--error-text);
+		--ui-color-hover: var(--error-text);
+		--ui-color-pressed: var(--error-text);
 		--ui-border: var(--error-text);
-		--ui-border-hover: var(--error-hover);
+		--ui-border-hover: var(--error-text);
+		--ui-border-pressed: var(--error-text);
+	}
+
+	// Автозаполнение читает те же переменные, что и обычная поверхность поля.
+	&:disabled,
+	&[data-disabled] {
+		--ui-background: var(--ui-disabled-background, var(--bg-disabled));
+		--ui-color: var(--ui-disabled-color, var(--text-disabled));
+
+		&::placeholder,
+		.uiPlaceholder {
+			color: var(--text-disabled);
+		}
 	}
 
 	&::placeholder {
@@ -155,21 +171,50 @@
 	appearance: none;
 	margin: 0;
 	cursor: pointer;
+	--ui-border-hover: var(--border-interactive-hover);
+	--ui-border-pressed: var(--border-interactive-pressed);
 
-	&:checked {
+	// Частичный выбор имеет ту же семантику, что и полный; aria сохраняет её и при SSR.
+	&:checked,
+	&:indeterminate,
+	&[aria-checked="mixed"] {
+		--ui-background: var(--selection-bg);
+		--ui-background-hover: var(--selection-bg-hover);
+		--ui-background-pressed: var(--selection-bg-pressed);
+		--ui-border: var(--selection-border);
+		--ui-border-hover: var(--selection-border-hover);
+		--ui-border-pressed: var(--selection-border-pressed);
+		--ui-color: var(--selection-text);
+		--ui-color-hover: var(--selection-text-hover);
+		--ui-color-pressed: var(--selection-text-pressed);
+		--ui-disabled-background: var(--selection-bg-disabled);
+		--ui-disabled-border: var(--selection-border-disabled);
+		--ui-disabled-color: var(--selection-text-disabled);
+
+		// Иконка — сосед нативного input и не наследует его текущий color.
 		& + .uiSelectionIcon {
-			color: var(--text-primary);
+			color: var(--selection-text);
+		}
+
+		&:enabled {
+			@include hover(false, false) {
+				& + .uiSelectionIcon {
+					color: var(--selection-text-hover);
+				}
+			}
+
+			&:active + .uiSelectionIcon {
+				color: var(--selection-text-pressed);
+			}
+		}
+
+		&:disabled + .uiSelectionIcon {
+			color: var(--selection-text-disabled);
 		}
 	}
 
 	&:disabled {
 		cursor: default;
-
-		&:checked {
-			& + .uiSelectionIcon {
-				color: var(--text-disabled);
-			}
-		}
 	}
 }
 
@@ -195,6 +240,7 @@
 		user-select: none;
 
 		.uiLabel,
+		.uiLabelBase,
 		.uiDescription {
 			color: var(--text-disabled);
 		}
@@ -202,7 +248,7 @@
 		.uiPlaceholder,
 		.uiOptionText,
 		.uiOptionCode {
-			opacity: 0.25;
+			color: var(--text-disabled);
 		}
 	}
 
@@ -291,20 +337,41 @@
 		cursor: default;
 
 		// Вторичный код должен сохранять контраст выбранной строки, а не брать приглушённый content-цвет.
-		.uiOptionCode {
+		.uiOptionCode,
+		.uiMenuOptionIcon,
+		.uiPopupOptionIcon,
+		.keyboard {
 			color: inherit;
 		}
 	}
 
-	@include hover(true, false) {
-		background-color: var(--selection-bg-hover);
-		cursor: pointer;
+	&:not(.disabled):not([aria-disabled="true"]) {
+		@include hover(false, false) {
+			background-color: var(--bg-hover);
+			cursor: pointer;
+		}
+
+		&:active {
+			background-color: var(--bg-pressed);
+		}
+
+		// Наведение и нажатие не снимают сохраняющееся состояние выбора.
+		&.selected {
+			@include hover(false, false) {
+				color: var(--selection-text-hover);
+				background-color: var(--selection-bg-hover);
+			}
+
+			&:active {
+				color: var(--selection-text-pressed);
+				background-color: var(--selection-bg-pressed);
+			}
+		}
 	}
 
-	// Active идёт после hover, чтобы нажатие не теряло своё состояние у мыши и touch-устройств.
-	&.uiPopupOptionActive,
-	&:active {
-		outline: 1px dashed var(--selection-border);
+	// Активная опция обозначает позицию клавиатурной навигации, а не выбор значения.
+	&.uiPopupOptionActive {
+		outline: var(--border-width) dashed var(--focus-ring);
 		outline-offset: -1px;
 
 		.uiOptionCode {
@@ -312,9 +379,26 @@
 		}
 	}
 
-	&.disabled {
-		// background-color: var(--bg-elevated);
-		color: var(--text-muted);
+	&.disabled,
+	&[aria-disabled="true"] {
+		color: var(--text-disabled);
+		background-color: var(--bg-disabled);
+
+		.uiMenuOptionIcon,
+		.uiPopupOptionIcon,
+		.keyboard {
+			color: inherit;
+		}
+
+		&.selected {
+			color: var(--selection-text-disabled);
+			background-color: var(--selection-bg-disabled);
+
+			.uiOptionText,
+			.uiOptionCode {
+				color: inherit;
+			}
+		}
 	}
 
 	&:focus-within {
@@ -413,8 +497,20 @@
 	color: var(--text-muted);
 	transition: color var(--transition-fast) ease-in-out;
 
-	&:hover {
-		color: var(--text-primary);
+	&:not(:disabled) {
+		@include hover(false, false) {
+			color: var(--text-primary);
+			// background-color: var(--bg-hover);
+		}
+
+		// &:active {
+		// 	background-color: var(--bg-pressed);
+		// }
+	}
+
+	&:disabled {
+		color: var(--text-disabled);
+		cursor: not-allowed;
 	}
 }
 
@@ -464,91 +560,143 @@
 // ---
 
 .uiToneNeutral {
-	--ui-background: var(--bg-elevated);
+	--ui-background: var(--bg-surface);
 	--ui-color: var(--text-primary);
+	--ui-color-hover: var(--text-primary);
+	--ui-color-pressed: var(--text-primary);
 	--ui-border: var(--border-interactive);
-
+	--ui-border-hover: var(--border-interactive-hover);
+	--ui-border-pressed: var(--border-interactive-pressed);
 	--ui-background-hover: var(--bg-hover);
 	--ui-background-pressed: var(--bg-pressed);
+	--ui-disabled-background: var(--bg-disabled);
+	--ui-disabled-color: var(--text-disabled);
+	--ui-disabled-border: var(--border-interactive-disabled);
 }
 
 .uiToneAccent {
-	--tone-fill: var(--accent-selection);
-	--tone-on-fill: var(--text-inverse);
-	--tone-border: var(--accent-selection);
-
-	--tone-fill-hover: var(--accent-selection-hover);
-	--tone-fill-pressed: var(--accent-selection-pressed);
+	--tone-text: var(--accent-text);
+	--tone-text-hover: var(--accent-text-hover);
+	--tone-text-pressed: var(--accent-text-pressed);
+	--tone-border: var(--accent-border);
+	--tone-border-hover: var(--accent-border-hover);
+	--tone-border-pressed: var(--accent-border-pressed);
+	--tone-bg: var(--bg-surface);
+	--tone-bg-hover: var(--bg-hover);
+	--tone-bg-pressed: var(--bg-pressed);
+	--tone-fill: var(--accent-fill);
+	--tone-fill-hover: var(--accent-fill-hover);
+	--tone-fill-pressed: var(--accent-fill-pressed);
+	--tone-on-fill: var(--accent-on-fill);
 }
 
-.uiToneBrand {
-	--tone-fill: var(--accent-brand);
-	--tone-on-fill: var(--text-inverse);
-	--tone-border: var(--accent-brand);
-
-	--tone-fill-hover: var(--accent-brand-hover);
-	--tone-fill-pressed: var(--accent-brand-pressed);
-}
-
+// У статуса текст и контур постоянны. Временные состояния меняют только
+// мягкую подложку либо насыщенную заливку в зависимости от appearance.
 .uiToneError {
-	--tone-fill: var(--error-text);
-	--tone-on-fill: var(--error-fill);
+	--tone-text: var(--error-text);
+	--tone-text-hover: var(--error-text);
+	--tone-text-pressed: var(--error-text);
 	--tone-border: var(--error-text);
-
-	--tone-fill-hover: var(--error-hover);
-	--tone-fill-pressed: var(--error-pressed);
+	--tone-border-hover: var(--error-text);
+	--tone-border-pressed: var(--error-text);
+	--tone-bg: var(--error-bg);
+	--tone-bg-hover: var(--error-bg-hover);
+	--tone-bg-pressed: var(--error-bg-pressed);
+	--tone-fill: var(--error-fill);
+	--tone-fill-hover: var(--error-fill-hover);
+	--tone-fill-pressed: var(--error-fill-pressed);
+	--tone-on-fill: var(--error-on-fill);
 }
 
 .uiToneWarning {
-	--tone-fill: var(--warning-text);
-	--tone-on-fill: var(--warning-fill);
+	--tone-text: var(--warning-text);
+	--tone-text-hover: var(--warning-text);
+	--tone-text-pressed: var(--warning-text);
 	--tone-border: var(--warning-text);
-
-	--tone-fill-hover: var(--warning-hover);
-	--tone-fill-pressed: var(--warning-pressed);
+	--tone-border-hover: var(--warning-text);
+	--tone-border-pressed: var(--warning-text);
+	--tone-bg: var(--warning-bg);
+	--tone-bg-hover: var(--warning-bg-hover);
+	--tone-bg-pressed: var(--warning-bg-pressed);
+	--tone-fill: var(--warning-fill);
+	--tone-fill-hover: var(--warning-fill-hover);
+	--tone-fill-pressed: var(--warning-fill-pressed);
+	--tone-on-fill: var(--warning-on-fill);
 }
 
 .uiToneSuccess {
-	--tone-fill: var(--success-text);
-	--tone-on-fill: var(--success-fill);
+	--tone-text: var(--success-text);
+	--tone-text-hover: var(--success-text);
+	--tone-text-pressed: var(--success-text);
 	--tone-border: var(--success-text);
-
-	--tone-fill-hover: var(--success-hover);
-	--tone-fill-pressed: var(--success-pressed);
+	--tone-border-hover: var(--success-text);
+	--tone-border-pressed: var(--success-text);
+	--tone-bg: var(--success-bg);
+	--tone-bg-hover: var(--success-bg-hover);
+	--tone-bg-pressed: var(--success-bg-pressed);
+	--tone-fill: var(--success-fill);
+	--tone-fill-hover: var(--success-fill-hover);
+	--tone-fill-pressed: var(--success-fill-pressed);
+	--tone-on-fill: var(--success-on-fill);
 }
 
 .uiToneInfo {
-	--tone-fill: var(--info-text);
-	--tone-on-fill: var(--info-fill);
+	--tone-text: var(--info-text);
+	--tone-text-hover: var(--info-text);
+	--tone-text-pressed: var(--info-text);
 	--tone-border: var(--info-text);
-
-	--tone-fill-hover: var(--info-hover);
-	--tone-fill-pressed: var(--info-pressed);
+	--tone-border-hover: var(--info-text);
+	--tone-border-pressed: var(--info-text);
+	--tone-bg: var(--info-bg);
+	--tone-bg-hover: var(--info-bg-hover);
+	--tone-bg-pressed: var(--info-bg-pressed);
+	--tone-fill: var(--info-fill);
+	--tone-fill-hover: var(--info-fill-hover);
+	--tone-fill-pressed: var(--info-fill-pressed);
+	--tone-on-fill: var(--info-on-fill);
 }
 
 .uiAppearanceSolid {
 	--ui-background: var(--tone-fill);
-	--ui-color: var(--tone-on-fill);
-	--ui-border: transparent;
-
 	--ui-background-hover: var(--tone-fill-hover);
 	--ui-background-pressed: var(--tone-fill-pressed);
+	--ui-color: var(--tone-on-fill);
+	--ui-color-hover: var(--tone-on-fill);
+	--ui-color-pressed: var(--tone-on-fill);
+	--ui-border: transparent;
+	--ui-border-hover: transparent;
+	--ui-border-pressed: transparent;
+	--ui-disabled-background: var(--bg-disabled);
+	--ui-disabled-color: var(--text-disabled);
+	--ui-disabled-border: transparent;
 }
 
 .uiAppearanceOutline {
-	--ui-background: var(--tone-on-fill);
-	--ui-color: var(--tone-fill);
+	--ui-background: var(--tone-bg);
+	--ui-background-hover: var(--tone-bg-hover);
+	--ui-background-pressed: var(--tone-bg-pressed);
+	--ui-color: var(--tone-text);
+	--ui-color-hover: var(--tone-text-hover);
+	--ui-color-pressed: var(--tone-text-pressed);
 	--ui-border: var(--tone-border);
-
-	--ui-background-hover: color-mix(in srgb, var(--ui-background) 90%, var(--ui-color));
-	--ui-background-pressed: color-mix(in srgb, var(--ui-background) 80%, var(--ui-color));
+	--ui-border-hover: var(--tone-border-hover);
+	--ui-border-pressed: var(--tone-border-pressed);
+	--ui-disabled-background: var(--bg-disabled);
+	--ui-disabled-color: var(--text-disabled);
+	--ui-disabled-border: var(--border-interactive-disabled);
 }
 
-.uiAppearanceTransparent,
 .uiAppearanceGhost {
 	--ui-background: transparent;
 	--ui-color: var(--text-secondary);
+	--ui-color-hover: var(--text-secondary);
+	--ui-color-pressed: var(--text-secondary);
 	--ui-border: transparent;
+	--ui-border-hover: transparent;
+	--ui-border-pressed: transparent;
+	--ui-disabled-background: transparent;
+	--ui-disabled-color: var(--text-disabled);
+	--ui-disabled-border: transparent;
 
 	--ui-background-hover: var(--bg-hover);
 	--ui-background-pressed: var(--bg-pressed);

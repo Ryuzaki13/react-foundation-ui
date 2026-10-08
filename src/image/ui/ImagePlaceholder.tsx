@@ -1,3 +1,5 @@
+import { useId } from "react";
+
 export interface ImagePlaceholderProps {
 	width?: number | string;
 	height?: number | string;
@@ -6,6 +8,8 @@ export interface ImagePlaceholderProps {
 }
 
 export function ImagePlaceholder({ width = "100%", height = "100%", aspectRatio = "16 / 9", className }: ImagePlaceholderProps) {
+	const maskId = useId();
+
 	return (
 		<div style={{ width, height, aspectRatio }} className={className}>
 			<svg
@@ -19,17 +23,21 @@ export function ImagePlaceholder({ width = "100%", height = "100%", aspectRatio 
 				ry="10"
 				style={{ display: "block" }}
 				aria-label="Изображение недоступно">
-				{/* <rect width="200" height="200" fill="var(--bg-elevated)" rx="10" ry="10" /> */}
-				<g fill="var(--bg-canvas)">
-					<rect x="40" y="50" width="120" height="100" rx="10" />
-
-					<circle cx="60" cy="70" r="8" fill="var(--bg-elevated)" />
-
-					<path d="M50 130 L75 100 L100 130 Z" fill="var(--bg-elevated)" />
-					<path d="M90 130 L120 90 L150 130 Z" fill="var(--bg-elevated)" />
-
-					<line x1="160" y1="40" x2="40" y2="160" stroke="var(--bg-canvas)" strokeWidth="15" strokeLinecap="round" />
-					<line x1="160" y1="40" x2="40" y2="160" stroke="var(--bg-elevated)" strokeWidth="5" strokeLinecap="round" />
+				<defs>
+					{/* Маска делает детали прозрачными, чтобы значок подходил к любой поверхности host-проекта. */}
+					<mask id={maskId} maskUnits="userSpaceOnUse" x="0" y="0" width="200" height="200">
+						<rect x="40" y="50" width="120" height="100" rx="10" fill="white" />
+						<g fill="black">
+							<circle cx="60" cy="70" r="8" />
+							<path d="M50 130 L75 100 L100 130 Z" />
+							<path d="M90 130 L120 90 L150 130 Z" />
+						</g>
+						<line x1="160" y1="40" x2="40" y2="160" stroke="black" strokeWidth="15" strokeLinecap="round" />
+					</mask>
+				</defs>
+				<g fill="var(--text-muted)" stroke="var(--text-muted)" opacity="0.6">
+					<rect x="40" y="50" width="120" height="100" rx="10" stroke="none" mask={`url(#${maskId})`} />
+					<line x1="160" y1="40" x2="40" y2="160" strokeWidth="5" strokeLinecap="round" />
 				</g>
 			</svg>
 		</div>

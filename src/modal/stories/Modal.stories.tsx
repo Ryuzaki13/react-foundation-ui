@@ -39,7 +39,7 @@ function DemoFormContent() {
 					padding: 12,
 					borderRadius: 8,
 					background: "var(--bg-surface)",
-					border: "1px solid var(--border-thin)"
+					border: "1px solid var(--border-subtle)"
 				}}>
 				Текущие значения: {name || "не указано"}, {department || "не указано"}
 			</div>
@@ -79,7 +79,7 @@ const meta = {
 					<DemoFormContent />
 				</ModalContent>
 				<ModalFooter>
-					<Button appearance="transparent">Отмена</Button>
+					<Button appearance="ghost">Отмена</Button>
 					<Button>Сохранить</Button>
 				</ModalFooter>
 			</>
@@ -143,7 +143,7 @@ export const Controlled: Story = {
 						<DemoFormContent />
 					</ModalContent>
 					<ModalFooter>
-						<Button appearance="transparent" onClick={close}>
+						<Button appearance="ghost" onClick={close}>
 							Отмена
 						</Button>
 						<Button onClick={close}>Сохранить</Button>
@@ -177,20 +177,20 @@ export const WithToolbarAndFooter: Story = {
 								padding: 12,
 								borderRadius: 8,
 								background: "var(--bg-surface)",
-								border: "1px solid var(--border-thin)"
+								border: "1px solid var(--border-subtle)"
 							}}>
 							<div>
 								<div style={{ fontWeight: 600 }}>Черновик обновлён автоматически</div>
 								<div style={{ opacity: 0.72 }}>Последнее сохранение: 2 минуты назад</div>
 							</div>
-							<Button appearance="transparent">Сбросить</Button>
+							<Button appearance="ghost">Сбросить</Button>
 						</div>
 					</ModalToolbar>
 					<ModalContent>
 						<DemoFormContent />
 					</ModalContent>
 					<ModalFooter>
-						<Button appearance="transparent" onClick={close}>
+						<Button appearance="ghost" onClick={close}>
 							Отмена
 						</Button>
 						<Button tone="success" appearance="solid" onClick={close}>
@@ -224,7 +224,7 @@ export const ScrollableContent: Story = {
 									style={{
 										padding: 12,
 										borderRadius: 8,
-										border: "1px solid var(--border-thin)",
+										border: "1px solid var(--border-subtle)",
 										background: "var(--bg-surface)"
 									}}>
 									<div style={{ fontWeight: 600 }}>Событие #{index + 1}</div>
@@ -259,7 +259,7 @@ export const Sizes: Story = {
 					{(["sm", "md", "lg", "xl", "xxl", "inside"] as const).map((size) => (
 						<Button
 							key={size}
-							appearance="transparent"
+							appearance="ghost"
 							onClick={() => updateArgs({ isOpen: true, size, title: `Размер ${size.toUpperCase()}` })}>
 							{size.toUpperCase()}
 						</Button>
@@ -305,13 +305,13 @@ export const StackedModals: Story = {
 					<ModalContent>
 						<div style={{ display: "grid", gap: 16 }}>
 							<div>Откройте вторую модалку и проверьте, что `Escape` закрывает только верхний слой.</div>
-							<Button appearance="transparent" onClick={() => setInnerOpen(true)}>
+							<Button appearance="ghost" onClick={() => setInnerOpen(true)}>
 								Открыть вторую модалку
 							</Button>
 						</div>
 					</ModalContent>
 					<ModalFooter>
-						<Button appearance="transparent" onClick={closeOuter}>
+						<Button appearance="ghost" onClick={closeOuter}>
 							Закрыть первую
 						</Button>
 					</ModalFooter>

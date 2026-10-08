@@ -14,19 +14,19 @@
 		padding-left: 0;
 
 		&.information {
-			border-left-color: var(--info-fill);
+			border-left-color: var(--info-text);
 		}
 
 		&.success {
-			border-left-color: var(--success-fill);
+			border-left-color: var(--success-text);
 		}
 
 		&.warning {
-			border-left-color: var(--warning-fill);
+			border-left-color: var(--warning-text);
 		}
 
 		&.error {
-			border-left-color: var(--error-fill);
+			border-left-color: var(--error-text);
 		}
 	}
 }
@@ -36,21 +36,21 @@
 
 	&.information {
 		color: var(--info-text);
-		fill: var(--info-fill);
+		fill: var(--info-bg);
 	}
 
 	&.success {
 		color: var(--success-text);
-		fill: var(--success-fill);
+		fill: var(--success-bg);
 	}
 
 	&.warning {
 		color: var(--warning-text);
-		fill: var(--warning-fill);
+		fill: var(--warning-bg);
 	}
 
 	&.error {
 		color: var(--error-text);
-		fill: var(--error-fill);
+		fill: var(--error-bg);
 	}
 }

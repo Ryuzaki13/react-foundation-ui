@@ -48,16 +48,21 @@ export function ImageSelectionFields({
 					<GridContainer templateColumns="repeat(auto-fill, minmax(10em, 1fr))" gap="xs">
 						{state.value.map((image, index) => {
 							const imageKey = getImageSelectionKey(image, index);
+							const selected = index === state.activeIndex;
 
 							return (
 								<button
 									key={imageKey}
 									type="button"
 									disabled={disabled}
+									className="interactiveSurface interactiveSurfaceFrame"
+									data-selected={selected ? "true" : undefined}
 									onClick={() => state.setActiveIndex(index)}
 									style={{
 										padding: 0,
-										border: index === state.activeIndex ? "2px solid var(--selection-border)" : "2px solid transparent",
+										borderWidth: 2,
+										borderStyle: "solid",
+										borderColor: selected ? undefined : "transparent",
 										background: "transparent",
 										cursor: disabled ? "default" : "pointer"
 									}}>

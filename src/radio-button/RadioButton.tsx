@@ -18,7 +18,7 @@ export interface RadioButtonProps
  * Компонент радиокнопки для выбора одного варианта.
  * Нативный `input[type="radio"]` обеспечивает взаимоисключение элементов с
  * общим `name`, а controlled API продолжает публиковать булево состояние.
- * Поддерживает tone + appearance и использует общие selection utility-классы из ui.module.scss.
+ * Состояния нативного input оформляются общими selection-классами из ui.module.scss.
  */
 export function RadioButton({
 	label,

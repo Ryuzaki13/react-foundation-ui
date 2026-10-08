@@ -5,12 +5,12 @@ declare const styles: {
   readonly thumb: "thumb";
   readonly mark: "mark";
   readonly compactMark: "compactMark";
+  readonly markDot: "markDot";
   readonly sliderCompact: "sliderCompact";
   readonly trackShell: "trackShell";
   readonly track: "track";
   readonly tooltipReference: "tooltipReference";
   readonly marks: "marks";
-  readonly markDot: "markDot";
   readonly markLabel: "markLabel";
   readonly popoverContent: "popoverContent";
   readonly rangeInputControl: "rangeInputControl";

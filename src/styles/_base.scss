@@ -26,13 +26,15 @@ body {
 
 /* Для WebKit браузеров (Chrome, Safari, Edge) */
 input:-webkit-autofill {
-	-webkit-text-fill-color: var(--text-secondary) !important;
-	-webkit-box-shadow: 0 0 0 1000px var(--bg-surface) inset !important;
+	// Сохраняем текущую поверхность поля, включая invalid и disabled, при автозаполнении.
+	-webkit-text-fill-color: var(--ui-color, var(--text-primary)) !important;
+	-webkit-box-shadow: 0 0 0 1000px var(--ui-background, var(--bg-sunken)) inset !important;
 }
 
 /* Для Firefox */
 input:autofill {
-	background: var(--bg-surface) !important;
+	color: var(--ui-color, var(--text-primary)) !important;
+	background: var(--ui-background, var(--bg-sunken)) !important;
 }
 
 #modal-root {
@@ -140,7 +142,7 @@ strong {
 code {
 	font-size: 87.5%;
 	color: var(--text-secondary);
-	border: var(--border-width) solid var(--border-thin);
+	border: var(--border-width) solid var(--border-subtle);
 	border-radius: var(--radius-xs);
 	padding-inline: var(--space-xs);
 	font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New", monospace;
@@ -163,7 +165,7 @@ blockquote {
 }
 
 table {
-	--table-border: var(--border-width) solid var(--border-thin);
+	--table-border: var(--border-width) solid var(--border-subtle);
 
 	min-width: 100%;
 	border-collapse: separate;
@@ -207,7 +209,7 @@ table {
 		}
 
 		th {
-			background-color: var(--bg-elevated);
+			background-color: var(--bg-surface);
 			font-variation-settings: "wght" 400;
 			font-weight: 400;
 		}

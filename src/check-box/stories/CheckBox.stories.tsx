@@ -59,11 +59,6 @@ const meta = {
 			control: "select",
 			options: ["xs", "sm", "md", "lg", "xl"]
 		},
-		tone: {
-			description: "Цветовой тон чекбокса.",
-			control: "inline-radio",
-			options: ["neutral", "accent", "brand", "error", "warning", "success", "info"]
-		},
 		noWrap: {
 			description: "Не переносит текст подписи на новую строку.",
 			control: "boolean"
@@ -85,34 +80,7 @@ export const Controlled: Story = {
 		description: "Подтверждение условий использования сервиса.",
 		value: false,
 		size: "md",
-		disabled: false,
-		tone: "neutral"
-	}
-};
-
-export const Tones: Story = {
-	render: () => {
-		const [values, setValues] = useState<Record<string, boolean>>({
-			neutral: true,
-			info: true,
-			success: true,
-			warning: true,
-			error: true
-		});
-
-		return (
-			<div style={{ display: "grid", gap: 12 }}>
-				{(["neutral", "info", "success", "warning", "error"] as const).map((tone) => (
-					<CheckBox
-						key={tone}
-						tone={tone}
-						label={`Тон ${tone}`}
-						value={values[tone]}
-						onChange={(next) => setValues((prev) => ({ ...prev, [tone]: next }))}
-					/>
-				))}
-			</div>
-		);
+		disabled: false
 	}
 };
 
@@ -148,7 +116,6 @@ export const Disabled: Story = {
 		label: "Недоступный чекбокс",
 		description: "Изменение недоступно из-за прав доступа.",
 		value: true,
-		disabled: true,
-		tone: "neutral"
+		disabled: true
 	}
 };

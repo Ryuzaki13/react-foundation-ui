@@ -62,9 +62,14 @@
 		scale var(--transition-fast) ease;
 
 	&:hover {
-		background-color: var(--error-fill);
+		background-color: var(--error-bg-hover);
 		color: var(--error-text);
 		scale: 1.1;
+	}
+
+	&:active {
+		background-color: var(--error-bg-pressed);
+		color: var(--error-text);
 	}
 
 	&:focus-visible {

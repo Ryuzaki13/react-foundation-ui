@@ -1,8 +1,11 @@
 .popover {
-	padding: var(--space-sm);
-	// background-image: radial-gradient(var(--bg-canvas) 50%, var(--bg-surface) 100%);
+	--floating-panel-background: var(--bg-elevated);
+	--floating-panel-border: var(--border-default);
 
-	border: var(--border-width) solid var(--border-default);
+	padding: var(--space-sm);
+	background-color: var(--floating-panel-background);
+
+	border: var(--border-width) solid var(--floating-panel-border);
 	border-radius: var(--radius-sm);
 	color: var(--text-primary);
 
@@ -11,10 +14,10 @@
 	z-index: var(--z-popover);
 
 	&.primary {
-		background-color: var(--bg-surface);
+		--floating-panel-background: var(--bg-surface);
 	}
 
 	&.secondary {
-		background-color: var(--bg-elevated);
+		--floating-panel-background: var(--bg-elevated);
 	}
 }

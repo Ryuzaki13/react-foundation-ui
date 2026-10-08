@@ -2,6 +2,8 @@ import { type MouseEvent, type ReactNode } from "react";
 
 import { Button } from "../../button";
 
+import styles from "./Toolbar.module.scss";
+
 type ToolbarControlProps = {
 	isActive?: boolean;
 	onClick?: (style: string) => void;
@@ -23,11 +25,12 @@ export function ToolbarControl({ isActive, disabled, style, title, icon, onClick
 
 	return (
 		<Button
+			className={styles.control}
 			data-text-editor-command={style}
 			title={title}
 			disabled={disabled}
 			appearance="outline"
-			tone={isActive ? "info" : undefined}
+			aria-pressed={isActive}
 			onMouseDown={handleMouseDown}
 			onClick={() => onClick?.(style || "")}
 			icon={icon}

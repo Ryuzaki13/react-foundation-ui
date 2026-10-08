@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .dayView {
 	padding: 0;
 }
@@ -12,7 +14,6 @@
 
 .weekday {
 	font-size: var(--font-size-xs);
-	color: var(--text-disabled);
 }
 
 .daysGrid {
@@ -35,10 +36,18 @@
 	border: var(--border-width) solid transparent;
 	background-color: var(--bg-elevated);
 
-	&:hover:not(.disabled) {
-		background-color: var(--bg-hover);
-		border-color: var(--border-interactive);
-		color: var(--text-primary);
+	&:not(.disabled) {
+		@include hover(false, false) {
+			background-color: var(--bg-hover);
+			border-color: var(--border-interactive-hover);
+			color: var(--text-primary);
+		}
+
+		&:active {
+			background-color: var(--bg-pressed);
+			border-color: var(--border-interactive-pressed);
+			color: var(--text-primary);
+		}
 	}
 
 	&.outsideMonth {
@@ -46,12 +55,16 @@
 		color: var(--text-muted);
 	}
 
-	&.periodSelection:hover:not(.disabled):not(.periodPreview):not(.selected) {
-		background-color: var(--bg-hover);
+	&.periodSelection:not(.disabled):not(.periodPreview):not(:active):not(:is(.selected, .range, .rangeStart, .rangeEnd)) {
+		@include hover(false, false) {
+			background-color: var(--bg-hover);
+		}
 	}
 
-	&.periodSelection.outsideMonth:hover:not(.disabled):not(.periodPreview):not(.selected) {
-		background-color: transparent;
+	&.periodSelection.outsideMonth:not(.disabled):not(.periodPreview):not(:active):not(:is(.selected, .range, .rangeStart, .rangeEnd)) {
+		@include hover(false, false) {
+			background-color: transparent;
+		}
 	}
 
 	&.periodPreview {
@@ -59,10 +72,34 @@
 		color: var(--text-primary);
 	}
 
-	&.range {
-		border-color: var(--border-accent);
+	// Выбранный период сохраняет свою семантику и при наведении.
+	&.range,
+	&.selected,
+	&.rangeStart,
+	&.rangeEnd {
+		border-color: var(--selection-border);
 		background-color: var(--selection-bg);
 		color: var(--selection-text);
+
+		&:not(.disabled) {
+			@include hover(false, false) {
+				background-color: var(--selection-bg-hover);
+				border-color: var(--selection-border-hover);
+				color: var(--selection-text-hover);
+			}
+
+			&:active {
+				background-color: var(--selection-bg-pressed);
+				border-color: var(--selection-border-pressed);
+				color: var(--selection-text-pressed);
+			}
+		}
+
+		&.disabled {
+			background-color: var(--selection-bg-disabled);
+			border-color: var(--selection-border-disabled);
+			color: var(--selection-text-disabled);
+		}
 	}
 
 	// &.rangeStart {
@@ -75,29 +112,31 @@
 	// 	border-bottom-right-radius: var(--range-radius);
 	// }
 
-	&.selected,
-	&.rangeStart,
-	&.rangeEnd {
-		border-color: var(--border-accent);
-		background-color: var(--selection-bg);
-		color: var(--selection-text);
-	}
-
-	&.weekend:not(.selected):not(.range):not(.rangeStart):not(.rangeEnd) {
+	&.weekend:not(.disabled):not(.selected):not(.range):not(.rangeStart):not(.rangeEnd) {
 		color: var(--error-text);
 	}
 
 	&.disabled {
-		color: var(--text-muted);
+		background-color: var(--bg-disabled);
+		border-color: var(--border-interactive-disabled);
+		color: var(--text-disabled);
 		cursor: not-allowed;
-
-		&:hover {
-			background: none;
-		}
 	}
 
-	&.now {
-		background-color: var(--accent-brand);
-		color: var(--text-inverse);
+	// Сегодняшняя дата не перекрашивает выбранные, preview и недоступные дни.
+	&.now:not(.disabled):not(.selected):not(.range):not(.rangeStart):not(.rangeEnd):not(.periodPreview) {
+		background-color: var(--accent-fill);
+		border-color: var(--accent-border);
+		color: var(--accent-on-fill);
+
+		@include hover(false, false) {
+			background-color: var(--accent-fill-hover);
+			border-color: var(--accent-border-hover);
+		}
+
+		&:active {
+			background-color: var(--accent-fill-pressed);
+			border-color: var(--accent-border-pressed);
+		}
 	}
 }

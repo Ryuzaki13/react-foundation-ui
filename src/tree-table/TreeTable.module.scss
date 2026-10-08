@@ -4,6 +4,14 @@
 
 .selectedIndicatorCell {
 	box-shadow: inset var(--focus-width) 0 0 var(--selection-border);
+
+	tr[tabindex="0"]:hover & {
+		box-shadow: inset var(--focus-width) 0 0 var(--selection-border-hover);
+	}
+
+	tr[tabindex="0"]:active & {
+		box-shadow: inset var(--focus-width) 0 0 var(--selection-border-pressed);
+	}
 }
 
 .treeCell {
@@ -29,11 +37,12 @@
 	border: 0;
 	border-radius: var(--radius-sm);
 	background: transparent;
-	color: var(--text-primary);
+	color: inherit;
 	cursor: pointer;
 
 	&:hover {
-		background-color: var(--bg-sunken);
+		background-color: var(--bg-hover);
+		color: var(--text-primary);
 	}
 }
 

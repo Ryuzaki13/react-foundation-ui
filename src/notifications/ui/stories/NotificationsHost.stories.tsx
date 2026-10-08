@@ -351,7 +351,7 @@ function PlaygroundPanel() {
 					</Button>
 
 					<Button
-						appearance="transparent"
+						appearance="ghost"
 						icon={<Trash2Icon />}
 						onClick={() => {
 							resetProgress();
@@ -360,7 +360,7 @@ function PlaygroundPanel() {
 						Скрыть toast
 					</Button>
 
-					<Button appearance="transparent" icon={<Trash2Icon />} onClick={() => api.clearHistory()}>
+					<Button appearance="ghost" icon={<Trash2Icon />} onClick={() => api.clearHistory()}>
 						Очистить историю
 					</Button>
 				</div>

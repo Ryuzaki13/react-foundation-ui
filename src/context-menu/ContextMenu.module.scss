@@ -1,6 +1,7 @@
 @use "@/styles/mixins" as *;
 
 .menuPositioner {
+	--picker-options-background: var(--bg-elevated);
 	z-index: var(--z-dropdown);
 	outline: none;
 }
@@ -30,8 +31,8 @@
 	border: var(--border);
 	border-radius: 50%;
 	background:
-		radial-gradient(circle, color-mix(in srgb, var(--bg-canvas) 96%, transparent) 0 36%, transparent 37%),
-		color-mix(in srgb, var(--bg-canvas) 88%, transparent);
+		radial-gradient(circle, color-mix(in srgb, var(--bg-elevated) 96%, transparent) 0 36%, transparent 37%),
+		color-mix(in srgb, var(--bg-elevated) 88%, transparent);
 	box-shadow: var(--shadow-popover);
 	pointer-events: none;
 }
@@ -84,7 +85,7 @@
 .radialItem {
 	padding: var(--space-xs);
 	pointer-events: auto;
-	border: var(--border-width) solid var(--border-thin);
+	border: var(--border-width) solid var(--border-interactive);
 	border-radius: 50%;
 	background-color: var(--bg-sunken);
 	color: var(--text-primary);
@@ -95,13 +96,15 @@
 		color var(--transition-fast) ease,
 		transform var(--transition-fast) ease;
 
-	&:focus {
-		border-color: var(--focus-ring);
-	}
-
-	@include hover(true) {
+	@include hover(false, false) {
 		cursor: pointer;
 		background-color: var(--bg-hover);
+		border-color: var(--border-interactive-hover);
+	}
+
+	&:active:not(:disabled):not([aria-disabled="true"]) {
+		background-color: var(--bg-pressed);
+		border-color: var(--border-interactive-pressed);
 	}
 }
 
@@ -117,8 +120,9 @@
 	&:disabled,
 	&[aria-disabled="true"] {
 		cursor: default;
+		background-color: var(--bg-disabled);
 		color: var(--text-disabled);
-		opacity: 0.52;
+		border-color: var(--border-interactive-disabled);
 		pointer-events: none;
 	}
 

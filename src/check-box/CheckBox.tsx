@@ -19,7 +19,7 @@ interface CheckBoxProps
 
 /**
  * Компонент флажка для выбора булевого значения в формах и списках.
- * Поддерживает tone + appearance и использует общие selection utility-классы из ui.module.scss.
+ * Состояния нативного input оформляются общими selection-классами из ui.module.scss.
  */
 export function CheckBox({
 	label,
@@ -61,7 +61,7 @@ export function CheckBox({
 						disabled={disabled}
 						aria-checked={indeterminate ? "mixed" : checked}
 						aria-describedby={descriptionId}
-						className={cn(uiStyles.uiSelectionControl, styles.input, indeterminate && styles.inputIndeterminate)}
+						className={cn(uiStyles.uiSelectionControl, styles.input)}
 						onChange={() => onChange?.(!checked)}
 					/>
 					<div className={cn(uiStyles.uiSelectionIcon, styles.icon)} aria-hidden="true">

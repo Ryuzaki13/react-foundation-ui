@@ -2,8 +2,6 @@ import { ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import uiStyles from "../ui.module.scss";
-
 import styles from "./Picker.module.scss";
 
 interface PickerStatusProps {
@@ -19,9 +17,5 @@ export function PickerStatus({ emptyState, errorState }: PickerStatusProps) {
 		return null;
 	}
 
-	return (
-		<div className={cn(uiStyles.uiPopupOption, styles.status, errorState !== undefined && styles.statusError)} aria-disabled={true}>
-			{content}
-		</div>
-	);
+	return <div className={cn(styles.status, errorState !== undefined && styles.statusError)}>{content}</div>;
 }

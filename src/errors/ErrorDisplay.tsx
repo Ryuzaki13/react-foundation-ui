@@ -57,7 +57,7 @@ export function ErrorDisplay({ error, componentStack, draftId }: { error: Error;
 					style={{
 						zIndex: 1,
 						position: "relative",
-						textShadow: "1px -1px 1px var(--warning-border), -1px 1px 1px var(--info-border)"
+						textShadow: "1px -1px 1px var(--warning-text), -1px 1px 1px var(--info-text)"
 					}}>
 					{ERROR_BOOM_MESSAGES[Math.floor(randomValue * ERROR_BOOM_MESSAGES.length)]}
 				</div>

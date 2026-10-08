@@ -96,7 +96,7 @@ export const Controlled: Story = {
 		<div>
 			<p>Подтвердите выполнение действия.</p>
 			<div style={{ display: "flex", gap: 8, justifyContent: "flex-end" }}>
-				<Button appearance="transparent" onClick={close}>
+				<Button appearance="ghost" onClick={close}>
 					Отмена
 				</Button>
 				<Button tone="success" appearance="solid" onClick={close}>

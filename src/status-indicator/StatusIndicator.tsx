@@ -17,7 +17,6 @@ export interface StatusIndicatorProps extends Omit<HTMLAttributes<HTMLSpanElemen
 
 const toneClasses: Record<StatusIndicatorTone, string> = {
 	accent: styles.accent,
-	brand: styles.brand,
 	neutral: styles.neutral,
 	info: styles.info,
 	success: styles.success,

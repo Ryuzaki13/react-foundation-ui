@@ -17,11 +17,6 @@
 		// font-size: var(--font-size-sm);
 	}
 
-	&::selection {
-		background-color: var(--focus-ring);
-		color: var(--bg-canvas);
-	}
-
 	// Remove spin buttons
 	&::-webkit-inner-spin-button,
 	&::-webkit-outer-spin-button {
@@ -30,7 +25,11 @@
 	}
 
 	&:disabled {
-		opacity: 0.25;
+		color: var(--text-disabled);
+
+		&::placeholder {
+			color: var(--text-disabled);
+		}
 	}
 }
 
@@ -40,6 +39,6 @@
 	flex-shrink: 0;
 
 	&[data-disabled] {
-		opacity: 0.25;
+		color: var(--text-disabled);
 	}
 }

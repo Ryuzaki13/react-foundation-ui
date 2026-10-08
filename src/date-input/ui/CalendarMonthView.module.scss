@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .monthView {
 	padding: 0;
 }
@@ -19,32 +21,53 @@
 	background-color: var(--bg-elevated);
 	text-transform: capitalize;
 
-	&:hover:not(.disabled) {
-		background-color: var(--bg-hover);
-		border-color: var(--border-interactive);
-		color: var(--text-primary);
+	&:not(.disabled) {
+		@include hover(false, false) {
+			background-color: var(--bg-hover);
+			border-color: var(--border-interactive-hover);
+			color: var(--text-primary);
+		}
+
+		&:active {
+			background-color: var(--bg-pressed);
+			border-color: var(--border-interactive-pressed);
+			color: var(--text-primary);
+		}
 	}
 
-	&.range {
-		border-color: var(--border-accent);
-		background-color: var(--selection-bg);
-		color: var(--selection-text);
-	}
-
+	&.range,
 	&.selected,
 	&.rangeStart,
 	&.rangeEnd {
-		border-color: var(--border-accent);
+		border-color: var(--selection-border);
 		background-color: var(--selection-bg);
 		color: var(--selection-text);
+
+		&:not(.disabled) {
+			@include hover(false, false) {
+				background-color: var(--selection-bg-hover);
+				border-color: var(--selection-border-hover);
+				color: var(--selection-text-hover);
+			}
+
+			&:active {
+				background-color: var(--selection-bg-pressed);
+				border-color: var(--selection-border-pressed);
+				color: var(--selection-text-pressed);
+			}
+		}
+
+		&.disabled {
+			background-color: var(--selection-bg-disabled);
+			border-color: var(--selection-border-disabled);
+			color: var(--selection-text-disabled);
+		}
 	}
 
 	&.disabled {
-		color: var(--text-muted);
+		background-color: var(--bg-disabled);
+		border-color: var(--border-interactive-disabled);
+		color: var(--text-disabled);
 		cursor: not-allowed;
-
-		&:hover {
-			background: none;
-		}
 	}
 }

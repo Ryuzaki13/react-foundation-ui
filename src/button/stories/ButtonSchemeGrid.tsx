@@ -1,13 +1,10 @@
 import { Button, type ButtonProps } from "../Button";
 
 const schemeExamples = [
-	["neutral", "solid", "Нейтральная с заливкой"],
-	["neutral", "outline", "Нейтральная с контуром"],
+	["neutral", "outline", "Нейтральная"],
 	["neutral", "ghost", "Ghost"],
 	["accent", "solid", "Акцентная с заливкой"],
 	["accent", "outline", "Акцентная с контуром"],
-	["brand", "solid", "Brand с заливкой"],
-	["brand", "outline", "Brand с контуром"],
 	["info", "solid", "Информация с заливкой"],
 	["success", "solid", "Успех с заливкой"],
 	["warning", "solid", "Предупреждение с заливкой"],
@@ -15,8 +12,7 @@ const schemeExamples = [
 	["info", "outline", "Информация с контуром"],
 	["success", "outline", "Успех с контуром"],
 	["warning", "outline", "Предупреждение с контуром"],
-	["error", "outline", "Ошибка с контуром"],
-	["neutral", "transparent", "Transparent"]
+	["error", "outline", "Ошибка с контуром"]
 ] as const satisfies ReadonlyArray<readonly [NonNullable<ButtonProps["tone"]>, NonNullable<ButtonProps["appearance"]>, string]>;
 
 /**

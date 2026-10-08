@@ -22,11 +22,11 @@ export type UiBaseProps<C, V = C> = {
 };
 
 /**
- * Цветовой тон задаёт смысл цвета, а `UiAppearance` — визуальную иерархию действия.
- * `accent` отмечает текущий или выбранный элемент, а `brand` — фирменное действие.
+ * Цветовой тон задаёт смысл цвета, а `UiAppearance` — способ оформления поверхности.
+ * `accent` задаёт выразительное оформление без семантики выбора; статусные тоны обозначают смысл сообщения или действия.
  */
-export type UiTone = "accent" | "neutral" | "brand" | "error" | "warning" | "success" | "info";
+export type UiTone = "accent" | "neutral" | "error" | "warning" | "success" | "info";
 
-export type UiAppearance = "solid" | "outline" | "ghost" | "transparent";
+export type UiAppearance = "solid" | "outline" | "ghost";
 
 export type UiPanelTone = "surface" | "elevated" | "sunken";

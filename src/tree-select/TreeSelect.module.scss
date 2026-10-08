@@ -72,7 +72,13 @@
 	color: var(--text-muted);
 
 	&:hover {
-		color: var(--selection-text);
+		color: var(--text-primary);
+	}
+
+	// Строка владеет парой выбранности и недоступности, включая цвет раскрывающей иконки.
+	[data-ui="tree-select-option"][aria-selected="true"] &,
+	[data-ui="tree-select-option"][aria-disabled="true"] & {
+		color: inherit;
 	}
 }
 

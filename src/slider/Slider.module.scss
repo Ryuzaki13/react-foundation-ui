@@ -9,22 +9,30 @@
 		.rail {
 			color: var(--text-disabled);
 			background-color: var(--bg-disabled);
-			border-color: transparent;
+			border-color: var(--border-interactive-disabled);
 		}
 
 		.fill {
-			opacity: var(--disabled-opacity);
+			background-color: var(--selection-fill-disabled);
 		}
 
 		.thumb {
-			border-color: transparent;
+			border-color: var(--border-interactive-disabled);
 			background-color: var(--bg-disabled);
 			box-shadow: none;
 		}
 
 		.mark,
 		.compactMark {
-			color: var(--bg-disabled);
+			color: var(--text-disabled);
+		}
+
+		.mark[data-active] .markDot {
+			background-color: var(--selection-fill-disabled);
+		}
+
+		.compactMark[data-active] {
+			color: var(--selection-on-fill-disabled);
 		}
 	}
 }
@@ -66,12 +74,13 @@
 .rail {
 	left: 0;
 	right: 0;
-	background-color: var(--bg-elevated);
+	background-color: var(--bg-sunken);
 	border: var(--border);
+	border-color: var(--border-interactive);
 }
 
 .fill {
-	background-color: var(--accent-selection);
+	background-color: var(--selection-fill);
 }
 
 .thumb {
@@ -82,8 +91,9 @@
 	width: calc(var(--control-height) - var(--space-md));
 	height: calc(var(--control-height) - var(--space-md));
 	border: var(--border);
+	border-color: var(--border-interactive);
 	border-radius: 50%;
-	background-color: var(--bg-sunken);
+	background-color: var(--bg-surface);
 	color: var(--text-primary);
 	box-shadow: var(--shadow-popover);
 	cursor: grab;
@@ -96,10 +106,12 @@
 
 	&:hover {
 		background-color: var(--bg-hover);
+		border-color: var(--border-interactive-hover);
 	}
 
 	&:active {
 		background-color: var(--bg-pressed);
+		border-color: var(--border-interactive-pressed);
 	}
 
 	&:focus-visible {
@@ -107,6 +119,8 @@
 	}
 
 	&[data-dragging] {
+		background-color: var(--bg-pressed);
+		border-color: var(--border-interactive-pressed);
 		cursor: grabbing;
 		transform: translate(-50%, -50%) scale(1.04);
 		box-shadow: var(--shadow-popover);
@@ -150,6 +164,10 @@
 	flex-direction: column;
 	gap: var(--space-xs);
 	white-space: nowrap;
+
+	&[data-active] .markDot {
+		background-color: var(--selection-fill);
+	}
 }
 
 .compactMark {
@@ -162,6 +180,11 @@
 	height: var(--control-height);
 
 	z-index: 1;
+
+	// Компактные отметки выбранного диапазона находятся непосредственно на его насыщенной заливке.
+	&[data-active] {
+		color: var(--selection-on-fill);
+	}
 }
 
 .markDot {

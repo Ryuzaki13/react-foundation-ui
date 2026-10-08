@@ -12,7 +12,6 @@ export type UiSelectionAppearance = Extract<UiAppearance, "outline" | "solid">;
 const toneClassNameMap: Record<UiTone, string> = Object.freeze({
 	accent: uiStyles.uiToneAccent,
 	neutral: uiStyles.uiToneNeutral,
-	brand: uiStyles.uiToneBrand,
 	error: uiStyles.uiToneError,
 	warning: uiStyles.uiToneWarning,
 	success: uiStyles.uiToneSuccess,
@@ -22,8 +21,7 @@ const toneClassNameMap: Record<UiTone, string> = Object.freeze({
 const appearanceClassNameMap: Record<UiAppearance, string> = Object.freeze({
 	solid: uiStyles.uiAppearanceSolid,
 	outline: uiStyles.uiAppearanceOutline,
-	ghost: uiStyles.uiAppearanceGhost,
-	transparent: uiStyles.uiAppearanceTransparent
+	ghost: uiStyles.uiAppearanceGhost
 });
 
 const panelToneClassNameMap: Record<UiPanelTone, string> = Object.freeze({
@@ -59,7 +57,7 @@ export function resolveUiScheme({
 		const resolvedTone = tone ?? fallbackTone;
 		const resolvedAppearance = appearance ?? fallbackAppearance;
 
-		if (resolvedAppearance === "ghost" || resolvedAppearance === "transparent") {
+		if (resolvedAppearance === "ghost") {
 			return {
 				tone: "neutral",
 				appearance: resolvedAppearance

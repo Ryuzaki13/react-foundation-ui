@@ -157,10 +157,10 @@
 
 	&:hover,
 	&:focus-visible {
-		background-color: var(--border-thin);
+		background-color: var(--bg-hover);
 	}
 
 	&:active {
-		background-color: var(--border-strong);
+		background-color: var(--bg-pressed);
 	}
 }

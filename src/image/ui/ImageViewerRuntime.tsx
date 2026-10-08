@@ -133,8 +133,17 @@ export default function ImageViewerRuntime({
 			iconPrev: () => <ChevronLeftIcon aria-hidden="true" className={styles.icon} />,
 			iconNext: () => <ChevronRightIcon aria-hidden="true" className={styles.icon} />,
 			iconClose: () => <XIcon aria-hidden="true" className={styles.icon} />,
-			iconLoading: () => <LoaderCircleIcon aria-hidden="true" className={cn(styles.icon, styles.loadingIcon)} />,
-			iconError: () => <ImageOffIcon aria-hidden="true" className={styles.icon} />,
+			// Custom-иконки не получают статусные классы YARL, поэтому цвет подключается явно.
+			iconLoading: () => (
+				<LoaderCircleIcon
+					aria-hidden="true"
+					className={cn(styles.icon, styles.loadingIcon)}
+					style={{ color: "var(--yarl__slide_icon_loading_color)" }}
+				/>
+			),
+			iconError: () => (
+				<ImageOffIcon aria-hidden="true" className={styles.icon} style={{ color: "var(--yarl__slide_icon_error_color)" }} />
+			),
 			iconZoomIn: () => <ZoomInIcon aria-hidden="true" className={styles.icon} />,
 			iconZoomOut: () => <ZoomOutIcon aria-hidden="true" className={styles.icon} />,
 			iconEnterFullscreen: () => <Maximize2Icon aria-hidden="true" className={styles.icon} />,

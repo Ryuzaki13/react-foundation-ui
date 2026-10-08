@@ -46,8 +46,10 @@ export function Example() {
 
 В компоненте есть два уровня настройки:
 
-- `tone` задаёт семантику: `neutral`, `accent`, `brand`, `success`, `warning`, `error`, `info`;
-- `appearance` задает форму отображения: `solid`, `outline`, `ghost`, `transparent`.
+- `tone` задаёт семантику: `neutral`, `accent`, `success`, `warning`, `error`, `info`;
+- `appearance` задает форму отображения: `solid`, `outline`, `ghost`.
+
+`neutral` не имеет отдельного варианта `solid`: `solid` и `outline` отображают одну нейтральную схему с рамкой. Для нейтральной метки доступны обычное оформление с рамкой и `ghost`; заливка `solid` предназначена для акцентных и статусных тонов.
 
 Если схема не передана полностью, компонент достраивает ее сам:
 
@@ -70,9 +72,6 @@ export function StatusBadges() {
 			</Badge>
 			<Badge tone="accent" appearance="solid">
 				Акцент
-			</Badge>
-			<Badge tone="brand" appearance="solid">
-				Бренд
 			</Badge>
 			<Badge tone="success" appearance="solid">
 				Успешно
@@ -101,17 +100,17 @@ import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui";
 export function AppearanceBadges() {
 	return (
 		<BadgeList>
-			<Badge tone="neutral" appearance="solid">
+			<Badge tone="neutral" appearance="outline">
+				Нейтральный
+			</Badge>
+			<Badge tone="accent" appearance="solid">
 				Solid
 			</Badge>
-			<Badge tone="neutral" appearance="outline">
+			<Badge tone="accent" appearance="outline">
 				Outline
 			</Badge>
 			<Badge tone="info" appearance="ghost">
 				Ghost
-			</Badge>
-			<Badge tone="warning" appearance="transparent">
-				Transparent
 			</Badge>
 		</BadgeList>
 	);

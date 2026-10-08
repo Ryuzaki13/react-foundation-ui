@@ -88,18 +88,19 @@ export const TextEditorInlineControls = [
 
 export const TextEditorStyleClasses = {
 	CODE: {
-		color: "rgb(8, 89, 114)",
+		color: "var(--text-primary)",
 		padding: "0.15em 0.4em",
 		margin: "0",
 		fontFamily: "monospace",
 		fontSize: "85%",
-		backgroundColor: "rgba(40, 68, 77, 0.05)",
+		backgroundColor: "var(--bg-sunken)",
 		borderRadius: "var(--radius-md)",
 		lineHeight: "1"
 	},
 	HIGHLIGHT: {
+		color: "var(--highlight-text)",
 		paddingInline: "0.15em",
-		backgroundColor: "rgb(234,255,142)",
+		backgroundColor: "var(--highlight-bg)",
 		borderRadius: "var(--radius-md)"
 	},
 	unstyled: {

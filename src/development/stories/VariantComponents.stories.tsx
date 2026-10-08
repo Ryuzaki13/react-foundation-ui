@@ -11,12 +11,13 @@ import styles from "./ComponentGallery.module.scss";
 const tones = [
 	{ tone: "neutral", label: "Нейтральный" },
 	{ tone: "accent", label: "Акцент" },
-	{ tone: "brand", label: "Бренд" },
 	{ tone: "info", label: "Информация" },
 	{ tone: "success", label: "Успех" },
 	{ tone: "warning", label: "Предупреждение" },
 	{ tone: "error", label: "Ошибка" }
 ] as const satisfies ReadonlyArray<{ tone: UiTone; label: string }>;
+
+const coloredTones = tones.filter(({ tone }) => tone !== "neutral");
 
 const meta = {
 	title: "Development/1. Solid и Outline",
@@ -25,7 +26,7 @@ const meta = {
 		layout: "fullscreen",
 		docs: {
 			description: {
-				component: "Сравнение badge, button и status-indicator с заливкой, а также badge и button с контуром."
+				component: "Сравнение цветных badge и button с заливкой и контуром, единой нейтральной схемы с рамкой и status-indicator."
 			}
 		}
 	}
@@ -34,7 +35,7 @@ const meta = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-/** Одинаковые тона в двух секциях позволяют проверять общую цветовую систему. */
+/** Цветные тона сравниваются в двух формах; единая нейтральная схема показана с рамкой. */
 export const All: Story = {
 	name: "Все компоненты",
 	render: () => (
@@ -42,7 +43,7 @@ export const All: Story = {
 			<Section title="Solid" className={styles.section}>
 				<h4 className={styles.subheading}>badge</h4>
 				<div className={styles.row}>
-					{tones.map(({ tone, label }) => (
+					{coloredTones.map(({ tone, label }) => (
 						<Badge key={tone} tone={tone} appearance="solid">
 							{label}
 						</Badge>
@@ -50,14 +51,11 @@ export const All: Story = {
 				</div>
 				<h4 className={styles.subheading}>button</h4>
 				<div className={styles.row}>
-					{tones.map(({ tone, label }) => (
+					{coloredTones.map(({ tone, label }) => (
 						<Button key={tone} type="button" tone={tone} appearance="solid">
 							{label}
 						</Button>
 					))}
-					<Button type="button" tone="neutral" appearance="solid" disabled>
-						Недоступно
-					</Button>
 				</div>
 				<h4 className={styles.subheading}>status-indicator</h4>
 				<div className={styles.row}>

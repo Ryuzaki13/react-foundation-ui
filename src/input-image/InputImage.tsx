@@ -162,7 +162,7 @@ export function InputImage({
 						tabIndex={disabled ? -1 : 0}
 						onClick={handleClick}
 						onKeyDown={(event) => handleKeyboardActivation(event, handleClick, { disabled })}
-						className={cn(uiStyles.uiInputControl, styles.control, controlClassName, !!error && "invalid")}
+						className={cn(uiStyles.uiInputControl, styles.control, controlClassName, !!error && uiStyles.invalid)}
 						data-disabled={disabled || undefined}
 						aria-invalid={!!error || undefined}
 						aria-disabled={disabled}

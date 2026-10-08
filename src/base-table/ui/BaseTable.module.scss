@@ -49,15 +49,30 @@
 .bodyRowInteractive {
 	cursor: pointer;
 
-	&:hover .bodyCell,
-	&:focus-visible .bodyCell {
+	&:hover .bodyCell {
 		background-color: var(--bg-hover);
+	}
+
+	&:active .bodyCell {
+		background-color: var(--bg-pressed);
 	}
 }
 
 .bodyRowSelected {
 	.bodyCell {
 		background-color: var(--selection-bg);
+		color: var(--selection-text);
+	}
+
+	// Наведение и нажатие меняют согласованную пару выбранности; фокус рисуется отдельно.
+	&.bodyRowInteractive:hover .bodyCell {
+		background-color: var(--selection-bg-hover);
+		color: var(--selection-text-hover);
+	}
+
+	&.bodyRowInteractive:active .bodyCell {
+		background-color: var(--selection-bg-pressed);
+		color: var(--selection-text-pressed);
 	}
 }
 

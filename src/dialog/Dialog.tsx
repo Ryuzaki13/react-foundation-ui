@@ -85,7 +85,7 @@ export function Dialog({ title, description, open, onClose, size, minWidth, chil
 					styles.panel,
 					size && styles.sized,
 					size && styles[size],
-					"scrollableY overscroll bgSurface paddingMd radiusMd"
+					"scrollableY overscroll bgElevated paddingMd radiusMd"
 				)}
 				style={dialogStyle}>
 				{title && (

@@ -35,12 +35,12 @@ const meta = {
 		tone: {
 			description: "Цветовой тон бейджа.",
 			control: "inline-radio",
-			options: ["neutral", "accent", "brand", "success", "warning", "error", "info"]
+			options: ["neutral", "accent", "success", "warning", "error", "info"]
 		},
 		appearance: {
-			description: "Форма бейджа.",
+			description: "Для accent и статусов доступны solid и outline. Нейтральный бейдж имеет рамку или использует ghost.",
 			control: "inline-radio",
-			options: ["solid", "outline", "ghost", "transparent"]
+			options: ["solid", "outline", "ghost"]
 		},
 		onRemove: {
 			description: "Показывает кнопку удаления и вызывает обработчик по клику.",
@@ -64,13 +64,10 @@ export const Tones: Story = {
 	render: () => (
 		<BadgeList>
 			<Badge tone="neutral" appearance="outline">
-				Neutral
+				Нейтральный
 			</Badge>
 			<Badge tone="accent" appearance="solid">
 				Акцент
-			</Badge>
-			<Badge tone="brand" appearance="solid">
-				Бренд
 			</Badge>
 			<Badge tone="success" appearance="solid">
 				Успешно
@@ -91,17 +88,17 @@ export const Tones: Story = {
 export const Appearances: Story = {
 	render: () => (
 		<BadgeList>
-			<Badge tone="neutral" appearance="solid">
+			<Badge tone="neutral" appearance="outline">
+				Нейтральный
+			</Badge>
+			<Badge tone="accent" appearance="solid">
 				Solid
 			</Badge>
-			<Badge tone="neutral" appearance="outline">
+			<Badge tone="accent" appearance="outline">
 				Outline
 			</Badge>
 			<Badge tone="info" appearance="ghost">
 				Ghost
-			</Badge>
-			<Badge tone="warning" appearance="transparent">
-				Transparent
 			</Badge>
 		</BadgeList>
 	)

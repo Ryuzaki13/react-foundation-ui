@@ -148,7 +148,7 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 ```scss
 @use "@ryuzaki13/react-foundation-ui/styles/themes" as foundationThemes;
 
-:root[data-theme="dark:brand"] {
+:root[data-theme="dark:custom"] {
 	color-scheme: dark;
 
 	@include foundationThemes.theme(
@@ -156,21 +156,31 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 		(
 			tokens: (
 				"--bg-canvas": #12111c,
-				"--accent-selection": #dc78c8,
-				"--accent-selection-hover": #ef9ddd,
-				"--accent-selection-pressed": #b95ca7,
+				"--selection-fill": #dc78c8,
+				"--selection-fill-hover": #ef9ddd,
+				"--selection-fill-pressed": #b95ca7,
+				"--selection-on-fill": #12111c,
 				"--selection-bg": #35243f,
 				"--selection-bg-hover": #493052,
-				"--error-fill": #34151f,
+				"--error-bg": #34151f,
+				"--error-bg-hover": #48212d,
+				"--error-bg-pressed": #5d2b39,
+				"--error-text": #ff8198,
+				"--error-fill": #ff8198,
 				"--error-fill-hover": #ff90a4,
-				"--error-fill-pressed": #ec7087
+				"--error-fill-pressed": #ec7087,
+				"--error-on-fill": #12111c
 			)
 		)
 	);
 }
 ```
 
-`--border-accent`, `--focus-ring`, `--selection-border` и токены выделения текста в базовой палитре используют явные `var(...)`-ссылки. Эти ссылки сохраняются в CSS, поэтому изменение соответствующего акцента влияет на связанные роли без вычисления новых цветов. Host может заменить любую ссылку самостоятельным цветом.
+Цвета фокуса, декоративной линии, выбранности и браузерного выделения текста задаются независимо. `accent-text` используется на обычных поверхностях, `accent-on-fill` — на насыщенной акцентной заливке. Для выбранного состояния доступны мягкий вариант `selection-bg` / `selection-text` и насыщенный `selection-fill` / `selection-on-fill`, включая отдельные состояния недоступности.
+
+Статусный outline/soft использует `--<status>-bg` и `--<status>-text` для текста и рамки; hover/pressed меняют только подложку. Solid использует `--<status>-fill` и `--<status>-on-fill`, причём меняется только заливка. `tone="brand"` и `Text color="brand"` удалены; выразительное оформление задаётся через `accent`. Прозрачное нейтральное оформление использует `appearance="ghost"`; дублирующий `transparent` удалён.
+
+У `neutral` нет отдельной насыщенной заливки: обычный вариант использует `bg-surface`, `text-primary` и `border-interactive`, а `ghost` — прозрачные фон и рамку. `solid` и `outline` при нейтральном тоне сохраняют одно обычное оформление; отдельная пара токенов для нейтрального solid не вводится.
 
 Цветовые Sass-значения сохраняют поддержку high contrast: например, `--error-text: var(--hc-error-text, #ff8198)`. Этот wrapper выбирает явно заданный runtime-цвет и не рассчитывает палитру. CSS-ссылки, градиенты и тени выводятся как переданы; при необходимости host задаёт их варианты контрастности явно.
 

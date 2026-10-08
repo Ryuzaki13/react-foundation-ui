@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .disclosureHeader {
 	display: flex;
 	align-items: center;
@@ -10,8 +12,13 @@
 	align-items: center;
 	justify-content: flex-start;
 
-	&:hover {
-		color: var(--selection-text);
+	@include hover(false, false) {
+		color: var(--text-primary);
+		background-color: var(--bg-hover);
+	}
+
+	&:active {
+		background-color: var(--bg-pressed);
 	}
 }
 

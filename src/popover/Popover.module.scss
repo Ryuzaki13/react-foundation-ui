@@ -1,51 +1,49 @@
 .tooltipPanel {
+	// Стрелка наследует те же цвета, что и оболочка, включая статусные варианты.
+	--floating-panel-background: var(--bg-elevated);
+	--floating-panel-border: var(--border-default);
+
 	padding: var(--space-sm);
-	// background-image: radial-gradient(var(--bg-canvas) 50%, var(--bg-surface) 100%);
-	background-color: var(--bg-surface);
-	border: var(--border-width) solid var(--border-default);
+	background-color: var(--floating-panel-background);
+	border: var(--border-width) solid var(--floating-panel-border);
 	border-radius: var(--radius-sm);
 	color: var(--text-primary);
 
 	box-shadow: var(--shadow-popover);
 
 	&.negative {
-		--border-thin: var(--text-primary);
+		--floating-panel-background: var(--text-primary);
+		--floating-panel-border: var(--text-primary);
 
-		background-color: var(--text-primary);
-		border-color: var(--border-thin);
-		color: var(--bg-surface);
+		color: var(--text-inverse);
 	}
 
 	&.information {
-		--border-thin: var(--info-text);
+		--floating-panel-background: var(--info-bg);
+		--floating-panel-border: var(--info-text);
 
-		background-color: var(--info-text);
-		border-color: var(--info-text);
-		color: var(--info-on-fill);
+		color: var(--info-text);
 	}
 
 	&.error {
-		--border-thin: var(--error-text);
+		--floating-panel-background: var(--error-bg);
+		--floating-panel-border: var(--error-text);
 
-		background-color: var(--error-text);
-		border-color: var(--error-text);
-		color: var(--error-on-fill);
+		color: var(--error-text);
 	}
 
 	&.warning {
-		--border-thin: var(--warning-text);
+		--floating-panel-background: var(--warning-bg);
+		--floating-panel-border: var(--warning-text);
 
-		background-color: var(--warning-text);
-		border-color: var(--warning-text);
-		color: var(--warning-on-fill);
+		color: var(--warning-text);
 	}
 
 	&.success {
-		--border-thin: var(--success-text);
+		--floating-panel-background: var(--success-bg);
+		--floating-panel-border: var(--success-text);
 
-		background-color: var(--success-text);
-		border-color: var(--success-text);
-		color: var(--success-on-fill);
+		color: var(--success-text);
 	}
 }
 

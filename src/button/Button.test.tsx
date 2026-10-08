@@ -22,7 +22,7 @@ describe("Button", () => {
 					event.preventDefault();
 					onSubmit();
 				}}>
-				<Button ref={buttonRef} tone="brand">
+				<Button ref={buttonRef} tone="accent">
 					Действие
 				</Button>
 			</form>
@@ -58,7 +58,7 @@ describe("Button", () => {
 	it("вызывает onClick только у доступной кнопки", () => {
 		const onClick = vi.fn();
 		const { rerender } = render(
-			<Button onClick={onClick} tone="brand" appearance="outline">
+			<Button onClick={onClick} tone="accent" appearance="outline">
 				Действие
 			</Button>
 		);
@@ -67,7 +67,7 @@ describe("Button", () => {
 		expect(onClick).toHaveBeenCalledTimes(1);
 
 		rerender(
-			<Button disabled onClick={onClick} tone="brand" appearance="ghost">
+			<Button disabled onClick={onClick} tone="accent" appearance="ghost">
 				Действие
 			</Button>
 		);

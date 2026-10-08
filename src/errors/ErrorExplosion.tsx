@@ -21,7 +21,7 @@ export function ErrorExplosion({ header, description }: ErrorExplosionProps) {
 					style={{
 						zIndex: 1,
 						position: "relative",
-						textShadow: "1px 0 1px var(--error-fill), -1px 0 1px var(--info-fill)"
+						textShadow: "1px 0 1px var(--error-text), -1px 0 1px var(--info-text)"
 					}}>
 					{ERROR_BOOM_MESSAGES[Math.floor(randomValue * ERROR_BOOM_MESSAGES.length)]}
 				</div>

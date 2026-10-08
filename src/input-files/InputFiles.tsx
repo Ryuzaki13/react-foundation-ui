@@ -210,8 +210,8 @@ export function InputFiles(props: InputFilesProps) {
 						tabIndex={disabled || isLimitReached ? -1 : 0}
 						onClick={handleClick}
 						onKeyDown={(event) => handleKeyboardActivation(event, handleClick, { disabled: disabled || isLimitReached })}
-						className={cn(uiStyles.uiInputControl, styles.control, !!error && "invalid")}
-						data-disabled={disabled || undefined}
+						className={cn(uiStyles.uiInputControl, styles.control, !!error && uiStyles.invalid)}
+						data-disabled={disabled || isLimitReached || undefined}
 						aria-invalid={!!error || undefined}
 						aria-disabled={disabled || isLimitReached}
 						aria-labelledby={labelId}

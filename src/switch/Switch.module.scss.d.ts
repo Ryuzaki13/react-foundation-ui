@@ -1,8 +1,8 @@
 declare const styles: {
   readonly switchWrapper: "switchWrapper";
-  readonly switch: "switch";
-  readonly iconWrapper: "iconWrapper";
-  readonly auto: "auto";
   readonly checked: "checked";
+  readonly iconWrapper: "iconWrapper";
+  readonly switch: "switch";
+  readonly auto: "auto";
 };
 export default styles;

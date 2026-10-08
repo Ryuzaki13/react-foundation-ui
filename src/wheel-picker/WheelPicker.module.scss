@@ -64,12 +64,37 @@
 		font-variation-settings: "wght" 600;
 	}
 
-	&:hover:not(:disabled) {
-		background: var(--selection-bg-hover);
+	&:enabled {
+		@include hover(false, false) {
+			background: var(--bg-hover);
+		}
+
+		&:active {
+			background: var(--bg-pressed);
+		}
+	}
+
+	&[data-selected]:enabled {
+		@include hover(false, false) {
+			background: var(--selection-bg-hover);
+			color: var(--selection-text-hover);
+		}
+
+		&:active {
+			background: var(--selection-bg-pressed);
+			color: var(--selection-text-pressed);
+		}
 	}
 
 	&:disabled {
 		cursor: default;
+		background: var(--bg-disabled);
+		color: var(--text-disabled);
+	}
+
+	&[data-selected]:disabled {
+		background: var(--selection-bg-disabled);
+		color: var(--selection-text-disabled);
 	}
 }
 

@@ -71,7 +71,7 @@ export const Basic: Story = {
 export const HeaderActions: Story = {
 	args: {
 		headerActions: (
-			<Button appearance="transparent" onClick={() => undefined}>
+			<Button appearance="ghost" onClick={() => undefined}>
 				Очистить
 			</Button>
 		)

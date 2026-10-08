@@ -13,7 +13,11 @@
 	font-variant-numeric: tabular-nums;
 
 	&:disabled {
-		opacity: 0.25;
+		color: var(--text-disabled);
+
+		&::placeholder {
+			color: var(--text-disabled);
+		}
 	}
 }
 
@@ -23,7 +27,7 @@
 	flex-shrink: 0;
 
 	&[data-disabled] {
-		opacity: 0.25;
+		color: var(--text-disabled);
 	}
 }
 

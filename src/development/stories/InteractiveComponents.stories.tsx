@@ -197,7 +197,6 @@ export function InteractiveComponents() {
 				<Text color="muted">Приглушенный</Text>
 				<Text color="disabled">Отключенный</Text>
 				<Text color="accent">Акцентированный</Text>
-				<Text color="brand">Брендовый</Text>
 				<Text color="info">Информация</Text>
 				<Text color="success">Успешно</Text>
 				<Text color="warning">Предупреждение</Text>
@@ -212,7 +211,7 @@ export function InteractiveComponents() {
 			<ComponentCard title="Badge">
 				<BadgeList>
 					<Badge tone="neutral" appearance="outline">
-						Neutral
+						Нейтральный
 					</Badge>
 					<Badge tone="success" appearance="solid">
 						Успешно
@@ -231,15 +230,11 @@ export function InteractiveComponents() {
 
 			<ComponentCard title="Button">
 				<GridContainer gap="sm" templateColumns="1fr 1fr">
-					<Button appearance="transparent" tone="neutral">
-						transparent
-					</Button>
 					<Button appearance="ghost" tone="neutral">
 						ghost
 					</Button>
-					<Button>neutral</Button>
+					<Button>Нейтральная</Button>
 					<Button tone="accent">accent</Button>
-					<Button tone="brand">brand</Button>
 					<Button tone="info">infoOutline</Button>
 					<Button tone="success">successOutline</Button>
 					<Button tone="warning">warningOutline</Button>
@@ -247,9 +242,6 @@ export function InteractiveComponents() {
 
 					<Button appearance="solid" tone="accent">
 						accent
-					</Button>
-					<Button appearance="solid" tone="brand">
-						brand
 					</Button>
 					<Button appearance="solid" tone="info">
 						info
@@ -708,7 +700,7 @@ export function InteractiveComponents() {
 
 			<ComponentCard title="ExpandableActionPanel">
 				<ExpandableActionPanel>
-					<Button appearance="transparent">Действие</Button>
+					<Button appearance="ghost">Действие</Button>
 				</ExpandableActionPanel>
 			</ComponentCard>
 

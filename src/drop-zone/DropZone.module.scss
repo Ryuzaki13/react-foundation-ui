@@ -8,7 +8,7 @@
 	min-height: 8em;
 	padding: var(--space-lg);
 
-	border: var(--border-width) dashed var(--border-strong);
+	border: var(--border-width) dashed var(--border-interactive);
 	border-radius: var(--radius-sm);
 	background-color: var(--bg-sunken);
 	color: var(--text-muted);
@@ -19,21 +19,18 @@
 	transition-duration: var(--transition-fast);
 
 	&.dragOver {
-		color: var(--selection-text);
-		border-color: var(--selection-border);
-		background-color: var(--selection-bg-hover);
+		// Цель перетаскивания временно акцентирована, но ещё не выбрана пользователем.
+		color: var(--accent-text-hover);
+		border-color: var(--accent-border-hover);
+		background-color: var(--bg-accent);
 	}
 
 	&.disabled {
 		cursor: default;
 		pointer-events: none;
 		background-color: var(--bg-disabled);
-		border-color: transparent;
-
-		.icon,
-		.hint {
-			opacity: 0.25;
-		}
+		border-color: var(--border-interactive-disabled);
+		color: var(--text-disabled);
 	}
 }
 

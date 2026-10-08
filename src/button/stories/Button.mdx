@@ -42,20 +42,22 @@ export function Example() {
 ## Как выбирать схему оформления
 
 Схема задаётся двумя независимыми свойствами: `tone` выбирает цветовой тон, а `appearance` — форму оформления.
-Для основного действия можно выбрать `solid`, для действия с контуром — `outline`.
+Для акцентных и статусных действий можно выбрать `solid` с заливкой или `outline` с контуром.
 
 Без обоих свойств кнопка использует нейтральный тон без отдельного `appearance`. Если задан только `tone`, применяется `outline`.
 Если задан только `appearance`, используется нейтральный тон.
 
-`ghost` и `transparent` всегда используют нейтральный тон, даже если передан другой `tone`.
-Цветовые тоны `accent`, `brand`, `error`, `warning`, `success` и `info` применяются к `solid` и `outline`.
+`neutral` не имеет отдельного варианта `solid`: `solid` и `outline` отображают одну нейтральную схему с рамкой. Для нейтрального действия выбирайте обычную кнопку с рамкой или `ghost`.
+
+`ghost` всегда использует нейтральный тон, даже если передан другой `tone`.
+Цветовые тоны `accent`, `error`, `warning`, `success` и `info` применяются к `solid` и `outline`.
 
 ### Каталог схем
 
 <Canvas of={ButtonStories.Variants} />
 
 Вторая группа в примере повторяет все варианты с `disabled`. Отключённое состояние не использует `opacity` и сохраняет структуру
-`appearance`: у `solid` нет видимой рамки, а у `ghost` и `transparent` не появляется фон.
+`appearance`: у цветного `solid` нет видимой рамки, а у `ghost` не появляется фон.
 
 ```tsx
 import { Button } from "@ryuzaki13/react-foundation-ui/button";
@@ -63,25 +65,16 @@ import { Button } from "@ryuzaki13/react-foundation-ui/button";
 export function ActionVariants() {
 	return (
 		<>
-			<Button tone="neutral" appearance="solid">
-				Основное действие
-			</Button>
 			<Button tone="neutral" appearance="outline">
-				Вторичное действие
+				Нейтральная
 			</Button>
 			<Button tone="neutral" appearance="ghost">
 				Лёгкое действие
 			</Button>
 			<Button tone="accent" appearance="solid">
-				Акцентное действие
-			</Button>
-			<Button tone="accent" appearance="outline">
-				Акцентный контур
-			</Button>
-			<Button tone="brand" appearance="solid">
 				Сохранить
 			</Button>
-			<Button tone="brand" appearance="outline">
+			<Button tone="accent" appearance="outline">
 				Предпросмотр
 			</Button>
 			<Button tone="success" appearance="solid">
@@ -89,9 +82,6 @@ export function ActionVariants() {
 			</Button>
 			<Button tone="error" appearance="outline">
 				Отменить
-			</Button>
-			<Button tone="neutral" appearance="transparent">
-				Действие в плотном интерфейсе
 			</Button>
 		</>
 	);
@@ -108,19 +98,13 @@ import { Button } from "@ryuzaki13/react-foundation-ui/button";
 export function CustomScheme() {
 	return (
 		<>
-			<Button tone="neutral" appearance="solid">
-				Нейтральная с заливкой
-			</Button>
 			<Button tone="neutral" appearance="outline">
-				Нейтральная с контуром
-			</Button>
-			<Button tone="accent" appearance="solid">
-				Акцентная с заливкой
+				Нейтральная
 			</Button>
 			<Button tone="neutral" appearance="ghost">
 				Лёгкое действие
 			</Button>
-			<Button tone="brand" appearance="solid">
+			<Button tone="accent" appearance="solid">
 				Сохранить
 			</Button>
 			<Button tone="neutral" appearance="ghost">
@@ -131,9 +115,6 @@ export function CustomScheme() {
 			</Button>
 			<Button tone="success" appearance="solid">
 				Применить
-			</Button>
-			<Button tone="neutral" appearance="transparent">
-				Сбросить
 			</Button>
 		</>
 	);
@@ -182,7 +163,7 @@ import { Button } from "@ryuzaki13/react-foundation-ui/button";
 export function FormActions() {
 	return (
 		<form onSubmit={handleSubmit}>
-			<Button type="button" tone="neutral" appearance="transparent" onClick={handleReset}>
+			<Button type="button" tone="neutral" appearance="ghost" onClick={handleReset}>
 				Сбросить
 			</Button>
 			<Button type="submit" tone="success" appearance="solid">
@@ -196,7 +177,7 @@ export function FormActions() {
 ## Практические рекомендации
 
 - Для явного оформления выбирай сочетание `tone` и `appearance`.
-- Для основного действия используй `solid`, для вторичного — `outline`; компактные `ghost` и `transparent` всегда нейтральные.
+- Для акцентных и статусных действий выбирай `solid` или `outline`; нейтральные действия имеют рамку либо используют компактный `ghost`.
 - Для операций удаления или других опасных действий используй `tone="error"` с `solid` или `outline`.
 - Для иконки без текста всегда задавай `title` или `aria-label`.
 - Если нужна кнопка удаления с подтверждением в два шага, стоит рассмотреть `ButtonRemove` из того же модуля.

@@ -34,8 +34,24 @@
 
 	&[data-selected] {
 		.previewCell {
-			background-color: var(--accent-selection);
+			background-color: var(--selection-fill);
 			border-color: transparent;
+		}
+
+		&:not([aria-disabled="true"]) {
+			@include hover(false, false) {
+				.previewCell {
+					background-color: var(--selection-fill-hover);
+				}
+			}
+
+			&:active .previewCell {
+				background-color: var(--selection-fill-pressed);
+			}
+		}
+
+		&[aria-disabled="true"] .previewCell {
+			background-color: var(--selection-fill-disabled);
 		}
 	}
 }
@@ -76,6 +92,12 @@
 .previewCompact {
 	.previewCell {
 		background-color: var(--selection-bg);
-		border-color: var(--border-accent);
+		border-color: var(--selection-border);
+	}
+
+	// Overlay следует состоянию настоящего input внутри соседнего InputControl.
+	:has(> input:disabled) ~ * & .previewCell {
+		background-color: var(--selection-bg-disabled);
+		border-color: var(--selection-border-disabled);
 	}
 }

@@ -1,22 +1,41 @@
+@use "@/styles/mixins" as *;
+
 .switchWrapper {
 	--size: calc(var(--control-height) - calc(var(--border-width) * 4));
 
 	display: block;
 	padding: 0 var(--border-width);
+
+	&:enabled {
+		@include hover(false, false) {
+			.checked {
+				background-color: var(--selection-fill-hover);
+			}
+		}
+
+		&:active .checked {
+			background-color: var(--selection-fill-pressed);
+		}
+	}
+
+	// Состояние берётся с настоящей кнопки, а не с внутреннего layout-контейнера.
+	&:disabled {
+		.iconWrapper {
+			background-color: var(--bg-disabled);
+			color: var(--text-disabled);
+		}
+
+		.checked {
+			background-color: var(--selection-fill-disabled);
+			color: var(--selection-on-fill-disabled);
+		}
+	}
 }
 
 .switch {
 	width: calc(var(--control-height) * 3);
 	display: flex;
 	justify-content: space-between;
-
-	&[data-disabled] .iconWrapper {
-		background-color: var(--ui-disabled-background, var(--bg-disabled));
-
-		svg {
-			color: var(--ui-disabled-color, var(--text-disabled));
-		}
-	}
 }
 
 .iconWrapper {
@@ -27,13 +46,14 @@
 	display: flex;
 	align-items: center;
 	justify-content: center;
+	color: var(--text-muted);
 
 	// background-color: var(--bg-elevated);
 	// opacity: 0.25;
 
 	svg {
 		display: block;
-		color: var(--text-muted);
+		color: currentColor;
 	}
 
 	&.auto {
@@ -46,12 +66,8 @@
 	// }
 
 	&.checked {
-		color: var(--text-primary);
-		background-color: var(--bg-elevated);
+		color: var(--selection-on-fill);
+		background-color: var(--selection-fill);
 		opacity: 1;
-
-		svg {
-			color: var(--text-primary);
-		}
 	}
 }

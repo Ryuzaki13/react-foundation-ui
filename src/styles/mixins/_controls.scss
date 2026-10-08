@@ -33,13 +33,13 @@
 		@include focusVisible;
 	}
 
-	// Disabled-состояние берёт структуру из appearance: solid остаётся без рамки,
-	// а ghost/transparent — без фона. Цвета задаются явно, чтобы не накапливать opacity родителей.
+	// Disabled-состояние сохраняет выбранность через --ui-disabled-* самого контрола.
+	// Ghost остаётся без фона; цвета не умножаются на opacity родителей.
 	&:disabled,
 	&[data-disabled] {
 		color: var(--ui-disabled-color, var(--text-disabled));
 		background-color: var(--ui-disabled-background, var(--bg-disabled));
-		border-color: var(--ui-disabled-border, transparent);
+		border-color: var(--ui-disabled-border, var(--border-interactive-disabled));
 	}
 
 	&:disabled {
