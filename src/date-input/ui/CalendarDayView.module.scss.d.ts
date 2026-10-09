@@ -6,14 +6,14 @@ declare const styles: {
   readonly week: "week";
   readonly day: "day";
   readonly disabled: "disabled";
-  readonly outsideMonth: "outsideMonth";
   readonly periodSelection: "periodSelection";
   readonly periodPreview: "periodPreview";
   readonly selected: "selected";
   readonly range: "range";
   readonly rangeStart: "rangeStart";
   readonly rangeEnd: "rangeEnd";
-  readonly weekend: "weekend";
+  readonly outsideMonth: "outsideMonth";
   readonly now: "now";
+  readonly weekend: "weekend";
 };
 export default styles;

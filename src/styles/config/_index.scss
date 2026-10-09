@@ -347,7 +347,7 @@ $light-theme-defaults: (
 			0 4px 12px rgb(22 25 45 / 0.06),
 			0 24px 64px rgb(22 25 45 / 0.12)
 		),
-		"--glow-brand": 0 0 22px rgb(80 56 219 / 0.1),
+		"--glow-accent": 0 0 22px rgb(80 56 219 / 0.1),
 		"--glow-selection": 0 0 24px rgb(190 20 116 / 0.1),
 		"--glow-focus": 0 0 24px rgb(0 118 149 / 0.1),
 		"--glow-highlight": 0 0 24px rgb(121 64 205 / 0.1)
@@ -469,7 +469,7 @@ $dark-theme-defaults: (
 		),
 		"--shadow-card": 0 10px 30px rgb(0 0 0 / 0.24),
 		"--shadow-popover": 0 20px 64px rgb(0 0 0 / 0.48),
-		"--glow-brand": 0 0 22px rgb(247 255 74 / 0.18),
+		"--glow-accent": 0 0 22px rgb(247 255 74 / 0.18),
 		"--glow-selection": 0 0 24px rgb(255 62 173 / 0.2),
 		"--glow-focus": 0 0 24px rgb(53 207 245 / 0.18),
 		"--glow-highlight": 0 0 28px rgb(255 62 173 / 0.3)
