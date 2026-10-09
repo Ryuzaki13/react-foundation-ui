@@ -1,12 +1,16 @@
 import { type LayoutPickerPreset } from "./types";
 
 /**
- * Базовый набор layout-пресетов для первого среза выбора схемы.
+ * Стандартный каталог схем для LayoutPicker и внешней модели раскладки.
  *
  * id формата:
  * - "2x3" — 2 строки, 3 колонки
  * - "2x2-l" — 2x2 с большой ячейкой слева
+ * - "2x3-m" — 2 строки, 3 колонки с большой ячейкой в центре
  * - "3x2-b" — 3x2 с широкой нижней ячейкой
+ *
+ * Большая боковая или центральная ячейка занимает всю высоту сетки.
+ * Подписи боковых блоков 1x2 и 1x3 обозначают одну колонку из двух или трёх ячеек.
  */
 export const DEFAULT_LAYOUT_PICKER_PRESETS = [
 	{
@@ -210,6 +214,46 @@ export const DEFAULT_LAYOUT_PICKER_PRESETS = [
 	},
 
 	{
+		id: "2x3-l",
+		label: "Большая слева + 2x2",
+		columns: 3,
+		rows: 2,
+		cells: [
+			{ id: "left", row: 1, column: 1, rowSpan: 2 },
+			{ id: "c12", row: 1, column: 2 },
+			{ id: "c13", row: 1, column: 3 },
+			{ id: "c22", row: 2, column: 2 },
+			{ id: "c23", row: 2, column: 3 }
+		]
+	},
+	{
+		id: "2x3-r",
+		label: "2x2 + большая справа",
+		columns: 3,
+		rows: 2,
+		cells: [
+			{ id: "c11", row: 1, column: 1 },
+			{ id: "c12", row: 1, column: 2 },
+			{ id: "right", row: 1, column: 3, rowSpan: 2 },
+			{ id: "c21", row: 2, column: 1 },
+			{ id: "c22", row: 2, column: 2 }
+		]
+	},
+	{
+		id: "2x3-m",
+		label: "1x2 + большая в центре + 1x2",
+		columns: 3,
+		rows: 2,
+		cells: [
+			{ id: "c11", row: 1, column: 1 },
+			{ id: "middle", row: 1, column: 2, rowSpan: 2 },
+			{ id: "c13", row: 1, column: 3 },
+			{ id: "c21", row: 2, column: 1 },
+			{ id: "c23", row: 2, column: 3 }
+		]
+	},
+
+	{
 		id: "3x2-t",
 		label: "Широкая сверху + 2x2",
 		columns: 2,
@@ -277,6 +321,21 @@ export const DEFAULT_LAYOUT_PICKER_PRESETS = [
 			{ id: "c22", row: 2, column: 2 },
 			{ id: "c31", row: 3, column: 1 },
 			{ id: "c32", row: 3, column: 2 }
+		]
+	},
+	{
+		id: "3x3-m",
+		label: "1x3 + большая в центре + 1x3",
+		columns: 3,
+		rows: 3,
+		cells: [
+			{ id: "c11", row: 1, column: 1 },
+			{ id: "middle", row: 1, column: 2, rowSpan: 3 },
+			{ id: "c13", row: 1, column: 3 },
+			{ id: "c21", row: 2, column: 1 },
+			{ id: "c23", row: 2, column: 3 },
+			{ id: "c31", row: 3, column: 1 },
+			{ id: "c33", row: 3, column: 3 }
 		]
 	},
 	{

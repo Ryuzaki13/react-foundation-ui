@@ -4,7 +4,14 @@ import { useArgs } from "storybook/preview-api";
 import { fn } from "storybook/test";
 
 import { Button } from "../../button";
-import { DEFAULT_LAYOUT_PICKER_PRESETS, LayoutPicker, type LayoutPickerPreset, type LayoutPickerProps } from "../index";
+import {
+	DEFAULT_LAYOUT_PICKER_PRESETS,
+	getLayoutCellStyle,
+	getLayoutStyle,
+	LayoutPicker,
+	type LayoutPickerPreset,
+	type LayoutPickerProps
+} from "../index";
 
 import styles from "./LayoutPicker.stories.module.scss";
 
@@ -85,28 +92,15 @@ function LayoutPreview({ value, presets }: { value: string; presets: readonly La
 	const selectedPreset = findPreset(value, presets);
 	if (!selectedPreset) return null;
 
-	const columns = selectedPreset.columns;
-	const rows = selectedPreset.rows;
 	const cells = selectedPreset.cells;
 
 	return (
-		<div
-			className={styles.layoutPreview}
-			style={{
-				gridTemplateColumns: `repeat(${columns}, minmax(0, 1fr))`,
-				gridTemplateRows: `repeat(${rows}, minmax(0, 1fr))`
-			}}>
+		<div className={styles.layoutPreview} style={getLayoutStyle(selectedPreset)}>
 			{cells.map((cell, index) => (
-				<div
-					key={cell.id}
-					className={styles.layoutCell}
-					style={{
-						gridColumn: `${cell.column} / span ${cell.columnSpan}`,
-						gridRow: `${cell.row} / span ${cell.rowSpan}`
-					}}>
+				<div key={cell.id} className={styles.layoutCell} style={getLayoutCellStyle(cell)}>
 					<span className={styles.layoutCellTitle}>Область {index + 1}</span>
 					<span className={styles.muted}>
-						Колонка {cell.column}, строка {cell.row}; span {cell.columnSpan} x {cell.rowSpan}
+						Колонка {cell.column}, строка {cell.row}; span {cell.columnSpan ?? 1} x {cell.rowSpan ?? 1}
 					</span>
 				</div>
 			))}
@@ -252,9 +246,35 @@ export const Controlled: Story = {
 					}}
 				/>
 				<PresetSummary value={args.value ?? ""} presets={presets} />
+				<LayoutPreview value={args.value ?? ""} presets={presets} />
 			</div>
 		);
 	}
+};
+
+/** Отдельные входы для проверки новых схем используют тот же контролируемый выбор. */
+export const MainLeftWithGrid: Story = {
+	...Controlled,
+	name: "Большая слева + 2x2",
+	args: { value: "2x3-l" }
+};
+
+export const MainRightWithGrid: Story = {
+	...Controlled,
+	name: "2x2 + большая справа",
+	args: { value: "2x3-r" }
+};
+
+export const MainCenterWithTwoRows: Story = {
+	...Controlled,
+	name: "1x2 + большая в центре + 1x2",
+	args: { value: "2x3-m" }
+};
+
+export const MainCenterWithThreeRows: Story = {
+	...Controlled,
+	name: "1x3 + большая в центре + 1x3",
+	args: { value: "3x3-m" }
 };
 
 export const Placeholder: Story = {

@@ -56,6 +56,24 @@ const dashboardPreset: LayoutPickerPreset = {
 };
 ```
 
+## Схемы с большой областью
+
+В стандартный каталог входят следующие варианты. Большая область занимает всю высоту сетки; боковые блоки `1x2` и `1x3` — вертикальные колонки из двух и трёх ячеек. Колонки имеют равную ширину.
+
+| ID      | Схема                        | Число областей |
+| ------- | ---------------------------- | -------------- |
+| `2x3-l` | Большая слева + 2x2          | 5              |
+| `2x3-r` | 2x2 + большая справа         | 5              |
+| `2x3-m` | 1x2 + большая в центре + 1x2 | 5              |
+| `3x3-m` | 1x3 + большая в центре + 1x3 | 7              |
+
+ID использует порядок «строки × колонки». Схемы доступны без передачи `presets`, а `resolveLayoutPreset` возвращает их геометрию для внешнего layout.
+
+<Canvas of={LayoutPickerStories.MainLeftWithGrid} />
+<Canvas of={LayoutPickerStories.MainRightWithGrid} />
+<Canvas of={LayoutPickerStories.MainCenterWithTwoRows} />
+<Canvas of={LayoutPickerStories.MainCenterWithThreeRows} />
+
 ## Пользовательский trigger
 
 Через `renderTrigger` стандартный input-like trigger можно заменить кнопкой или другой button-композицией. `LayoutPicker` по-прежнему владеет popup и `PickerOptions`: передайте `triggerProps` в корневую кнопку, чтобы сохранить ref для позиционирования, клавиатурное управление и роли `combobox/listbox`.
@@ -71,9 +89,7 @@ export function LayoutMenuButton() {
 		<LayoutPicker
 			value={layoutId}
 			onChange={setLayoutId}
-			renderTrigger={({ triggerLabel, triggerProps }) => (
-				<Button {...triggerProps}>Раскладка: {triggerLabel}</Button>
-			)}
+			renderTrigger={({ triggerLabel, triggerProps }) => <Button {...triggerProps}>Раскладка: {triggerLabel}</Button>}
 		/>
 	);
 }
