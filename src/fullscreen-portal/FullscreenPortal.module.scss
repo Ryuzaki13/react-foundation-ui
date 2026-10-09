@@ -1,3 +1,5 @@
+@use "@/styles/mixins" as *;
+
 .overlay {
 	position: fixed;
 	top: var(--visual-viewport-top, 0px);
@@ -26,5 +28,14 @@
 	&:focus-visible {
 		outline: var(--focus);
 		outline-offset: var(--focus-offset);
+	}
+}
+
+@include mobile {
+	.panel {
+		inset: 0;
+		border-radius: 0;
+		box-shadow: none;
+		padding: var(--space-sm);
 	}
 }
