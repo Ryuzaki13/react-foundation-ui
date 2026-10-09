@@ -1,0 +1,19 @@
+.root {
+	max-inline-size: 100%;
+	aspect-ratio: 1;
+}
+
+.image {
+	display: block;
+	inline-size: 100%;
+	block-size: auto;
+}
+
+.placeholder {
+	inline-size: 100%;
+	block-size: 100%;
+	padding: var(--space-sm);
+	color: var(--text-secondary);
+	font-size: var(--font-size-sm);
+	text-align: center;
+}

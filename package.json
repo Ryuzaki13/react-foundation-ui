@@ -243,6 +243,10 @@
 			"types": "./dist/preset-select/index.d.ts",
 			"import": "./dist/preset-select/index.js"
 		},
+		"./qr-code": {
+			"types": "./dist/qr-code/index.d.ts",
+			"import": "./dist/qr-code/index.js"
+		},
 		"./radio-button": {
 			"types": "./dist/radio-button/index.d.ts",
 			"import": "./dist/radio-button/index.js"

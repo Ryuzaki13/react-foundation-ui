@@ -230,6 +230,28 @@ export function BarcodeField() {
 
 Пакет сам устанавливает `@yudiel/react-qr-scanner` и согласованную с ним версию `zxing_reader.wasm`. `prepareZXingModule` автоматически направляет полифилл на asset host-сборки, поэтому сканер не обращается к CDN. Host-сборка PWA должна добавлять `wasm` в precache. Камера доступна только в secure context: HTTPS либо `localhost`.
 
+## Генерация QR-кодов
+
+`QrCode` из `@ryuzaki13/react-foundation-ui/qr-code` локально кодирует строку и
+показывает доступное изображение. По умолчанию размер равен 256 CSS px, уровень
+коррекции — `M`; `errorCorrectionLevel` поддерживает `L`, `M`, `Q`, `H`.
+Quiet zone и контрастное изображение сохраняются во всех темах.
+
+```tsx
+import { QrCode } from "@ryuzaki13/react-foundation-ui/qr-code";
+
+<QrCode value="https://example.org/" alt="QR-код ссылки на сайт" />;
+```
+
+Компонент использует существующую dependency `zxing-wasm/writer`; host-сборщик
+доставляет её WASM через `?url`, без CDN. Payload не передаётся по сети или в
+browser storage. Первый SSR нейтрален; генерация начинается после mount.
+При смене `value` прежний код скрывается сразу, поздние результаты игнорируются,
+Blob URL освобождается. `onError` сообщает только безопасный `kind`:
+`encoding-failed` либо `unavailable`. Смена callback, `alt`, `size` и `className`
+не перезапускает кодирование. Host управляет сроком жизни payload и снимает
+компонент, когда QR больше нельзя показывать.
+
 ## Просмотр изображений
 
 `ImageViewer` из точечного entrypoint `@ryuzaki13/react-foundation-ui/image` предоставляет controlled lightbox для одного изображения или галереи. Реализация использует Yet Another React Lightbox как внутренний runtime, но наружу публикует только foundation-контракты `ImageViewerImage`, `ImageViewerFeatures`, `ImageViewerLabels` и `ImageViewerStyle`.
