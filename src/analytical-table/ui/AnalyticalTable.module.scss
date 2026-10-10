@@ -1,0 +1,361 @@
+.flexAlignCenter {
+	display: flex;
+	align-items: center;
+}
+.flexCenterBetweenXs {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: var(--space-xs);
+}
+.hoverRingContent {
+	content: "";
+	position: absolute;
+	inset: 0;
+	outline: var(--border-width) solid var(--border-interactive-hover);
+	outline-offset: calc(var(--border-width) * -1);
+	pointer-events: none;
+}
+
+.analyticalTable {
+	--z-header: 30;
+	--z-pinned: 15;
+	--z-pinned-cell: 40;
+	--z-tree-cell: 20;
+
+	--grouped-cell-background: var(--bg-secondary);
+
+	overflow: auto;
+	max-width: 100%;
+	min-width: 0;
+	height: var(--analytical-viewport-height, 32rem);
+	background: var(--bg-surface);
+	border: var(--border-width) solid var(--border-subtle);
+	flex: 1 1 auto;
+	min-height: 0;
+
+	font-variant-numeric: tabular-nums;
+}
+
+.table {
+	min-width: initial;
+	border-collapse: separate;
+	border-spacing: 0;
+	table-layout: fixed;
+	font-variant-numeric: tabular-nums;
+
+	// Чтобы не рисовать "двойную" линию между последней строкой и строкой итогов
+	--row-border-bottom: var(--border-width) solid var(--border-subtle);
+
+	tbody > tr:last-child {
+		--row-border-bottom: none;
+	}
+
+	tr,
+	td {
+		height: var(--row-height, var(--control-height));
+	}
+}
+
+.header {
+	position: sticky;
+	top: 0;
+	z-index: var(--z-header);
+}
+
+.dataRow {
+	// Hover дерева подсвечивает целую строку.
+	&:has(.treeCell:hover) {
+		.treeCell,
+		.cell {
+			background: var(--bg-hover);
+		}
+	}
+}
+
+.dataRowSelectable,
+.cellSelectable {
+	cursor: pointer;
+}
+
+.selectionCell,
+.treeCell,
+.totalCell {
+	position: sticky;
+	left: 0;
+	z-index: var(--z-tree-cell);
+	padding: 0;
+}
+
+.selectionCell,
+.treeCell,
+.totalCell,
+.headerCell,
+.cell {
+	height: 100%;
+
+	border-bottom: var(--row-border-bottom);
+	vertical-align: middle;
+}
+
+.treeCell,
+.totalCell,
+.headerCell,
+.cell {
+	border-right: var(--border-width) solid var(--border-subtle);
+}
+
+.headerCell,
+.cell {
+	position: relative;
+	padding-inline: var(--space-sm);
+}
+
+.totalCell {
+	border-top: var(--border-width) solid var(--border-subtle);
+	background-color: var(--bg-sunken);
+
+	.totalCellInner {
+		@extend .flexAlignCenter;
+
+		height: 100%;
+		min-width: 0;
+		white-space: nowrap;
+		overflow: hidden;
+		text-overflow: ellipsis;
+
+		padding-inline-start: var(--space-sm);
+		padding-inline-end: var(--space-md);
+
+		background: linear-gradient(to right, var(--bg-sunken) 80%, transparent);
+	}
+}
+
+.headerCell {
+	padding-block: var(--space-sm);
+	background: var(--bg-sunken);
+	text-align: left;
+	font-weight: 400;
+	font-variation-settings: "wght" 400;
+
+	hyphens: auto;
+
+	.headerCellInner {
+		height: 100%;
+		@extend .flexCenterBetweenXs;
+	}
+
+	&.headerCellDragging {
+		z-index: calc(var(--z-header) + 1);
+		opacity: 0.72;
+	}
+
+	.headerButton {
+		cursor: inherit;
+		height: 100%;
+		width: 100%;
+		text-align: left;
+		appearance: none;
+
+		border-radius: var(--radius-sm);
+	}
+}
+
+.cell {
+	// нужно красить, чтобы при sticky не было накладок
+	background-color: var(--bg-surface);
+}
+
+.cellCustomContent,
+.cellContent,
+.cellValue {
+	width: 100%;
+	min-width: 0;
+}
+
+.cellContent {
+	display: flex;
+	align-items: center;
+	justify-content: flex-start;
+	gap: var(--space-xs);
+
+	&[data-measure] {
+		justify-content: flex-end;
+	}
+}
+
+.cellValue {
+	text-align: inherit;
+
+	&[data-overflow-popover] {
+		cursor: pointer;
+	}
+}
+
+.cellOverflowPopover {
+	max-width: min(36em, 80vw);
+	max-height: min(20em, 60vh);
+	overflow: auto;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	user-select: text;
+}
+
+.treeCell,
+.cellGrouped,
+.selectionCell {
+	background-color: var(--grouped-cell-background);
+}
+
+.cellTotal {
+	background: var(--bg-sunken);
+	border-top: var(--border-width) solid var(--border-subtle);
+}
+
+.cellPinned {
+	position: sticky;
+	z-index: var(--z-pinned);
+}
+
+.treeCell,
+.cellGrouped,
+.cellTotal,
+.cellMeasure {
+	font-weight: 600;
+	font-variation-settings: "wght" 600;
+}
+
+.lastPinned {
+	border-right-color: var(--border-strong);
+}
+
+.totalRow {
+	font-variant-numeric: tabular-nums;
+}
+
+.headerNoopCell {
+	@extend .headerCell;
+	@extend .cellPinned;
+
+	left: 0;
+}
+
+// --
+
+.rowSelected {
+	color: var(--selection-text);
+	--grouped-cell-background: var(--selection-bg);
+
+	.cell {
+		background-color: var(--grouped-cell-background);
+	}
+}
+
+// Специфичность должна быть выше, чем .rowSelected.cell
+.cell:hover {
+	background: var(--bg-hover);
+
+	&::before {
+		@extend .hoverRingContent;
+	}
+}
+
+.cellSelected {
+	background-color: var(--selection-bg);
+}
+
+.selectionCell {
+	text-align: center;
+}
+
+.treeCellInner {
+	height: 100%;
+}
+
+.treeExpanderButton {
+	@extend .flexAlignCenter;
+
+	gap: var(--space-xs);
+	height: 100%;
+	min-width: 100%;
+	overflow: hidden;
+	white-space: nowrap;
+	text-align: left;
+	font-weight: inherit;
+	font-variation-settings: inherit;
+	padding-inline-start: var(--space-xs);
+	padding-inline-end: var(--space-lg);
+
+	border-radius: var(--radius-sm);
+	background: linear-gradient(to right, var(--grouped-cell-background) 85%, transparent);
+
+	&:hover {
+		background: var(--bg-hover);
+	}
+}
+
+.spacerCell {
+	padding: 0;
+	border: 0;
+	background: transparent;
+}
+
+.footerCellSticky {
+	position: sticky;
+	bottom: 0;
+	z-index: var(--z-header);
+}
+
+.cellPinned.footerCellSticky {
+	z-index: var(--z-pinned-cell);
+}
+
+.headerGroup {
+	position: relative;
+	background: var(--bg-sunken);
+	text-align: left;
+	border-right: var(--border-width) solid var(--border-subtle);
+	border-bottom: var(--border-width) solid var(--border-subtle);
+	padding: var(--space-sm);
+}
+.toolbar {
+	flex-shrink: 0;
+}
+
+.viewport {
+	position: relative;
+	min-width: 0;
+}
+.empty {
+	padding: var(--space-lg);
+}
+
+.rowSelected .cell:hover,
+.cellSelected:hover {
+	background: var(--selection-bg-hover);
+	color: var(--selection-text-hover);
+}
+.cellSelected {
+	color: var(--selection-text);
+}
+
+.treeExpanderButton:not([data-has-label]) {
+	width: 1.5em;
+	min-width: 0;
+	padding-inline: 0;
+}
+.treeExpanderButton svg {
+	flex-shrink: 0;
+}
+
+.headerIsGroup {
+	color: var(--info-text);
+	&::before {
+		content: "";
+		position: absolute;
+		inset: max(2px, 0.125em);
+		border-top: var(--border-width) dashed var(--info-text);
+		border-bottom: var(--border-width) dashed var(--info-text);
+		pointer-events: none;
+	}
+}
