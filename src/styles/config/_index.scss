@@ -201,6 +201,8 @@ $light-theme-defaults: (
 		"--bg-canvas": #f6f7fb,
 		"--bg-surface": #ffffff,
 		"--bg-elevated": #ffffff,
+		// Внутренние служебные секции; роль не задаёт уровень возвышения.
+		"--bg-secondary": #f2f4f8,
 		"--bg-sunken": #eff1f7,
 		"--bg-hover": #eaedf6,
 		"--bg-pressed": #dce2ef,
@@ -361,6 +363,7 @@ $dark-theme-defaults: (
 		"--bg-canvas": #0a1020,
 		"--bg-surface": #111b30,
 		"--bg-elevated": #17243b,
+		"--bg-secondary": #132036,
 		"--bg-sunken": #080e1b,
 		"--bg-hover": #1f304b,
 		"--bg-pressed": #2a3f5c,

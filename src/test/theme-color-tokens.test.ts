@@ -7,6 +7,10 @@ import { fileURLToPath } from "node:url";
 
 const packageRoot = fileURLToPath(new URL("../../", import.meta.url));
 
+const backgroundRoles = ["canvas", "surface", "elevated", "secondary", "sunken", "hover", "pressed", "accent", "disabled", "overlay"].map(
+	(part) => `--bg-${part}`
+);
+
 // Проверяем публичный Sass-контракт: обе схемы должны предоставлять каждую
 // независимую роль, даже когда текущий компонент использует не все состояния.
 const semanticRoles = [
@@ -37,6 +41,32 @@ function compileTheme(source: string) {
 }
 
 describe("Семантические цветовые роли темы", () => {
+	it.each(["light", "dark"])("предоставляет все фоновые роли с поддержкой high contrast в схеме %s", (mode) => {
+		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+
+		for (const role of backgroundRoles) {
+			expect(tokens.get(role), role).toMatch(new RegExp(`^var\\(--hc-${role.slice(2)}, .+\\)$`));
+		}
+	});
+
+	it.each(["light", "dark"])("настраивает вспомогательный фон независимо от содержимого и состояний в схеме %s", (mode) => {
+		const defaults = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+		const config = `@use "styles/config" with ($${mode}-theme-overrides: (tokens: ("--bg-secondary": #123456)));`;
+		const configured = compileTheme(`${config} @use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+		const overridden = compileTheme(`
+			${config}
+			@use "styles/themes" as themes;
+			.theme { @include themes.theme(${mode}, (tokens: ("--bg-secondary": #abcdef))); }
+		`);
+
+		expect(configured.get("--bg-secondary")).toBe("var(--hc-bg-secondary, #123456)");
+		expect(overridden.get("--bg-secondary")).toBe("var(--hc-bg-secondary, #abcdef)");
+		for (const role of [...backgroundRoles.filter((role) => role !== "--bg-secondary"), "--text-primary", "--text-secondary"]) {
+			expect(configured.get(role), role).toBe(defaults.get(role));
+			expect(overridden.get(role), role).toBe(defaults.get(role));
+		}
+	});
+
 	it.each(["light", "dark"])("предоставляет все 45 ролей в схеме %s", (mode) => {
 		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
 

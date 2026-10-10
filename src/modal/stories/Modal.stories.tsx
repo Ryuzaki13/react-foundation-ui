@@ -176,7 +176,6 @@ export const WithToolbarAndFooter: Story = {
 								gap: 12,
 								padding: 12,
 								borderRadius: 8,
-								background: "var(--bg-surface)",
 								border: "1px solid var(--border-subtle)"
 							}}>
 							<div>

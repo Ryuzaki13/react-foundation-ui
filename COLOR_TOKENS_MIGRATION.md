@@ -10,7 +10,7 @@
 
 | Группа | Токены |
 | --- | --- |
-| Поверхности | `--bg-canvas`, `--bg-surface`, `--bg-elevated`, `--bg-sunken`, `--bg-hover`, `--bg-pressed`, `--bg-accent`, `--bg-disabled`, `--bg-overlay` |
+| Поверхности | `--bg-canvas`, `--bg-surface`, `--bg-elevated`, `--bg-secondary`, `--bg-sunken`, `--bg-hover`, `--bg-pressed`, `--bg-accent`, `--bg-disabled`, `--bg-overlay` |
 | Текст | `--text-primary`, `--text-secondary`, `--text-muted`, `--text-disabled`, `--text-inverse`, `--text-link`, `--text-link-hover` |
 | Акцент | `--accent-text`, `--accent-border`, `--accent-fill`, их `-hover` / `-pressed`, а также `--accent-on-fill` |
 | Границы | `--border-subtle`, `--border-default`, `--border-strong`, `--border-interactive` и его `-hover` / `-pressed` / `-disabled`, `--border-decorative` |

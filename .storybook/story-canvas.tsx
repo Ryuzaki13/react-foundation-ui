@@ -29,7 +29,7 @@ const toolbarStyle: CSSProperties = {
 	justifyContent: "space-between",
 	padding: 8,
 	borderBottom: "var(--border)",
-	background: "var(--bg-elevated)"
+	background: "var(--bg-secondary)"
 };
 
 const toggleButtonStyle: CSSProperties = {
