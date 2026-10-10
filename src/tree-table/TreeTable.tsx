@@ -441,6 +441,9 @@ export function TreeTable<TData extends object>({
 		features: foundationTableFeatures,
 		data: treeData.rows as TreeTableRuntimeRow<TData>[],
 		columns: columns as TableColumnDef<TreeTableRuntimeRow<TData>>[],
+		// TreeTable сам сохраняет раскрытие по стабильным ID и удаляет исчезнувшие узлы.
+		// Автосброс TanStack при новом data отменял этот lifecycle, включая первый async snapshot.
+		autoResetExpanded: false,
 		state: {
 			columnOrder: resolvedColumnOrder,
 			columnPinning: resolvedColumnPinning,
