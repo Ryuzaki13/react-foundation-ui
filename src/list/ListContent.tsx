@@ -16,7 +16,8 @@ export interface ListContentProps<T> {
 export function ListContent<T>({ items, getKey, render, separated, className }: ListContentProps<T>) {
 	return (
 		<Scrollable className={className}>
-			<ul>
+			{/* NOTE: пустой className необходим, чтобы применить normalize для удаления дефолтных стилей списка */}
+			<ul className="">
 				{items.map((item, index) => (
 					<li key={getKey(item, index)} className={cn(separated && "borderBottom")}>
 						{render(item)}
