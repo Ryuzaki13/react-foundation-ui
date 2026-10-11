@@ -1,5 +1,9 @@
+export * from "./Alert";
+export * from "./AlertWithActions";
 export * from "./AnimatedLogo";
 export * from "./AnimatedLogoSegment";
+export * from "./StateIcon";
+
 export { CopyTextWrapper } from "./CopyTextWrapper";
 export { IconWrapper } from "./IconWrapper";
 export { LazyDynamicComponent } from "./LazyDynamicComponent";
@@ -12,5 +16,4 @@ export { OneStepScroller } from "./OneStepScroller";
 export { Scrollable } from "./Scrollable";
 export type { ScrollableProps } from "./Scrollable";
 export { SkeletonLine } from "./SkeletonLine";
-export * from "./StateIcon";
 export { StateWrapper } from "./StateWrapper";
