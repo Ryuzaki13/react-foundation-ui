@@ -1,8 +1,8 @@
 import { useMemo } from "react";
 
 import {
-	buildAnalyticalTableModel,
-	projectAnalyticalTableExpansion,
+	compileAnalyticalTableDefinition,
+	createAnalyticalTableRuntime,
 	type AnalyticalModelRow
 } from "@ryuzaki13/react-foundation-lib/analytical-table";
 import { compileFormattersPipelineRuntime, type FormattersPipelineRuntimeField } from "@ryuzaki13/react-foundation-lib/formatters";
@@ -19,21 +19,26 @@ export function useAnalyticalTableModel<T>(props: AnalyticalTableProps<T>): Anal
 	const { grouping, sorting, filters, expandedRowIds } = state;
 	const rows = props.snapshot.rows;
 	const { aggregate, isAggregateRow, grandTotalsScope } = props.aggregation ?? {};
-	const baseModel = useMemo(
+	// Определение компилируется независимо от снимка и состояния представления.
+	// Runtime сохраняет расчёты строк, а команды таблицы запрашивают нужную проекцию.
+	const definition = useMemo(
 		() =>
-			buildAnalyticalTableModel({
-				snapshot: { rows },
+			compileAnalyticalTableDefinition({
 				columns: props.columns,
-				state: { grouping, sorting, filters },
+				dataFields: props.dataFields,
 				aggregate,
 				isAggregateRow,
 				grandTotalsScope,
 				grandTotals: props.showGrandTotals ?? true
 			}),
-		[rows, props.columns, aggregate, isAggregateRow, grandTotalsScope, props.showGrandTotals, grouping, sorting, filters]
+		[props.columns, props.dataFields, aggregate, isAggregateRow, grandTotalsScope, props.showGrandTotals]
 	);
-	const maxRowLevel = useMemo(() => baseModel.flatRows.reduce((max, row) => Math.max(max, row.level), 0), [baseModel.flatRows]);
-	const model = useMemo(() => projectAnalyticalTableExpansion(baseModel, expandedRowIds ?? []), [baseModel, expandedRowIds]);
+	const dataRuntime = useMemo(() => createAnalyticalTableRuntime({ definition, snapshot: { rows } }), [definition, rows]);
+	const model = useMemo(
+		() => dataRuntime.getModel({ grouping, sorting, filters, expandedRowIds }),
+		[dataRuntime, grouping, sorting, filters, expandedRowIds]
+	);
+	const maxRowLevel = useMemo(() => model.flatRows.reduce((max, row) => Math.max(max, row.level), 0), [model.flatRows]);
 	const columns = props.columns;
 	const formattingFields = useMemo(
 		() =>

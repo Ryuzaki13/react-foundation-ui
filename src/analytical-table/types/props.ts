@@ -1,6 +1,7 @@
 import { type CSSProperties, type ReactNode } from "react";
 
 import {
+	type AnalyticalColumn,
 	type AnalyticalExportProjection,
 	type AnalyticalModelRow,
 	type AnalyticalSnapshot,
@@ -18,6 +19,8 @@ import { type AnalyticalTableState } from "./state";
 export type AnalyticalTableProps<T = unknown> = Readonly<{
 	snapshot: AnalyticalSnapshot<T>;
 	columns: readonly AnalyticalTableColumn<T>[];
+	/** Служебные поля участвуют в вычислениях, но не становятся колонками интерфейса. */
+	dataFields?: readonly AnalyticalColumn<T>[];
 	columnGroups?: readonly AnalyticalTableColumnGroup[];
 	state?: AnalyticalTableState;
 	defaultState?: AnalyticalTableState;

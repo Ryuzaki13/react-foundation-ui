@@ -22,10 +22,9 @@ export function useAnalyticalSelection<T>(props: AnalyticalTableProps<T>, runtim
 	);
 	const selectableSet = useMemo(() => new Set(selectableIds), [selectableIds]);
 	const columnIds = useMemo(() => runtime.visibleColumns.map((column) => column.id), [runtime.visibleColumns]);
-	const rowById = useMemo(() => new Map(runtime.model.flatRows.map((row) => [row.id, row])), [runtime.model.flatRows]);
 	const { rowSelection: rows, activateRowSelection } = useTableRowSelection({
 		availableRowIds: selectableIds,
-		rowById,
+		rowById: runtime.model.rowById,
 		selectionMode: rowMode,
 		selectedRowIds: props.selectedRowIds,
 		onRowSelectionChange: rowMode === "none" ? undefined : props.onRowSelectionChange
