@@ -9,8 +9,6 @@ import { RadioGroup } from "../../radio-group";
 import { UiBaseProps } from "../../types";
 import uiStyles from "../../ui.module.scss";
 import {
-	areRangeDateValuesEqual,
-	areSingleDateValuesEqual,
 	DATE_INPUT_SELECTION_MODES,
 	isDatePickerLevelAvailable,
 	normalizeDateInputSelectionModes,
@@ -133,13 +131,10 @@ function DateInput({
 			: preferredCalendarType;
 
 	const initialDateRef = useRef(props.value);
-	const dateInputValueOptions = {
-		selectionMode,
-		weekEndDay
-	};
-
-	const { inputValue, setInputValue, selectedDate, setSelectedDate, handleSelect, formatDate, parseDate } = useDateInput({
+	const { inputValue, setInputValue, selectedDate, setSelectedDate, handleSelect, handleInputBlur, formatDate } = useDateInput({
 		...props,
+		minDate,
+		maxDate,
 		datePreset: activeDatePreset,
 		datePickerLevel: minDatePickerLevel,
 		selectionMode,
@@ -163,31 +158,6 @@ function DateInput({
 	useEffect(() => {
 		initialDateRef.current = props.value;
 	}, [props.value]);
-
-	const handleInputBlur = () => {
-		if (inputValue) {
-			const parsedDate = parseDate(inputValue);
-			if (parsedDate) {
-				setInputValue(formatDate(parsedDate));
-
-				if (props.selectsRange && isDateRangeTuple(parsedDate)) {
-					const selectedRange = isDateRangeTuple(selectedDate) ? selectedDate : null;
-
-					if (areRangeDateValuesEqual(parsedDate, selectedRange, dateInputValueOptions)) return;
-
-					setSelectedDate(parsedDate);
-					props.onChange(parsedDate);
-				} else if (!props.selectsRange && parsedDate instanceof Date) {
-					const selectedSingleDate = selectedDate instanceof Date ? selectedDate : null;
-
-					if (areSingleDateValuesEqual(parsedDate, selectedSingleDate, dateInputValueOptions)) return;
-
-					setSelectedDate(parsedDate);
-					props.onChange(parsedDate);
-				}
-			}
-		}
-	};
 
 	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === "Enter") {

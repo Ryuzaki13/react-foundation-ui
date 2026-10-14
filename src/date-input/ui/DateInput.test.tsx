@@ -5,7 +5,7 @@ import { act, type ReactNode, useState } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { RangeDateInput, SingleDateInput } from "./DateInput";
+import { RangeDateInput, SingleDateInput, type DateSingleInputProps } from "./DateInput";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -27,6 +27,18 @@ function setNativeInputValue(input: HTMLInputElement, value: string) {
 	valueSetter?.call(input, value);
 	input.dispatchEvent(new Event("input", { bubbles: true }));
 }
+
+async function blurText(value: string): Promise<HTMLInputElement> {
+	const input = container?.querySelector<HTMLInputElement>("input[type='text']");
+	if (!input) throw new Error("DateInput не создал текстовое поле.");
+	await act(async () => input.focus());
+	await act(async () => setNativeInputValue(input, value));
+	await act(async () => input.blur());
+	return input;
+}
+
+type BoundedTextCase = Pick<DateSingleInputProps, "value" | "minDate" | "maxDate" | "selectionMode"> &
+	Readonly<{ name: string; text: string }>;
 
 function ControlledSingleDateInput({ datePreset, onCommit }: { datePreset?: string; onCommit: (value: Date | null) => void }) {
 	const [value, setValue] = useState<Date | null>(new Date(2026, 2, 3, 12, 30, 0));
@@ -68,6 +80,92 @@ afterEach(async () => {
 });
 
 describe("SingleDateInput", () => {
+	it.each([
+		{ name: "день перед min", value: new Date(2026, 2, 4), minDate: new Date(2026, 2, 3), text: "02.03.2026" },
+		{ name: "день после max", value: new Date(2026, 2, 4), maxDate: new Date(2026, 2, 5), text: "06.03.2026" },
+		{ name: "неделя перед min", value: new Date(2026, 7, 3), minDate: new Date(2026, 7, 3), selectionMode: "week", text: "01.08.2026" },
+		{
+			name: "неделя после max",
+			value: new Date(2026, 7, 3),
+			maxDate: new Date(2026, 7, 15),
+			selectionMode: "week",
+			text: "17.08.2026"
+		},
+		{
+			name: "понедельник вне min",
+			value: new Date(2026, 7, 10),
+			minDate: new Date(2026, 7, 4),
+			selectionMode: "week",
+			text: "06.08.2026"
+		},
+		{ name: "суббота вне max", value: new Date(2026, 7, 3), maxDate: new Date(2026, 7, 14), selectionMode: "week", text: "10.08.2026" },
+		{ name: "месяц после max", value: new Date(2026, 3, 1), maxDate: new Date(2026, 4, 31), selectionMode: "month", text: "06.2026" },
+		{
+			name: "последний день года вне max",
+			value: new Date(2026, 0, 1),
+			maxDate: new Date(2027, 11, 30),
+			selectionMode: "year",
+			text: "2027"
+		}
+	] satisfies readonly BoundedTextCase[])("после blur восстанавливает controlled value: $name", async (testCase) => {
+		const onChange = vi.fn();
+		await renderNode(
+			<SingleDateInput
+				value={testCase.value}
+				minDate={testCase.minDate}
+				maxDate={testCase.maxDate}
+				selectionMode={testCase.selectionMode}
+				label="Дата"
+				onChange={onChange}
+				weekEndDay="saturday"
+			/>
+		);
+		const before = container?.querySelector<HTMLInputElement>("input")?.value;
+		const input = await blurText(testCase.text);
+
+		expect(onChange).not.toHaveBeenCalled();
+		expect(input.value).toBe(before);
+	});
+
+	it.each([3, 5])("принимает включительную границу дня %i и сохраняет ровно один callback", async (day) => {
+		const onChange = vi.fn();
+		await renderNode(
+			<SingleDateInput
+				value={new Date(2026, 2, 4)}
+				minDate={new Date(2026, 2, 3)}
+				maxDate={new Date(2026, 2, 5)}
+				onChange={onChange}
+			/>
+		);
+		await blurText(`0${day}.03.2026`);
+		expect(onChange).toHaveBeenCalledExactlyOnceWith(new Date(2026, 2, day));
+	});
+
+	it("принимает полную неделю до включённой субботы", async () => {
+		const onChange = vi.fn();
+		await renderNode(
+			<SingleDateInput
+				value={new Date(2026, 7, 3)}
+				minDate={new Date(2026, 7, 3)}
+				maxDate={new Date(2026, 7, 15)}
+				selectionMode="week"
+				weekEndDay="saturday"
+				onChange={onChange}
+			/>
+		);
+		const input = await blurText("15.08.2026");
+		expect(onChange).toHaveBeenCalledExactlyOnceWith(new Date(2026, 7, 10));
+		expect(input.value).toBe("10.08.2026 - 15.08.2026");
+	});
+
+	it("не меняет нормализацию воскресенья и текст без ограничений", async () => {
+		const onChange = vi.fn();
+		await renderNode(<SingleDateInput value={new Date(2026, 7, 3)} selectionMode="week" weekEndDay="saturday" onChange={onChange} />);
+		const input = await blurText("02.08.2026");
+		expect(onChange).toHaveBeenCalledExactlyOnceWith(new Date(2026, 6, 27));
+		expect(input.value).toBe("27.07.2026 - 01.08.2026");
+	});
+
 	it("передаёт popup-семантику кнопке и связывает её с календарным диалогом", async () => {
 		await renderNode(<SingleDateInput label="Дата" value={new Date(2026, 2, 3)} onChange={() => {}} />);
 
@@ -157,6 +255,57 @@ describe("SingleDateInput", () => {
 });
 
 describe("RangeDateInput", () => {
+	it.each(["02.03.2026 - 05.03.2026", "04.03.2026 - 11.03.2026"])(
+		"проверяет каждый текстовый конец и восстанавливает весь диапазон %s",
+		async (text) => {
+			const onChange = vi.fn();
+			await renderNode(
+				<RangeDateInput
+					value={[new Date(2026, 2, 4), new Date(2026, 2, 5)]}
+					minDate={new Date(2026, 2, 3)}
+					maxDate={new Date(2026, 2, 10)}
+					onChange={onChange}
+				/>
+			);
+			const input = await blurText(text);
+			expect(onChange).not.toHaveBeenCalled();
+			expect(input.value).toBe("04.03.2026 - 05.03.2026");
+		}
+	);
+
+	it("проверяет полную последнюю неделю диапазона, а не только её понедельник", async () => {
+		const onChange = vi.fn();
+		await renderNode(
+			<RangeDateInput
+				value={[new Date(2026, 7, 3), new Date(2026, 7, 8)]}
+				maxDate={new Date(2026, 7, 21)}
+				selectionMode="week"
+				weekEndDay="saturday"
+				onChange={onChange}
+			/>
+		);
+		const input = await blurText("10.08.2026 - 17.08.2026");
+		expect(onChange).not.toHaveBeenCalled();
+		expect(input.value).toBe("03.08.2026 - 08.08.2026");
+	});
+
+	it("принимает включённую конечную дату и сохраняет незавершённый диапазон", async () => {
+		const onChange = vi.fn();
+		await renderNode(
+			<RangeDateInput
+				value={[new Date(2026, 2, 4), new Date(2026, 2, 5)]}
+				minDate={new Date(2026, 2, 3)}
+				maxDate={new Date(2026, 2, 10)}
+				onChange={onChange}
+			/>
+		);
+		await blurText("04.03.2026 - 10.03.2026");
+		expect(onChange).toHaveBeenLastCalledWith([new Date(2026, 2, 4), new Date(2026, 2, 10, 23, 59, 59)]);
+		await blurText("04.03.2026");
+		expect(onChange).toHaveBeenLastCalledWith([new Date(2026, 2, 4), null]);
+		expect(onChange).toHaveBeenCalledTimes(2);
+	});
+
 	it("даёт календарному диалогу имя сценария выбора диапазона", async () => {
 		await renderNode(<RangeDateInput label="Период" value={[null, null]} onChange={() => {}} />);
 

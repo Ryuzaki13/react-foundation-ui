@@ -1,9 +1,11 @@
 import { useMemo, useState } from "react";
 
-import { isDateRangeTuple, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
+import { isDateRangeTuple, type CalendarPeriodDateBounds, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 
 import {
 	DateInputValueOptions,
+	areRangeDateValuesEqual,
+	areSingleDateValuesEqual,
 	formatDateInputValue,
 	normalizeRangeDateValue,
 	normalizeRangeEndDateValue,
@@ -12,6 +14,7 @@ import {
 	parseSingleDateValue,
 	type DateInputOptions
 } from "../lib";
+import { isDateInputValueWithinDateBounds } from "../lib/isDateInputValueWithinDateBounds";
 
 function resolveReferenceDate(value: Date | NullableDateRange | null): Date | undefined {
 	if (isDateRangeTuple(value)) {
@@ -24,7 +27,7 @@ function resolveReferenceDate(value: Date | NullableDateRange | null): Date | un
 /**
  * Хук управляет текстовым представлением и выбранным значением поля даты.
  */
-export const useDateInput = (options: DateInputOptions) => {
+export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBounds) => {
 	const externalSelectedDate = useMemo(() => {
 		const selectionOptions: DateInputValueOptions = {
 			selectionMode: options.selectionMode,
@@ -121,6 +124,37 @@ export const useDateInput = (options: DateInputOptions) => {
 	};
 
 	/**
+	 * Проверяет уже нормализованный текст до смены draft и публикации. При отказе
+	 * восстанавливает внешний controlled-снимок целиком: отклонённый текст не
+	 * должен оставаться видимым выбранным периодом без соответствующего onChange.
+	 */
+	const handleInputBlur = () => {
+		if (!inputValue) return;
+		const parsedDate = parseDate(inputValue);
+		if (!parsedDate) return;
+		if (!isDateInputValueWithinDateBounds(parsedDate, formatOptions, options)) {
+			setDraftState({
+				sourceSignature: externalStateSignature,
+				selectedDate: externalSelectedDate,
+				inputValue: externalInputValue
+			});
+			return;
+		}
+		setInputValue(formatValue(parsedDate));
+		if (options.selectsRange && isDateRangeTuple(parsedDate)) {
+			const selectedRange = isDateRangeTuple(selectedDate) ? selectedDate : null;
+			if (areRangeDateValuesEqual(parsedDate, selectedRange, formatOptions)) return;
+			setSelectedDate(parsedDate);
+			options.onChange(parsedDate);
+		} else if (!options.selectsRange && parsedDate instanceof Date) {
+			const selectedSingleDate = selectedDate instanceof Date ? selectedDate : null;
+			if (areSingleDateValuesEqual(parsedDate, selectedSingleDate, formatOptions)) return;
+			setSelectedDate(parsedDate);
+			options.onChange(parsedDate);
+		}
+	};
+
+	/**
 	 * Обрабатывает выбор даты из календаря.
 	 */
 	const handleSelect = (date: Date | NullableDateRange) => {
@@ -181,6 +215,7 @@ export const useDateInput = (options: DateInputOptions) => {
 		selectedDate,
 		setSelectedDate,
 		handleSelect,
+		handleInputBlur,
 		formatDate: formatValue,
 		parseDate
 	};
