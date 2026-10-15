@@ -59,14 +59,17 @@ input:autofill {
 }
 
 #dialog-root {
-	&:not(:empty) {
-		position: fixed;
-		z-index: var(--z-dialog);
-		left: 0;
-		top: 0;
-		right: 0;
-		bottom: 0;
-	}
+	/*
+	 * Корень сохраняет общий stacking context диалогов, но сам не перекрывает страницу.
+	 * Геометрией viewport владеет fixed overlay Dialog: нулевые размеры корня не зависят
+	 * от пересчёта :empty после закрытия в Safari и не мешают кликам по странице.
+	 */
+	position: fixed;
+	z-index: var(--z-dialog);
+	left: 0;
+	top: 0;
+	width: 0;
+	height: 0;
 }
 
 h1,
