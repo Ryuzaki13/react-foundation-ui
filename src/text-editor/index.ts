@@ -12,6 +12,7 @@ export type {
 	TextEditorToolbarComponents
 } from "./editorModel";
 export { isLexicalTextRaw } from "./editorModel";
+export { createEmptyTextEditorLexicalRaw } from "./lib/serialization/createEmptyTextEditorLexicalRaw";
 export type { LinkType, TextEditorLinkState } from "./linkTypes";
 export { LinkTypes, TagTypes } from "./toolbar";
 export type {

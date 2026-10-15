@@ -80,6 +80,23 @@ Optional поля SDK со значением `undefined` исключаются
 Сериализация не изменяет состояние редактора и не проверяет предметные правила
 допустимого документа: их по-прежнему задаёт consumer.
 
+### Пустой документ без редактора
+
+`createEmptyTextEditorLexicalRaw()` доступна из того же `/text-editor` subpath.
+Фабрика создаёт настоящий Lexical-документ с одним пустым абзацем и возвращает
+`TextEditorLexicalRaw` через общую сериализацию пакета. Каждый вызов возвращает
+независимый JSON-снимок, включая все вложенные объекты и массивы.
+
+```ts
+import { createEmptyTextEditorLexicalRaw } from "@ryuzaki13/react-foundation-ui/text-editor";
+
+const initialData = { html: "", raw: createEmptyTextEditorLexicalRaw() };
+```
+
+DOM, HTML parser и монтирование React-компонента не требуются: фабрика работает
+также в Node и SSR. Она не добавляет текст и не меняет правила допустимого
+документа у consumer: пустой raw сам по себе не означает, что его можно сохранить.
+
 ### Компактное представление
 
 `presentation="compact"` предназначен для встроенного короткого ввода:

@@ -16,6 +16,13 @@ import type { UiControlProps } from "@ryuzaki13/react-foundation-ui/types";
 
 Стили подключаются отдельно и один раз на уровне host-приложения.
 
+## Пустой Lexical-документ
+
+`createEmptyTextEditorLexicalRaw()` из `/text-editor` возвращает независимый
+`TextEditorLexicalRaw` с одним пустым абзацем. Фабрика использует Lexical и общую
+JSON-сериализацию редактора, работает в Node/SSR без DOM и не требует монтирования
+React-компонента. Допустимость сохранения пустого документа определяет consumer.
+
 ## Изменения List в 3.24.0
 
 По явному решению владельца в minor 3.24.0 удалены опубликованные типы
