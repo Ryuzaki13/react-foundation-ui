@@ -3,6 +3,14 @@ import { type VirtualItem } from "@tanstack/react-virtual";
 export type ListVirtualizerOptions<T> = Readonly<{
 	items: readonly T[];
 	getKey: (item: T, index: number) => string;
+	/**
+	 * Внутренние уникальные identities в порядке чтения; каждый ряд содержит
+	 * хотя бы один ключ. Колонки сохраняют по ним якорь при пересборке рядов,
+	 * а getKey по-прежнему определяет только identity измеряемой геометрии.
+	 */
+	getAnchorKeys?: (item: T, index: number) => readonly string[];
+	/** Проецирует видимые измеряемые ряды в ключи данных; служебный заголовок возвращает []. */
+	getVisibleKeys?: (item: T, index: number) => readonly string[];
 	hasNextPage?: boolean;
 	estimateSize?: number;
 	overscan?: number;

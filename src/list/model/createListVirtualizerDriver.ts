@@ -8,6 +8,7 @@ import {
 } from "@tanstack/react-virtual";
 
 import { captureListScrollAnchor } from "../lib/captureListScrollAnchor";
+import { indexListRowAnchorKeys } from "../lib/indexListRowAnchorKeys";
 import { type ListScrollAnchor } from "../lib/listScrollAnchorTypes";
 import { resolveListScrollAnchor } from "../lib/resolveListScrollAnchor";
 import { selectListVisibleKeys } from "../lib/selectListVisibleKeys";
@@ -26,6 +27,12 @@ const loadingRowKey = -1;
 export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOptions<T>): ListVirtualizerDriver<T> {
 	let committedOptions = initialOptions;
 	let committedKeys = initialOptions.items.map(initialOptions.getKey);
+	let committedAnchorKeyIndex = initialOptions.getAnchorKeys
+		? indexListRowAnchorKeys(initialOptions.items, initialOptions.getAnchorKeys)
+		: null;
+	let committedVisibleEntries = initialOptions.getVisibleKeys
+		? new Map(initialOptions.items.map((item, index) => [initialOptions.getKey(item, index), { item, index }]))
+		: null;
 	let scrollElement: HTMLDivElement | null = null;
 	let mounted = false;
 	let mountRevision = 0;
@@ -76,7 +83,16 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 			// Освобождение прежнего consumer допускает reentrant commit; используем уже текущий core.
 			virtualItems = instance.getVirtualItems();
 		}
-		const next = selectListVisibleKeys(virtualItems, instance.scrollOffset ?? 0, instance.scrollRect?.height ?? 0);
+		const rowKeys = selectListVisibleKeys(virtualItems, instance.scrollOffset ?? 0, instance.scrollRect?.height ?? 0);
+		const getVisibleKeys = committedOptions.getVisibleKeys;
+		const next = getVisibleKeys
+			? Object.freeze(
+					rowKeys.flatMap((key) => {
+						const entry = committedVisibleEntries?.get(key);
+						return entry === undefined ? [] : getVisibleKeys(entry.item, entry.index);
+					})
+				)
+			: rowKeys;
 		if (callback === visibleCallback && visibleKeys?.length === next.length && visibleKeys.every((key, index) => key === next[index]))
 			return;
 		visibleCallback = callback;
@@ -144,9 +160,10 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 	 */
 	function restorePendingAnchor(): void {
 		if (scrollElement === null || pendingAnchor === null) return;
-		const resolved = resolveListScrollAnchor(pendingAnchor, committedKeys);
+		const resolved = resolveListScrollAnchor(pendingAnchor, committedAnchorKeyIndex?.keys ?? committedKeys);
+		const rowIndex = resolved === null ? undefined : (committedAnchorKeyIndex?.rowIndexes[resolved.index] ?? resolved.index);
 		instance.getTotalSize();
-		const measurement = resolved === null ? undefined : instance.measurementsCache[resolved.index];
+		const measurement = rowIndex === undefined ? undefined : instance.measurementsCache[rowIndex];
 		const targetOffset =
 			measurement === undefined || resolved === null ? 0 : measurement.start + Math.min(resolved.offset, measurement.size);
 		const desiredOffset = Math.max(0, Math.min(targetOffset, instance.getTotalSize() - scrollElement.clientHeight));
@@ -197,9 +214,29 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 					options.items === committedOptions.items && options.getKey === committedOptions.getKey
 						? committedKeys
 						: options.items.map(options.getKey);
-				const datasetChanged =
+				const rowKeysChanged =
 					candidateKeys !== committedKeys &&
 					(candidateKeys.length !== committedKeys.length || candidateKeys.some((key, index) => key !== committedKeys[index]));
+				const candidateAnchorKeyIndex =
+					options.items === committedOptions.items && options.getAnchorKeys === committedOptions.getAnchorKeys
+						? committedAnchorKeyIndex
+						: options.getAnchorKeys
+							? indexListRowAnchorKeys(options.items, options.getAnchorKeys)
+							: null;
+				const previousAnchorKeyIndex = committedAnchorKeyIndex;
+				// Прежний geometric key не означает прежний состав ряда: смена
+				// колонок или удаление клетки могут оставить первый ключ на месте.
+				const anchorKeysChanged =
+					candidateAnchorKeyIndex !== previousAnchorKeyIndex &&
+					(candidateAnchorKeyIndex === null ||
+						previousAnchorKeyIndex === null ||
+						candidateAnchorKeyIndex.keys.length !== previousAnchorKeyIndex.keys.length ||
+						candidateAnchorKeyIndex.keys.some(
+							(key, index) =>
+								key !== previousAnchorKeyIndex.keys[index] ||
+								candidateAnchorKeyIndex.rowIndexes[index] !== previousAnchorKeyIndex.rowIndexes[index]
+						));
+				const datasetChanged = rowKeysChanged || anchorKeysChanged;
 				if (!Object.is(options.resetKey, committedOptions.resetKey)) {
 					pendingAnchor = { type: "start" };
 				} else if (!(options.preserveScrollAnchor ?? true)) {
@@ -213,24 +250,45 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 						typeof visibleMeasurement?.key === "string"
 							? visibleMeasurement
 							: instance.measurementsCache[committedKeys.length - 1];
-					pendingAnchor = captureListScrollAnchor(committedKeys, anchorMeasurement, offset);
+					if (committedAnchorKeyIndex === null) {
+						pendingAnchor = captureListScrollAnchor(committedKeys, anchorMeasurement, offset);
+					} else {
+						const logicalIndex =
+							anchorMeasurement === undefined ? undefined : committedAnchorKeyIndex.firstKeyIndexes[anchorMeasurement.index];
+						const logicalKey = logicalIndex === undefined ? undefined : committedAnchorKeyIndex.keys[logicalIndex];
+						pendingAnchor = captureListScrollAnchor(
+							committedAnchorKeyIndex.keys,
+							anchorMeasurement === undefined || logicalIndex === undefined || logicalKey === undefined
+								? undefined
+								: { key: logicalKey, index: logicalIndex, start: anchorMeasurement.start },
+							offset
+						);
+					}
 				}
 
 				// Новая функция key extractor нужна только при изменении порядка:
 				// TanStack пересчитывает позиции, сохраняя измеренные высоты по ключам.
-				const keys = datasetChanged ? candidateKeys : committedKeys;
+				const keys = rowKeysChanged ? candidateKeys : committedKeys;
 				const nextOptions = createCoreOptions(options, keys);
-				if (!datasetChanged && (options.estimateSize ?? 120) === (committedOptions.estimateSize ?? 120)) {
+				if (!rowKeysChanged && (options.estimateSize ?? 120) === (committedOptions.estimateSize ?? 120)) {
 					nextOptions.getItemKey = instance.options.getItemKey;
 				}
+				if (options.getVisibleKeys === undefined) {
+					committedVisibleEntries = null;
+				} else if (rowKeysChanged || options.items !== committedOptions.items || committedVisibleEntries === null) {
+					// Проекция читает текущие данные, даже если прежние ключи рядов
+					// сохранились. Callback consumer при этом не заменяется wrapper.
+					committedVisibleEntries = new Map(options.items.map((item, index) => [options.getKey(item, index), { item, index }]));
+				}
 				committedKeys = keys;
+				committedAnchorKeyIndex = candidateAnchorKeyIndex;
 				committedOptions = options;
 				instance.setOptions(nextOptions);
 				instance._willUpdate();
 				instance.getTotalSize();
 				// Обычный scroll commit подключает только новые ref-узлы. Уже живые
-				// строки измеряет ResizeObserver core; смена порядка единственный раз
-				// обновляет их data-index, сохраняя keyed cache реальных размеров.
+				// строки измеряет ResizeObserver core; смена порядка или состава рядов
+				// обновляет их измерения, сохраняя keyed cache реальных размеров.
 				const elementsToMeasure = datasetChanged ? measuredElements : pendingMeasurements;
 				for (const element of elementsToMeasure) {
 					if (element.isConnected && scrollElement?.contains(element)) instance.measureElement(element);

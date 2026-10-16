@@ -61,6 +61,40 @@ function createDriverHost(items: readonly string[], options: Partial<ListVirtual
 	return { driver, viewport, commit, cleanup, getKey };
 }
 
+type LogicalDriverTestRow = Readonly<{
+	key: string;
+	anchorKeys: readonly string[];
+	visibleKeys?: readonly string[];
+}>;
+
+/** Проекция изменяется вместе с данными; внешний visible callback сохраняет identity. */
+function createLogicalDriverHost(rows: readonly LogicalDriverTestRow[], options: Partial<ListVirtualizerOptions<string>> = {}) {
+	let entries = new Map(rows.map((row) => [row.key, row]));
+	const getAnchorKeys = (key: string) => entries.get(key)?.anchorKeys ?? [];
+	const getVisibleKeys = (key: string) => {
+		const row = entries.get(key);
+		return row?.visibleKeys ?? row?.anchorKeys ?? [];
+	};
+	const host = createDriverHost(
+		rows.map((row) => row.key),
+		{ getAnchorKeys, getVisibleKeys, ...options }
+	);
+	return {
+		...host,
+		commit(nextRows: readonly LogicalDriverTestRow[], nextOptions: Partial<ListVirtualizerOptions<string>> = {}) {
+			entries = new Map(nextRows.map((row) => [row.key, row]));
+			host.commit(
+				nextRows.map((row) => row.key),
+				nextOptions
+			);
+		}
+	};
+}
+
+function createColumnRows(keys: readonly string[], columns = 2): readonly LogicalDriverTestRow[] {
+	return keys.flatMap((key, index) => (index % columns === 0 ? [{ key, anchorKeys: keys.slice(index, index + columns) }] : []));
+}
+
 describe("createListVirtualizerDriver", () => {
 	const items = Array.from({ length: 30 }, (_, index) => `item-${index}`);
 
@@ -106,6 +140,70 @@ describe("createListVirtualizerDriver", () => {
 		commit(["new", ...items]);
 		expect(viewport.scrollTop).toBe(1357);
 		expect(driver.getSnapshot().virtualItems.some((row) => row.key === "item-10" && row.start === 1320)).toBe(true);
+	});
+
+	it("сохраняет логическую запись при prepend одного элемента и полной пересборке двух колонок", () => {
+		const source = Array.from({ length: 60 }, (_, index) => `item-${index}`);
+		const { viewport, commit, driver } = createLogicalDriverHost(createColumnRows(source));
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		commit(createColumnRows(["new", ...source]));
+		expect(viewport.scrollTop).toBe(1237);
+		expect(driver.getSnapshot().virtualItems.some((row) => row.key === "item-19" && row.start === 1200)).toBe(true);
+	});
+
+	it("сопоставляет логический anchor новому индексу ряда при смене числа колонок", () => {
+		const source = Array.from({ length: 90 }, (_, index) => `item-${index}`);
+		const { viewport, commit } = createLogicalDriverHost(createColumnRows(source));
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		commit(createColumnRows(source, 3));
+		expect(viewport.scrollTop).toBe(757);
+	});
+
+	it("обнаруживает перестановку logical identities при прежних геометрических ключах", () => {
+		const rows = Array.from({ length: 30 }, (_, index) => ({
+			key: `row-${index}`,
+			anchorKeys: [`item-${index * 2}`, `item-${index * 2 + 1}`]
+		}));
+		const { viewport, commit } = createLogicalDriverHost(rows);
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		commit(rows.map((row, index) => ({ ...row, anchorKeys: rows[index === 10 ? 12 : index === 12 ? 10 : index]?.anchorKeys ?? [] })));
+		expect(viewport.scrollTop).toBe(1477);
+	});
+
+	it("обнаруживает новое распределение прежнего логического порядка при прежних ключах рядов", () => {
+		const rows = Array.from({ length: 30 }, (_, index) => ({
+			key: `row-${index}`,
+			anchorKeys: [`item-${index * 2}`, `item-${index * 2 + 1}`]
+		}));
+		const { viewport, commit } = createLogicalDriverHost(rows);
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		commit(
+			rows.map((row, index) => ({
+				...row,
+				anchorKeys:
+					index === 9
+						? ["item-18"]
+						: index === 10
+							? ["item-19"]
+							: index === 11
+								? ["item-20", "item-21", "item-22", "item-23"]
+								: row.anchorKeys
+			}))
+		);
+		expect(viewport.scrollTop).toBe(1357);
+	});
+
+	it("при удалении logical anchor выбирает ближайшего участника прежнего порядка внутри нового ряда", () => {
+		const source = Array.from({ length: 60 }, (_, index) => `item-${index}`);
+		const { viewport, commit } = createLogicalDriverHost(createColumnRows(source));
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		commit(createColumnRows(source.filter((key) => key !== "item-19" && key !== "item-20")));
+		expect(viewport.scrollTop).toBe(1117);
 	});
 
 	it("поддерживает same-count внутреннюю перестановку, а не только изменение краёв", () => {
@@ -255,6 +353,48 @@ describe("createListVirtualizerDriver", () => {
 		expect(driver.getSnapshot()).toBe(snapshot);
 		expect(listener).not.toHaveBeenCalled();
 		expect(readGeometry).not.toHaveBeenCalled();
+	});
+
+	it("проецирует видимые ряды в исходные keys, исключая group и loader без замены consumer", () => {
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const rows = [
+			{ key: "group:first", anchorKeys: ["group:first"], visibleKeys: [] },
+			{ key: "row:first", anchorKeys: ["item-1", "item-2"] },
+			{ key: "row:second", anchorKeys: ["item-3", "item-4"] }
+		];
+		const { viewport, commit, cleanup } = createLogicalDriverHost(rows, { onVisibleKeysChange, hasNextPage: true });
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-1", "item-2"]);
+		expect(Object.isFrozen(onVisibleKeysChange.mock.lastCall?.[0])).toBe(true);
+		onVisibleKeysChange.mockClear();
+		commit(rows.map((row) => ({ ...row })));
+		expect(onVisibleKeysChange).not.toHaveBeenCalled();
+		commit(rows.map((row) => (row.key === "row:first" ? { ...row, anchorKeys: ["item-1", "item-9"] } : row)));
+		expect(onVisibleKeysChange).toHaveBeenCalledExactlyOnceWith(["item-1", "item-9"]);
+		viewport.scrollTop = 360;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
+		viewport.scrollTop = 120;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-1", "item-9", "item-3", "item-4"]);
+		onVisibleKeysChange.mockClear();
+		cleanup();
+		expect(onVisibleKeysChange).toHaveBeenCalledExactlyOnceWith([]);
+	});
+
+	it("публикует пустую проекцию viewport с одним заголовком и не раскрывает его anchor key", () => {
+		environment.setViewportHeight(120);
+		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const { viewport } = createLogicalDriverHost(
+			[
+				{ key: "heading", anchorKeys: ["group:first"], visibleKeys: [] },
+				{ key: "row", anchorKeys: ["item-1", "item-2"] }
+			],
+			{ onVisibleKeysChange }
+		);
+		expect(onVisibleKeysChange).toHaveBeenCalledExactlyOnceWith([]);
+		viewport.scrollTop = 120;
+		viewport.dispatchEvent(new Event("scroll"));
+		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-1", "item-2"]);
 	});
 
 	it("дедуплицирует одинаковые keys при scroll/commit и передаёт immutable массив", () => {

@@ -1,8 +1,12 @@
-import type { ReactNode } from "react";
+import { useMemo, type ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { Scrollable } from "../misc";
+
+import { buildListRows } from "./lib/buildListRows";
+import { type ListColumns, type ListGrouping } from "./listLayoutTypes";
+import { ListRowContent } from "./ListRowContent";
 
 export interface ListContentProps<T> {
 	readonly items: readonly T[];
@@ -10,17 +14,26 @@ export interface ListContentProps<T> {
 	readonly render: (item: T) => ReactNode;
 	readonly separated?: boolean;
 	readonly className?: string;
+	/** Встроенная сборка измеряемых строк; группировка для колонок не обязательна. */
+	readonly columns?: ListColumns;
+	readonly grouping?: ListGrouping<T>;
 }
 
 /** Невиртуальный вариант сохраняет прежний API для небольших наборов. */
-export function ListContent<T>({ items, getKey, render, separated, className }: ListContentProps<T>) {
+export function ListContent<T>({ items, getKey, render, separated, className, columns, grouping }: ListContentProps<T>) {
+	const { rows, itemCount } = useMemo(() => buildListRows({ items, getKey, columns, grouping }), [items, getKey, columns, grouping]);
 	return (
 		<Scrollable className={className}>
 			{/* NOTE: пустой className необходим, чтобы применить normalize для удаления дефолтных стилей списка */}
 			<ul className="">
-				{items.map((item, index) => (
-					<li key={getKey(item, index)} className={cn(separated && "borderBottom")}>
-						{render(item)}
+				{rows.map((row) => (
+					<li
+						key={row.key}
+						role={row.kind === "group" || columns !== undefined ? "presentation" : undefined}
+						aria-posinset={grouping && columns === undefined && row.kind === "items" ? row.entries[0]?.position : undefined}
+						aria-setsize={grouping && columns === undefined && row.kind === "items" ? itemCount : undefined}
+						className={cn(separated && row.kind === "items" && "borderBottom")}>
+						<ListRowContent row={row} render={render} columns={columns} grouping={grouping} itemCount={itemCount} />
 					</li>
 				))}
 			</ul>

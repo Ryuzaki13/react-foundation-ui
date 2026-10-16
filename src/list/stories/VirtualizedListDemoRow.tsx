@@ -12,7 +12,7 @@ type VirtualizedListDemoRowProps = Readonly<{
 	onSelect: (id: string) => void;
 }>;
 
-/** Обычная интерактивная строка с переменной высотой и устойчивой identity независимо от её позиции. */
+/** Интерактивная запись с переменной высотой; управляемый выбор переживает перемещение между строками списка. */
 export const VirtualizedListDemoRow = memo(function VirtualizedListDemoRow({ item, selected, onSelect }: VirtualizedListDemoRowProps) {
 	return (
 		<FlexContainer column gap="sm" className="paddingSm" data-list-demo-item={item.id}>

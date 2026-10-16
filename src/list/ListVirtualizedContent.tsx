@@ -4,7 +4,13 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { LoadingMessage, Scrollable } from "../misc";
 
+import { buildListRows } from "./lib/buildListRows";
+import { getListRowAnchorKeys } from "./lib/getListRowAnchorKeys";
+import { getListRowKey } from "./lib/getListRowKey";
+import { getListRowVisibleKeys } from "./lib/getListRowVisibleKeys";
+import { projectListPaginationItems } from "./lib/projectListPaginationItems";
 import { ListPaginationEffect } from "./ListPaginationEffect";
+import { ListRowContent } from "./ListRowContent";
 import styles from "./ListVirtualizedContent.module.scss";
 import { type ListVirtualizedContentProps } from "./listVirtualizedContentTypes";
 import { useListVirtualizer } from "./model/useListVirtualizer";
@@ -16,6 +22,8 @@ export function ListVirtualizedContent<T>({
 	render,
 	separated,
 	className,
+	columns,
+	grouping,
 	isLoading,
 	hasNextPage = false,
 	fetchNextPage,
@@ -29,10 +37,13 @@ export function ListVirtualizedContent<T>({
 }: ListVirtualizedContentProps<T>) {
 	// Между render новых данных и commit геометрии снимок ещё может содержать
 	// старые индексы. Сопоставление по ключу не передаёт чужие данные живой строке.
-	const entriesByKey = useMemo(() => new Map(items.map((item, index) => [getKey(item, index), { item, index }])), [items, getKey]);
+	const { rows, itemCount } = useMemo(() => buildListRows({ items, getKey, columns, grouping }), [items, getKey, columns, grouping]);
+	const entriesByKey = useMemo(() => new Map(rows.map((row, index) => [row.key, { row, index }])), [rows]);
 	const { virtualItems, totalSize, attachScrollElement, measureElement } = useListVirtualizer({
-		items,
-		getKey,
+		items: rows,
+		getKey: getListRowKey,
+		getAnchorKeys: getListRowAnchorKeys,
+		getVisibleKeys: getListRowVisibleKeys,
 		hasNextPage,
 		estimateSize,
 		overscan,
@@ -40,6 +51,10 @@ export function ListVirtualizedContent<T>({
 		resetKey,
 		onVisibleKeysChange
 	});
+	const paginationItems = useMemo(
+		() => projectListPaginationItems(virtualItems, entriesByKey, itemCount),
+		[virtualItems, entriesByKey, itemCount]
+	);
 
 	return (
 		<Scrollable
@@ -51,8 +66,8 @@ export function ListVirtualizedContent<T>({
 			overscroll>
 			{fetchNextPage && (
 				<ListPaginationEffect
-					virtualItems={virtualItems}
-					currentItemsCount={items.length}
+					virtualItems={paginationItems}
+					currentItemsCount={itemCount}
 					hasNextPage={hasNextPage}
 					fetchNextPage={fetchNextPage}
 				/>
@@ -69,17 +84,33 @@ export function ListVirtualizedContent<T>({
 						// Последняя строка DOM-окна не обязательно завершает набор. Реальная
 						// последняя запись сохраняет разделитель перед следующей страницей,
 						// а служебный loading sentinel собственного разделителя не получает.
-						const showSeparator = separated && entry !== undefined && (entry.index < items.length - 1 || hasNextPage);
+						const showSeparator = separated && entry?.row.kind === "items" && (entry.index < rows.length - 1 || hasNextPage);
+						const isItem = entry?.row.kind === "items" && columns === undefined;
 						return (
 							<li
 								key={row.key}
 								ref={measureElement}
-								data-index={entry?.index ?? items.length}
-								aria-posinset={entry === undefined ? undefined : entry.index + 1}
-								aria-setsize={entry === undefined ? undefined : items.length}
+								data-index={entry?.index ?? rows.length}
+								role={
+									entry?.row.kind === "group" || columns !== undefined || (grouping !== undefined && entry === undefined)
+										? "presentation"
+										: undefined
+								}
+								aria-posinset={isItem && entry?.row.kind === "items" ? entry.row.entries[0]?.position : undefined}
+								aria-setsize={isItem ? itemCount : undefined}
 								style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${row.start}px)` }}
 								className={cn(styles.item, showSeparator && styles.separator)}>
-								{entry === undefined ? <LoadingMessage text="Загрузка следующей страницы" /> : render(entry.item)}
+								{entry === undefined ? (
+									<LoadingMessage text="Загрузка следующей страницы" />
+								) : (
+									<ListRowContent
+										row={entry.row}
+										render={render}
+										columns={columns}
+										grouping={grouping}
+										itemCount={itemCount}
+									/>
+								)}
 							</li>
 						);
 					})}

@@ -12,7 +12,7 @@ type ListVirtualizedViewportProps = Readonly<{
 	preserveScrollAnchor?: boolean;
 	/** Смена ключа явно возвращает viewport к началу, например при клиентском поиске. */
 	resetKey?: string | number | null;
-	/** Ключи реально пересекающих viewport записей, без overscan и загрузочного sentinel. */
+	/** Ключи записей пересекающих viewport строк, без overscan, заголовков и sentinel. В колонках включает весь ряд. */
 	onVisibleKeysChange?: (keys: readonly string[]) => void;
 	emptyContent?: ReactNode;
 	"aria-label"?: string;
