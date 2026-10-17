@@ -1,0 +1,255 @@
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:string";
+
+@use "./contrast-colors" as colors;
+
+// Единственная таблица допустимых обычных поверхностей принадлежит теме,
+// а не компонентам. Новая тема предоставляет только исходные HEX/RGB роли.
+$_surfaces: (
+	"--bg-canvas",
+	"--bg-surface",
+	"--bg-elevated",
+	"--bg-secondary",
+	"--bg-sunken",
+	"--bg-hover",
+	"--bg-pressed",
+	"--bg-accent",
+	"--bg-disabled"
+);
+$_states: ("", "-hover", "-pressed");
+$_statuses: ("success", "warning", "error", "info");
+$_text-ratio: 7;
+$_boundary-ratio: 3;
+
+@function _backgrounds($tokens, $names) {
+	$backgrounds: ();
+	@each $name in $names {
+		$backgrounds: list.append($backgrounds, colors.read($tokens, $name));
+	}
+	@return $backgrounds;
+}
+
+/// Сначала сохраняет все подложки и исправляет только передний план.
+/// Если общего цвета недостаточно, сравнивает варианты совместной коррекции
+/// текста и всей группы фонов. Пары не подменяются независимыми цветами состояний.
+@function _pair($tokens, $foreground-name, $background-names, $ratio) {
+	$foreground: colors.read($tokens, $foreground-name);
+	$backgrounds: _backgrounds($tokens, $background-names);
+	$fitted: colors.fit($foreground, $backgrounds, $ratio);
+	@if $fitted != null {
+		@return map.set($tokens, $foreground-name, $fitted);
+	}
+
+	$best: null;
+	$best-cost: null;
+	$candidates: (colors.mix-rgb($foreground, #000, 0), #000, #fff);
+	@each $pole in (#000, #fff) {
+		$candidates: list.append($candidates, colors.fit($foreground, ($pole), $ratio));
+	}
+	@each $candidate in $candidates {
+		@if $candidate != null {
+			$adjusted: map.set($tokens, $foreground-name, $candidate);
+			$cost: colors.distance($foreground, $candidate);
+			$possible: true;
+			@each $name in $background-names {
+				$background: colors.read($tokens, $name);
+				$fitted-background: colors.fit($background, ($candidate), $ratio);
+				@if $fitted-background == null {
+					$possible: false;
+				} @else {
+					$adjusted: map.set($adjusted, $name, $fitted-background);
+					$cost: $cost + colors.distance($background, $fitted-background);
+				}
+			}
+			@if $possible and ($best-cost == null or $cost < $best-cost) {
+				$best: $adjusted;
+				$best-cost: $cost;
+			}
+		}
+	}
+	@if $best == null {
+		@error "Не удалось обеспечить контраст #{$ratio}:1 для #{$foreground-name} на #{$background-names}.";
+	}
+	@return $best;
+}
+
+/// Границы не меняют уже проверенные подложки. Если общего цвета для всех
+/// соседей нет, ошибка сборки показывает несовместимый контракт композиции.
+@function _foreground($tokens, $name, $background-names, $ratio) {
+	$fitted: colors.fit(colors.read($tokens, $name), _backgrounds($tokens, $background-names), $ratio);
+	@if $fitted == null {
+		@error "Нет общего цвета #{$name} с контрастом #{$ratio}:1 на #{$background-names}. Разделите несовместимые поверхности.";
+	}
+	@return map.set($tokens, $name, $fitted);
+}
+
+/// Сохраняет пригодные поверхности независимо от названия light/dark.
+/// При несовместимых фонах выбирается направление с меньшей суммарной
+/// коррекцией RGB; mode разрешает только равенство стоимости двух вариантов.
+@function _align-surfaces($tokens, $names, $mode) {
+	$poles: if(
+		sass($mode == light): (
+			#000,
+			#fff
+		);
+		else: (
+			#fff,
+			#000
+		)
+	);
+	$best: null;
+	$best-cost: null;
+	@each $pole in $poles {
+		$adjusted: $tokens;
+		$cost: 0;
+		@each $name in $names {
+			$original: colors.read($tokens, $name);
+			$fitted: colors.fit($original, ($pole), $_text-ratio);
+			$adjusted: map.set($adjusted, $name, $fitted);
+			$cost: $cost + colors.distance($original, $fitted);
+		}
+		@if $best-cost == null or $cost < $best-cost {
+			$best: $adjusted;
+			$best-cost: $cost;
+		}
+		@if $cost == 0 {
+			@return $adjusted;
+		}
+	}
+	@return $best;
+}
+
+@function _resolve-colors($tokens) {
+	$roles: list.join(
+		$_surfaces,
+		(
+			"--text-primary",
+			"--text-secondary",
+			"--text-muted",
+			"--text-disabled",
+			"--text-inverse",
+			"--text-link",
+			"--text-link-hover",
+			"--focus-ring",
+			"--accent-on-fill",
+			"--selection-on-fill",
+			"--selection-fill-disabled",
+			"--selection-on-fill-disabled",
+			"--text-selection-bg",
+			"--text-selection-text"
+		)
+	);
+	@each $part in ("subtle", "default", "strong", "interactive", "interactive-hover", "interactive-pressed", "interactive-disabled") {
+		$roles: list.append($roles, "--border-#{$part}");
+	}
+	@each $state in $_states {
+		@each $part in ("text", "border", "fill") {
+			$roles: list.append($roles, "--accent-#{$part}#{$state}");
+		}
+	}
+	@each $state in list.append($_states, "-disabled") {
+		@each $part in ("bg", "text", "border", "fill") {
+			$roles: list.append($roles, "--selection-#{$part}#{$state}");
+		}
+	}
+	@each $state in ("", "-current") {
+		@each $part in ("bg", "text", "border") {
+			$roles: list.append($roles, "--highlight-#{$part}#{$state}");
+		}
+	}
+	@each $status in $_statuses {
+		@each $part in ("text", "bg", "bg-hover", "bg-pressed", "fill", "fill-hover", "fill-pressed", "on-fill") {
+			$roles: list.append($roles, "--#{$status}-#{$part}");
+		}
+	}
+	// Ссылки разрешаются по исходной карте до коррекции её зависимостей:
+	// иначе var(--accent-fill) незаметно изменил бы уже проверенный текст.
+	$resolved: $tokens;
+	$canvas: colors.read($tokens, "--bg-canvas");
+	@if color.channel($canvas, "alpha") != 1 {
+		@error "--bg-canvas должен быть непрозрачным: фон документа неизвестен генератору контраста.";
+	}
+	$surface: colors.composite(colors.read($tokens, "--bg-surface"), $canvas);
+	@each $role in $roles {
+		$value: colors.read($tokens, $role);
+		// Полупрозрачные подложки фиксируются над известной surface. Overlay,
+		// gradients, shadows и прочая декоративная графика сюда не входят.
+		@if $role == "--bg-surface" {
+			$value: $surface;
+		} @else if
+			list.index($_surfaces, $role) or
+			string.index($role, "-bg") or
+			(string.index($role, "-fill") and not string.index($role, "-on-fill"))
+		{
+			$value: colors.composite($value, $surface);
+		}
+		$resolved: map.set($resolved, $role, $value);
+	}
+	@return $resolved;
+}
+
+/// Формирует повышенную контрастность из единственной авторской палитры.
+/// Алгоритм не затрагивает normal и не создаёт дополнительных CSS-переменных.
+@function resolve($tokens, $mode) {
+	$result: _resolve-colors($tokens);
+	$soft-surfaces: $_surfaces;
+	@each $state in list.append($_states, "-disabled") {
+		$soft-surfaces: list.append($soft-surfaces, "--selection-bg#{$state}");
+	}
+	@each $status in $_statuses {
+		@each $state in $_states {
+			$soft-surfaces: list.append($soft-surfaces, "--#{$status}-bg#{$state}");
+		}
+	}
+	$result: _align-surfaces($result, $soft-surfaces, $mode);
+	// Primary используется и как фон обратного Popover. Непрозрачное значение
+	// позволяет проверить обе роли без зависимости от неизвестного нижнего слоя.
+	$result: map.set($result, "--text-primary", color.change(colors.read($result, "--text-primary"), $alpha: 1));
+	@each $name in ("--text-primary", "--text-secondary", "--text-muted", "--text-disabled", "--text-link", "--text-link-hover") {
+		$result: _foreground($result, $name, $soft-surfaces, $_text-ratio);
+	}
+	$result: _foreground($result, "--text-inverse", ("--text-primary"), $_text-ratio);
+	@each $state in $_states {
+		$result: _foreground($result, "--accent-text#{$state}", $soft-surfaces, $_text-ratio);
+		$result: _foreground($result, "--accent-border#{$state}", $soft-surfaces, $_boundary-ratio);
+	}
+	@each $part in ("subtle", "default", "strong", "interactive", "interactive-hover", "interactive-pressed", "interactive-disabled") {
+		$result: _foreground($result, "--border-#{$part}", $soft-surfaces, $_boundary-ratio);
+	}
+	@each $state in list.append($_states, "-disabled") {
+		$background: "--selection-bg#{$state}";
+		$result: _pair($result, "--selection-text#{$state}", ($background), $_text-ratio);
+		$result: _foreground($result, "--selection-border#{$state}", list.append($_surfaces, $background), $_boundary-ratio);
+	}
+	$result: _pair($result, "--accent-on-fill", ("--accent-fill", "--accent-fill-hover", "--accent-fill-pressed"), $_text-ratio);
+	$result: _pair(
+		$result,
+		"--selection-on-fill",
+		("--selection-fill", "--selection-fill-hover", "--selection-fill-pressed"),
+		$_text-ratio
+	);
+	$result: _pair($result, "--selection-on-fill-disabled", ("--selection-fill-disabled"), $_text-ratio);
+	$result: _pair($result, "--text-selection-text", ("--text-selection-bg"), $_text-ratio);
+	@each $state in ("", "-current") {
+		$background: "--highlight-bg#{$state}";
+		$result: _pair($result, "--highlight-text#{$state}", ($background), $_text-ratio);
+		$result: _foreground($result, "--highlight-border#{$state}", ($background), $_boundary-ratio);
+	}
+	@each $status in $_statuses {
+		$soft-backgrounds: ("--#{$status}-bg", "--#{$status}-bg-hover", "--#{$status}-bg-pressed");
+		$result: _pair($result, "--#{$status}-text", list.join($_surfaces, $soft-backgrounds), $_text-ratio);
+		$result: _pair(
+			$result,
+			"--#{$status}-on-fill",
+			("--#{$status}-fill", "--#{$status}-fill-hover", "--#{$status}-fill-pressed"),
+			$_text-ratio
+		);
+	}
+	$result: _foreground($result, "--focus-ring", $soft-surfaces, $_boundary-ratio);
+	// Даже общая disabled-утилита не должна уменьшать уже проверенный контраст
+	// непрозрачных ролей; доступность взаимодействия задаётся HTML-состоянием.
+	$result: map.set($result, "--disabled-opacity", 1);
+	@return $result;
+}

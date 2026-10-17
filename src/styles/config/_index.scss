@@ -501,14 +501,7 @@ $dark-theme: map.deep-merge($dark-theme-defaults, $dark-theme-overrides);
 
 @mixin emit-declarations($tokens) {
 	@each $name, $value in $tokens {
-		@if string.slice($name, 1, 2) == "--" and meta.type-of($value) == color {
-			$high-contrast-name: --hc-#{string.slice($name, 3)};
-
-			// Цвет остаётся fallback, а одноимённый --hc-* можно включить runtime-режимом контрастности.
-			#{$name}: var(#{$high-contrast-name}, #{meta.inspect($value)});
-		} @else {
-			#{$name}: #{meta.inspect($value)};
-		}
+		#{$name}: #{meta.inspect($value)};
 	}
 }
 

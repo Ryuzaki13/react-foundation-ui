@@ -1,0 +1,24 @@
+declare const styles: {
+  readonly interactiveSurface: "interactiveSurface";
+  readonly interactiveSurfaceFrame: "interactiveSurfaceFrame";
+  readonly sample: "sample";
+  readonly gallery: "gallery";
+  readonly pair: "pair";
+  readonly surface: "surface";
+  readonly errorField: "errorField";
+  readonly primary: "primary";
+  readonly secondary: "secondary";
+  readonly muted: "muted";
+  readonly accentText: "accentText";
+  readonly link: "link";
+  readonly highlight: "highlight";
+  readonly currentHighlight: "currentHighlight";
+  readonly textSelection: "textSelection";
+  readonly swatch: "swatch";
+  readonly focusPreview: "focusPreview";
+  readonly focusClip: "focusClip";
+  readonly clippedButton: "clippedButton";
+  readonly states: "states";
+  readonly stateHeading: "stateHeading";
+};
+export default styles;

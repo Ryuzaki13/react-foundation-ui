@@ -671,6 +671,15 @@
 	--ui-disabled-border: transparent;
 }
 
+// Внутренний контур остаётся видимым и в обрезающих контейнерах. На solid
+// используется проверенная пара с заливкой; вложенная normal-тема завершает
+// область high, поэтому соседние образцы и встроенные темы сохраняют свой фокус.
+@scope ([data-contrast="high"]) to ([data-contrast="normal"]) {
+	.uiAppearanceSolid:not(:disabled, [data-disabled], [aria-disabled="true"]):focus-visible {
+		outline-color: var(--tone-on-fill, var(--focus-ring));
+	}
+}
+
 .uiAppearanceOutline {
 	--ui-background: var(--tone-bg);
 	--ui-background-hover: var(--tone-bg-hover);

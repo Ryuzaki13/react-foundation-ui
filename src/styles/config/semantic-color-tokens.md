@@ -55,18 +55,18 @@
 
 ## Фоновые поверхности: `--bg-*`
 
-| Токен | Назначение |
-| --- | --- |
-| `--bg-canvas` | Общая подложка приложения |
-| `--bg-surface` | Обычная самостоятельная поверхность с содержимым |
-| `--bg-elevated` | Основная поверхность всплывающего компонента |
+| Токен            | Назначение                                                            |
+| ---------------- | --------------------------------------------------------------------- |
+| `--bg-canvas`    | Общая подложка приложения                                             |
+| `--bg-surface`   | Обычная самостоятельная поверхность с содержимым                      |
+| `--bg-elevated`  | Основная поверхность всплывающего компонента                          |
 | `--bg-secondary` | Нейтральный фон вспомогательной структурной области внутри компонента |
-| `--bg-sunken` | Утопленная рабочая область: поле, редактор, блок кода |
-| `--bg-hover` | Временная реакция нейтрального элемента на наведение |
-| `--bg-pressed` | Временная реакция нейтрального элемента в процессе нажатия |
-| `--bg-accent` | Намеренно акцентированная область без состояния выбора |
-| `--bg-disabled` | Фон недоступного элемента |
-| `--bg-overlay` | Полупрозрачная подложка позади модального слоя |
+| `--bg-sunken`    | Утопленная рабочая область: поле, редактор, блок кода                 |
+| `--bg-hover`     | Временная реакция нейтрального элемента на наведение                  |
+| `--bg-pressed`   | Временная реакция нейтрального элемента в процессе нажатия            |
+| `--bg-accent`    | Намеренно акцентированная область без состояния выбора                |
+| `--bg-disabled`  | Фон недоступного элемента                                             |
+| `--bg-overlay`   | Полупрозрачная подложка позади модального слоя                        |
 
 `secondary` описывает роль поверхности относительно основного содержимого. Он подходит для шапки, панели команд, области действий или внутренней секции метаданных. Самостоятельная панель с основным содержимым остаётся `surface`. Вспомогательная область не получает собственный уровень возвышения, статус, выбранность или недоступность.
 
@@ -82,7 +82,7 @@ Modal                         bg-elevated
 
 Заголовок на `bg-secondary` продолжает использовать `text-primary`: название фона не определяет важность текста. Состояния вложенных кнопок и полей сохраняют свои роли `hover`, `pressed`, `selection`, `disabled` и статусов.
 
-Тема задаёт `--bg-secondary` независимо от `surface`, `elevated` и `sunken` через обычную карту `tokens` публичного mixin `theme($mode, $overrides: ())`. Класс `bgSecondary` доступен в `styles/foundation`, чтобы приложение могло оформить свои служебные секции без дополнительных компонентных API.
+Тема задаёт `--bg-secondary` независимо от `surface`, `elevated` и `sunken` через обычную карту `tokens` публичного mixin `theme($mode, $overrides: (), $contrast: auto)`. Класс `bgSecondary` доступен в `styles/foundation`, чтобы приложение могло оформить свои служебные секции без дополнительных компонентных API.
 
 ## 1. Акцентное оформление: `--accent-*`
 
@@ -103,7 +103,7 @@ Modal                         bg-elevated
 ```scss
 .heroTitle,
 .accentIcon {
-  color: var(--accent-text);
+	color: var(--accent-text);
 }
 ```
 
@@ -138,8 +138,8 @@ Modal                         bg-elevated
 
 ```scss
 .accentBadge {
-  color: var(--accent-on-fill);
-  background-color: var(--accent-fill);
+	color: var(--accent-on-fill);
+	background-color: var(--accent-fill);
 }
 ```
 
@@ -184,8 +184,8 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 .panel {
-  background-color: var(--bg-surface);
-  border: var(--border-width) solid var(--border-default);
+	background-color: var(--bg-surface);
+	border: var(--border-width) solid var(--border-default);
 }
 ```
 
@@ -212,8 +212,7 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 .sectionHeading {
-  border-block-end:
-    var(--border-width) solid var(--border-decorative);
+	border-block-end: var(--border-width) solid var(--border-decorative);
 }
 ```
 
@@ -231,8 +230,8 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 .control:focus-visible {
-  outline: var(--focus-width) solid var(--focus-ring);
-  outline-offset: var(--focus-offset);
+	outline: var(--focus-width) solid var(--focus-ring);
+	outline-offset: var(--focus-offset);
 }
 ```
 
@@ -243,6 +242,8 @@ border-color: var(--border-interactive-disabled);
 В составных компонентах с `aria-activedescendant` DOM-фокус может оставаться на контейнере или поле, а активный дочерний элемент задаётся атрибутом. Такой компонент должен сам связать визуальный индикатор с активным элементом: одного `:focus-visible` на каждой опции недостаточно. [^aria]
 
 При отрицательном `--focus-offset` контур оказывается внутри элемента. Его необходимо проверять на заливке компонента; внешний контур проверяется на окружающей поверхности. Особенно важны насыщенные `accent-fill` и `selection-fill`. [^nontext]
+
+В повышенном режиме внутренний контур доступного solid-контрола Foundation использует его `on-fill`: этот цвет проверяется сразу на обычной, hover и pressed заливках. Отрицательная геометрия контура сохраняется, поэтому индикатор остаётся внутри обрезающего контейнера. У нейтрального оформления сохраняется общий `focus-ring`. Правило действует в области `data-contrast="high"`; вложенный `data-contrast="normal"` завершает эту область. Для собственной композиции на `selection-fill` или другой насыщенной заливке host должен выбрать контрастную пару фокуса самостоятельно.
 
 Не следует использовать `focus-ring` для декоративных линий, границ ошибок или выбранности. Свечение также не заменяет различимый контур фокуса.
 
@@ -273,9 +274,9 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 .selectedCard {
-  color: var(--selection-text);
-  background-color: var(--selection-bg);
-  border: var(--border-width) solid var(--selection-border);
+	color: var(--selection-text);
+	background-color: var(--selection-bg);
+	border: var(--border-width) solid var(--selection-border);
 }
 ```
 
@@ -311,8 +312,8 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 .selectedSegment {
-  color: var(--selection-on-fill);
-  background-color: var(--selection-fill);
+	color: var(--selection-on-fill);
+	background-color: var(--selection-fill);
 }
 ```
 
@@ -337,8 +338,8 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 ::selection {
-  color: var(--text-selection-text);
-  background-color: var(--text-selection-bg);
+	color: var(--text-selection-text);
+	background-color: var(--text-selection-bg);
 }
 ```
 
@@ -380,15 +381,15 @@ border-color: var(--border-interactive-disabled);
 
 ```scss
 .searchMatch {
-  color: var(--highlight-text);
-  background-color: var(--highlight-bg);
-  box-shadow: inset 0 -1px 0 var(--highlight-border);
+	color: var(--highlight-text);
+	background-color: var(--highlight-bg);
+	box-shadow: inset 0 -1px 0 var(--highlight-border);
 
-  &[data-current="true"] {
-    color: var(--highlight-text-current);
-    background-color: var(--highlight-bg-current);
-    box-shadow: inset 0 -2px 0 var(--highlight-border-current);
-  }
+	&[data-current="true"] {
+		color: var(--highlight-text-current);
+		background-color: var(--highlight-bg-current);
+		box-shadow: inset 0 -2px 0 var(--highlight-border-current);
+	}
 }
 ```
 
@@ -441,51 +442,57 @@ disabled → pressed → hover → базовое состояние
 
 ```scss
 .accentButton {
-  font: inherit;
-  color: var(--accent-on-fill);
-  background-color: var(--accent-fill);
-  border: var(--border-width) solid var(--accent-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-sm) var(--space-md);
+	font: inherit;
+	color: var(--accent-on-fill);
+	background-color: var(--accent-fill);
+	border: var(--border-width) solid var(--accent-border);
+	border-radius: var(--radius-sm);
+	padding: var(--space-sm) var(--space-md);
 
-  @media (hover: hover) {
-    &:enabled:hover {
-      background-color: var(--accent-fill-hover);
-      border-color: var(--accent-border-hover);
-    }
-  }
+	@media (hover: hover) {
+		&:enabled:hover {
+			background-color: var(--accent-fill-hover);
+			border-color: var(--accent-border-hover);
+		}
+	}
 
-  &:enabled:active {
-    background-color: var(--accent-fill-pressed);
-    border-color: var(--accent-border-pressed);
-  }
+	&:enabled:active {
+		background-color: var(--accent-fill-pressed);
+		border-color: var(--accent-border-pressed);
+	}
 
-  &:disabled {
-    color: var(--text-disabled);
-    background-color: var(--bg-disabled);
-    border-color: var(--border-interactive-disabled);
-  }
+	&:disabled {
+		color: var(--text-disabled);
+		background-color: var(--bg-disabled);
+		border-color: var(--border-interactive-disabled);
+	}
 
-  &:focus-visible {
-    outline: var(--focus-width) solid var(--focus-ring);
-    outline-offset: var(--focus-offset);
-  }
+	&:focus-visible {
+		outline: var(--focus-width) solid var(--focus-ring);
+		outline-offset: var(--focus-offset);
+	}
+}
+
+@scope ([data-contrast="high"]) to ([data-contrast="normal"]) {
+	.accentButton:enabled:focus-visible {
+		outline-color: var(--accent-on-fill);
+	}
 }
 ```
 
 Медиаусловие `hover: hover` ограничивает hover-оформление устройствами, чей основной указатель поддерживает удобное наведение. Это выбранная стратегия примера, а не механизм определения всех подключённых устройств ввода. [^hover]
 
-Цвет текста остаётся `accent-on-fill` при обычном состоянии, наведении и нажатии. В недоступном состоянии применяется нейтральная пара. Геометрия фокуса проверяется отдельно, особенно при отрицательном отступе.
+Цвет текста остаётся `accent-on-fill` при обычном состоянии, наведении и нажатии. В недоступном состоянии применяется нейтральная пара. Собственная кнопка в примере явно связывает внутренний high-фокус с `accent-on-fill`; готовые solid-контролы Foundation выполняют это через свою tone-пару.
 
 ## 9. Требования к теме
 
 ### Полнота и независимость ролей
 
-Тема должна предоставлять значения для всех 45 токенов этой группы, непосредственно или через документированное наследование базовой темы. Даже когда компонент использует только часть состояний, общий контракт остаётся доступным остальным компонентам.
+Тема должна предоставлять полный набор семантических ролей непосредственно или через наследование базовой темы. Даже когда компонент использует только часть состояний, общий контракт остаётся доступным остальным компонентам.
 
 Совпадающие значения разрешены. Роли не должны неявно связываться только ради устранения одинаковых HEX-значений. Особенно важно независимо настраивать функциональный фокус, декоративную линию, выбранность и пользовательское выделение текста.
 
-Состояния задаются явно. Компонентам не следует вычислять hover/pressed через произвольное затемнение, прозрачность или `filter: brightness()`: это меняет согласованную темой пару фона и содержимого.
+Исходные состояния задаются явно. Компонентам не следует вычислять hover/pressed через произвольное затемнение, прозрачность или `filter: brightness()`: это меняет согласованную темой пару фона и содержимого. В high-режиме общий генератор корректирует согласованные группы после объединения исходной карты; этот расчёт принадлежит теме.
 
 ### Контрастные пары
 
@@ -509,9 +516,65 @@ disabled → pressed → hover → базовое состояние
 
 ### Повышенная контрастность
 
-Вариант повышенной контрастности сохраняет назначения токенов, но может менять их значения независимо. Декоративная линия не обязана повторять цвет функционального фокуса.
+Публичный `theme($mode, $overrides: (), $contrast: auto)` рассчитывает повышенную контрастность из единственной исходной палитры. Сначала объединяются defaults режима, config overrides и overrides вызова. Отдельных цветовых переменных, второй авторской палитры и переходных aliases нет. Владельцы механизма — [`theme`](../themes/_theme.scss) и его приватный [генератор контраста](../themes/_contrast-theme.scss).
+
+| `$contrast`           | Результат Sass-сборки                                                                  |
+| --------------------- | -------------------------------------------------------------------------------------- |
+| `auto` — по умолчанию | Исходная палитра и `&[data-contrast="high"]` с изменившимися значениями тех же токенов |
+| `normal`              | Только исходная палитра без расчёта контраста                                          |
+| `high`                | Полная рассчитанная палитра непосредственно в selector вызова                          |
+
+Selector темы и `data-contrast` в `auto` принадлежат одному элементу:
+
+```scss
+@use "@ryuzaki13/react-foundation-ui/styles/themes" as themes;
+
+.projectTheme {
+	@include themes.theme(
+		light,
+		(
+			tokens: (
+				"--bg-surface": #f5f8fc,
+				"--text-muted": #8190a4
+			)
+		)
+	);
+}
+```
+
+```html
+<section class="projectTheme" data-contrast="high">…</section>
+```
+
+Этот пример задаёт исходные переопределения один раз; high получает их после объединения с базовой темой. Mixin не выставляет атрибут и не разрешает `prefers-contrast`: host сам выбирает `normal` или `high` для DOM. Для явного `$contrast: high` также задаётся `data-contrast="high"` на области темы, чтобы включить контекстный фокус solid-контролов. Все вычисления выполняются при Sass-сборке; JavaScript в браузере для расчёта цветов не нужен.
+
+**Цветовой контракт расчёта.** Известные семантические роли принимают Sass HEX/RGB в sRGB или простую ссылку `var(--роль)` на значение в той же карте. Цепочки разрешаются по исходной карте до коррекции зависимостей. В `auto` и `high` отсутствующая роль, неизвестная ссылка, цикл, fallback, составное выражение или другое цветовое пространство завершают сборку ошибкой. `normal` выводит исходные значения без такой проверки.
+
+Canvas должен быть непрозрачным. Полупрозрачная surface сначала сводится с canvas; остальные расчётные подложки и заливки сводятся с полученной surface. В high они выводятся непрозрачными. Полупрозрачный текст проверяется после наложения на каждый предусмотренный фон и при необходимости корректируется. `text-primary` в high всегда непрозрачен: он также служит фоном обратной пары `text-inverse`, например в Negative Popover.
+
+Генератор вычисляет относительную яркость sRGB и подбирает цвет смешиванием исходных RGB-каналов с чёрным либо белым. Он сохраняет подходящие значения и сначала стремится исправить передний план; если единый `on-fill` недостижим на группе состояний, согласованно исправляет и заливки. Для несовместимых обычных и мягких поверхностей выбирается согласованная коррекция с меньшей суммой изменений RGB; светлая либо тёмная схема разрешает только равенство стоимости. Геометрия, имена и семантика состояний не меняются. Минимальность доли RGB-смешивания не означает перцептивной оптимальности оттенка.
+
+Для high действует единая политика:
+
+| Передний план                                                                                          | Проверяемые фоны                                                                          | Минимум |
+| ------------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------------------------- | ------- |
+| `text-primary`, `text-secondary`, `text-muted`, `text-disabled`, ссылки и `accent-text` со состояниями | Все обычные поверхности, включая `bg-disabled`, все мягкие selected-фоны и статусные фоны | 7:1     |
+| `text-inverse`                                                                                         | Итоговый `text-primary`                                                                   | 7:1     |
+| `selection-text` со состояниями, включая disabled                                                      | Соответствующий `selection-bg`                                                            | 7:1     |
+| Статусный `text`                                                                                       | Все обычные поверхности и три мягких фона этого статуса                                   | 7:1     |
+| `accent-on-fill`, `selection-on-fill`, статусный `on-fill`                                             | Все три соответствующие заливки; disabled выбранность использует собственную пару         | 7:1     |
+| `text-selection-text`, `highlight-text` и `highlight-text-current`                                     | Собственные подложки                                                                      | 7:1     |
+| Нейтральные границы, включая `border-subtle` и disabled, `accent-border` и общий `focus-ring`          | Все обычные, мягкие selected- и статусные поверхности                                     | 3:1     |
+| `selection-border` со состояниями, включая disabled                                                    | Соответствующий `selection-bg` и все обычные поверхности                                  | 3:1     |
+| `highlight-border` и `highlight-border-current`                                                        | Собственные подложки                                                                      | 3:1     |
+
+Обычные поверхности здесь — `bg-canvas`, `bg-surface`, `bg-elevated`, `bg-secondary`, `bg-sunken`, `bg-hover`, `bg-pressed`, `bg-accent` и `bg-disabled`. Disabled-цвета сохраняют эти пороги: генератор задаёт `--disabled-opacity: 1`, а недоступность взаимодействия по-прежнему определяется HTML-состоянием. Декоративная линия `border-decorative`, тени и свечение остаются свободным оформлением и не обязаны повторять функциональный фокус.
+
+Порог гарантируется только для перечисленных пар рассчитанной палитры. Overlay, градиенты, изображения, текст на произвольной графике и неизвестные доменные токены приложения не входят в расчёт. Дополнительная `opacity`, смешивание цветов в компоненте или неподходящая комбинация ролей требует отдельной проверки. Если для функционального переднего плана нет общего цвета при фиксированных фонах, сборка сообщает несовместимые роли вместо пропуска проверки.
 
 Системный режим `forced-colors` может заменять авторские цвета и отключать тени. Поэтому единственный функциональный индикатор нельзя оставлять исключительно в `box-shadow`; компонентам нужна проверка и подходящая альтернатива, например граница или outline с системным цветом. Не следует без необходимости отключать системную адаптацию через `forced-color-adjust: none`. [^forced]
+
+Для визуальной проверки запустите `npm run storybook` и откройте [Development/Theme contrast](../../development/theme-contrast/stories/ThemeContrast.stories.tsx). История располагает normal и high рядом для светлой, тёмной, сиреневой и зелёной палитр. Проверьте hover/pressed, Tab-фокус, solid-кнопку вплотную к обрезающему контейнеру, disabled, selected, поля и пользовательское выделение текста. Численные гарантии проверяются отдельно на скомпилированном CSS; визуальная история проверяет применение ролей в реальных контролах.
 
 ## 10. Проверка компонента
 
@@ -527,16 +590,16 @@ disabled → pressed → hover → базовое состояние
 
 Для каждого из `success`, `warning`, `error`, `info` предусмотрено восемь независимых ролей:
 
-| Роль | Назначение |
-| --- | --- |
-| `--<status>-text` | Текст, одноцветные иконки и рамка мягкого статусного элемента |
-| `--<status>-bg` | Мягкая подложка outline/soft |
-| `--<status>-bg-hover` | Её фон при наведении |
-| `--<status>-bg-pressed` | Её фон во время нажатия |
-| `--<status>-fill` | Насыщенная заливка solid |
-| `--<status>-fill-hover` | Её фон при наведении |
-| `--<status>-fill-pressed` | Её фон во время нажатия |
-| `--<status>-on-fill` | Содержимое на насыщенной заливке во всех трёх состояниях |
+| Роль                      | Назначение                                                    |
+| ------------------------- | ------------------------------------------------------------- |
+| `--<status>-text`         | Текст, одноцветные иконки и рамка мягкого статусного элемента |
+| `--<status>-bg`           | Мягкая подложка outline/soft                                  |
+| `--<status>-bg-hover`     | Её фон при наведении                                          |
+| `--<status>-bg-pressed`   | Её фон во время нажатия                                       |
+| `--<status>-fill`         | Насыщенная заливка solid                                      |
+| `--<status>-fill-hover`   | Её фон при наведении                                          |
+| `--<status>-fill-pressed` | Её фон во время нажатия                                       |
+| `--<status>-on-fill`      | Содержимое на насыщенной заливке во всех трёх состояниях      |
 
 В мягком варианте цвет текста и рамки совпадает и остаётся `--<status>-text` при наведении и нажатии. Меняется только подложка. Для solid постоянным остаётся `--<status>-on-fill`, а меняется только заливка. `text` нельзя применять как содержимое на `fill`, а `on-fill` — как текст на `bg`.
 
@@ -551,15 +614,27 @@ disabled → pressed → hover → базовое состояние
 Имена токенов и правила их распределения в этом документе — контракт UI-пакета. Источники ниже описывают поведение веб-платформы и требования доступности; они не предписывают эти имена.
 
 [^selectors]: W3C, [Selectors Level 4 — User Action Pseudo-classes](https://www.w3.org/TR/selectors-4/#useraction-pseudos).
+
 [^keyboard]: W3C, [ARIA APG — Developing a Keyboard Interface](https://www.w3.org/WAI/ARIA/apg/practices/keyboard-interface/).
+
 [^aria]: W3C, [WAI-ARIA — States and Properties](https://www.w3.org/TR/wai-aria-1.2/#states_and_properties).
+
 [^nontext]: W3C, [Understanding WCAG 2.2: Non-text Contrast](https://www.w3.org/WAI/WCAG22/Understanding/non-text-contrast.html).
+
 [^button]: W3C, [ARIA APG — Button Pattern](https://www.w3.org/WAI/ARIA/apg/patterns/button/).
+
 [^selection]: W3C, [CSS Pseudo-Elements Level 4 — Highlight Pseudo-elements](https://www.w3.org/TR/css-pseudo-4/#highlight-pseudos).
+
 [^mark]: WHATWG, [HTML — The mark element](https://html.spec.whatwg.org/multipage/text-level-semantics.html#the-mark-element).
+
 [^color]: W3C, [Understanding WCAG 2.2: Use of Color](https://www.w3.org/WAI/WCAG22/Understanding/use-of-color.html).
+
 [^disabled]: WHATWG, [HTML — Enabling and disabling form controls](https://html.spec.whatwg.org/dev/form-control-infrastructure.html#enabling-and-disabling-form-controls:-the-disabled-attribute).
+
 [^readonly]: WHATWG, [HTML — The input element](https://html.spec.whatwg.org/dev/input.html).
+
 [^hover]: W3C, [Media Queries Level 4 — Hover](https://www.w3.org/TR/mediaqueries-4/#hover).
+
 [^contrast]: W3C, [Understanding WCAG 2.2: Contrast (Minimum)](https://www.w3.org/WAI/WCAG22/Understanding/contrast-minimum.html).
+
 [^forced]: W3C, [CSS Color Adjustment Level 1 — Forced Colors Mode](https://www.w3.org/TR/css-color-adjust-1/#forced-colors-mode).

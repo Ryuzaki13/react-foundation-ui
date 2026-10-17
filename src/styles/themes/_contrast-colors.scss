@@ -1,0 +1,148 @@
+@use "sass:color";
+@use "sass:list";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+
+// Приватная математика генератора тем. Все вычисления и смешивание выполняются
+// в sRGB; округление до каналов HEX происходит до проверки контраста.
+@function _trim($value) {
+	@while string.length($value) > 0 and list.index((" ", "\a", "\9"), string.slice($value, 1, 1)) {
+		$value: string.slice($value, 2);
+	}
+	@while string.length($value) > 0 and list.index((" ", "\a", "\9"), string.slice($value, -1)) {
+		$value: string.slice($value, 1, -2);
+	}
+	@return $value;
+}
+
+/// Разрешает только известные цветовые роли, включая простые ссылки var(--role).
+/// Составные CSS-выражения нельзя проверить при сборке: вместо тихого пропуска
+/// генератор сообщает имя роли и предлагает передать конкретный HEX/RGB.
+@function read($tokens, $name, $visited: ()) {
+	@if list.index($visited, $name) {
+		@error "Циклическая ссылка цвета #{$name}: #{$visited}.";
+	}
+	@if not map.has-key($tokens, $name) {
+		@error "Для контрастной темы отсутствует цветовая роль #{$name}.";
+	}
+	$value: map.get($tokens, $name);
+	@if meta.type-of($value) == string and string.slice($value, 1, 4) == "var(" and string.slice($value, -1) == ")" {
+		@return read($tokens, _trim(string.slice($value, 5, -2)), list.append($visited, $name));
+	}
+	@if meta.type-of($value) != color {
+		@error "Для расчёта контраста #{$name} требуется HEX/RGB или ссылка на известную роль, получено #{meta.inspect($value)}.";
+	}
+	@if color.space($value) != rgb {
+		@error "Для расчёта контраста #{$name} требуется цвет sRGB, получено #{meta.inspect($value)}.";
+	}
+	// CSS обрезает выходящие за sRGB каналы при выводе. Проверка должна видеть
+	// тот же цвет, иначе rgb(300 0 0) даст ложную оценку относительной яркости.
+	@return color.change(
+		$value,
+		$red: math.clamp(0, color.channel($value, "red"), 255),
+		$green: math.clamp(0, color.channel($value, "green"), 255),
+		$blue: math.clamp(0, color.channel($value, "blue"), 255)
+	);
+}
+
+/// Композиция alpha выполняется над известной непрозрачной поверхностью.
+@function composite($foreground, $background) {
+	$alpha: color.channel($foreground, "alpha");
+	@if $alpha == 1 {
+		@return $foreground;
+	}
+	@return rgb(
+		color.channel($foreground, "red") * $alpha + color.channel($background, "red") * (1 - $alpha),
+		color.channel($foreground, "green") * $alpha + color.channel($background, "green") * (1 - $alpha),
+		color.channel($foreground, "blue") * $alpha + color.channel($background, "blue") * (1 - $alpha)
+	);
+}
+
+@function _linear-channel($channel) {
+	$value: math.div($channel, 255);
+	@if $value <= 0.04045 {
+		@return math.div($value, 12.92);
+	}
+	@return math.pow(math.div($value + 0.055, 1.055), 2.4);
+}
+
+@function luminance($value) {
+	@return 0.2126 * _linear-channel(color.channel($value, "red")) + 0.7152 * _linear-channel(color.channel($value, "green")) + 0.0722 *
+		_linear-channel(color.channel($value, "blue"));
+}
+
+@function _ratio($first, $second) {
+	@return math.div(math.max($first, $second) + 0.05, math.min($first, $second) + 0.05);
+}
+
+@function _minimum($foreground, $backgrounds, $luminances) {
+	$minimum: 21;
+	$opaque: color.channel($foreground, "alpha") == 1;
+	$foreground-luminance: if(sass($opaque): luminance($foreground); else: 0);
+	@for $index from 1 through list.length($backgrounds) {
+		$current: $foreground-luminance;
+		@if not $opaque {
+			$current: luminance(composite($foreground, list.nth($backgrounds, $index)));
+		}
+		$minimum: math.min($minimum, _ratio($current, list.nth($luminances, $index)));
+	}
+	@return $minimum;
+}
+
+@function mix-rgb($value, $pole, $amount) {
+	@return rgb(
+		math.round(color.channel($value, "red") * (1 - $amount) + color.channel($pole, "red") * $amount),
+		math.round(color.channel($value, "green") * (1 - $amount) + color.channel($pole, "green") * $amount),
+		math.round(color.channel($value, "blue") * (1 - $amount) + color.channel($pole, "blue") * $amount)
+	);
+}
+
+/// Ищет минимальную долю RGB-смешивания в каждом допустимом направлении.
+/// Проверяется худший фон всей группы: один on-fill остаётся общим для состояний.
+/// null означает, что одними изменениями переднего плана задачу решить нельзя.
+@function fit($foreground, $backgrounds, $ratio) {
+	$luminances: ();
+	@each $background in $backgrounds {
+		$luminances: list.append($luminances, luminance($background));
+	}
+	@if _minimum($foreground, $backgrounds, $luminances) >= $ratio {
+		@return $foreground;
+	}
+	$opaque: mix-rgb($foreground, #000, 0);
+	@if _minimum($opaque, $backgrounds, $luminances) >= $ratio {
+		@return $opaque;
+	}
+	$best: null;
+	$best-amount: 2;
+	@each $pole in (#000, #fff) {
+		@if _minimum($pole, $backgrounds, $luminances) >= $ratio {
+			$low: 0;
+			$high: 1;
+			@for $iteration from 1 through 18 {
+				$middle: math.div($low + $high, 2);
+				@if _minimum(mix-rgb($foreground, $pole, $middle), $backgrounds, $luminances) >= $ratio {
+					$high: $middle;
+				} @else {
+					$low: $middle;
+				}
+			}
+			@if $high < $best-amount {
+				$best: mix-rgb($foreground, $pole, $high);
+				$best-amount: $high;
+			}
+		}
+	}
+	@return $best;
+}
+
+/// Стоимость нужна только при выборе согласованной коррекции пары: это
+/// расстояние RGB-каналов, а не обещание перцептивной оптимальности цвета.
+@function distance($first, $second) {
+	$distance: 0;
+	@each $channel in ("red", "green", "blue") {
+		$distance: $distance + math.pow(color.channel($first, $channel) - color.channel($second, $channel), 2);
+	}
+	@return $distance;
+}

@@ -41,26 +41,29 @@ function compileTheme(source: string) {
 }
 
 describe("Семантические цветовые роли темы", () => {
-	it.each(["light", "dark"])("предоставляет все фоновые роли с поддержкой high contrast в схеме %s", (mode) => {
-		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+	it.each(["light", "dark"])("предоставляет все фоновые роли в схеме %s", (mode) => {
+		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}, $contrast: normal); }`);
 
 		for (const role of backgroundRoles) {
-			expect(tokens.get(role), role).toMatch(new RegExp(`^var\\(--hc-${role.slice(2)}, .+\\)$`));
+			expect(tokens.get(role), role).toBeDefined();
+			expect(tokens.get(role), role).not.toContain("--hc-");
 		}
 	});
 
 	it.each(["light", "dark"])("настраивает вспомогательный фон независимо от содержимого и состояний в схеме %s", (mode) => {
-		const defaults = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+		const defaults = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}, $contrast: normal); }`);
 		const config = `@use "styles/config" with ($${mode}-theme-overrides: (tokens: ("--bg-secondary": #123456)));`;
-		const configured = compileTheme(`${config} @use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+		const configured = compileTheme(
+			`${config} @use "styles/themes" as themes; .theme { @include themes.theme(${mode}, $contrast: normal); }`
+		);
 		const overridden = compileTheme(`
 			${config}
 			@use "styles/themes" as themes;
-			.theme { @include themes.theme(${mode}, (tokens: ("--bg-secondary": #abcdef))); }
+			.theme { @include themes.theme(${mode}, (tokens: ("--bg-secondary": #abcdef)), $contrast: normal); }
 		`);
 
-		expect(configured.get("--bg-secondary")).toBe("var(--hc-bg-secondary, #123456)");
-		expect(overridden.get("--bg-secondary")).toBe("var(--hc-bg-secondary, #abcdef)");
+		expect(configured.get("--bg-secondary")).toBe("#123456");
+		expect(overridden.get("--bg-secondary")).toBe("#abcdef");
 		for (const role of [...backgroundRoles.filter((role) => role !== "--bg-secondary"), "--text-primary", "--text-secondary"]) {
 			expect(configured.get(role), role).toBe(defaults.get(role));
 			expect(overridden.get(role), role).toBe(defaults.get(role));
@@ -68,11 +71,12 @@ describe("Семантические цветовые роли темы", () => 
 	});
 
 	it.each(["light", "dark"])("предоставляет все 45 ролей в схеме %s", (mode) => {
-		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}, $contrast: normal); }`);
 
 		expect(new Set(semanticRoles).size).toBe(45);
 		for (const role of semanticRoles) {
-			expect(tokens.get(role), role).toMatch(new RegExp(`^var\\(--hc-${role.slice(2)}, .+\\)$`));
+			expect(tokens.get(role), role).toBeDefined();
+			expect(tokens.get(role), role).not.toContain("--hc-");
 		}
 
 		for (const retiredRole of [
@@ -89,17 +93,18 @@ describe("Семантические цветовые роли темы", () => 
 	});
 
 	it("сохраняет одинаковый набор ролей в обеих схемах", () => {
-		const light = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(light); }');
-		const dark = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(dark); }');
+		const light = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(light, $contrast: normal); }');
+		const dark = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(dark, $contrast: normal); }');
 
 		expect([...light.keys()].sort()).toEqual([...dark.keys()].sort());
 	});
 
 	it.each(["light", "dark"])("предоставляет независимые мягкие и насыщенные роли статусов в схеме %s", (mode) => {
-		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}); }`);
+		const tokens = compileTheme(`@use "styles/themes" as themes; .theme { @include themes.theme(${mode}, $contrast: normal); }`);
 
 		for (const role of statusRoles) {
-			expect(tokens.get(role), role).toMatch(new RegExp(`^var\\(--hc-${role.slice(2)}, .+\\)$`));
+			expect(tokens.get(role), role).toBeDefined();
+			expect(tokens.get(role), role).not.toContain("--hc-");
 		}
 		for (const status of statuses) {
 			expect(tokens.has(`--${status}-hover`)).toBe(false);
@@ -108,13 +113,13 @@ describe("Семантические цветовые роли темы", () => 
 	});
 
 	it("не связывает фон, заливку и содержимое статуса при переопределении темы", () => {
-		const defaults = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(light); }');
+		const defaults = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(light, $contrast: normal); }');
 		const tokens = compileTheme(`
 			@use "styles/themes" as themes;
 			.theme { @include themes.theme(light, (tokens: (
 				"--error-bg-hover": #123456, "--error-fill": #654321,
 				"--error-fill-pressed": #abcdef, "--error-on-fill": #fedcba
-			))); }
+			)), $contrast: normal); }
 		`);
 
 		for (const [role, value] of Object.entries({
@@ -123,7 +128,7 @@ describe("Семантические цветовые роли темы", () => 
 			"--error-fill-pressed": "#abcdef",
 			"--error-on-fill": "#fedcba"
 		})) {
-			expect(tokens.get(role)).toBe(`var(--hc-${role.slice(2)}, ${value})`);
+			expect(tokens.get(role)).toBe(value);
 		}
 		for (const role of ["--error-text", "--error-bg", "--error-bg-pressed", "--error-fill-hover"]) {
 			expect(tokens.get(role)).toBe(defaults.get(role));
@@ -131,7 +136,7 @@ describe("Семантические цветовые роли темы", () => 
 	});
 
 	it("позволяет независимо переопределять части и состояния через публичный mixin", () => {
-		const defaults = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(light); }');
+		const defaults = compileTheme('@use "styles/themes" as themes; .theme { @include themes.theme(light, $contrast: normal); }');
 		const tokens = compileTheme(`
 			@use "styles/config" with ($light-theme-overrides: (tokens: (
 				"--accent-text": #123456, "--accent-fill": #654321,
@@ -142,7 +147,7 @@ describe("Семантические цветовые роли темы", () => 
 				"--accent-text": #abcdef, "--selection-bg-pressed": #fedcba,
 				"--selection-text-pressed": #012345, "--selection-fill-disabled": #456789,
 				"--selection-on-fill-disabled": #987654, "--highlight-bg-current": #112233
-			))); }
+			)), $contrast: normal); }
 		`);
 
 		for (const [role, value] of Object.entries({
@@ -156,7 +161,7 @@ describe("Семантические цветовые роли темы", () => 
 			"--selection-on-fill-disabled": "#987654",
 			"--highlight-bg-current": "#112233"
 		})) {
-			expect(tokens.get(role)).toBe(`var(--hc-${role.slice(2)}, ${value})`);
+			expect(tokens.get(role)).toBe(value);
 		}
 
 		// Настройка fill не должна менять on-fill, выбранность или ::selection.

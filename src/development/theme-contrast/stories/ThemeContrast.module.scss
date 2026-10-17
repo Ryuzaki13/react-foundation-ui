@@ -1,0 +1,240 @@
+@use "../../../../styles/themes" as themes;
+
+// Цветные темы задают только исходные overrides. High-значения выводит тот же
+// публичный mixin, который используют host-приложения.
+.sample[data-contrast-theme="light"] {
+	color-scheme: light;
+
+	@include themes.theme(light);
+}
+
+.sample[data-contrast-theme="dark"] {
+	color-scheme: dark;
+
+	@include themes.theme(dark);
+}
+
+.sample[data-contrast-theme="lilac"] {
+	color-scheme: light;
+
+	@include themes.theme(
+		light,
+		(
+			tokens: (
+				"--bg-canvas": rgb(247 241 252),
+				"--bg-surface": rgb(253 248 255),
+				"--bg-elevated": rgb(255 250 255),
+				"--bg-secondary": rgb(241 231 249),
+				"--bg-sunken": rgb(238 228 246),
+				"--bg-hover": rgb(235 222 245),
+				"--bg-pressed": rgb(225 208 240),
+				"--bg-accent": rgb(247 231 249),
+				"--text-primary": rgb(58 36 71),
+				"--text-secondary": rgb(109 83 124),
+				"--text-muted": rgb(137 113 151),
+				"--accent-fill": rgb(145 84 163),
+				"--accent-fill-hover": rgb(129 68 147),
+				"--accent-fill-pressed": rgb(112 53 130),
+				"--accent-text": rgb(145 84 163),
+				"--accent-text-hover": rgb(129 68 147),
+				"--accent-text-pressed": rgb(112 53 130),
+				"--accent-border": rgb(145 84 163),
+				"--accent-border-hover": rgb(129 68 147),
+				"--accent-border-pressed": rgb(112 53 130)
+			)
+		)
+	);
+}
+
+.sample[data-contrast-theme="forest"] {
+	color-scheme: dark;
+
+	@include themes.theme(
+		dark,
+		(
+			tokens: (
+				"--bg-canvas": rgb(13 31 26),
+				"--bg-surface": rgb(20 43 35),
+				"--bg-elevated": rgb(27 51 43),
+				"--bg-secondary": rgb(24 48 39),
+				"--bg-sunken": rgb(11 28 23),
+				"--bg-hover": rgb(34 61 50),
+				"--bg-pressed": rgb(47 75 62),
+				"--bg-accent": rgb(34 49 25),
+				"--text-primary": rgb(226 242 224),
+				"--text-secondary": rgb(170 199 173),
+				"--text-muted": rgb(121 156 135),
+				"--accent-fill": rgb(148 200 118),
+				"--accent-fill-hover": rgb(167 217 139),
+				"--accent-fill-pressed": rgb(129 179 101),
+				"--accent-text": rgb(148 200 118),
+				"--accent-text-hover": rgb(167 217 139),
+				"--accent-text-pressed": rgb(129 179 101),
+				"--accent-border": rgb(148 200 118),
+				"--accent-border-hover": rgb(167 217 139),
+				"--accent-border-pressed": rgb(129 179 101),
+				"--accent-on-fill": rgb(13 31 26)
+			)
+		)
+	);
+}
+
+.gallery {
+	padding: var(--space-md);
+	color: var(--text-primary);
+	background: var(--bg-canvas);
+}
+
+.pair > h2 {
+	margin: 0 0 var(--space-md);
+}
+
+.sample {
+	min-width: 0;
+	padding: var(--space-md);
+	border: var(--border-width) solid var(--border-default);
+	border-radius: var(--radius-lg);
+	color: var(--text-primary);
+	background: var(--bg-canvas);
+
+	> h3,
+	> p {
+		margin: 0;
+	}
+
+	::selection {
+		color: var(--text-selection-text);
+		background: var(--text-selection-bg);
+	}
+}
+
+.surface {
+	min-width: 0;
+	padding: var(--space-md);
+	border: var(--border-width) solid var(--border-default);
+	border-radius: var(--radius-md);
+	background: var(--bg-surface);
+
+	> p {
+		margin: 0;
+	}
+}
+
+// Error-слой поля выводится поверх потока; стенд резервирует место, чтобы
+// сообщение и следующий control можно было оценить независимо.
+.errorField {
+	padding-bottom: calc(var(--text-height) * 2 + var(--space-md));
+}
+
+.primary {
+	color: var(--text-primary);
+}
+.secondary {
+	color: var(--text-secondary);
+}
+.muted {
+	color: var(--text-muted);
+}
+.accentText {
+	color: var(--accent-text);
+}
+
+.link {
+	color: var(--text-link);
+
+	&:hover {
+		color: var(--text-link-hover);
+	}
+}
+
+.highlight,
+.currentHighlight,
+.textSelection,
+.swatch {
+	padding: var(--space-xs) var(--space-sm);
+	border: var(--border-width) solid transparent;
+	border-radius: var(--radius-xs);
+}
+
+.highlight {
+	color: var(--highlight-text);
+	background: var(--highlight-bg);
+	border-color: var(--highlight-border);
+}
+
+.currentHighlight {
+	color: var(--highlight-text-current);
+	background: var(--highlight-bg-current);
+	border-color: var(--highlight-border-current);
+}
+
+.textSelection {
+	color: var(--text-selection-text);
+	background: var(--text-selection-bg);
+}
+
+// Образец не задаёт состояние :focus-visible компонентам: реальный контур
+// остаётся под управлением общих стилей Foundation.
+.focusPreview {
+	padding: var(--space-sm);
+	outline: var(--focus);
+	outline-offset: var(--focus-offset);
+}
+
+// Кнопка стоит вплотную к границам контейнера. Образец выявляет исчезновение
+// индикатора фокуса при внешнем outline в обрезающих scroll/overlay-контейнерах.
+.focusClip {
+	overflow: hidden;
+	border-radius: var(--radius-sm);
+}
+
+.clippedButton {
+	width: 100%;
+}
+
+.states {
+	font-size: var(--font-size-sm);
+}
+
+.stateHeading {
+	margin: 0;
+	text-align: center;
+}
+
+.swatch {
+	text-align: center;
+	overflow-wrap: anywhere;
+}
+
+@each $state, $suffix in (normal: "", hover: "-hover", pressed: "-pressed") {
+	.swatch[data-swatch-role="neutral"][data-state="#{$state}"] {
+		color: var(--text-primary);
+		background: if(sass($state == normal): var(--bg-sunken); else: var(--bg#{$suffix}));
+		border-color: var(--border-interactive#{$suffix});
+	}
+
+	.swatch[data-swatch-role="accent"][data-state="#{$state}"] {
+		color: var(--accent-on-fill);
+		background: var(--accent-fill#{$suffix});
+		border-color: var(--accent-border#{$suffix});
+	}
+
+	.swatch[data-swatch-role="selection"][data-state="#{$state}"] {
+		color: var(--selection-text#{$suffix});
+		background: var(--selection-bg#{$suffix});
+		border-color: var(--selection-border#{$suffix});
+	}
+
+	.swatch[data-swatch-role="selection-fill"][data-state="#{$state}"] {
+		color: var(--selection-on-fill);
+		background: var(--selection-fill#{$suffix});
+	}
+
+	@each $status in (success, warning, error, info) {
+		.swatch[data-swatch-role="#{$status}"][data-state="#{$state}"] {
+			color: var(--#{$status}-text);
+			background: var(--#{$status}-bg#{$suffix});
+			border-color: var(--#{$status}-text);
+		}
+	}
+}
