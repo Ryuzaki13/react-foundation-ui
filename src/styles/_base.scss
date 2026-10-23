@@ -1,7 +1,7 @@
 @use "./mixins" as *;
 
 body {
-	@include stepped-font();
+	font-size: 1em;
 	font-family: var(--font-family-base);
 
 	// color: var(--text-primary);
@@ -74,32 +74,32 @@ input:autofill {
 
 h1,
 .h1 {
-	@include stepped-font(24);
+	font-size: 1.5em;
 }
 
 h2,
 .h2 {
-	@include stepped-font(22);
+	font-size: 1.375em;
 }
 
 h3,
 .h3 {
-	@include stepped-font(20);
+	font-size: 1.25em;
 }
 
 h4,
 .h4 {
-	@include stepped-font(19);
+	font-size: 1.1875em;
 }
 
 h5,
 .h5 {
-	@include stepped-font(17);
+	font-size: 1.0625em;
 }
 
 h6,
 .h6 {
-	@include stepped-font(16);
+	font-size: 1em;
 }
 
 h1,
@@ -231,7 +231,7 @@ caption {
 	text-align: left;
 	margin-block: var(--space-sm);
 	color: var(--text-secondary);
-	@include stepped-font(20);
+	font-size: 1.25em;
 }
 
 table {
