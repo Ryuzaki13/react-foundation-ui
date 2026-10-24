@@ -1,11 +1,10 @@
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { BellIcon, CheckIcon, DownloadIcon, PlusIcon } from "lucide-react";
 import { useArgs } from "storybook/preview-api";
 
 import { Button, type ButtonProps } from "../Button";
 
 import { ButtonSchemeGrid } from "./ButtonSchemeGrid";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
 const meta = {
 	title: "UI/Button",
@@ -27,12 +26,13 @@ const meta = {
 			control: "text"
 		},
 		tone: {
-			description: "Цветовой тон для solid и outline. Если задан только tone, используется outline; ghost всегда нейтральный.",
+			description: "Цветовой тон для solid, outline и ghost. Если задан только tone, используется outline.",
 			control: "inline-radio",
 			options: ["neutral", "accent", "error", "warning", "success", "info"]
 		},
 		appearance: {
-			description: "Для accent и статусов доступны solid и outline. Нейтральная кнопка имеет рамку или использует ghost.",
+			description:
+				"Solid задаёт заливку, outline — контур, ghost — цветной контент без рамки. Neutral имеет рамку или использует ghost.",
 			control: "inline-radio",
 			options: ["solid", "outline", "ghost"]
 		},
@@ -110,7 +110,7 @@ export const ComposableScheme: Story = {
 				Акцентная с контуром
 			</Button>
 			<Button tone="accent" appearance="ghost">
-				Ghost остаётся нейтральной
+				Акцентная ghost
 			</Button>
 			<Button tone="info" appearance="outline">
 				Информация с контуром
@@ -125,7 +125,9 @@ export const ComposableScheme: Story = {
 export const WithIcons: Story = {
 	render: () => (
 		<div style={{ display: "flex", gap: 12, flexWrap: "wrap" }}>
-			<Button icon={<DownloadIcon />}>Скачать</Button>
+			<Button icon={<DownloadIcon />} tone="accent" appearance="ghost">
+				Скачать
+			</Button>
 			<Button icon={<PlusIcon />} tone="info" appearance="solid">
 				Создать
 			</Button>

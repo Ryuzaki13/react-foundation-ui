@@ -1,11 +1,10 @@
 import { useState, type ComponentProps } from "react";
 
+import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
 import { Badge } from "../Badge";
 import { BadgeList } from "../BadgeList";
-
-import type { Meta, StoryObj } from "@storybook/react-vite";
 
 type BadgeStoryArgs = ComponentProps<typeof Badge>;
 
@@ -38,7 +37,8 @@ const meta = {
 			options: ["neutral", "accent", "success", "warning", "error", "info"]
 		},
 		appearance: {
-			description: "Для accent и статусов доступны solid и outline. Нейтральный бейдж имеет рамку или использует ghost.",
+			description:
+				"Solid задаёт заливку, outline — контур, ghost — цветной контент без фона и рамки. Neutral имеет рамку или использует ghost.",
 			control: "inline-radio",
 			options: ["solid", "outline", "ghost"]
 		},
@@ -99,6 +99,33 @@ export const Appearances: Story = {
 			</Badge>
 			<Badge tone="info" appearance="ghost">
 				Ghost
+			</Badge>
+		</BadgeList>
+	)
+};
+
+/**
+ * Все тоны ghost используют общую схему содержимого без фоновой подложки.
+ * Нейтральный пример позволяет сравнить её с явно заданными цветными тонами.
+ */
+export const GhostTones: Story = {
+	render: () => (
+		<BadgeList>
+			<Badge appearance="ghost">Нейтральный</Badge>
+			<Badge tone="accent" appearance="ghost">
+				Акцент
+			</Badge>
+			<Badge tone="success" appearance="ghost">
+				Успешно
+			</Badge>
+			<Badge tone="warning" appearance="ghost">
+				Внимание
+			</Badge>
+			<Badge tone="error" appearance="ghost">
+				Ошибка
+			</Badge>
+			<Badge tone="info" appearance="ghost">
+				Информация
 			</Badge>
 		</BadgeList>
 	)

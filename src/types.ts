@@ -27,6 +27,10 @@ export type UiBaseProps<C, V = C> = {
  */
 export type UiTone = "accent" | "neutral" | "error" | "warning" | "success" | "info";
 
+/**
+ * `ghost` окрашивает содержимое по `tone`, оставляя фон и рамку прозрачными
+ * в обычном состоянии; нейтральный вариант использует вторичный текст темы.
+ */
 export type UiAppearance = "solid" | "outline" | "ghost";
 
 export type UiPanelTone = "surface" | "elevated" | "sunken";

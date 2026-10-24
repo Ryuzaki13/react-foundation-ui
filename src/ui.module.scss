@@ -560,6 +560,10 @@
 // ---
 
 .uiToneNeutral {
+	// Нейтральный ghost сбрасывает цвет родительского tone, сохраняя вторичный текст.
+	--tone-text: var(--text-secondary);
+	--tone-text-hover: var(--text-secondary);
+	--tone-text-pressed: var(--text-secondary);
 	--ui-background: var(--bg-surface);
 	--ui-color: var(--text-primary);
 	--ui-color-hover: var(--text-primary);
@@ -688,9 +692,10 @@
 
 .uiAppearanceGhost {
 	--ui-background: transparent;
-	--ui-color: var(--text-secondary);
-	--ui-color-hover: var(--text-secondary);
-	--ui-color-pressed: var(--text-secondary);
+	// Ghost меняет только цвет содержимого: подложки состояний остаются нейтральными.
+	--ui-color: var(--tone-text);
+	--ui-color-hover: var(--tone-text-hover);
+	--ui-color-pressed: var(--tone-text-pressed);
 	--ui-border: transparent;
 	--ui-border-hover: transparent;
 	--ui-border-pressed: transparent;

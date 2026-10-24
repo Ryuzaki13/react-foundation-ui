@@ -59,7 +59,7 @@ export function resolveUiScheme({
 
 		if (resolvedAppearance === "ghost") {
 			return {
-				tone: "neutral",
+				tone: resolvedTone,
 				appearance: resolvedAppearance
 			};
 		}

@@ -22,14 +22,14 @@ Badge подходит для коротких подписей, которые 
 - служебные пометки рядом с полями, карточками и строками таблиц;
 - компактные списки значений с возможностью удаления.
 
-Компонент принимает только строковый `children`. Длинный текст автоматически ограничивается по ширине и сокращается через `TextOverflow`, поэтому Badge лучше использовать для коротких и однозначных формулировок.
+Компонент принимает строку или число в `children`. Длинный текст автоматически ограничивается по ширине и сокращается через `TextOverflow`, поэтому Badge лучше использовать для коротких и однозначных формулировок.
 
 ## Основной сценарий
 
 <Primary />
 
 ```tsx
-import { Badge } from "@ryuzaki13/react-foundation-ui";
+import { Badge } from "@ryuzaki13/react-foundation-ui/badge";
 
 export function Example() {
 	return (
@@ -47,22 +47,24 @@ export function Example() {
 В компоненте есть два уровня настройки:
 
 - `tone` задаёт семантику: `neutral`, `accent`, `success`, `warning`, `error`, `info`;
-- `appearance` задает форму отображения: `solid`, `outline`, `ghost`.
+- `appearance` задаёт форму отображения: `solid`, `outline`, `ghost`.
 
 `neutral` не имеет отдельного варианта `solid`: `solid` и `outline` отображают одну нейтральную схему с рамкой. Для нейтральной метки доступны обычное оформление с рамкой и `ghost`; заливка `solid` предназначена для акцентных и статусных тонов.
 
-Если схема не передана полностью, компонент достраивает ее сам:
+`ghost` сохраняет прозрачные фон и рамку, окрашивая содержимое по `tone`. Без `tone` и при `tone="neutral"` используется `text-secondary`, для акцента — `accent-text`, для статусов — `--<status>-text`.
 
-- без пропсов будет использован `neutral + outline`;
-- если задан цветной `tone`, но не задан `appearance`, по умолчанию используется `solid`;
-- проп `color` поддерживается только для обратной совместимости и считается устаревшим.
+Если схема не передана полностью, компонент достраивает её сам:
+
+- без обоих свойств используется нейтральное оформление с рамкой без отдельного `appearance`;
+- если задан только `tone`, применяется `outline`;
+- если задан только `appearance`, используется нейтральный тон.
 
 ### Тоны
 
 <Canvas of={BadgeStories.Tones} />
 
 ```tsx
-import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui";
+import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui/badge";
 
 export function StatusBadges() {
 	return (
@@ -95,7 +97,7 @@ export function StatusBadges() {
 <Canvas of={BadgeStories.Appearances} />
 
 ```tsx
-import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui";
+import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui/badge";
 
 export function AppearanceBadges() {
 	return (
@@ -117,6 +119,28 @@ export function AppearanceBadges() {
 }
 ```
 
+### Цветные метки без подложки
+
+<Canvas of={BadgeStories.GhostTones} />
+
+```tsx
+import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui/badge";
+
+export function GhostBadges() {
+	return (
+		<BadgeList>
+			<Badge appearance="ghost">Нейтральный</Badge>
+			<Badge tone="success" appearance="ghost">
+				Успешно
+			</Badge>
+			<Badge tone="error" appearance="ghost">
+				Ошибка
+			</Badge>
+		</BadgeList>
+	);
+}
+```
+
 ## Размеры
 
 Badge поддерживает размеры от `xs` до `xl`. На практике чаще всего используются `sm` и `md`: они лучше всего подходят для строк таблиц, панелей фильтрации и карточек.
@@ -124,7 +148,7 @@ Badge поддерживает размеры от `xs` до `xl`. На прак
 <Canvas of={BadgeStories.Sizes} />
 
 ```tsx
-import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui";
+import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui/badge";
 
 export function SizeBadges() {
 	return (
@@ -148,7 +172,7 @@ export function SizeBadges() {
 ```tsx
 import { useState } from "react";
 
-import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui";
+import { Badge, BadgeList } from "@ryuzaki13/react-foundation-ui/badge";
 
 export function SelectedFilters() {
 	const [items, setItems] = useState(["Фильтр A", "Фильтр B", "Фильтр C"]);
@@ -171,11 +195,11 @@ export function SelectedFilters() {
 
 ## Поведение и ограничения
 
-- `children` должен быть строкой, а не произвольным JSX.
+- `children` должен быть строкой или числом, а не произвольным JSX.
 - Без `onRemove` бейдж считается пассивным и не участвует во взаимодействии мышью.
 - При передаче `onRemove` справа появляется встроенная кнопка удаления.
 - Для длинных значений лучше использовать короткий видимый текст, потому что Badge рассчитан на компактные подписи, а не на развернутые описания.
-- Для новых сценариев рекомендуется использовать `tone` и `appearance`, а не `color`.
+- Схема оформления задаётся через `tone` и `appearance`; свойства `color` у компонента нет.
 
 ## API
 
