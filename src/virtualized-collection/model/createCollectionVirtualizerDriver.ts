@@ -34,9 +34,10 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 	let committedAnchorKeyIndex = initialOptions.getAnchorKeys
 		? indexCollectionRowAnchorKeys(initialOptions.items, initialOptions.getAnchorKeys)
 		: null;
-	let committedVisibleEntries = initialOptions.getVisibleKeys
-		? new Map(initialOptions.items.map((item, index) => [initialOptions.getKey(item, index), { item, index }]))
-		: null;
+	let committedRowEntries =
+		initialOptions.getVisibleKeys || initialOptions.getAnchorKeys
+			? new Map(initialOptions.items.map((item, index) => [initialOptions.getKey(item, index), { item, index }]))
+			: null;
 	let scrollElement: HTMLDivElement | null = null;
 	let mounted = false;
 	let mountRevision = 0;
@@ -50,6 +51,7 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 	const serverRowCount = initialOptions.items.length + Number(initialOptions.hasNextPage ?? false);
 	const serverSnapshot: CollectionVirtualizerSnapshot = Object.freeze({
 		virtualItems: Object.freeze([]),
+		anchorKeys: Object.freeze([]),
 		totalSize: serverRowCount * (initialOptions.estimateSize ?? 120) + Math.max(0, serverRowCount - 1) * (initialOptions.gap ?? 0)
 	});
 	let snapshot = serverSnapshot;
@@ -93,7 +95,7 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 		const next = getVisibleKeys
 			? Object.freeze(
 					rowKeys.flatMap((key) => {
-						const entry = committedVisibleEntries?.get(key);
+						const entry = committedRowEntries?.get(key);
 						return entry === undefined ? [] : getVisibleKeys(entry.item, entry.index);
 					})
 				)
@@ -110,6 +112,15 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 		const revision = mountRevision;
 		const virtualItems = instance.getVirtualItems();
 		const totalSize = instance.getTotalSize();
+		const getAnchorKeys = committedOptions.getAnchorKeys;
+		const anchorKeys = virtualItems.flatMap((item) => {
+			if (typeof item.key !== "string") return [];
+			if (getAnchorKeys === undefined) return [item.key];
+			const entry = committedRowEntries?.get(item.key);
+			return entry === undefined ? [] : getAnchorKeys(entry.item, entry.index);
+		});
+		const sameAnchorKeys =
+			snapshot.anchorKeys.length === anchorKeys.length && snapshot.anchorKeys.every((key, index) => key === anchorKeys[index]);
 		const sameGeometry =
 			snapshot.totalSize === totalSize &&
 			snapshot.virtualItems.length === virtualItems.length &&
@@ -125,16 +136,17 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 					previous.lane === current.lane
 				);
 			});
-		if (!sameGeometry) {
+		if (!sameGeometry || !sameAnchorKeys) {
 			snapshot = Object.freeze({
-				virtualItems: Object.freeze(virtualItems.map((item) => Object.freeze({ ...item }))),
+				virtualItems: sameGeometry ? snapshot.virtualItems : Object.freeze(virtualItems.map((item) => Object.freeze({ ...item }))),
+				anchorKeys: sameAnchorKeys ? snapshot.anchorKeys : Object.freeze(anchorKeys),
 				totalSize
 			});
 		}
 		// Scroll/resize может сменить пересечение строк, не меняя overscan-геометрию.
 		// Поэтому range уведомляется даже при прежнем cached React snapshot.
 		publishVisibleKeys(virtualItems);
-		if (!mounted || revision !== mountRevision || sameGeometry) return;
+		if (!mounted || revision !== mountRevision || (sameGeometry && sameAnchorKeys)) return;
 		for (const listener of listeners) listener();
 	}
 
@@ -149,6 +161,7 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 			estimateSize,
 			overscan: options.overscan ?? 5,
 			gap: options.gap ?? 0,
+			useAnimationFrameWithResizeObserver: options.useAnimationFrameWithResizeObserver ?? false,
 			measureElement: measureVirtualElement,
 			observeElementRect,
 			observeElementOffset: observeScrollOffset,
@@ -281,12 +294,12 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 				if (!rowKeysChanged && (options.estimateSize ?? 120) === (committedOptions.estimateSize ?? 120)) {
 					nextOptions.getItemKey = instance.options.getItemKey;
 				}
-				if (options.getVisibleKeys === undefined) {
-					committedVisibleEntries = null;
-				} else if (rowKeysChanged || options.items !== committedOptions.items || committedVisibleEntries === null) {
+				if (options.getVisibleKeys === undefined && options.getAnchorKeys === undefined) {
+					committedRowEntries = null;
+				} else if (rowKeysChanged || options.items !== committedOptions.items || committedRowEntries === null) {
 					// Проекция читает текущие данные, даже если прежние ключи рядов
 					// сохранились. Callback consumer при этом не заменяется wrapper.
-					committedVisibleEntries = new Map(options.items.map((item, index) => [options.getKey(item, index), { item, index }]));
+					committedRowEntries = new Map(options.items.map((item, index) => [options.getKey(item, index), { item, index }]));
 				}
 				committedKeys = keys;
 				committedAnchorKeyIndex = candidateAnchorKeyIndex;

@@ -1,0 +1,33 @@
+.layout,
+.viewport,
+.cell,
+.rowProbe {
+	min-width: 0;
+	min-height: 0;
+}
+
+.viewport {
+	// Единственным владельцем позиции остаётся virtualizer, без второго browser anchor.
+	overflow-anchor: none;
+}
+
+.sizingProbe {
+	position: relative;
+	height: 0;
+	visibility: hidden;
+	overflow: hidden;
+	pointer-events: none;
+}
+
+.metricsProbe {
+	// Следит за CSS-длиной и типографикой даже при неизменном внешнем размере
+	// sizingProbe: смена var/rem/em или gap должна разбудить измерение tracks.
+	position: absolute;
+	top: 0;
+	left: 0;
+}
+
+.rowProbe {
+	// Пустая растянутая ячейка измеряет максимум высоты соседних карточек, не перекрывая их действия.
+	pointer-events: none;
+}

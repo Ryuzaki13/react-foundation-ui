@@ -102,9 +102,10 @@ describe("createCollectionVirtualizerDriver", () => {
 		const driver = createCollectionVirtualizerDriver({ items, getKey: (item) => item });
 		expect(driver.getSnapshot()).toBe(driver.getServerSnapshot());
 		expect(driver.getServerSnapshot()).toBe(driver.getServerSnapshot());
-		expect(driver.getServerSnapshot()).toEqual({ virtualItems: [], totalSize: 3600 });
+		expect(driver.getServerSnapshot()).toEqual({ virtualItems: [], anchorKeys: [], totalSize: 3600 });
 		expect(Object.isFrozen(driver.getServerSnapshot())).toBe(true);
 		expect(Object.isFrozen(driver.getServerSnapshot().virtualItems)).toBe(true);
+		expect(Object.isFrozen(driver.getServerSnapshot().anchorKeys)).toBe(true);
 	});
 
 	it("учитывает gap только между рядами, включая sentinel, при SSR и в браузере", () => {
@@ -166,6 +167,48 @@ describe("createCollectionVirtualizerDriver", () => {
 		expect(Object.isFrozen(before)).toBe(true);
 		expect(Object.isFrozen(before.virtualItems[0])).toBe(true);
 		unsubscribe();
+	});
+
+	it("снимок содержит immutable logical identities всего окна с overscan без visible callback", () => {
+		const { driver } = createDriverHost(["first", "second", "third", "fourth"], {
+			overscan: 1,
+			getAnchorKeys: (key) => [key + ":left", key + ":right"]
+		});
+		expect(driver.getSnapshot().anchorKeys).toEqual([
+			"first:left",
+			"first:right",
+			"second:left",
+			"second:right",
+			"third:left",
+			"third:right"
+		]);
+		expect(Object.isFrozen(driver.getSnapshot().anchorKeys)).toBe(true);
+	});
+
+	it("переиздаёт logical identities при прежней геометрии, сохраняя identity geometry array", () => {
+		const rows = [
+			{ key: "first", anchorKeys: ["item-0", "item-1"] },
+			{ key: "second", anchorKeys: ["item-2", "item-3"] }
+		];
+		const { driver, commit } = createLogicalDriverHost(rows);
+		const before = driver.getSnapshot();
+		const listener = vi.fn();
+		driver.subscribe(listener);
+		commit([{ key: "first", anchorKeys: ["item-0", "item-9"] }, rows[1]]);
+		const next = driver.getSnapshot();
+		expect(next).not.toBe(before);
+		expect(next.virtualItems).toBe(before.virtualItems);
+		expect(next.anchorKeys).toEqual(["item-0", "item-9", "item-2", "item-3"]);
+		expect(listener).toHaveBeenCalledOnce();
+		listener.mockClear();
+		commit([{ key: "first", anchorKeys: ["item-0", "item-9"] }, rows[1]]);
+		expect(driver.getSnapshot()).toBe(next);
+		expect(listener).not.toHaveBeenCalled();
+	});
+
+	it("без logical projection снимок использует geometric string keys и исключает sentinel", () => {
+		const { driver } = createDriverHost(["first", "second"], { hasNextPage: true });
+		expect(driver.getSnapshot().anchorKeys).toEqual(["first", "second"]);
 	});
 
 	it("повторный commit и scroll не вызывают синхронное чтение размера живых строк", () => {

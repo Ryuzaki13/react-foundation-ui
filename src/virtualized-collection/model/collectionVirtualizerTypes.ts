@@ -17,16 +17,20 @@ export type CollectionVirtualizerOptions<T> = {
 	readonly gap?: number;
 	/** Смена геометрии сбрасывает размеры невидимых рядов и заново измеряет живые DOM-узлы. */
 	readonly measurementKey?: string | number;
+	/** CSS-сетка меняет измеряемые ряды при resize; отложенная обработка разрывает ResizeObserver delivery cycle. */
+	readonly useAnimationFrameWithResizeObserver?: boolean;
 	readonly overscan?: number;
 	readonly preserveScrollAnchor?: boolean;
 	readonly resetKey?: string | number | null;
 	readonly onVisibleKeysChange?: (keys: readonly string[]) => void;
 };
 
-/** React получает только геометрию: изменяемый TanStack instance не покидает владельца. */
+/** React получает геометрию и identities окна: изменяемый TanStack instance не покидает владельца. */
 export type CollectionVirtualizerSnapshot = {
 	readonly virtualItems: readonly Readonly<VirtualItem>[];
 	readonly totalSize: number;
+	/** Логические identities всего DOM-окна, включая overscan, для переноса окна на новую упаковку. */
+	readonly anchorKeys: readonly string[];
 };
 
 export type CollectionVirtualizerResult = CollectionVirtualizerSnapshot & {

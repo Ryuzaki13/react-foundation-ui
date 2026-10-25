@@ -147,6 +147,10 @@
 			"types": "./dist/grid/index.d.ts",
 			"import": "./dist/grid/index.js"
 		},
+		"./grid-list": {
+			"types": "./dist/grid-list/index.d.ts",
+			"import": "./dist/grid-list/index.js"
+		},
 		"./image": {
 			"types": "./dist/image/index.d.ts",
 			"import": "./dist/image/index.js"
