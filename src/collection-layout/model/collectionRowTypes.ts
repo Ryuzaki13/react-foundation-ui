@@ -1,5 +1,5 @@
 /** Исходная identity и индекс сохраняются при группировке, position относится к отображаемому порядку списка. */
-export type ListRowEntry<T> = {
+export type CollectionRowEntry<T> = {
 	readonly item: T;
 	readonly key: string;
 	readonly index: number;
@@ -7,11 +7,11 @@ export type ListRowEntry<T> = {
 };
 
 /** Виртуализатор измеряет целую строку; заголовок не считается пользовательской записью. */
-export type ListRow<T> =
-	| { readonly kind: "items"; readonly key: string; readonly entries: readonly ListRowEntry<T>[] }
+export type CollectionRow<T> =
+	| { readonly kind: "items"; readonly key: string; readonly entries: readonly CollectionRowEntry<T>[] }
 	| { readonly kind: "group"; readonly key: string; readonly groupKey: string; readonly items: readonly T[] };
 
-export type ListRows<T> = {
-	readonly rows: readonly ListRow<T>[];
+export type CollectionRows<T> = {
+	readonly rows: readonly CollectionRow<T>[];
 	readonly itemCount: number;
 };

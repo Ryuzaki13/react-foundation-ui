@@ -1,15 +1,15 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { installListTestEnvironment } from "../test-fixtures/installListTestEnvironment";
+import { installCollectionTestEnvironment } from "../test-fixtures/installCollectionTestEnvironment.fixture.test";
 
-import { createListVirtualizerDriver } from "./createListVirtualizerDriver";
-import { type ListVirtualizerOptions } from "./listVirtualizerTypes";
+import { type CollectionVirtualizerOptions } from "./collectionVirtualizerTypes";
+import { createCollectionVirtualizerDriver } from "./createCollectionVirtualizerDriver";
 
-let environment: ReturnType<typeof installListTestEnvironment>;
+let environment: ReturnType<typeof installCollectionTestEnvironment>;
 const cleanupCallbacks = new Set<() => void>();
 
 beforeEach(() => {
-	environment = installListTestEnvironment();
+	environment = installCollectionTestEnvironment();
 });
 afterEach(() => {
 	for (const cleanup of cleanupCallbacks) cleanup();
@@ -19,18 +19,18 @@ afterEach(() => {
 });
 
 /** Изолированный DOM-host проверяет настоящий core без подмены его ключей/измерений. */
-function createDriverHost(items: readonly string[], options: Partial<ListVirtualizerOptions<string>> = {}) {
+function createDriverHost(items: readonly string[], options: Partial<CollectionVirtualizerOptions<string>> = {}) {
 	const viewport = document.createElement("div");
 	viewport.setAttribute("role", "region");
 	document.body.append(viewport);
 	const getKey = (item: string) => item;
-	const driver = createListVirtualizerDriver({ items, getKey, ...options });
+	const driver = createCollectionVirtualizerDriver({ items, getKey, ...options });
 	driver.attachScrollElement(viewport);
 	const cleanup = driver.mount();
 	cleanupCallbacks.add(cleanup);
 	const rowsByKey = new Map<string, HTMLElement>();
 
-	function commit(nextItems: readonly string[], nextOptions: Partial<ListVirtualizerOptions<string>> = {}) {
+	function commit(nextItems: readonly string[], nextOptions: Partial<CollectionVirtualizerOptions<string>> = {}) {
 		const currentKeys = new Set(nextItems);
 		for (const [key, row] of rowsByKey) {
 			if (!currentKeys.has(key)) {
@@ -61,14 +61,14 @@ function createDriverHost(items: readonly string[], options: Partial<ListVirtual
 	return { driver, viewport, commit, cleanup, getKey };
 }
 
-type LogicalDriverTestRow = Readonly<{
-	key: string;
-	anchorKeys: readonly string[];
-	visibleKeys?: readonly string[];
-}>;
+type LogicalDriverTestRow = {
+	readonly key: string;
+	readonly anchorKeys: readonly string[];
+	readonly visibleKeys?: readonly string[];
+};
 
 /** Проекция изменяется вместе с данными; внешний visible callback сохраняет identity. */
-function createLogicalDriverHost(rows: readonly LogicalDriverTestRow[], options: Partial<ListVirtualizerOptions<string>> = {}) {
+function createLogicalDriverHost(rows: readonly LogicalDriverTestRow[], options: Partial<CollectionVirtualizerOptions<string>> = {}) {
 	let entries = new Map(rows.map((row) => [row.key, row]));
 	const getAnchorKeys = (key: string) => entries.get(key)?.anchorKeys ?? [];
 	const getVisibleKeys = (key: string) => {
@@ -81,7 +81,7 @@ function createLogicalDriverHost(rows: readonly LogicalDriverTestRow[], options:
 	);
 	return {
 		...host,
-		commit(nextRows: readonly LogicalDriverTestRow[], nextOptions: Partial<ListVirtualizerOptions<string>> = {}) {
+		commit(nextRows: readonly LogicalDriverTestRow[], nextOptions: Partial<CollectionVirtualizerOptions<string>> = {}) {
 			entries = new Map(nextRows.map((row) => [row.key, row]));
 			host.commit(
 				nextRows.map((row) => row.key),
@@ -95,16 +95,62 @@ function createColumnRows(keys: readonly string[], columns = 2): readonly Logica
 	return keys.flatMap((key, index) => (index % columns === 0 ? [{ key, anchorKeys: keys.slice(index, index + columns) }] : []));
 }
 
-describe("createListVirtualizerDriver", () => {
+describe("createCollectionVirtualizerDriver", () => {
 	const items = Array.from({ length: 30 }, (_, index) => `item-${index}`);
 
 	it("имеет детерминированный cached SSR snapshot без доступа к DOM", () => {
-		const driver = createListVirtualizerDriver({ items, getKey: (item) => item });
+		const driver = createCollectionVirtualizerDriver({ items, getKey: (item) => item });
 		expect(driver.getSnapshot()).toBe(driver.getServerSnapshot());
 		expect(driver.getServerSnapshot()).toBe(driver.getServerSnapshot());
 		expect(driver.getServerSnapshot()).toEqual({ virtualItems: [], totalSize: 3600 });
 		expect(Object.isFrozen(driver.getServerSnapshot())).toBe(true);
 		expect(Object.isFrozen(driver.getServerSnapshot().virtualItems)).toBe(true);
+	});
+
+	it("учитывает gap только между рядами, включая sentinel, при SSR и в браузере", () => {
+		const { driver } = createDriverHost(["first", "second", "third"], { gap: 12, hasNextPage: true });
+		expect(driver.getServerSnapshot().totalSize).toBe(516);
+		expect(driver.getSnapshot().totalSize).toBe(516);
+		expect(driver.getSnapshot().virtualItems.map((row) => row.start)).toEqual([0, 132, 264, 396]);
+		const empty = createCollectionVirtualizerDriver({ items: [], getKey: String, gap: 12 });
+		expect(empty.getServerSnapshot().totalSize).toBe(0);
+		const sentinelOnly = createCollectionVirtualizerDriver({ items: [], getKey: String, gap: 12, hasNextPage: true });
+		expect(sentinelOnly.getServerSnapshot().totalSize).toBe(120);
+	});
+
+	it("изменение gap сохраняет якорь и его внутреннее смещение", () => {
+		const { driver, viewport, commit } = createDriverHost(items, { gap: 12 });
+		viewport.scrollTop = 1357;
+		viewport.dispatchEvent(new Event("scroll"));
+		commit(items, { gap: 24 });
+		expect(viewport.scrollTop).toBe(1477);
+		expect(driver.getSnapshot().virtualItems.find((row) => row.key === "item-10")?.start).toBe(1440);
+	});
+
+	it("measurementKey сбрасывает невидимые размеры и заново измеряет живые ряды", () => {
+		environment.setRowHeight("item-20", 360);
+		const { driver, viewport, getKey } = createDriverHost(items, { measurementKey: "wide" });
+		expect(driver.getSnapshot().totalSize).toBe(3840);
+		viewport.querySelector('[data-index="20"]')?.remove();
+		driver.measureElement(null);
+		driver.commit({ items, getKey, measurementKey: "wide" });
+		environment.setRowHeight("item-0", 180);
+		driver.commit({ items, getKey, measurementKey: "narrow" });
+		expect(driver.getSnapshot().totalSize).toBe(3660);
+		expect(driver.getSnapshot().virtualItems.find((row) => row.key === "item-0")?.size).toBe(180);
+	});
+
+	it("measurementKey сохраняет глубокий якорь при сбросе невидимых размеров до viewport", () => {
+		environment.setRowHeight("item-3", 240);
+		const { driver, viewport, getKey } = createDriverHost(items, { measurementKey: "wide" });
+		viewport.scrollTop = 1237;
+		viewport.dispatchEvent(new Event("scroll"));
+		viewport.querySelector('[data-index="3"]')?.remove();
+		driver.measureElement(null);
+		driver.commit({ items, getKey, measurementKey: "wide" });
+		driver.commit({ items, getKey, measurementKey: "narrow" });
+		expect(viewport.scrollTop).toBe(1117);
+		expect(driver.getSnapshot().virtualItems.find((row) => row.key === "item-9")?.start).toBe(1080);
 	});
 
 	it("публикует только изменённую immutable геометрию, а не каждый commit", () => {
@@ -277,7 +323,7 @@ describe("createListVirtualizerDriver", () => {
 		viewport.setAttribute("role", "region");
 		document.body.append(viewport);
 		const getKey = (item: string) => item;
-		const driver = createListVirtualizerDriver({ items, getKey });
+		const driver = createCollectionVirtualizerDriver({ items, getKey });
 		driver.attachScrollElement(viewport);
 		cleanupCallbacks.add(driver.mount());
 		driver.commit({ items, getKey });
@@ -323,10 +369,10 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("SSR/factory не вызывают visible callback и не читают DOM", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const readGeometry = vi.spyOn(HTMLElement.prototype, "getBoundingClientRect");
 		readGeometry.mockClear();
-		const driver = createListVirtualizerDriver({ items, getKey: (item) => item, onVisibleKeysChange });
+		const driver = createCollectionVirtualizerDriver({ items, getKey: (item) => item, onVisibleKeysChange });
 		driver.getSnapshot();
 		driver.getServerSnapshot();
 		expect(onVisibleKeysChange).not.toHaveBeenCalled();
@@ -334,7 +380,7 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("visible keys не включают overscan и меняются при прежней cached геометрии без новых DOM reads", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { driver, viewport } = createDriverHost(items, { onVisibleKeysChange });
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1"]);
 		expect(driver.getSnapshot().virtualItems.length).toBeGreaterThan(2);
@@ -356,7 +402,7 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("проецирует видимые ряды в исходные keys, исключая group и loader без замены consumer", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const rows = [
 			{ key: "group:first", anchorKeys: ["group:first"], visibleKeys: [] },
 			{ key: "row:first", anchorKeys: ["item-1", "item-2"] },
@@ -383,7 +429,7 @@ describe("createListVirtualizerDriver", () => {
 
 	it("публикует пустую проекцию viewport с одним заголовком и не раскрывает его anchor key", () => {
 		environment.setViewportHeight(120);
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { viewport } = createLogicalDriverHost(
 			[
 				{ key: "heading", anchorKeys: ["group:first"], visibleKeys: [] },
@@ -398,7 +444,7 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("дедуплицирует одинаковые keys при scroll/commit и передаёт immutable массив", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { viewport, commit } = createDriverHost(items, { onVisibleKeysChange });
 		const keys = onVisibleKeysChange.mock.lastCall?.[0];
 		expect(Object.isFrozen(keys)).toBe(true);
@@ -410,7 +456,7 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("resize/измерение обновляют пересечение, а скрытие viewport публикует пустой диапазон", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		createDriverHost(items, { onVisibleKeysChange });
 		environment.setViewportHeight(360);
 		environment.flushResizeObservers();
@@ -427,8 +473,8 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("замена/удаление callback закрывают старый consumer и новый получает current range", () => {
-		const first = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
-		const second = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const first = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const second = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { commit, cleanup } = createDriverHost(items, { onVisibleKeysChange: first });
 		commit(items, { onVisibleKeysChange: second });
 		expect(first.mock.calls.map(([keys]) => keys)).toEqual([["item-0", "item-1"], []]);
@@ -442,7 +488,7 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("cleanup закрывает range ровно один раз и старый cleanup не закрывает remount", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { driver, getKey, cleanup } = createDriverHost(items, { onVisibleKeysChange });
 		cleanup();
 		cleanup();
@@ -459,7 +505,7 @@ describe("createListVirtualizerDriver", () => {
 
 	it("reentrant commit из callback не повторяет текущую последовательность", () => {
 		const { driver, getKey } = createDriverHost(items);
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
 			if (keys.length > 0) driver.commit({ items, getKey, onVisibleKeysChange });
 		});
 		driver.commit({ items, getKey, onVisibleKeysChange });
@@ -468,9 +514,9 @@ describe("createListVirtualizerDriver", () => {
 
 	it("reentrant replacement при освобождении старого consumer не публикует уже отменённый callback", () => {
 		const { driver, getKey } = createDriverHost(items);
-		const replacement = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
-		const superseded = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
-		const first = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
+		const replacement = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const superseded = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const first = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
 			if (keys.length === 0) driver.commit({ items, getKey, onVisibleKeysChange: replacement });
 		});
 		driver.commit({ items, getKey, onVisibleKeysChange: first });
@@ -482,7 +528,7 @@ describe("createListVirtualizerDriver", () => {
 
 	it("cleanup из visible callback закрывает интерес до любых последующих событий core", () => {
 		const { driver, viewport, getKey, cleanup } = createDriverHost(items);
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>((keys) => {
 			if (keys.length > 0) cleanup();
 		});
 		driver.commit({ items, getKey, onVisibleKeysChange });
@@ -495,7 +541,7 @@ describe("createListVirtualizerDriver", () => {
 	});
 
 	it("empty, sentinel-only и reset/prepend не передают чужие или технические ключи", () => {
-		const onVisibleKeysChange = vi.fn<NonNullable<ListVirtualizerOptions<string>["onVisibleKeysChange"]>>();
+		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { viewport, commit } = createDriverHost(["-1"], { hasNextPage: true, onVisibleKeysChange });
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["-1"]);
 		viewport.scrollTop = 120;

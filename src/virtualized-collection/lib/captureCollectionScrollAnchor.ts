@@ -1,11 +1,11 @@
-import { type ListScrollAnchor, type ListScrollAnchorMeasurement } from "./listScrollAnchorTypes";
+import { type CollectionScrollAnchor, type CollectionScrollAnchorMeasurement } from "./collectionScrollAnchorTypes";
 
 /** Верх списка остаётся верхом, даже если перед первой строкой появились новые данные. */
-export function captureListScrollAnchor(
+export function captureCollectionScrollAnchor(
 	keys: readonly string[],
-	measurement: ListScrollAnchorMeasurement | undefined,
+	measurement: CollectionScrollAnchorMeasurement | undefined,
 	scrollOffset: number
-): ListScrollAnchor {
+): CollectionScrollAnchor {
 	if (scrollOffset <= 0 || measurement === undefined || typeof measurement.key !== "string") {
 		return { type: "start" };
 	}

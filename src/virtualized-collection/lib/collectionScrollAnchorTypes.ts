@@ -1,5 +1,5 @@
 /** Якорь описывает видимую строку, а не её изменяемый индекс в новом наборе. */
-export type ListScrollAnchor =
+export type CollectionScrollAnchor =
 	| { readonly type: "start" }
 	| {
 			readonly type: "item";
@@ -9,13 +9,13 @@ export type ListScrollAnchor =
 			readonly previousKeys: readonly string[];
 	  };
 
-export type ListScrollAnchorMeasurement = {
+export type CollectionScrollAnchorMeasurement = {
 	readonly key: string | number | bigint;
 	readonly index: number;
 	readonly start: number;
 };
 
-export type ResolvedListScrollAnchor = {
+export type ResolvedCollectionScrollAnchor = {
 	readonly index: number;
 	readonly offset: number;
 };

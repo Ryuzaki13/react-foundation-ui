@@ -1,18 +1,18 @@
 /** Два направления индекса связывают логическую запись с измеряемым рядом. */
-export type ListRowAnchorKeyIndex = Readonly<{
-	keys: readonly string[];
-	rowIndexes: readonly number[];
-	firstKeyIndexes: readonly (number | undefined)[];
-}>;
+export type CollectionRowAnchorKeyIndex = {
+	readonly keys: readonly string[];
+	readonly rowIndexes: readonly number[];
+	readonly firstKeyIndexes: readonly (number | undefined)[];
+};
 
 /**
  * Разворачивает identities без изменения исходных записей. После пересборки
  * колонок запись может перейти в другой ряд, сохранив логический scroll anchor.
  */
-export function indexListRowAnchorKeys<T>(
+export function indexCollectionRowAnchorKeys<T>(
 	items: readonly T[],
 	getAnchorKeys: (item: T, index: number) => readonly string[]
-): ListRowAnchorKeyIndex {
+): CollectionRowAnchorKeyIndex {
 	const keys: string[] = [];
 	const rowIndexes: number[] = [];
 	const firstKeyIndexes: Array<number | undefined> = [];

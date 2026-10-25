@@ -1,13 +1,13 @@
 import { type ReactNode } from "react";
 
+import { type CollectionRow } from "../collection-layout/model/collectionRowTypes";
 import { GridContainer } from "../grid";
 
 import { resolveListColumnTemplate } from "./lib/resolveListColumnTemplate";
 import { type ListColumns, type ListGrouping } from "./listLayoutTypes";
-import { type ListRow } from "./model/listRowTypes";
 
 type ListRowContentProps<T> = {
-	readonly row: ListRow<T>;
+	readonly row: CollectionRow<T>;
 	readonly render: (item: T) => ReactNode;
 	readonly columns?: ListColumns;
 	readonly grouping?: ListGrouping<T>;

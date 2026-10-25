@@ -1,6 +1,6 @@
-import { type ListRow } from "../model/listRowTypes";
+import { type CollectionRow } from "../model/collectionRowTypes";
 
 /** Интересы consumer относятся к исходным записям измеряемой строки, без служебных заголовков. */
-export function getListRowVisibleKeys<T>(row: ListRow<T>): readonly string[] {
+export function getCollectionRowVisibleKeys<T>(row: CollectionRow<T>): readonly string[] {
 	return row.kind === "group" ? [] : row.entries.map((entry) => entry.key);
 }

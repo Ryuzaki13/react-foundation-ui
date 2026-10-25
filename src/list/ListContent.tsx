@@ -2,9 +2,9 @@ import { useMemo, type ReactNode } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { buildCollectionRows } from "../collection-layout/lib/buildCollectionRows";
 import { Scrollable } from "../misc";
 
-import { buildListRows } from "./lib/buildListRows";
 import { type ListColumns, type ListGrouping } from "./listLayoutTypes";
 import { ListRowContent } from "./ListRowContent";
 
@@ -21,7 +21,10 @@ export interface ListContentProps<T> {
 
 /** Невиртуальный вариант сохраняет прежний API для небольших наборов. */
 export function ListContent<T>({ items, getKey, render, separated, className, columns, grouping }: ListContentProps<T>) {
-	const { rows, itemCount } = useMemo(() => buildListRows({ items, getKey, columns, grouping }), [items, getKey, columns, grouping]);
+	const { rows, itemCount } = useMemo(
+		() => buildCollectionRows({ items, getKey, columns, grouping }),
+		[items, getKey, columns, grouping]
+	);
 	return (
 		<Scrollable className={className}>
 			{/* NOTE: пустой className необходим, чтобы применить normalize для удаления дефолтных стилей списка */}

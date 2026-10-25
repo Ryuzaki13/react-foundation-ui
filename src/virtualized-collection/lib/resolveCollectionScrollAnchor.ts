@@ -1,11 +1,14 @@
-import { type ListScrollAnchor, type ResolvedListScrollAnchor } from "./listScrollAnchorTypes";
+import { type CollectionScrollAnchor, type ResolvedCollectionScrollAnchor } from "./collectionScrollAnchorTypes";
 
 /**
  * При исчезновении якоря выбирает ближайшую сохранившуюся строку прежнего порядка.
  * Равное расстояние разрешается в пользу следующей строки: удалённое место
  * естественно занимает её преемник, но строка слева не теряется при удалении хвоста.
  */
-export function resolveListScrollAnchor(anchor: ListScrollAnchor, keys: readonly string[]): ResolvedListScrollAnchor | null {
+export function resolveCollectionScrollAnchor(
+	anchor: CollectionScrollAnchor,
+	keys: readonly string[]
+): ResolvedCollectionScrollAnchor | null {
 	if (anchor.type === "start" || keys.length === 0) return null;
 
 	const currentIndexes = new Map(keys.map((key, index) => [key, index]));

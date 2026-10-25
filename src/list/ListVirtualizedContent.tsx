@@ -2,18 +2,18 @@ import { useMemo } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { buildCollectionRows } from "../collection-layout/lib/buildCollectionRows";
+import { getCollectionRowAnchorKeys } from "../collection-layout/lib/getCollectionRowAnchorKeys";
+import { getCollectionRowKey } from "../collection-layout/lib/getCollectionRowKey";
+import { getCollectionRowVisibleKeys } from "../collection-layout/lib/getCollectionRowVisibleKeys";
+import { projectCollectionPaginationItems } from "../collection-layout/lib/projectCollectionPaginationItems";
 import { LoadingMessage, Scrollable } from "../misc";
+import { CollectionPaginationEffect } from "../virtualized-collection/CollectionPaginationEffect";
+import { useCollectionVirtualizer } from "../virtualized-collection/model/useCollectionVirtualizer";
 
-import { buildListRows } from "./lib/buildListRows";
-import { getListRowAnchorKeys } from "./lib/getListRowAnchorKeys";
-import { getListRowKey } from "./lib/getListRowKey";
-import { getListRowVisibleKeys } from "./lib/getListRowVisibleKeys";
-import { projectListPaginationItems } from "./lib/projectListPaginationItems";
-import { ListPaginationEffect } from "./ListPaginationEffect";
 import { ListRowContent } from "./ListRowContent";
 import styles from "./ListVirtualizedContent.module.scss";
 import { type ListVirtualizedContentProps } from "./listVirtualizedContentTypes";
-import { useListVirtualizer } from "./model/useListVirtualizer";
 
 /** Отображает DOM-окно полного или постраничного набора, не управляя данными потребителя. */
 export function ListVirtualizedContent<T>({
@@ -37,13 +37,16 @@ export function ListVirtualizedContent<T>({
 }: ListVirtualizedContentProps<T>) {
 	// Между render новых данных и commit геометрии снимок ещё может содержать
 	// старые индексы. Сопоставление по ключу не передаёт чужие данные живой строке.
-	const { rows, itemCount } = useMemo(() => buildListRows({ items, getKey, columns, grouping }), [items, getKey, columns, grouping]);
+	const { rows, itemCount } = useMemo(
+		() => buildCollectionRows({ items, getKey, columns, grouping }),
+		[items, getKey, columns, grouping]
+	);
 	const entriesByKey = useMemo(() => new Map(rows.map((row, index) => [row.key, { row, index }])), [rows]);
-	const { virtualItems, totalSize, attachScrollElement, measureElement } = useListVirtualizer({
+	const { virtualItems, totalSize, attachScrollElement, measureElement } = useCollectionVirtualizer({
 		items: rows,
-		getKey: getListRowKey,
-		getAnchorKeys: getListRowAnchorKeys,
-		getVisibleKeys: getListRowVisibleKeys,
+		getKey: getCollectionRowKey,
+		getAnchorKeys: getCollectionRowAnchorKeys,
+		getVisibleKeys: getCollectionRowVisibleKeys,
 		hasNextPage,
 		estimateSize,
 		overscan,
@@ -52,7 +55,7 @@ export function ListVirtualizedContent<T>({
 		onVisibleKeysChange
 	});
 	const paginationItems = useMemo(
-		() => projectListPaginationItems(virtualItems, entriesByKey, itemCount),
+		() => projectCollectionPaginationItems(virtualItems, entriesByKey, itemCount),
 		[virtualItems, entriesByKey, itemCount]
 	);
 
@@ -65,7 +68,7 @@ export function ListVirtualizedContent<T>({
 			tabIndex={0}
 			overscroll>
 			{fetchNextPage && (
-				<ListPaginationEffect
+				<CollectionPaginationEffect
 					virtualItems={paginationItems}
 					currentItemsCount={itemCount}
 					hasNextPage={hasNextPage}

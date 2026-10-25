@@ -1,11 +1,11 @@
 import { describe, expect, it, vi } from "vitest";
 
-import { buildListRows } from "./buildListRows";
+import { buildCollectionRows } from "./buildCollectionRows";
 
-describe("buildListRows", () => {
+describe("buildCollectionRows", () => {
 	it("без опций сохраняет исходный порядок и по одной записи в строке", () => {
 		const items = ["one", "two", "three"];
-		const result = buildListRows({ items, getKey: (item) => item });
+		const result = buildCollectionRows({ items, getKey: (item) => item });
 		expect(result.itemCount).toBe(3);
 		expect(
 			result.rows.map(
@@ -20,7 +20,7 @@ describe("buildListRows", () => {
 
 	it("пакует записи в строки, включая последнюю неполную строку", () => {
 		const items = ["a", "b", "c", "d", "e"];
-		const result = buildListRows({ items, getKey: (item) => item, columns: { count: 2, minItemWidth: "12rem" } });
+		const result = buildCollectionRows({ items, getKey: (item) => item, columns: { count: 2 } });
 		expect(result.itemCount).toBe(5);
 		expect(result.rows.map((row) => row.kind === "items" && row.entries.map((entry) => entry.key))).toEqual([
 			["a", "b"],
@@ -40,7 +40,7 @@ describe("buildListRows", () => {
 		]);
 		const getKey = vi.fn((item: (typeof items)[number], index: number) => `${item.id}:${index}`);
 		const groupKey = vi.fn<(item: (typeof items)[number], index: number) => string>((item) => item.group);
-		const result = buildListRows({ items, getKey, columns: { count: 2 }, grouping: { getKey: groupKey, render: () => null } });
+		const result = buildCollectionRows({ items, getKey, columns: { count: 2 }, grouping: { getKey: groupKey, render: () => null } });
 		expect(result.itemCount).toBe(5);
 		expect(
 			result.rows.map((row) =>
@@ -72,7 +72,11 @@ describe("buildListRows", () => {
 			{ id: "two", group: "other" },
 			{ id: "three", group: "" }
 		];
-		const result = buildListRows({ items, getKey: (item) => item.id, grouping: { getKey: (item) => item.group, render: () => null } });
+		const result = buildCollectionRows({
+			items,
+			getKey: (item) => item.id,
+			grouping: { getKey: (item) => item.group, render: () => null }
+		});
 		expect(result.rows.map((row) => (row.kind === "group" ? row.groupKey : row.entries.map((entry) => entry.key)))).toEqual([
 			"",
 			["one"],
@@ -83,7 +87,7 @@ describe("buildListRows", () => {
 	});
 
 	it("пустой набор не создаёт заголовки или пустые строки", () => {
-		const result = buildListRows({
+		const result = buildCollectionRows({
 			items: [],
 			getKey: String,
 			columns: { count: 3 },
@@ -93,6 +97,6 @@ describe("buildListRows", () => {
 	});
 
 	it.each([0, -1, 1.5, Number.NaN, Number.POSITIVE_INFINITY])("отклоняет недопустимое число столбцов %s", (count) => {
-		expect(() => buildListRows({ items: ["one"], getKey: (item) => item, columns: { count } })).toThrow(RangeError);
+		expect(() => buildCollectionRows({ items: ["one"], getKey: (item) => item, columns: { count } })).toThrow(RangeError);
 	});
 });

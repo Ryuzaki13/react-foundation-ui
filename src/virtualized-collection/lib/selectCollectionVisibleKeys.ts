@@ -1,8 +1,8 @@
-import { type ListVirtualizerSnapshot } from "../model/listVirtualizerTypes";
+import { type CollectionVirtualizerSnapshot } from "../model/collectionVirtualizerTypes";
 
 /** Геометрия core уже измерена: наблюдение видимости не читает DOM каждой строки и не расширяется на overscan. */
-export function selectListVisibleKeys(
-	virtualItems: ListVirtualizerSnapshot["virtualItems"],
+export function selectCollectionVisibleKeys(
+	virtualItems: CollectionVirtualizerSnapshot["virtualItems"],
 	offset: number,
 	height: number
 ): readonly string[] {

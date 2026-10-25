@@ -4,14 +4,14 @@ import { vi } from "vitest";
  * jsdom не рассчитывает геометрию. Этот browser adapter задаёт viewport и реальные
  * измерения строк по их ключам, не заменяя Virtualizer, события или React lifecycle.
  */
-export function installListTestEnvironment() {
+export function installCollectionTestEnvironment() {
 	const rowHeights = new Map<string, number>();
 	let viewportHeight = 240;
 	const observers = new Map<ResizeObserver, Readonly<{ callback: ResizeObserverCallback; targets: Set<Element> }>>();
 	const originalRect = HTMLElement.prototype.getBoundingClientRect;
 	const originalScrollTo = Object.getOwnPropertyDescriptor(HTMLElement.prototype, "scrollTo");
 
-	class ListResizeObserver implements ResizeObserver {
+	class CollectionResizeObserver implements ResizeObserver {
 		constructor(callback: ResizeObserverCallback) {
 			observers.set(this, { callback, targets: new Set() });
 		}
@@ -26,7 +26,7 @@ export function installListTestEnvironment() {
 		}
 	}
 
-	vi.stubGlobal("ResizeObserver", ListResizeObserver);
+	vi.stubGlobal("ResizeObserver", CollectionResizeObserver);
 	vi.spyOn(HTMLElement.prototype, "getBoundingClientRect").mockImplementation(function (this: HTMLElement) {
 		if (this.getAttribute("role") === "region") return new DOMRect(0, 0, 400, viewportHeight);
 		const item = this.querySelector<HTMLElement>("[data-list-test-item]");

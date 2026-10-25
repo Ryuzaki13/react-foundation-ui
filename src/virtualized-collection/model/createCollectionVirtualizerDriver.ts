@@ -7,13 +7,17 @@ import {
 	type VirtualizerOptions
 } from "@tanstack/react-virtual";
 
-import { captureListScrollAnchor } from "../lib/captureListScrollAnchor";
-import { indexListRowAnchorKeys } from "../lib/indexListRowAnchorKeys";
-import { type ListScrollAnchor } from "../lib/listScrollAnchorTypes";
-import { resolveListScrollAnchor } from "../lib/resolveListScrollAnchor";
-import { selectListVisibleKeys } from "../lib/selectListVisibleKeys";
+import { captureCollectionScrollAnchor } from "../lib/captureCollectionScrollAnchor";
+import { type CollectionScrollAnchor } from "../lib/collectionScrollAnchorTypes";
+import { indexCollectionRowAnchorKeys } from "../lib/indexCollectionRowAnchorKeys";
+import { resolveCollectionScrollAnchor } from "../lib/resolveCollectionScrollAnchor";
+import { selectCollectionVisibleKeys } from "../lib/selectCollectionVisibleKeys";
 
-import { type ListVirtualizerDriver, type ListVirtualizerOptions, type ListVirtualizerSnapshot } from "./listVirtualizerTypes";
+import {
+	type CollectionVirtualizerDriver,
+	type CollectionVirtualizerOptions,
+	type CollectionVirtualizerSnapshot
+} from "./collectionVirtualizerTypes";
 
 /** Числовой ключ не пересекается со строковыми ключами пользовательских данных. */
 const loadingRowKey = -1;
@@ -24,11 +28,11 @@ const loadingRowKey = -1;
  * никогда не измерялась с прежним индексным ключом. Пагинация этому драйверу
  * не принадлежит: дополнительная строка лишь резервирует место индикатора.
  */
-export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOptions<T>): ListVirtualizerDriver<T> {
+export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionVirtualizerOptions<T>): CollectionVirtualizerDriver<T> {
 	let committedOptions = initialOptions;
 	let committedKeys = initialOptions.items.map(initialOptions.getKey);
 	let committedAnchorKeyIndex = initialOptions.getAnchorKeys
-		? indexListRowAnchorKeys(initialOptions.items, initialOptions.getAnchorKeys)
+		? indexCollectionRowAnchorKeys(initialOptions.items, initialOptions.getAnchorKeys)
 		: null;
 	let committedVisibleEntries = initialOptions.getVisibleKeys
 		? new Map(initialOptions.items.map((item, index) => [initialOptions.getKey(item, index), { item, index }]))
@@ -37,19 +41,20 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 	let mounted = false;
 	let mountRevision = 0;
 	let committing = false;
-	let pendingAnchor: ListScrollAnchor | null = null;
+	let pendingAnchor: CollectionScrollAnchor | null = null;
 	let receiveScrollOffset: ((offset: number, isScrolling: boolean) => void) | null = null;
 	const listeners = new Set<() => void>();
 	const measuredElements = new Set<HTMLElement>();
 	const pendingMeasurements = new Set<HTMLElement>();
 	let shouldPruneElements = false;
-	const serverSnapshot: ListVirtualizerSnapshot = Object.freeze({
+	const serverRowCount = initialOptions.items.length + Number(initialOptions.hasNextPage ?? false);
+	const serverSnapshot: CollectionVirtualizerSnapshot = Object.freeze({
 		virtualItems: Object.freeze([]),
-		totalSize: (initialOptions.items.length + Number(initialOptions.hasNextPage ?? false)) * (initialOptions.estimateSize ?? 120)
+		totalSize: serverRowCount * (initialOptions.estimateSize ?? 120) + Math.max(0, serverRowCount - 1) * (initialOptions.gap ?? 0)
 	});
 	let snapshot = serverSnapshot;
 	let visibleKeys: readonly string[] | null = null;
-	let visibleCallback: ListVirtualizerOptions<T>["onVisibleKeysChange"];
+	let visibleCallback: CollectionVirtualizerOptions<T>["onVisibleKeysChange"];
 	const getScrollElement = () => scrollElement;
 	const estimateSize = () => committedOptions.estimateSize ?? 120;
 	const observeScrollOffset: VirtualizerOptions<HTMLDivElement, HTMLElement>["observeElementOffset"] = (core, callback) => {
@@ -62,7 +67,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 	};
 
 	/** Baseline устанавливается до callback: reentrant commit не повторяет тот же набор и не получает старую геометрию. */
-	function publishVisibleKeys(virtualItems: ListVirtualizerSnapshot["virtualItems"]): void {
+	function publishVisibleKeys(virtualItems: CollectionVirtualizerSnapshot["virtualItems"]): void {
 		const callback = committedOptions.onVisibleKeysChange;
 		if (callback === undefined) {
 			const previous = visibleCallback;
@@ -83,7 +88,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 			// Освобождение прежнего consumer допускает reentrant commit; используем уже текущий core.
 			virtualItems = instance.getVirtualItems();
 		}
-		const rowKeys = selectListVisibleKeys(virtualItems, instance.scrollOffset ?? 0, instance.scrollRect?.height ?? 0);
+		const rowKeys = selectCollectionVisibleKeys(virtualItems, instance.scrollOffset ?? 0, instance.scrollRect?.height ?? 0);
 		const getVisibleKeys = committedOptions.getVisibleKeys;
 		const next = getVisibleKeys
 			? Object.freeze(
@@ -134,7 +139,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 	}
 
 	function createCoreOptions(
-		options: ListVirtualizerOptions<T>,
+		options: CollectionVirtualizerOptions<T>,
 		keys: readonly string[]
 	): VirtualizerOptions<HTMLDivElement, HTMLElement> {
 		return {
@@ -143,6 +148,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 			getScrollElement,
 			estimateSize,
 			overscan: options.overscan ?? 5,
+			gap: options.gap ?? 0,
 			measureElement: measureVirtualElement,
 			observeElementRect,
 			observeElementOffset: observeScrollOffset,
@@ -160,7 +166,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 	 */
 	function restorePendingAnchor(): void {
 		if (scrollElement === null || pendingAnchor === null) return;
-		const resolved = resolveListScrollAnchor(pendingAnchor, committedAnchorKeyIndex?.keys ?? committedKeys);
+		const resolved = resolveCollectionScrollAnchor(pendingAnchor, committedAnchorKeyIndex?.keys ?? committedKeys);
 		const rowIndex = resolved === null ? undefined : (committedAnchorKeyIndex?.rowIndexes[resolved.index] ?? resolved.index);
 		instance.getTotalSize();
 		const measurement = rowIndex === undefined ? undefined : instance.measurementsCache[rowIndex];
@@ -221,7 +227,7 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 					options.items === committedOptions.items && options.getAnchorKeys === committedOptions.getAnchorKeys
 						? committedAnchorKeyIndex
 						: options.getAnchorKeys
-							? indexListRowAnchorKeys(options.items, options.getAnchorKeys)
+							? indexCollectionRowAnchorKeys(options.items, options.getAnchorKeys)
 							: null;
 				const previousAnchorKeyIndex = committedAnchorKeyIndex;
 				// Прежний geometric key не означает прежний состав ряда: смена
@@ -237,11 +243,13 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 								candidateAnchorKeyIndex.rowIndexes[index] !== previousAnchorKeyIndex.rowIndexes[index]
 						));
 				const datasetChanged = rowKeysChanged || anchorKeysChanged;
+				const measurementChanged = !Object.is(options.measurementKey, committedOptions.measurementKey);
+				const geometryChanged = datasetChanged || measurementChanged || (options.gap ?? 0) !== (committedOptions.gap ?? 0);
 				if (!Object.is(options.resetKey, committedOptions.resetKey)) {
 					pendingAnchor = { type: "start" };
 				} else if (!(options.preserveScrollAnchor ?? true)) {
 					pendingAnchor = null;
-				} else if (datasetChanged && (options.preserveScrollAnchor ?? true) && pendingAnchor === null) {
+				} else if (geometryChanged && (options.preserveScrollAnchor ?? true) && pendingAnchor === null) {
 					const offset = scrollElement?.scrollTop ?? 0;
 					const visibleMeasurement = instance.getVirtualItemForOffset(offset);
 					// В коротком viewport может быть виден только loader. Новая страница
@@ -251,12 +259,12 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 							? visibleMeasurement
 							: instance.measurementsCache[committedKeys.length - 1];
 					if (committedAnchorKeyIndex === null) {
-						pendingAnchor = captureListScrollAnchor(committedKeys, anchorMeasurement, offset);
+						pendingAnchor = captureCollectionScrollAnchor(committedKeys, anchorMeasurement, offset);
 					} else {
 						const logicalIndex =
 							anchorMeasurement === undefined ? undefined : committedAnchorKeyIndex.firstKeyIndexes[anchorMeasurement.index];
 						const logicalKey = logicalIndex === undefined ? undefined : committedAnchorKeyIndex.keys[logicalIndex];
-						pendingAnchor = captureListScrollAnchor(
+						pendingAnchor = captureCollectionScrollAnchor(
 							committedAnchorKeyIndex.keys,
 							anchorMeasurement === undefined || logicalIndex === undefined || logicalKey === undefined
 								? undefined
@@ -285,13 +293,22 @@ export function createListVirtualizerDriver<T>(initialOptions: ListVirtualizerOp
 				committedOptions = options;
 				instance.setOptions(nextOptions);
 				instance._willUpdate();
+				// Ширина карточек может измениться без смены числа колонок. Старые
+				// размеры невидимых рядов в этом случае не описывают новую раскладку.
+				if (measurementChanged) instance.measure();
 				instance.getTotalSize();
 				// Обычный scroll commit подключает только новые ref-узлы. Уже живые
 				// строки измеряет ResizeObserver core; смена порядка или состава рядов
 				// обновляет их измерения, сохраняя keyed cache реальных размеров.
-				const elementsToMeasure = datasetChanged ? measuredElements : pendingMeasurements;
+				const elementsToMeasure = datasetChanged || measurementChanged ? measuredElements : pendingMeasurements;
 				for (const element of elementsToMeasure) {
-					if (element.isConnected && scrollElement?.contains(element)) instance.measureElement(element);
+					if (!element.isConnected || !scrollElement?.contains(element)) continue;
+					const forceMeasurement = measurementChanged && instance.isScrolling;
+					instance.measureElement(element);
+					// При пользовательском scroll core обычно ждёт ResizeObserver.
+					// Новая геометрия нужна якорю уже в текущем layout commit.
+					if (forceMeasurement)
+						instance.resizeItem(instance.indexFromElement(element), measureVirtualElement(element, undefined, instance));
 				}
 				pendingMeasurements.clear();
 				if (shouldPruneElements || datasetChanged) {

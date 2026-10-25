@@ -1,20 +1,16 @@
-import { type ListContentProps } from "../ListContent";
-import { type ListRow, type ListRowEntry, type ListRows } from "../model/listRowTypes";
+import { type CollectionLayoutOptions } from "../model/collectionLayoutTypes";
+import { type CollectionRow, type CollectionRowEntry, type CollectionRows } from "../model/collectionRowTypes";
 
 /**
  * Единственная проекция для обоих Content. Группы собираются до разбиения на
  * строки, поэтому неполный хвост никогда не заполняется элементом другой группы.
  * JSON-кортежи разделяют пространства служебных ключей без коллизий разделителей.
  */
-export function buildListRows<T>({
-	items,
-	getKey,
-	columns,
-	grouping
-}: Pick<ListContentProps<T>, "items" | "getKey" | "columns" | "grouping">): ListRows<T> {
+export function buildCollectionRows<T>({ items, getKey, columns, grouping }: CollectionLayoutOptions<T>): CollectionRows<T> {
 	const count = columns?.count ?? 1;
-	if (!Number.isSafeInteger(count) || count < 1) throw new RangeError("List: columns.count должен быть положительным целым числом.");
-	const groups = new Map<string, ListRowEntry<T>[]>();
+	if (!Number.isSafeInteger(count) || count < 1)
+		throw new RangeError("Collection: columns.count должен быть положительным целым числом.");
+	const groups = new Map<string, CollectionRowEntry<T>[]>();
 	items.forEach((item, index) => {
 		const groupKey = grouping?.getKey(item, index) ?? "";
 		const entry = { item, key: getKey(item, index), index, position: 0 };
@@ -22,7 +18,7 @@ export function buildListRows<T>({
 		if (entries) entries.push(entry);
 		else groups.set(groupKey, [entry]);
 	});
-	const rows: ListRow<T>[] = [];
+	const rows: CollectionRow<T>[] = [];
 	let position = 0;
 	for (const [groupKey, sourceEntries] of groups) {
 		if (grouping) {

@@ -1,14 +1,14 @@
 import { act, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 
-import { installListTestEnvironment } from "./test-fixtures/installListTestEnvironment";
+import { installCollectionTestEnvironment } from "../virtualized-collection/test-fixtures/installCollectionTestEnvironment.fixture.test";
 
 import { List } from "./index";
 
-let environment: ReturnType<typeof installListTestEnvironment>;
+let environment: ReturnType<typeof installCollectionTestEnvironment>;
 
 beforeEach(() => {
-	environment = installListTestEnvironment();
+	environment = installCollectionTestEnvironment();
 });
 afterEach(() => {
 	environment.restore();

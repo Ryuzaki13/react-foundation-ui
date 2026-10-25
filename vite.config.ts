@@ -132,6 +132,6 @@ export default defineConfig((configEnv) => ({
 		environment: "jsdom",
 		setupFiles: ["src/test/setup.ts"],
 		include: ["src/**/*.{test,spec}.{ts,tsx}"],
-		exclude: ["node_modules", "dist"]
+		exclude: ["node_modules", "dist", "**/*.fixture.test.{ts,tsx}"]
 	}
 }));
