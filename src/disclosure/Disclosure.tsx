@@ -4,6 +4,7 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { ChevronDownIcon, ChevronUpIcon } from "lucide-react";
 
 import { FlexSpacer } from "../flex";
+import { Separator } from "../separator";
 import { UiPanelTone } from "../types";
 import uiStyles from "../ui.module.scss";
 import { getUiPanelToneClassName } from "../uiClasses";
@@ -16,12 +17,22 @@ export interface DisclosureProps extends PropsWithChildren {
 	tone?: UiPanelTone;
 	/** Независимые действия в правой части заголовка, расположенные вне кнопки раскрытия. */
 	headerActions?: ReactNode;
+	triggerClassName?: string;
+	contentClassName?: string;
 }
 
 /**
  * Раскрывающийся блок с заголовком и скрываемым содержимым. Используется для FAQ, настроек и компактного размещения второстепенной информации.
  */
-export function Disclosure({ label, defaultOpen, headerActions, tone = "surface", children }: DisclosureProps) {
+export function Disclosure({
+	label,
+	defaultOpen,
+	headerActions,
+	tone = "surface",
+	triggerClassName,
+	contentClassName,
+	children
+}: DisclosureProps) {
 	const [open, setOpen] = useState(defaultOpen === true);
 	const panelId = useId();
 	const buttonId = useId();
@@ -35,7 +46,7 @@ export function Disclosure({ label, defaultOpen, headerActions, tone = "surface"
 					type="button"
 					aria-expanded={open}
 					aria-controls={panelId}
-					className={cn(styles.disclosureButton, "fontBold radiusSm paddingSm gapSm")}
+					className={cn(styles.disclosureButton, triggerClassName)}
 					data-ui="disclosure-toggle"
 					data-action={open ? "collapse-disclosure" : "expand-disclosure"}
 					onClick={() => setOpen((prevOpen) => !prevOpen)}>
@@ -51,9 +62,12 @@ export function Disclosure({ label, defaultOpen, headerActions, tone = "surface"
 			</div>
 
 			{open && (
-				<div id={panelId} role="region" aria-labelledby={buttonId}>
-					<div className="paddingMd">{children}</div>
-				</div>
+				<>
+					<Separator className="marginBlockSm" />
+					<div id={panelId} role="region" aria-labelledby={buttonId} className={contentClassName}>
+						{children}
+					</div>
+				</>
 			)}
 		</div>
 	);
