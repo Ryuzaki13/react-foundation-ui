@@ -17,16 +17,17 @@ export interface ListContentProps<T> {
 	/** Встроенная сборка измеряемых строк; группировка для колонок не обязательна. */
 	readonly columns?: ListColumns;
 	readonly grouping?: ListGrouping<T>;
+	readonly overscroll?: boolean;
 }
 
 /** Невиртуальный вариант сохраняет прежний API для небольших наборов. */
-export function ListContent<T>({ items, getKey, render, separated, className, columns, grouping }: ListContentProps<T>) {
+export function ListContent<T>({ items, getKey, render, separated, className, columns, grouping, overscroll }: ListContentProps<T>) {
 	const { rows, itemCount } = useMemo(
 		() => buildCollectionRows({ items, getKey, columns, grouping }),
 		[items, getKey, columns, grouping]
 	);
 	return (
-		<Scrollable className={className}>
+		<Scrollable overscroll={overscroll} className={className}>
 			{/* NOTE: пустой className необходим, чтобы применить normalize для удаления дефолтных стилей списка */}
 			<ul className="">
 				{rows.map((row) => (

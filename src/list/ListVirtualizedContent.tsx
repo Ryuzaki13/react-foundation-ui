@@ -24,6 +24,7 @@ export function ListVirtualizedContent<T>({
 	className,
 	columns,
 	grouping,
+	overscroll,
 	isLoading,
 	hasNextPage = false,
 	fetchNextPage,
@@ -66,7 +67,7 @@ export function ListVirtualizedContent<T>({
 			role="region"
 			aria-label={ariaLabel}
 			tabIndex={0}
-			overscroll>
+			overscroll={overscroll}>
 			{fetchNextPage && (
 				<CollectionPaginationEffect
 					virtualItems={paginationItems}
