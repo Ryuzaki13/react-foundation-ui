@@ -17,7 +17,7 @@ export function FloatingArrow({ ref, placement, middlewareData }: TooltipArrowPr
 				width="16"
 				height="16"
 				viewBox="0 0 16 16"
-				fill="var(--floating-panel-background, var(--bg-elevated))"
+				fill="var(--floating-panel-border, var(--border-default))"
 				stroke="var(--floating-panel-border, var(--border-default))"
 				strokeWidth="var(--border-width)"
 				style={{ display: "block" }}>
