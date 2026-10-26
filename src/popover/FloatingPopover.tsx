@@ -6,7 +6,7 @@ import {
 	autoUpdate,
 	flip,
 	offset,
-	Placement,
+	type Placement,
 	shift,
 	useDismiss,
 	useFocus,
@@ -20,28 +20,47 @@ import { createPortal } from "react-dom";
 
 import { FloatingArrow } from "../floating-arrow/FloatingArrow";
 
+import { FloatingPopoverAnchor } from "./FloatingPopoverAnchor";
 import styles from "./Popover.module.scss";
 
-interface FloatingPopoverProps {
-	content: React.ReactNode;
-	children: React.ReactNode;
-	openOnHover?: boolean;
-	placement?: Placement;
-	openDelay?: number;
-	closeDelay?: number;
-	maxWidth?: number;
-	state?: "information" | "error" | "warning" | "success" | "negative";
-	tooltip?: true;
+/**
+ * Пассивная floating-подсказка. По умолчанию создаёт span для произвольного
+ * содержимого; asChild сохраняет участие самого trigger в Grid/Flex-раскладке.
+ */
+export type FloatingPopoverProps = {
+	readonly content: React.ReactNode;
+	readonly openOnHover?: boolean;
+	readonly placement?: Placement;
+	readonly openDelay?: number;
+	readonly closeDelay?: number;
+	readonly maxWidth?: number;
+	readonly state?: "information" | "error" | "warning" | "success" | "negative";
+	readonly tooltip?: true;
 	/**
 	 * Изменяется вместе с CSS-координатой trigger, когда её изменение не отслеживается `autoUpdate`.
 	 * После commit React выполняется повторный расчёт позиции открытой floating-панели.
 	 */
-	positionUpdateKey?: unknown;
-}
+	readonly positionUpdateKey?: unknown;
+} & (
+	| {
+			/**
+			 * Передаёт reference, события и ARIA единственному дочернему элементу.
+			 * Пользовательский компонент обязан передать их и ref своему DOM-элементу.
+			 * Fragment не может быть якорем; нативный disabled сохраняет свою семантику.
+			 */
+			readonly asChild: true;
+			readonly children: React.ReactElement<React.HTMLProps<HTMLElement>>;
+	  }
+	| {
+			readonly asChild?: false;
+			readonly children: React.ReactNode;
+	  }
+);
 
 export function FloatingPopover({
 	content,
 	children,
+	asChild = false,
 	openOnHover = true,
 	placement = "bottom",
 	openDelay = 200,
@@ -104,9 +123,15 @@ export function FloatingPopover({
 
 	return (
 		<>
-			<span ref={refs.setReference} {...getReferenceProps()} style={{ lineHeight: 1 }}>
-				{children}
-			</span>
+			{asChild ? (
+				<FloatingPopoverAnchor referenceRef={refs.setReference} getReferenceProps={getReferenceProps}>
+					{children}
+				</FloatingPopoverAnchor>
+			) : (
+				<span ref={refs.setReference} {...getReferenceProps()} style={{ lineHeight: 1 }}>
+					{children}
+				</span>
+			)}
 
 			{open &&
 				createPortal(

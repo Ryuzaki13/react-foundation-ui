@@ -88,6 +88,36 @@ export function Example() {
 
 <Canvas of={PopoverStories.Tooltip} />
 
+### Подсказка без обёртки
+
+По умолчанию `FloatingPopover` оборачивает произвольные `children` в `span`.
+С `asChild` якорем становится единственный дочерний элемент: он сохраняет прямое участие в Grid/Flex,
+а события и ARIA-атрибуты подсказки передаются на него вместе с объединённым `ref`.
+Собственные обработчики, `ref` и идентификаторы из `aria-describedby` дочернего элемента сохраняются.
+
+```tsx
+import { Button } from "@ryuzaki13/react-foundation-ui/button";
+import { FloatingPopover } from "@ryuzaki13/react-foundation-ui/popover";
+
+export function ActionTooltip() {
+	return (
+		<FloatingPopover asChild tooltip content="Описание действия">
+			<Button>Выполнить</Button>
+		</FloatingPopover>
+	);
+}
+```
+
+Для `asChild` нужен один React-элемент, принимающий `ref`, обработчики событий и ARIA-атрибуты.
+Нативный DOM-элемент подходит напрямую; собственный компонент должен передать эти props на тот же DOM-узел.
+Текст, Fragment и несколько соседних элементов в этом режиме не поддерживаются.
+
+`Button` с `title` использует `asChild` автоматически. Нативный `disabled` сохраняет блокировку действия
+и отсутствие клавиатурного фокуса; подсказка такой кнопки доступна при наведении мыши.
+Причину недоступности действия, которую необходимо прочитать с клавиатуры, размещайте также в доступном пояснении рядом.
+
+<Canvas of={PopoverStories.TooltipAsChild} />
+
 ## API
 
 <ArgTypes of={PopoverStories} />

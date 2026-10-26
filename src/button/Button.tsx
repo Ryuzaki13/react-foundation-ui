@@ -85,7 +85,7 @@ export function Button({
 	if (!title) return button;
 
 	return (
-		<FloatingPopover placement="bottom" tooltip content={<>{title}</>}>
+		<FloatingPopover asChild placement="bottom" tooltip content={<>{title}</>}>
 			{button}
 		</FloatingPopover>
 	);

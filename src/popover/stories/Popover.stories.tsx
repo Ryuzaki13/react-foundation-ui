@@ -7,6 +7,7 @@ import { fn } from "storybook/test";
 
 import { Button } from "../../button/Button";
 import { createControlledStoryRender } from "../../development/storybook/createControlledStoryRender";
+import { GridContainer } from "../../grid";
 import { Input } from "../../input/Input";
 import { Popover, type PopoverProps } from "../components/Popover";
 import { type PopoverContentProps } from "../components/PopoverContent";
@@ -245,6 +246,30 @@ export const Tooltip: Story = {
 			<FloatingPopover tooltip content="Дополнительное описание действия">
 				<button type="button">Навести или сфокусировать</button>
 			</FloatingPopover>
+		);
+	}
+};
+
+/**
+ * Сравнение сохраняет одинаковую ширину ячеек: наличие подсказки не должно
+ * добавлять промежуточный grid-элемент ни у обычной, ни у disabled-кнопки.
+ */
+export const TooltipAsChild: Story = {
+	parameters: { layout: "padded" },
+	render: function Render() {
+		return (
+			<GridContainer data-testid="tooltip-grid" templateColumns="minmax(0, 1fr)" gap="md" style={{ width: "min(20em, 100%)" }}>
+				<Button data-testid="plain-grid-button">Обычная кнопка</Button>
+				<Button data-testid="title-grid-button" title="Подсказка кнопки в grid">
+					Кнопка с подсказкой
+				</Button>
+				<Button data-testid="disabled-grid-button" disabled title="Действие пока недоступно">
+					Недоступная кнопка
+				</Button>
+				<FloatingPopover asChild tooltip content="Якорем служит сам дочерний Button">
+					<Button data-testid="as-child-grid-button">Явный asChild</Button>
+				</FloatingPopover>
+			</GridContainer>
 		);
 	}
 };

@@ -3,6 +3,7 @@
 import { createRef, type SyntheticEvent } from "react";
 
 import { fireEvent, render, screen } from "@testing-library/react";
+import userEvent from "@testing-library/user-event";
 import { describe, expect, it, vi } from "vitest";
 
 import { Button } from "./Button";
@@ -88,5 +89,51 @@ describe("Button", () => {
 		expect(screen.getByRole("button", { name: expectedName }).getAttribute("aria-label")).toBe(expectedName);
 		expect(screen.getByRole("img", { hidden: true })).toBeInstanceOf(HTMLElement);
 		expect(screen.queryByRole("img")).toBeNull();
+	});
+
+	it("сохраняет участие кнопки с title в родительской grid-раскладке и её ref", async () => {
+		const user = userEvent.setup();
+		const buttonRef = createRef<HTMLButtonElement>();
+		const onClick = vi.fn();
+		render(
+			<div data-testid="button-grid" style={{ display: "grid", gridTemplateColumns: "16rem" }}>
+				<Button ref={buttonRef} title="Описание действия" onClick={onClick} style={{ gridColumn: "1 / -1" }}>
+					Действие
+				</Button>
+			</div>
+		);
+		const button = screen.getByRole("button");
+		// Непосредственное участие в Grid — требование этого исправления;
+		// фактическое растяжение дополнительно проверяется в настоящем браузере.
+		expect(button.parentElement).toBe(screen.getByTestId("button-grid"));
+		expect(buttonRef.current).toBe(button);
+		await user.tab();
+		const tooltip = screen.getByRole("tooltip");
+		expect(button.getAttribute("aria-describedby")).toBe(tooltip.id);
+		await user.keyboard("{Enter}");
+		expect(onClick).toHaveBeenCalledTimes(1);
+		expect(screen.queryByRole("tooltip")).toBeNull();
+	});
+
+	it("сохраняет native disabled с title и допускает hover-подсказку без активации", async () => {
+		const user = userEvent.setup();
+		const onClick = vi.fn();
+		render(
+			<>
+				<Button data-testid="disabled-trigger" disabled title="Причина недоступности" onClick={onClick} />
+				<button type="button" data-testid="next-focus-target" />
+			</>
+		);
+		const button = screen.getByTestId("disabled-trigger");
+		expect(button).toHaveProperty("disabled", true);
+		expect(button.hasAttribute("aria-disabled")).toBe(false);
+		await user.hover(button);
+		const tooltip = await screen.findByRole("tooltip");
+		expect(button.getAttribute("aria-describedby")).toBe(tooltip.id);
+		await user.click(button);
+		expect(onClick).not.toHaveBeenCalled();
+		await user.unhover(button);
+		await user.tab();
+		expect(document.activeElement).toBe(screen.getByTestId("next-focus-target"));
 	});
 });
