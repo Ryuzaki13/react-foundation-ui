@@ -110,7 +110,7 @@ textarea,
 select,
 button {
 	font-family: inherit;
-	font-size: 1em;
+	font-size: max(16px, var(--font-size-md));
 }
 
 html {
