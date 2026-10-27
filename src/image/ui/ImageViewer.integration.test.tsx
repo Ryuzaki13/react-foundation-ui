@@ -1,7 +1,7 @@
 import { useState } from "react";
 
 import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { afterEach, beforeAll, describe, expect, it } from "vitest";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 
 import { Button } from "../../button";
 import { Modal, ModalContent, ModalManagerProvider } from "../../modal";
@@ -58,6 +58,37 @@ function ViewerOverModalFixture() {
 
 afterEach(() => {
 	document.getElementById("modal-root")?.remove();
+	vi.restoreAllMocks();
+});
+
+describe("ImageViewer на прокрученной странице", () => {
+	it.each(["close", "unmount"] as const)("восстанавливает обе координаты после %s и освобождает стили документа", async (ending) => {
+		vi.spyOn(window, "scrollX", "get").mockReturnValue(17);
+		vi.spyOn(window, "scrollY", "get").mockReturnValue(480);
+		const scrollTo = vi.spyOn(window, "scrollTo");
+		const images = [{ src: "/preview.webp", alt: "Изображение" }];
+		const onClose = vi.fn();
+		const view = render(<ImageViewer open images={images} onClose={onClose} />);
+		try {
+			await screen.findByRole("dialog", { name: "Просмотр изображений" });
+			// Vendor height: 100% обрезал длинный body и терял scrollTop ещё при открытии.
+			expect(document.body.classList.contains("yarl__no_scroll")).toBe(false);
+			expect(document.body.style.position).toBe("fixed");
+			expect(document.body.style.top).toBe("-480px");
+			expect(document.body.style.left).toBe("-17px");
+			if (ending === "close") {
+				fireEvent.click(screen.getByRole("button", { name: "Закрыть просмотр" }));
+				await waitFor(() => expect(onClose).toHaveBeenCalledOnce());
+				view.rerender(<ImageViewer open={false} images={images} onClose={onClose} />);
+			} else view.unmount();
+			await waitFor(() => expect(document.body.style.position).toBe(""));
+			expect(document.body.style.top).toBe("");
+			expect(document.documentElement.style.overflow).toBe("");
+			expect(scrollTo).toHaveBeenLastCalledWith({ left: 17, top: 480, behavior: "instant" });
+		} finally {
+			view.unmount();
+		}
+	});
 });
 
 describe("ImageViewer поверх Modal", () => {
@@ -89,6 +120,7 @@ describe("ImageViewer поверх Modal", () => {
 		expect(modalRoot?.hasAttribute("inert")).toBe(false);
 		expect(modalRoot?.hasAttribute("aria-hidden")).toBe(false);
 		expect(screen.getByRole("dialog", { name: "Выбор изображения" })).not.toBeNull();
+		expect(document.body.style.position).toBe("fixed");
 
 		fireEvent.keyDown(previewTrigger, { key: "Escape", bubbles: true, cancelable: true });
 

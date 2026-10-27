@@ -1,5 +1,5 @@
-import { fireEvent, render, screen, waitFor } from "@testing-library/react";
-import { beforeEach, describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { type LightboxExternalProps, type Plugin } from "yet-another-react-lightbox";
 import Captions from "yet-another-react-lightbox/plugins/captions";
 import Counter from "yet-another-react-lightbox/plugins/counter";
@@ -51,6 +51,11 @@ const IMAGES: readonly ImageViewerImage[] = [
 	{ src: "/second.webp", alt: "Второе", intrinsicWidth: 1600, intrinsicHeight: 900 }
 ];
 
+afterEach(() => {
+	cleanup();
+	vi.restoreAllMocks();
+});
+
 /**
  * Дожидается загрузки ленивого runtime галереи перед проверкой диалога.
  *
@@ -66,6 +71,7 @@ async function findViewerDialog() {
 describe("ImageViewer", () => {
 	beforeEach(() => {
 		lightboxMock.props = undefined;
+		vi.spyOn(window, "scrollTo").mockImplementation(() => undefined);
 	});
 
 	it("передаёт controlled-состояние, русские labels и полный набор включённых plugins", async () => {

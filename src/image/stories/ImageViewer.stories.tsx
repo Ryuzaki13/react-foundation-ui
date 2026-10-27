@@ -2,6 +2,7 @@ import { type Meta, type StoryObj } from "@storybook/react-vite";
 import { useArgs } from "storybook/preview-api";
 
 import { Button } from "../../button";
+import { FlexContainer } from "../../flex";
 import { type ImageViewerImage, type ImageViewerProps, type ImageViewerStyle } from "../model/imageViewerTypes";
 import { ImageViewer } from "../ui/ImageViewer";
 
@@ -108,6 +109,29 @@ export const SingleImage: Story = {
 					}}
 				/>
 			</>
+		);
+	}
+};
+
+/** Проверяет возврат к триггеру внизу длинного документа без скачка к началу. */
+export const LongPage: Story = {
+	parameters: { layout: "fullscreen" },
+	render: function Render(args) {
+		const [, updateArgs] = useArgs<ImageViewerProps>();
+		return (
+			<FlexContainer column gap="lg" justify="between" style={{ minHeight: "200vh", padding: "var(--space-lg)" }}>
+				<p>Прокрутите страницу вниз, откройте изображение и закройте его. Позиция страницы должна сохраниться.</p>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть изображение внизу страницы</Button>
+				<ImageViewer
+					{...args}
+					open={args.open}
+					images={IMAGES.slice(0, 1)}
+					onClose={() => {
+						args.onClose();
+						updateArgs({ open: false });
+					}}
+				/>
+			</FlexContainer>
 		);
 	}
 };

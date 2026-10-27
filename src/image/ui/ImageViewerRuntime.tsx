@@ -1,5 +1,6 @@
 import { useEffect, useMemo } from "react";
 
+import { useDocumentScrollLock } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import {
 	CaptionsIcon,
@@ -63,6 +64,10 @@ export default function ImageViewerRuntime({
 
 	// Стабильная ссылка предотвращает внешний reset текущего slide при несвязанном rerender родителя.
 	const slides = useMemo(() => buildImageViewerSlides(images), [images]);
+	const viewerOpen = open && slides.length > 0;
+	// Общая аренда сохраняет исходную прокрутку и не разблокирует документ под
+	// вложенным Modal. Vendor height: 100% обрезает длинный body и теряет scrollTop.
+	useDocumentScrollLock({ active: viewerOpen, compensateScrollbar: true });
 	const requestedIndex = Number.isFinite(index) ? Math.trunc(index) : 0;
 	const resolvedIndex = slides.length > 0 ? Math.min(Math.max(requestedIndex, 0), slides.length - 1) : 0;
 	const hasCaptions = images.some((image) => {
@@ -88,7 +93,7 @@ export default function ImageViewerRuntime({
 	);
 	const resolvedLabels = useMemo(() => resolveImageViewerLabels(labels), [labels]);
 	const lightboxProps: LightboxExternalProps = {
-		open: open && slides.length > 0,
+		open: viewerOpen,
 		close: onClose,
 		index: resolvedIndex,
 		slides,
@@ -98,6 +103,7 @@ export default function ImageViewerRuntime({
 		labels: resolvedLabels,
 		carousel: { finite: !loop },
 		controller: { closeOnBackdropClick, closeOnPullDown },
+		noScroll: { disabled: true },
 		captions: { showToggle: true },
 		counter: {
 			separator: " / ",
