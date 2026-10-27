@@ -1,6 +1,12 @@
 import { createRef, type RefCallback } from "react";
 
-import { TextEditorLexical, type TextEditorCoreProps, type TextEditorHandle } from "../src/text-editor";
+import {
+	TextEditorLexical,
+	type TextEditorCoreProps,
+	type TextEditorFocusHandle,
+	type TextEditorFocusOptions,
+	type TextEditorHandle
+} from "../src/text-editor";
 
 const ref = createRef<TextEditorHandle>();
 const callbackRef: RefCallback<TextEditorHandle> = (handle) => {
@@ -18,6 +24,22 @@ const callbackEditor = <TextEditorLexical {...props} ref={callbackRef} readOnly=
 const unchangedConsumer = <TextEditorLexical initialData={{ html: "", raw: null }} onChange={() => undefined} />;
 ref.current?.clear();
 
+// Прежний минимальный контракт совместим и с consumer-owned clear-only реализацией.
+const oldHandle: TextEditorHandle = { clear: () => undefined };
+const focusRef = createRef<TextEditorFocusHandle>();
+const focusCallback: RefCallback<TextEditorFocusHandle> = (handle) => handle?.focus();
+const focusedEditor = <TextEditorLexical {...props} ref={focusRef} />;
+const focusCallbackEditor = <TextEditorLexical {...props} ref={focusCallback} />;
+const focusOptions = { preventScroll: true } satisfies TextEditorFocusOptions;
+focusRef.current?.clear();
+focusRef.current?.focus();
+focusRef.current?.focus(focusOptions);
+
+// @ts-expect-error Focus options не принимают строковые HTML-значения.
+focusRef.current?.focus({ preventScroll: "true" });
+// @ts-expect-error Дополнительная возможность не раскрывает внутренний Lexical instance.
+const focusedInternalEditor = focusRef.current?.editor;
+
 // @ts-expect-error Режим редактирования является флагом, а не строковым значением HTML.
 const invalidReadOnly = <TextEditorLexical {...props} readOnly="true" />;
 // @ts-expect-error Ref предоставляет ограниченную handle, а не DOM-узел editable.
@@ -32,6 +54,10 @@ ref.current?.focus();
 void readonlyEditor;
 void callbackEditor;
 void unchangedConsumer;
+void focusedEditor;
+void focusCallbackEditor;
+void focusedInternalEditor;
+void oldHandle;
 void invalidReadOnly;
 void invalidElementRef;
 void internalEditor;

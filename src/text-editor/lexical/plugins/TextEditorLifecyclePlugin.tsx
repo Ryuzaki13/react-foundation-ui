@@ -3,7 +3,8 @@ import { type Ref, useImperativeHandle, useLayoutEffect, useRef } from "react";
 import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext";
 import { $createParagraphNode, $getRoot, CLEAR_HISTORY_COMMAND, SKIP_DOM_SELECTION_TAG, SKIP_SCROLL_INTO_VIEW_TAG } from "lexical";
 
-import { type TextEditorHandle } from "../../editorModel";
+import { type TextEditorFocusHandle, type TextEditorHandle } from "../../editorModel";
+import { focusTextEditor } from "../../model/focusTextEditor";
 import { type TextEditorHistory, type TextEditorLifecycle } from "../../model/textEditorLifecycleTypes";
 
 type TextEditorLifecyclePluginProps = Readonly<{
@@ -36,7 +37,11 @@ export function TextEditorLifecyclePlugin({ lifecycle, history, readOnly, editor
 		// Ref cleanup отзывает и сохранённый consumer handle, включая StrictMode
 		// и замену самого ref. Отозванный handle не должен очистить новую сессию.
 		const generation = lease.current.generation;
-		const handle: TextEditorHandle = {
+		const handle: TextEditorFocusHandle = {
+			focus: (options) => {
+				if (!lease.current.active || lease.current.generation !== generation) return;
+				focusTextEditor(editor, options);
+			},
 			clear: () => {
 				const rootElement = editor.getRootElement();
 				if (!lease.current.active || lease.current.generation !== generation || !rootElement?.isConnected) return;

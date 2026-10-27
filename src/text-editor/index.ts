@@ -9,6 +9,8 @@ export type {
 	TextEditorData,
 	TextEditorEditableProps,
 	TextEditorExternalLinkOptions,
+	TextEditorFocusHandle,
+	TextEditorFocusOptions,
 	TextEditorHandle,
 	TextEditorLexicalRaw,
 	TextEditorToolbarComponents

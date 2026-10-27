@@ -4,6 +4,7 @@ import { fn } from "storybook/test";
 import { LinkTypes, type TextEditorCoreProps, TextEditorLexical } from "../index";
 
 import { TextEditorCaretScrollExample } from "./TextEditorCaretScrollExample";
+import { TextEditorImperativeFocusExample } from "./TextEditorImperativeFocusExample";
 import { TextEditorInitialFocusExample } from "./TextEditorInitialFocusExample";
 import { TextEditorLifecycleExample } from "./TextEditorLifecycleExample";
 
@@ -36,7 +37,8 @@ const meta = {
 			control: false
 		},
 		ref: {
-			description: "TextEditorHandle с единственной операцией clear(): пустой документ и новая история без remount.",
+			description:
+				"TextEditorHandle предоставляет clear(); дополнительный TextEditorFocusHandle — явный focus() с сохранением документа, выделения и истории.",
 			control: false
 		},
 		initialData: { description: "Начальные HTML или TextEditorLexicalRaw. Это не controlled value.", control: false },
@@ -174,6 +176,19 @@ export const InitialFocus: Story = {
 		docs: {
 			description: {
 				story: "Нажмите «Открыть новый документ»: новый editable получает фокус и каретку в конце без программной прокрутки host-экрана. Очистка и повторное разрешение ввода не повторяют autoFocus. Открытие в режиме чтения не фокусирует поле. Проверка физической экранной клавиатуры остаётся отдельным browser/device gate."
+			}
+		}
+	}
+};
+
+export const ImperativeFocus: Story = {
+	name: "Возврат фокуса в текущий документ",
+	args: { ...Restricted.args, presentation: "compact", placeholder: null },
+	render: (args) => <TextEditorImperativeFocusExample {...args} />,
+	parameters: {
+		docs: {
+			description: {
+				story: "Явная команда consumer возвращает фокус без нового документа или сброса undo. Сохраняется прежнее выделение; если его нет, каретка ставится в конец. preventScroll по умолчанию true: native focus и Lexical reconciliation не прокручивают host. ReadOnly и отозванный handle не фокусируют editor."
 			}
 		}
 	}

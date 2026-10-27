@@ -60,6 +60,17 @@ export type TextEditorHandle = Readonly<{
 	clear: () => void;
 }>;
 
+/** По умолчанию фокус не прокручивает окружающую страницу или host редактора. */
+export type TextEditorFocusOptions = Readonly<{
+	preventScroll?: boolean;
+}>;
+
+/** Дополнительная возможность того же runtime handle; прежний clear-контракт не расширяется. */
+export type TextEditorFocusHandle = TextEditorHandle &
+	Readonly<{
+		focus: (options?: TextEditorFocusOptions) => void;
+	}>;
+
 export interface LocalLinkDialogAdapterProps {
 	isOpen: boolean;
 	onClose: () => void;

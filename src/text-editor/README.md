@@ -237,6 +237,39 @@ Storybook содержит обычный и компактный lifecycle-пр
 проверяют идентичность DOM, history barrier, readOnly, focus и устаревшие
 callbacks; они не заменяют проверку физической экранной клавиатуры.
 
+### Явный возврат фокуса
+
+Дополнительный `TextEditorFocusHandle` расширяет минимальный `TextEditorHandle`
+методом `focus(options?: TextEditorFocusOptions): void`. Это тот же runtime
+handle с `clear` и `focus`; существующие consumers и собственные clear-only
+реализации прежнего типа остаются совместимыми.
+
+```tsx
+import { useRef } from "react";
+import { type TextEditorFocusHandle, TextEditorLexical } from "@ryuzaki13/react-foundation-ui/text-editor";
+
+const editorRef = useRef<TextEditorFocusHandle>(null);
+
+<TextEditorLexical ref={editorRef} initialData={initialData} onChange={onChange} />;
+// В обработчике явного пользовательского действия:
+editorRef.current?.focus({ preventScroll: true });
+```
+
+Команда сохраняет документ, DOM editable, undo/redo и прежнее текстовое
+выделение. При отсутствии выделения каретка ставится в конец. Она не создаёт
+новый `onChange` только из-за фокуса и не меняет `initialData` или React key.
+`preventScroll` по умолчанию `true`: ограничение применяется к native focus
+и к последующему восстановлению выделения Lexical. Явное `false` разрешает
+браузеру и Lexical штатную прокрутку. Физическое открытие экранной клавиатуры
+и изменение visual viewport остаются поведением браузера.
+
+При `readOnly`, фактическом `editor.isEditable() === false`, отсоединённом root,
+замене ref или unmount команда ничего не делает. Старый сохранённый handle
+не фокусирует новую сессию. Во время SSR handle не публикуется. Команда
+не отменяет открытый consumer dialog и не заменяет его решение о возврате
+фокуса. Storybook «Возврат фокуса в текущий документ» показывает действие без
+автоматического фокуса при открытии страницы stories.
+
 ## Просмотр Lexical-документа
 
 `TextEditorLexicalViewer` — предметно независимый компонент чтения из
