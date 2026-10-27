@@ -78,7 +78,8 @@ export class SemanticTagNode extends ElementNode {
 	static importDOM(): DOMConversionMap | null {
 		return {
 			abbr: () => ({ conversion: convertSemanticTagElement, priority: 2 }),
-			span: () => ({ conversion: convertSemanticTagElement, priority: 2 }),
+			// Обычные обёртки буфера обмена импортирует TextNode с сохранением форматирования.
+			span: (element) => (element.hasAttribute("lang") ? { conversion: convertSemanticTagElement, priority: 2 } : null),
 			time: () => ({ conversion: convertSemanticTagElement, priority: 2 }),
 			cite: () => ({ conversion: convertSemanticTagElement, priority: 2 }),
 			del: () => ({ conversion: convertSemanticTagElement, priority: 2 }),
