@@ -1,6 +1,6 @@
 import { type ComponentProps, type ComponentType, type Ref } from "react";
 
-import { type TextEditorBlockStyle } from "./model/textEditorTypes";
+import { type TextEditorBlockStyle, type TextEditorInlineStyle } from "./model/textEditorTypes";
 import { type LinkTypes } from "./toolbar/types";
 
 export type TextEditorLexicalRaw = {
@@ -40,6 +40,21 @@ export type TextEditorExternalLinkOptions = Readonly<{
 	allowQrCode?: boolean;
 }>;
 
+/** Допустимое оформление новых узлов из буфера; остальная разметка преобразуется в текст. */
+export type TextEditorClipboardProfile = {
+	/** Сохраняемые стили блоков; обычный абзац остаётся текстовым fallback даже при пустом списке. */
+	readonly blockStyles: readonly TextEditorBlockStyle[];
+	readonly inlineStyles: readonly TextEditorInlineStyle[];
+	/** Возвращает разрешённый URL; null или отсутствие callback оставляет подпись без ссылки. */
+	readonly normalizeLinkUrl?: (url: string) => string | null;
+};
+
+/** Не изменяет initialData и не заменяет проверку итогового документа у consumer. */
+export type TextEditorClipboardOptions = {
+	/** Без профиля сохраняется штатный импорт Lexical; обработчик не устанавливается. */
+	readonly profile?: TextEditorClipboardProfile;
+};
+
 /** Очистка текущего документа без remount; история предыдущего текста также удаляется. */
 export type TextEditorHandle = Readonly<{
 	clear: () => void;
@@ -71,6 +86,7 @@ export interface TextEditorCoreProps<TRaw = unknown> {
 	businessAdapters?: TextEditorBusinessAdapters;
 	editableProps?: TextEditorEditableProps;
 	externalLinkOptions?: TextEditorExternalLinkOptions;
+	clipboardOptions?: TextEditorClipboardOptions;
 }
 
 export const isLexicalTextRaw = (raw: unknown): raw is TextEditorLexicalRaw => {

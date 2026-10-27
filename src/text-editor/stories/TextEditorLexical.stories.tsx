@@ -44,6 +44,10 @@ const meta = {
 		toolbarComponents: { description: "Видимые группы панели и доступные в них стили блоков и типы ссылок.", control: false },
 		editableProps: { description: "DOM id и доступные ARIA-атрибуты непосредственно для contenteditable.", control: false },
 		externalLinkOptions: { description: "Настройки диалога внешней ссылки, включая доступность QR-представления.", control: false },
+		clipboardOptions: {
+			description: "Независимый профиль оформления вставляемого фрагмента; без профиля сохраняется штатный импорт.",
+			control: false
+		},
 		presentation: {
 			description: "document — обычная панель; compact — встроенный ввод с командами во всплывающей панели.",
 			control: false
@@ -103,6 +107,27 @@ export const Compact: Story = {
 		docs: {
 			description: {
 				story: "Встроенный редактор без внешней рамки и подсказки. Форматирование доступно одной кнопкой с сохранением исходного выделения; размеры целей нажатия не уменьшаются. Длинный текст прокручивается внутри поля. Проверяйте панель и переход к диалогу ссылки также на узком viewport."
+			}
+		}
+	}
+};
+
+export const ClipboardProfile: Story = {
+	...Compact,
+	name: "Вставка в ограниченный профиль",
+	args: {
+		...Compact.args,
+		clipboardOptions: {
+			profile: {
+				blockStyles: ["unstyled", "ordered-list-item", "unordered-list-item"],
+				inlineStyles: ["BOLD", "ITALIC", "UNDERLINE", "STRIKETHROUGH", "HIGHLIGHT", "CODE"]
+			}
+		}
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: "Вставьте текст с заголовками, выравниванием, списками и семантическими тегами через контекстное меню. Сохраняются абзацы, списки и разрешённое inline-оформление; остальная разметка превращается в текст. В этом примере normalizeLinkUrl не задан, поэтому подписи вставляемых ссылок остаются текстом. Начальный документ и кнопки панели политикой не изменяются."
 			}
 		}
 	}

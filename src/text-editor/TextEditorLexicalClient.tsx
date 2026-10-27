@@ -15,6 +15,7 @@ import { type LexicalEditor, type EditorState as LexicalEditorState } from "lexi
 
 import { type TextEditorCoreProps, isLexicalTextRaw } from "./editorModel";
 import { SelectionStatePlugin } from "./lexical/plugins";
+import { TextEditorClipboardProfilePlugin } from "./lexical/plugins/TextEditorClipboardProfilePlugin";
 import { TextEditorCompactCaretScrollPlugin } from "./lexical/plugins/TextEditorCompactCaretScrollPlugin";
 import { TextEditorInitialFocusPlugin } from "./lexical/plugins/TextEditorInitialFocusPlugin";
 import { TextEditorLifecyclePlugin } from "./lexical/plugins/TextEditorLifecyclePlugin";
@@ -41,6 +42,7 @@ export function TextEditorLexicalClient({
 	businessAdapters,
 	editableProps,
 	externalLinkOptions,
+	clipboardOptions,
 	readOnly = false,
 	autoFocus = false,
 	ref,
@@ -140,6 +142,9 @@ export function TextEditorLexicalClient({
 						ErrorBoundary={LexicalErrorBoundary}
 					/>
 					<HistoryPlugin externalHistoryState={history.state} />
+					{clipboardOptions?.profile && (
+						<TextEditorClipboardProfilePlugin profile={clipboardOptions.profile} onError={handleError} />
+					)}
 					{presentation === "compact" && <TextEditorCompactCaretScrollPlugin />}
 					<ListPlugin />
 					<SelectionStatePlugin onStateChange={setToolbarState} />

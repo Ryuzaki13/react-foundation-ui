@@ -3,6 +3,8 @@ export { TextEditorLexicalViewer, type TextEditorLexicalViewerProps } from "./Te
 export type {
 	LocalLinkDialogAdapterProps,
 	TextEditorBusinessAdapters,
+	TextEditorClipboardOptions,
+	TextEditorClipboardProfile,
 	TextEditorCoreProps,
 	TextEditorData,
 	TextEditorEditableProps,
