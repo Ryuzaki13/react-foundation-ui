@@ -25,10 +25,11 @@ InputFiles уже имеет живые stories, а эта страница со
 ```tsx
 import { useState } from "react";
 
-import { InputFiles } from "@ryuzaki13/react-foundation-ui";
+import { type ReadFileAsDataUrlResult } from "@ryuzaki13/react-foundation-lib/file";
+import { InputFiles } from "@ryuzaki13/react-foundation-ui/input-files";
 
 export function Example() {
-	const [value, setValue] = useState([]);
+	const [value, setValue] = useState<ReadFileAsDataUrlResult[]>([]);
 
 	return <InputFiles label="Вложения" value={value} onChange={setValue} />;
 }
@@ -36,6 +37,9 @@ export function Example() {
 
 ## Практические рекомендации
 
+- `onReadingChange` сообщает о чтении всей группы. До `false` форма должна блокировать отправку; новый выбор отменяет предыдущую группу без промежуточного `false`.
+- Удаление выбранного файла, блокировка поля, смена режима и размонтирование отменяют незавершённое чтение. Устаревшие результаты и ошибки не вызывают callbacks.
+- При ошибке отдельного файла `onReadError` сообщает отказ; успешно прочитанные файлы добавляются к прежнему выбору. `disabled` блокирует также удаление элементов списка.
 - Если состояние должно жить во внешней форме или модели, ориентируйтесь на контролируемый режим из документации.
 - При редактировании сущностей проверьте сценарий инициализации компонента уже существующими данными.
 
