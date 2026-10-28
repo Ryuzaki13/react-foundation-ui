@@ -110,10 +110,8 @@ export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogPro
 				</GridContainer>
 			</ModalContent>
 			<ModalFooter>
-				<Button appearance="solid" tone="error" onClick={handleClose}>
-					Отмена
-				</Button>
-				<Button appearance="solid" tone="success" onClick={handleConfirm} disabled={!phone || !ariaLabel}>
+				<Button onClick={handleClose}>Отмена</Button>
+				<Button appearance="solid" tone="accent" onClick={handleConfirm} disabled={!phone || !ariaLabel}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

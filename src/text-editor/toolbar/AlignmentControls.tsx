@@ -1,6 +1,5 @@
 import { AlignCenter, AlignJustify, AlignLeft, AlignRight } from "lucide-react";
 
-import ToolbarStyle from "./Toolbar.module.scss";
 import { ToolbarControl } from "./ToolbarControl";
 
 import type { TextAlignment } from "../model/textEditorTypes";
@@ -16,7 +15,7 @@ interface AlignmentControlsProps {
  */
 export function AlignmentControls({ onAlignmentChange, activeAlignment, disabled }: AlignmentControlsProps) {
 	return (
-		<div className={ToolbarStyle.groupControls}>
+		<>
 			<ToolbarControl
 				disabled={disabled}
 				title="По левому краю"
@@ -45,6 +44,6 @@ export function AlignmentControls({ onAlignmentChange, activeAlignment, disabled
 				isActive={activeAlignment === "justify"}
 				onClick={() => onAlignmentChange("justify")}
 			/>
-		</div>
+		</>
 	);
 }

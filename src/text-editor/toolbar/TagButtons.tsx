@@ -1,6 +1,5 @@
 import { BookType, Clock, Languages, MessageSquareQuote, PictureInPicture, Shredder } from "lucide-react";
 
-import ToolbarStyle from "./Toolbar.module.scss";
 import { ToolbarControl } from "./ToolbarControl";
 import { TagTypes } from "./types";
 
@@ -14,7 +13,7 @@ interface TagButtonsProps {
  */
 export function TagButtons({ onClick, disabled }: TagButtonsProps) {
 	return (
-		<div className={ToolbarStyle.groupControls}>
+		<>
 			<ToolbarControl disabled={disabled} title="Вставить Аббревиатуру" icon={<BookType />} onClick={() => onClick(TagTypes.abbr)} />
 			<ToolbarControl disabled={disabled} title="Вставить Код языка" icon={<Languages />} onClick={() => onClick(TagTypes.lang)} />
 			<ToolbarControl disabled={disabled} title="Вставить Дату/время" icon={<Clock />} onClick={() => onClick(TagTypes.time)} />
@@ -36,6 +35,6 @@ export function TagButtons({ onClick, disabled }: TagButtonsProps) {
 				icon={<PictureInPicture />}
 				onClick={() => onClick(TagTypes.ins)}
 			/>
-		</div>
+		</>
 	);
 }

@@ -98,10 +98,8 @@ export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = tru
 				</GridContainer>
 			</ModalContent>
 			<ModalFooter>
-				<Button appearance="outline" tone="error" onClick={handleClose}>
-					Отмена
-				</Button>
-				<Button appearance="outline" tone="success" onClick={handleConfirm} disabled={!url || !ariaLabel}>
+				<Button onClick={handleClose}>Отмена</Button>
+				<Button appearance="solid" tone="accent" onClick={handleConfirm} disabled={!url || !ariaLabel}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

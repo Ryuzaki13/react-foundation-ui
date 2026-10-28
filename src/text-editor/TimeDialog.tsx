@@ -7,7 +7,7 @@ import { Modal, ModalContent, ModalFooter } from "../modal";
 import { RadioGroup } from "../radio-group";
 
 import { isSemanticDateTime } from "./lib/semantic/isSemanticDateTime";
-import { type TimeMode, type TimeDialogInitialState } from "./model/timeDialogState";
+import { type TimeDialogInitialState, type TimeMode } from "./model/timeDialogState";
 
 interface TimeDialogProps {
 	onClose: () => void;
@@ -133,10 +133,8 @@ export function TimeDialog({ onClose, onConfirm, initialState }: TimeDialogProps
 				</GridContainer>
 			</ModalContent>
 			<ModalFooter>
-				<Button appearance="solid" tone="error" onClick={onClose}>
-					Отмена
-				</Button>
-				<Button appearance="solid" tone="success" onClick={handleConfirm}>
+				<Button onClick={onClose}>Отмена</Button>
+				<Button appearance="solid" tone="accent" onClick={handleConfirm}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

@@ -80,10 +80,8 @@ export function EmailDialog({ onClose, onConfirm, initialState }: EmailDialogPro
 				</div>
 			</ModalContent>
 			<ModalFooter>
-				<Button appearance="outline" tone="error" onClick={handleClose}>
-					Отмена
-				</Button>
-				<Button appearance="outline" tone="success" onClick={handleConfirm} disabled={!email || !ariaLabel}>
+				<Button onClick={handleClose}>Отмена</Button>
+				<Button appearance="solid" tone="accent" onClick={handleConfirm} disabled={!email || !ariaLabel}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

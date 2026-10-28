@@ -1,5 +1,6 @@
 import { BrushCleaning } from "lucide-react";
 
+import { FlexContainer } from "../../flex";
 import { type TextEditorToolbarComponents } from "../editorModel";
 import { type LexicalToolbarState, type TextAlignment } from "../model/textEditorTypes";
 
@@ -49,41 +50,39 @@ export function TextEditorToolbarLexical({
 	const hasLinks = components.links && (components.linkTypes === undefined || components.linkTypes.length > 0);
 
 	return (
-		<div className={ToolbarStyle.toolbar}>
+		<FlexContainer wrap justify="start" gap="xs" className={ToolbarStyle.toolbar}>
 			{components.blocks && blockControls.length > 0 && (
 				<>
-					<div className={ToolbarStyle.groupControls}>
-						{blockControls.map((control) => (
-							<ToolbarControl
-								key={control.style}
-								disabled={disabled}
-								isActive={control.style === state.blockType}
-								style={control.style}
-								title={control.label}
-								icon={control.icon}
-								onClick={onBlockStyleToggle}
-							/>
-						))}
-					</div>
+					{blockControls.map((control) => (
+						<ToolbarControl
+							key={control.style}
+							disabled={disabled}
+							isActive={control.style === state.blockType}
+							style={control.style}
+							title={control.label}
+							icon={control.icon}
+							onClick={onBlockStyleToggle}
+						/>
+					))}
+
 					<hr />
 				</>
 			)}
 
 			{components.inline && (
 				<>
-					<div className={ToolbarStyle.groupControls}>
-						{TextEditorInlineControls.map((control) => (
-							<ToolbarControl
-								key={control.style}
-								isActive={!!state.activeInlineStyles[control.style as keyof typeof state.activeInlineStyles]}
-								title={control.label}
-								style={control.style}
-								icon={control.icon}
-								disabled={disabled || state.isTextUnselected}
-								onClick={onInlineStyleToggle}
-							/>
-						))}
-					</div>
+					{TextEditorInlineControls.map((control) => (
+						<ToolbarControl
+							key={control.style}
+							isActive={!!state.activeInlineStyles[control.style as keyof typeof state.activeInlineStyles]}
+							title={control.label}
+							style={control.style}
+							icon={control.icon}
+							disabled={disabled || state.isTextUnselected}
+							onClick={onInlineStyleToggle}
+						/>
+					))}
+
 					<hr />
 				</>
 			)}
@@ -114,12 +113,7 @@ export function TextEditorToolbarLexical({
 				</>
 			)}
 
-			{components.history && (
-				<>
-					<HistoryControls disabled={disabled} onUndo={onUndo} onRedo={onRedo} />
-					<hr />
-				</>
-			)}
+			{components.history && <HistoryControls disabled={disabled} onUndo={onUndo} onRedo={onRedo} />}
 
 			{(components.clearSemanticTag ?? true) && (
 				<ToolbarControl
@@ -129,6 +123,6 @@ export function TextEditorToolbarLexical({
 					onClick={onCleanTag}
 				/>
 			)}
-		</div>
+		</FlexContainer>
 	);
 }

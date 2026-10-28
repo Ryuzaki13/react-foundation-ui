@@ -1,6 +1,5 @@
 import { AtSign, ExternalLink, Link, Phone } from "lucide-react";
 
-import ToolbarStyle from "./Toolbar.module.scss";
 import { ToolbarControl } from "./ToolbarControl";
 import { LinkTypes } from "./types";
 
@@ -17,7 +16,7 @@ interface LinkButtonsProps {
  */
 export function LinkButtons({ disabled, disabledLocalLink, onClick, linkTypes }: LinkButtonsProps) {
 	return (
-		<div className={ToolbarStyle.groupControls}>
+		<>
 			{(!linkTypes || linkTypes.includes(LinkTypes.LOCAL_LINK)) && (
 				<ToolbarControl
 					style={LinkTypes.LOCAL_LINK}
@@ -42,6 +41,6 @@ export function LinkButtons({ disabled, disabledLocalLink, onClick, linkTypes }:
 			{(!linkTypes || linkTypes.includes(LinkTypes.EMAIL)) && (
 				<ToolbarControl title="Добавить email" disabled={disabled} icon={<AtSign />} onClick={() => onClick(LinkTypes.EMAIL)} />
 			)}
-		</div>
+		</>
 	);
 }

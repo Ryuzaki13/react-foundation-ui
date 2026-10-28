@@ -119,10 +119,8 @@ export function SemanticDialog({ onClose, onConfirm, config, initialText = "", i
 				</GridContainer>
 			</ModalContent>
 			<ModalFooter>
-				<Button appearance="solid" tone="error" onClick={onClose}>
-					Отмена
-				</Button>
-				<Button appearance="solid" tone="success" onClick={handleConfirm}>
+				<Button onClick={onClose}>Отмена</Button>
+				<Button appearance="solid" tone="accent" onClick={handleConfirm}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

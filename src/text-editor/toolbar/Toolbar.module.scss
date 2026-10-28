@@ -17,20 +17,11 @@
 }
 
 .toolbar {
-	display: flex;
-	flex-wrap: wrap;
-	justify-content: start;
-	gap: var(--space-sm);
 	margin-bottom: var(--space-md);
 
 	hr {
-		margin: 0.5rem 0;
+		margin: var(--space-xs);
 	}
-}
-
-.groupControls {
-	display: flex;
-	gap: var(--space-sm);
 }
 
 .compactToolbar {
@@ -43,21 +34,8 @@
 	// оставляя место вводу и истории даже над экранной клавиатурой.
 	min-inline-size: 0;
 	grid-column: 1 / -1;
-	max-block-size: min(12rem, calc(var(--visual-viewport-height, 100dvh) * 0.25));
-	overflow: auto;
-	overscroll-behavior: contain;
 
 	.toolbar {
-		gap: var(--space-xs);
 		margin: 0;
-
-		hr {
-			margin: var(--space-xs) 0;
-		}
-	}
-
-	.groupControls {
-		flex-wrap: wrap;
-		gap: var(--space-xs);
 	}
 }
