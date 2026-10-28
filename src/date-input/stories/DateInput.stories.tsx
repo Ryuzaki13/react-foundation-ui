@@ -1,7 +1,7 @@
 import { useArgs } from "storybook/preview-api";
 
 import { DATE_INPUT_SELECTION_MODES, DATE_INPUT_WEEK_END_DAYS, type DateInputSelectionMode } from "../lib";
-import { RangeDateInput, SingleDateInput, type DateRangeInputProps, type DateSingleInputProps } from "../ui/DateInput";
+import { RangeDateInput, SingleDateInput, type DateRangeInputProps, type DateSingleInputProps } from "../ui";
 
 import type { Meta, StoryObj } from "@storybook/react-vite";
 
@@ -36,6 +36,10 @@ const meta = {
 		onChange: {
 			description: "Вызывается при выборе даты или диапазона.",
 			control: false
+		},
+		clearable: {
+			description: "Добавляет встроенную очистку в null; пустой ручной ввод применяется по Enter или blur.",
+			control: "boolean"
 		},
 		minDate: {
 			description: "Включительная нижняя граница полного периода при выборе в календаре и вводе текстом.",
@@ -165,6 +169,18 @@ export const Range: RangeStory = {
 		placeholder: "дд.мм.гггг - дд.мм.гггг",
 		value: [new Date(2026, 2, 5, 0, 0, 0), new Date(2026, 2, 15, 23, 59, 59)]
 	}
+};
+
+/** Очистка принадлежит самому полю и не требует внешней кнопки у потребителя. */
+export const ClearableSingle: SingleStory = {
+	...Single,
+	args: { ...Single.args, clearable: true }
+};
+
+/** Диапазон может вернуться к состоянию без ограничения дат с сохранением режимов календаря. */
+export const ClearableRange: RangeStory = {
+	...Range,
+	args: { ...Range.args, clearable: true, allowSelectionModeChange: true }
 };
 
 /**

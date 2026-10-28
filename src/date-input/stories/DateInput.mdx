@@ -25,7 +25,7 @@ DateInput уже имеет живые stories, а эта страница со�
 ```tsx
 import { useState } from "react";
 
-import { RangeDateInput } from "@ryuzaki13/react-foundation-ui";
+import { RangeDateInput } from "@ryuzaki13/react-foundation-ui/date-input";
 
 export function Example() {
 	const [value, setValue] = useState(null);
@@ -59,6 +59,21 @@ export function Example() {
 Сценарий выбора диапазона.
 
 <Canvas of={DateInputStories.Range} />
+
+### Необязательная дата или период
+
+`clearable` включает штатную кнопку очистки внутри поля рядом с календарём.
+`SingleDateInput` и `RangeDateInput` сообщают очистку одинаково: `onChange(null)`.
+Пустой ручной ввод тоже применяется по Enter или blur. Кнопка блокируется вместе
+с полем, возвращает фокус к вводу и отменяет незавершённый календарный выбор.
+Закрытие календаря после очистки не восстанавливает прежний период.
+
+По умолчанию `clearable={false}`: существующие обязательные сценарии сохраняют
+прежнее поведение. Поле само хранит незавершённый календарный выбор и выбранный
+режим дня, недели, месяца или года; внешняя обёртка для этого не требуется.
+
+<Canvas of={DateInputStories.ClearableSingle} />
+<Canvas of={DateInputStories.ClearableRange} />
 
 ### Ограничения по допустимым значениям
 

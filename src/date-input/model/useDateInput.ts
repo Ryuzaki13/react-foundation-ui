@@ -3,7 +3,7 @@ import { useMemo, useState } from "react";
 import { isDateRangeTuple, type CalendarPeriodDateBounds, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 
 import {
-	DateInputValueOptions,
+	type DateInputValueOptions,
 	areRangeDateValuesEqual,
 	areSingleDateValuesEqual,
 	formatDateInputValue,
@@ -16,14 +16,6 @@ import {
 } from "../lib";
 import { isDateInputValueWithinDateBounds } from "../lib/isDateInputValueWithinDateBounds";
 
-function resolveReferenceDate(value: Date | NullableDateRange | null): Date | undefined {
-	if (isDateRangeTuple(value)) {
-		return value[0] ?? value[1] ?? undefined;
-	}
-
-	return value ?? undefined;
-}
-
 /**
  * Хук управляет текстовым представлением и выбранным значением поля даты.
  */
@@ -35,11 +27,12 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 		};
 
 		if (options.selectsRange) {
-			return normalizeRangeDateValue(options.value as NullableDateRange | null, selectionOptions);
+			return normalizeRangeDateValue(options.value ?? null, selectionOptions);
 		}
 
-		return normalizeSingleDateValue(options.value as Date | null, selectionOptions);
+		return normalizeSingleDateValue(options.value ?? null, selectionOptions);
 	}, [options.selectsRange, options.selectionMode, options.value, options.weekEndDay]);
+
 	const formatOptions = useMemo<DateInputValueOptions>(
 		() => ({
 			datePreset: options.datePreset,
@@ -49,6 +42,7 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 		}),
 		[options.datePickerLevel, options.datePreset, options.selectionMode, options.weekEndDay]
 	);
+
 	const externalInputValue = formatDateInputValue(externalSelectedDate, formatOptions);
 	const externalStateSignature = JSON.stringify([
 		options.selectsRange,
@@ -60,12 +54,26 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 			? [externalSelectedDate[0]?.getTime() ?? null, externalSelectedDate[1]?.getTime() ?? null]
 			: (externalSelectedDate?.getTime() ?? null)
 	]);
+
 	const [draftState, setDraftState] = useState(() => ({
 		sourceSignature: externalStateSignature,
 		selectedDate: externalSelectedDate,
 		inputValue: externalInputValue
 	}));
+
 	const hasCurrentDraft = draftState.sourceSignature === externalStateSignature;
+
+	// Ограниченная корректировка собственного draft по предыдущему external-снимку
+	// сохраняет input DOM и фокус. Одного сравнения сигнатур недостаточно: цикл
+	// A → B → A иначе воскрешает незавершённый текст от первого A.
+	if (!hasCurrentDraft) {
+		setDraftState({
+			sourceSignature: externalStateSignature,
+			selectedDate: externalSelectedDate,
+			inputValue: externalInputValue
+		});
+	}
+
 	const selectedDate = hasCurrentDraft ? draftState.selectedDate : externalSelectedDate;
 	const inputValue = hasCurrentDraft ? draftState.inputValue : externalInputValue;
 
@@ -113,7 +121,7 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 	const parseDate = (dateString: string): Date | NullableDateRange | null => {
 		const parseOptions: DateInputValueOptions = {
 			...formatOptions,
-			referenceDate: resolveReferenceDate(selectedDate)
+			referenceDate: isDateRangeTuple(selectedDate) ? (selectedDate[0] ?? selectedDate[1] ?? undefined) : (selectedDate ?? undefined)
 		};
 
 		if (options.selectsRange) {
@@ -123,15 +131,46 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 		return parseSingleDateValue(dateString, parseOptions);
 	};
 
+	/** Закрытие календаря отменяет только незавершённый draft, не публикуя старое значение повторно. */
+	const restoreExternalValue = () => {
+		setDraftState({
+			sourceSignature: externalStateSignature,
+			selectedDate: externalSelectedDate,
+			inputValue: externalInputValue
+		});
+	};
+
+	/** Сброс использует единственное пустое значение обоих публичных контролов — null. */
+	const clearValue = () => {
+		if (!options.clearable || options.disabled) {
+			return;
+		}
+
+		setDraftState({ sourceSignature: externalStateSignature, selectedDate: null, inputValue: "" });
+
+		if (selectedDate !== null || inputValue !== "") {
+			options.onChange(null);
+		}
+	};
+
 	/**
 	 * Проверяет уже нормализованный текст до смены draft и публикации. При отказе
 	 * восстанавливает внешний controlled-снимок целиком: отклонённый текст не
 	 * должен оставаться видимым выбранным периодом без соответствующего onChange.
 	 */
 	const handleInputBlur = () => {
-		if (!inputValue) return;
+		if (!inputValue.trim()) {
+			if (options.clearable) {
+				clearValue();
+			}
+
+			return;
+		}
+
 		const parsedDate = parseDate(inputValue);
-		if (!parsedDate) return;
+		if (!parsedDate) {
+			return;
+		}
 		if (!isDateInputValueWithinDateBounds(parsedDate, formatOptions, options)) {
 			setDraftState({
 				sourceSignature: externalStateSignature,
@@ -140,15 +179,20 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 			});
 			return;
 		}
+
 		setInputValue(formatValue(parsedDate));
 		if (options.selectsRange && isDateRangeTuple(parsedDate)) {
 			const selectedRange = isDateRangeTuple(selectedDate) ? selectedDate : null;
-			if (areRangeDateValuesEqual(parsedDate, selectedRange, formatOptions)) return;
+			if (areRangeDateValuesEqual(parsedDate, selectedRange, formatOptions)) {
+				return;
+			}
 			setSelectedDate(parsedDate);
 			options.onChange(parsedDate);
 		} else if (!options.selectsRange && parsedDate instanceof Date) {
 			const selectedSingleDate = selectedDate instanceof Date ? selectedDate : null;
-			if (areSingleDateValuesEqual(parsedDate, selectedSingleDate, formatOptions)) return;
+			if (areSingleDateValuesEqual(parsedDate, selectedSingleDate, formatOptions)) {
+				return;
+			}
 			setSelectedDate(parsedDate);
 			options.onChange(parsedDate);
 		}
@@ -158,7 +202,7 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 	 * Обрабатывает выбор даты из календаря.
 	 */
 	const handleSelect = (date: Date | NullableDateRange) => {
-		const [selectedStartDate, selectedEndDate] = (Array.isArray(date) ? date : [date, null]) as NullableDateRange;
+		const [selectedStartDate, selectedEndDate] = date instanceof Date ? [date, null] : date;
 
 		if (options.selectsRange) {
 			const normalizedStartDate = normalizeSingleDateValue(selectedStartDate, formatOptions);
@@ -217,6 +261,8 @@ export const useDateInput = (options: DateInputOptions & CalendarPeriodDateBound
 		handleSelect,
 		handleInputBlur,
 		formatDate: formatValue,
-		parseDate
+		parseDate,
+		clearValue,
+		restoreExternalValue
 	};
 };

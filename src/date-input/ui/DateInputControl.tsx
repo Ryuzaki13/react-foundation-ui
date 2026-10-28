@@ -1,4 +1,4 @@
-import { JSX, useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useRef, useState, type KeyboardEvent } from "react";
 
 import { isDateRangeTuple, type NullableDateRange } from "@ryuzaki13/react-foundation-lib/formatters";
 import { CalendarDaysIcon } from "lucide-react";
@@ -6,93 +6,25 @@ import { CalendarDaysIcon } from "lucide-react";
 import { InputText } from "../../input";
 import { Popover } from "../../popover";
 import { RadioGroup } from "../../radio-group";
-import { UiBaseProps } from "../../types";
 import uiStyles from "../../ui.module.scss";
 import {
 	DATE_INPUT_SELECTION_MODES,
 	isDatePickerLevelAvailable,
 	normalizeDateInputSelectionModes,
 	resolveAvailableDatePickerLevel,
-	resolveDateInputSelectionModeOptionsByModes,
 	type DateInputSelectionMode,
-	type DateInputSelectionModeDatePresets,
-	type DateInputSelectionModeOption,
-	type DateInputWeekEndDay,
 	type DatePickerLevel
 } from "../lib";
+import { type DateInputControlProps } from "../lib/dateInputProps";
+import { resolveDateInputSelectionModeOptions } from "../lib/resolveDateInputSelectionModeOptions";
 import { useDateInput } from "../model";
+import { type DateInputCalendarState } from "../model/dateInputCalendarState";
 
 import { CalendarView } from "./CalendarView";
 import styles from "./DateInput.module.scss";
 
-interface BaseDateInputProps {
-	error?: string;
-	onClearError?: () => void;
-
-	minDate?: Date;
-	maxDate?: Date;
-
-	datePreset?: string;
-
-	/**
-	 * Минимальный уровень календарной навигации. Размер выбранного периода задаёт `selectionMode`.
-	 */
-	datePickerLevel?: DatePickerLevel;
-	/**
-	 * Размер периода, который выбирает поле: день, неделя, месяц или год.
-	 */
-	selectionMode?: DateInputSelectionMode;
-	/**
-	 * Последний включённый день недели для `selectionMode="week"`.
-	 */
-	weekEndDay?: DateInputWeekEndDay;
-	/**
-	 * Показывает переключатель `selectionMode` под календарём.
-	 */
-	allowSelectionModeChange?: boolean;
-	/**
-	 * Ограничивает набор режимов в runtime-переключателе.
-	 */
-	selectionModeOptions?: readonly DateInputSelectionMode[];
-	/**
-	 * Задаёт отдельный пресет форматирования для каждого runtime-режима выбора.
-	 * Общий `datePreset` используется как fallback для отсутствующих значений.
-	 */
-	selectionModeDatePresets?: DateInputSelectionModeDatePresets;
-	/**
-	 * Сообщает наружу о runtime-смене режима выбора.
-	 */
-	onSelectionModeChange?: (selectionMode: DateInputSelectionMode) => void;
-}
-
-export interface DateSingleInputProps extends BaseDateInputProps, UiBaseProps<Date | null> {
-	selectsRange?: false;
-}
-export interface DateRangeInputProps extends BaseDateInputProps, UiBaseProps<NullableDateRange | null> {
-	selectsRange: true;
-}
-
-type DateInputProps = DateSingleInputProps | DateRangeInputProps;
-
-interface CalendarTypeState {
-	readonly view: DatePickerLevel;
-	readonly selectionMode: DateInputSelectionMode;
-	readonly minDatePickerLevel: DatePickerLevel;
-}
-
-function resolveSelectionModeOptions(
-	selectionModeOptions: readonly DateInputSelectionMode[] | undefined,
-	selectionMode: DateInputSelectionMode
-): readonly DateInputSelectionModeOption[] {
-	const configuredModes = normalizeDateInputSelectionModes(selectionModeOptions, DATE_INPUT_SELECTION_MODES);
-	const availableModes = configuredModes.includes(selectionMode) ? configuredModes : [...configuredModes, selectionMode];
-
-	return resolveDateInputSelectionModeOptionsByModes(availableModes);
-}
-
-function DateInput(props: DateSingleInputProps): JSX.Element;
-function DateInput(props: DateRangeInputProps): JSX.Element;
-function DateInput({
+export function DateInputControl({
+	clearable = false,
 	placeholder,
 	disabled,
 	error,
@@ -108,21 +40,25 @@ function DateInput({
 	selectionModeDatePresets,
 	onSelectionModeChange,
 	...props
-}: DateInputProps) {
+}: DateInputControlProps) {
 	const [open, setOpen] = useState(false);
+
 	const configuredSelectionModes = normalizeDateInputSelectionModes(selectionModeOptions, DATE_INPUT_SELECTION_MODES);
 	const [uncontrolledSelectionMode, setUncontrolledSelectionMode] = useState<DateInputSelectionMode>(
 		() => controlledSelectionMode ?? configuredSelectionModes[0] ?? "day"
 	);
+
 	const selectionMode = controlledSelectionMode ?? uncontrolledSelectionMode;
 	const activeDatePreset = allowSelectionModeChange ? (selectionModeDatePresets?.[selectionMode] ?? datePreset) : datePreset;
+
 	const minDatePickerLevel = datePickerLevel ?? "day";
 	const preferredCalendarType = resolveAvailableDatePickerLevel(selectionMode, minDatePickerLevel);
-	const [calendarTypeState, setCalendarTypeState] = useState<CalendarTypeState>(() => ({
+	const [calendarTypeState, setCalendarTypeState] = useState<DateInputCalendarState>(() => ({
 		view: preferredCalendarType,
 		selectionMode,
 		minDatePickerLevel
 	}));
+
 	const calendarType =
 		calendarTypeState.selectionMode === selectionMode &&
 		calendarTypeState.minDatePickerLevel === minDatePickerLevel &&
@@ -130,9 +66,21 @@ function DateInput({
 			? calendarTypeState.view
 			: preferredCalendarType;
 
-	const initialDateRef = useRef(props.value);
-	const { inputValue, setInputValue, selectedDate, setSelectedDate, handleSelect, handleInputBlur, formatDate } = useDateInput({
+	const inputRef = useRef<HTMLInputElement>(null);
+	const {
+		inputValue,
+		setInputValue,
+		selectedDate,
+		setSelectedDate,
+		handleSelect,
+		handleInputBlur,
+		formatDate,
+		clearValue,
+		restoreExternalValue
+	} = useDateInput({
 		...props,
+		clearable,
+		disabled,
 		minDate,
 		maxDate,
 		datePreset: activeDatePreset,
@@ -140,6 +88,7 @@ function DateInput({
 		selectionMode,
 		weekEndDay
 	});
+
 	const rangeOnChange = props.selectsRange ? props.onChange : undefined;
 
 	const updateCalendarType = useCallback(
@@ -155,11 +104,7 @@ function DateInput({
 		[minDatePickerLevel, selectionMode]
 	);
 
-	useEffect(() => {
-		initialDateRef.current = props.value;
-	}, [props.value]);
-
-	const handleKeyDown = (event: React.KeyboardEvent<HTMLInputElement>) => {
+	const handleKeyUp = (event: KeyboardEvent<HTMLInputElement>) => {
 		if (event.key === "Enter") {
 			event.preventDefault();
 			handleInputBlur();
@@ -198,7 +143,12 @@ function DateInput({
 
 			if (!selectedEndDate) {
 				// Восстановить исходное состояние диапазона
-				const initialValue = initialDateRef.current;
+				if (clearable) {
+					restoreExternalValue();
+					return;
+				}
+
+				const initialValue = props.value;
 				const initialRange = Array.isArray(initialValue) ? initialValue : null;
 				const initialStart = initialRange?.[0] ?? null;
 				const initialEnd = initialRange?.[1] ?? null;
@@ -218,10 +168,21 @@ function DateInput({
 				}
 			}
 		}
-	}, [rangeOnChange, selectedDate, setSelectedDate, setInputValue, formatDate]);
+	}, [clearable, rangeOnChange, selectedDate, setSelectedDate, setInputValue, formatDate, props.value, restoreExternalValue]);
 
-	const availableSelectionModeOptions = resolveSelectionModeOptions(selectionModeOptions, selectionMode);
+	const availableSelectionModeOptions = resolveDateInputSelectionModeOptions(selectionModeOptions, selectionMode);
 	const showSelectionModeControl = allowSelectionModeChange && availableSelectionModeOptions.length > 1;
+
+	const handleClear = () => {
+		if (disabled || !clearable) {
+			return;
+		}
+
+		clearValue();
+		setOpen(false);
+
+		inputRef.current?.focus();
+	};
 
 	return (
 		<Popover
@@ -233,24 +194,26 @@ function DateInput({
 				}
 			}}>
 			<InputText
+				ref={inputRef}
+				onClear={clearable ? handleClear : undefined}
 				label={props.label}
 				description={props.description}
 				size={props.size}
 				value={inputValue}
 				onChange={setInputValue}
 				onBlur={handleInputBlur}
-				onKeyUp={handleKeyDown}
+				onKeyUp={handleKeyUp}
 				placeholder={placeholder}
 				disabled={disabled}
 				error={error}
 				onClearError={onClearError}
-				endAdornmentWidth="var(--control-height)"
 				endAdornment={
 					<div className={uiStyles.uiToggleButtonContainer}>
 						<Popover.Trigger>
 							<button
 								type="button"
 								disabled={disabled}
+								data-action="open-calendar"
 								aria-label="Открыть календарь"
 								aria-haspopup="dialog"
 								className={uiStyles.uiToggleButton}>
@@ -290,12 +253,4 @@ function DateInput({
 			</Popover.Content>
 		</Popover>
 	);
-}
-
-export function SingleDateInput(props: Omit<DateSingleInputProps, "selectsRange">) {
-	return <DateInput {...props} />;
-}
-
-export function RangeDateInput(props: Omit<DateRangeInputProps, "selectsRange">) {
-	return <DateInput {...props} selectsRange={true} />;
 }

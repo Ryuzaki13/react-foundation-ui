@@ -1,4 +1,4 @@
-import React, { type MouseEvent, CSSProperties, InputHTMLAttributes, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import React, { type MouseEvent, CSSProperties, InputHTMLAttributes, ReactNode, type Ref, useLayoutEffect, useRef, useState } from "react";
 
 import { toFiniteNumber } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -217,6 +217,8 @@ export interface BaseInputProps<T extends number | string | undefined, V = T>
 }
 
 export interface InputTextProps extends BaseInputProps<string> {
+	/** React 19 передаёт ref нативному input, в том числе для возврата фокуса после очистки. */
+	ref?: Ref<HTMLInputElement>;
 	type?: "email" | "password" | "search" | "tel" | "text" | "url";
 
 	/**

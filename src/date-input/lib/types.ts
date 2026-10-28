@@ -22,6 +22,8 @@ interface BaseUiProps<T = unknown> {
 
 // Опции для хука useDateInput
 export interface BaseDateInputOptions<T = unknown> extends BaseUiProps<T> {
+	clearable?: boolean;
+	disabled?: boolean;
 	datePreset?: string;
 	datePickerLevel?: DatePickerLevel;
 	selectionMode?: DateInputSelectionMode;

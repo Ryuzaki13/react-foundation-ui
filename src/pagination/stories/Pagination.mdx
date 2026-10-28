@@ -1,0 +1,43 @@
+import { ArgTypes, Canvas, Meta } from "@storybook/addon-docs/blocks";
+import * as PaginationStories from "./Pagination.stories";
+
+<Meta of={PaginationStories} />
+
+# Pagination
+
+Управляемая навигация с номерами страниц, соседними переходами и сокращением длинного списка.
+Компонент принадлежит общему UI-слою: он не хранит данные, не выполняет запросы и не зависит от Router.
+
+<Canvas of={PaginationStories.Controlled} />
+
+```tsx
+import { Pagination } from "@ryuzaki13/react-foundation-ui/pagination";
+
+<Pagination page={page} pageCount={pageCount} onPageChange={setPage} disabled={isFetching} aria-label="Страницы результатов" />;
+```
+
+## Контракт состояния
+
+- `page` — положительное безопасное целое число; нумерация начинается с единицы.
+- `pageCount` — неотрицательное безопасное целое число. При нуле или одной странице навигация не отображается.
+- При сокращении набора номер, превышающий `pageCount`, визуально ограничивается последней страницей. Во время render `onPageChange` не вызывается: синхронизацией URL и состояния владеет потребитель.
+- Дробные, отрицательные и небезопасные значения отклоняются через `RangeError`.
+- На больших наборах число элементов остаётся ограниченным. Пропуски отображаются текстом `...`, не попадают в Tab-порядок и не становятся кнопками.
+
+Общее количество записей, размер страницы и предметные фильтры компонует приложение. Эти знания не передаются в `Pagination`.
+
+## Доступность
+
+Корневой элемент — `nav`. Его подпись можно задать через стандартные `aria-label` или `aria-labelledby`.
+Текущая кнопка получает `aria-current="page"`; повторное нажатие не создаёт новый переход.
+Нативные кнопки поддерживают Tab, Enter и Space. `disabled` блокирует все действия.
+
+Машинные идентификаторы принадлежат самому primitive: `data-ui="pagination"`, номера `data-page` и действия `pagination-previous` / `pagination-next`.
+Для функциональных тестов не требуется дополнительный DOM-контейнер.
+
+<Canvas of={PaginationStories.Middle} />
+<Canvas of={PaginationStories.Disabled} />
+
+## API
+
+<ArgTypes of={PaginationStories} />

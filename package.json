@@ -219,6 +219,10 @@
 			"types": "./dist/pages/index.d.ts",
 			"import": "./dist/pages/index.js"
 		},
+		"./pagination": {
+			"types": "./dist/pagination/index.d.ts",
+			"import": "./dist/pagination/index.js"
+		},
 		"./panel": {
 			"types": "./dist/panel/index.d.ts",
 			"import": "./dist/panel/index.js"
