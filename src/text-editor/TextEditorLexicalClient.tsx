@@ -28,6 +28,7 @@ import { AccessibleLinkNode } from "./nodes/AccessibleLinkNode";
 import { SemanticTagNode } from "./nodes/SemanticTagNode";
 import styles from "./TextEditor.module.scss";
 import "./TextEditor.scss";
+import { TextEditorInputSurface } from "./TextEditorInputSurface";
 import { TextEditorInteractions } from "./TextEditorInteractions";
 
 type TextEditorLexicalClientProps = TextEditorCoreProps;
@@ -47,7 +48,8 @@ export function TextEditorLexicalClient({
 	autoFocus = false,
 	ref,
 	presentation = "document",
-	placeholder
+	placeholder,
+	endAdornment
 }: TextEditorLexicalClientProps) {
 	const [isFocused, setIsFocused] = useState(false);
 	const [toolbarState, setToolbarState] = useState<LexicalToolbarState>(DEFAULT_TOOLBAR_STATE);
@@ -89,6 +91,10 @@ export function TextEditorLexicalClient({
 			theme: {
 				paragraph: "paragraph",
 				text: {
+					// Lexical выбирает один HTML-тег для нескольких форматов: strong
+					// сам по себе не показывает одновременный курсив.
+					bold: "fontBold",
+					italic: "fontItalic",
 					code: styles.lexicalTextCode,
 					highlight: styles.lexicalTextHighlight,
 					underline: styles.lexicalTextUnderline,
@@ -120,27 +126,29 @@ export function TextEditorLexicalClient({
 						toolbarComponents={toolbarComponents}
 						state={toolbarState}
 					/>
-					<RichTextPlugin
-						contentEditable={
-							<ContentEditable
-								id={editableProps?.id}
-								aria-label={editableProps?.["aria-label"]}
-								aria-labelledby={editableProps?.["aria-labelledby"]}
-								aria-describedby={editableProps?.["aria-describedby"]}
-								aria-invalid={editableProps?.["aria-invalid"]}
-								aria-required={editableProps?.["aria-required"]}
-								className={cn(
-									styles.lexicalEditorContentEditable,
-									"scrollableY",
-									presentation === "compact" && styles.compactEditable
-								)}
-								onFocus={() => setIsFocused(true)}
-								onBlur={() => setIsFocused(false)}
-							/>
-						}
-						placeholder={placeholder ? <div className={styles.lexicalEditorPlaceholder}>{placeholder}</div> : null}
-						ErrorBoundary={LexicalErrorBoundary}
-					/>
+					<TextEditorInputSurface presentation={presentation} endAdornment={endAdornment}>
+						<RichTextPlugin
+							contentEditable={
+								<ContentEditable
+									id={editableProps?.id}
+									aria-label={editableProps?.["aria-label"]}
+									aria-labelledby={editableProps?.["aria-labelledby"]}
+									aria-describedby={editableProps?.["aria-describedby"]}
+									aria-invalid={editableProps?.["aria-invalid"]}
+									aria-required={editableProps?.["aria-required"]}
+									className={cn(
+										styles.lexicalEditorContentEditable,
+										"scrollableY",
+										presentation === "compact" && styles.compactEditable
+									)}
+									onFocus={() => setIsFocused(true)}
+									onBlur={() => setIsFocused(false)}
+								/>
+							}
+							placeholder={placeholder ? <div className={styles.lexicalEditorPlaceholder}>{placeholder}</div> : null}
+							ErrorBoundary={LexicalErrorBoundary}
+						/>
+					</TextEditorInputSurface>
 					<HistoryPlugin externalHistoryState={history.state} />
 					{clipboardOptions?.profile && (
 						<TextEditorClipboardProfilePlugin profile={clipboardOptions.profile} onError={handleError} />

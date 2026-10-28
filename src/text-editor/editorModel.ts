@@ -1,4 +1,4 @@
-import { type ComponentProps, type ComponentType, type Ref } from "react";
+import { type ComponentProps, type ComponentType, type ReactNode, type Ref } from "react";
 
 import { type TextEditorBlockStyle, type TextEditorInlineStyle } from "./model/textEditorTypes";
 import { type LinkTypes } from "./toolbar/types";
@@ -93,6 +93,8 @@ export interface TextEditorCoreProps<TRaw = unknown> {
 	presentation?: "document" | "compact";
 	/** null полностью убирает подсказку и её место; undefined сохраняет стандартную подсказку. */
 	placeholder?: string | null;
+	/** Действия или содержимое справа внутри общей рамки поля, вне contenteditable. Состоянием действий управляет consumer. */
+	endAdornment?: ReactNode;
 	toolbarComponents?: TextEditorToolbarComponents;
 	businessAdapters?: TextEditorBusinessAdapters;
 	editableProps?: TextEditorEditableProps;

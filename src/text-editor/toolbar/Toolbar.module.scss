@@ -34,14 +34,16 @@
 }
 
 .compactToolbar {
-	margin-bottom: 0;
+	order: 1;
+	align-self: start;
 }
 
 .compactPanel {
-	// Popover сообщает свободную область; вычитаем его рамку и внутренний
-	// отступ, чтобы панель оставалась доступной и над экранной клавиатурой.
-	max-width: min(24rem, calc(var(--popover-available-width, 100vw) - 2 * var(--space-sm) - 2 * var(--border-width)));
-	max-height: calc(var(--popover-available-height, 60dvh) - 2 * var(--space-sm) - 2 * var(--border-width));
+	// Панель занимает ширину поля; множество команд прокручивается отдельно,
+	// оставляя место вводу и истории даже над экранной клавиатурой.
+	min-inline-size: 0;
+	grid-column: 1 / -1;
+	max-block-size: min(12rem, calc(var(--visual-viewport-height, 100dvh) * 0.25));
 	overflow: auto;
 	overscroll-behavior: contain;
 

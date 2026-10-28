@@ -355,48 +355,48 @@ describe("lifecycle публичного редактора", () => {
 		expect(onChange).not.toHaveBeenCalled();
 	});
 
-	it.each(["clear", "readOnly"])("отзывает отложенную команду компактной панели после %s", async (boundary) => {
+	it.each(["clear", "readOnly"])("отзывает синхронно открытую сессию компактной панели после %s", async (boundary) => {
 		const user = userEvent.setup();
 		const ref = createRef<TextEditorHandle>();
 		const onChange = vi.fn();
-		const props = { initialData, onChange, toolbarComponents: { links: true, linkTypes: [LinkTypes.LINK] } };
+		const adapter = vi.fn(LocalLinkDialogFixture);
+		const props = {
+			initialData,
+			onChange,
+			toolbarComponents: { links: true, linkTypes: [LinkTypes.LOCAL_LINK] },
+			businessAdapters: { LocalLinkDialogComponent: adapter }
+		};
 		const view = render(<TextEditorLexicalClient {...props} ref={ref} presentation="compact" />);
 		const input = screen.getByRole("textbox");
 		await waitFor(() => expect(input.textContent).toBe("Первоначальный текст"));
 		await selectAllText(input);
+		act(() => input.focus());
 		const trigger = document.querySelector('[data-action="toggle-text-editor-formatting"]');
 		if (!(trigger instanceof HTMLButtonElement)) throw new Error("Нет компактной панели");
 		await user.click(trigger);
-		await waitFor(() => expect(document.activeElement).toBe(screen.getByRole("group")));
-		const callbacks = new Map<number, FrameRequestCallback>();
-		let nextFrame = 100;
-		const schedule = vi.spyOn(window, "requestAnimationFrame").mockImplementation((callback) => {
-			callbacks.set(++nextFrame, callback);
-			return nextFrame;
+		expect(screen.getByRole("group")).toBeDefined();
+		expect(document.activeElement).toBe(input);
+
+		fireEvent.click(commandButton(LinkTypes.LOCAL_LINK));
+		// Команда открывает диалог в текущем событии, без отложенного действия popup.
+		expect(screen.getByRole("dialog")).toBeDefined();
+		const pending = adapter.mock.lastCall?.[0];
+		if (!pending?.isOpen) throw new Error("Компактная команда не открыла адаптер синхронно");
+
+		if (boundary === "clear") await act(async () => ref.current?.clear());
+		else view.rerender(<TextEditorLexicalClient {...props} ref={ref} presentation="compact" readOnly />);
+		expect(screen.getByRole("textbox")).toBe(input);
+		expect(screen.queryByRole("group")).toBeNull();
+		expect(screen.queryByRole("dialog")).toBeNull();
+		onChange.mockClear();
+		await act(async () => {
+			pending.onConfirm("/articles/late", "Поздний ответ");
+			pending.onClose();
 		});
-		const cancel = vi.spyOn(window, "cancelAnimationFrame").mockImplementation((id) => {
-			callbacks.delete(id);
-		});
-		try {
-			fireEvent.click(commandButton(LinkTypes.LINK));
-			expect(schedule).toHaveBeenCalled();
-			// Уже взятый браузером callback тоже обязан уважать новую границу документа.
-			const pending = Array.from(callbacks.values());
-			if (boundary === "clear") await act(async () => ref.current?.clear());
-			else view.rerender(<TextEditorLexicalClient {...props} ref={ref} presentation="compact" readOnly />);
-			onChange.mockClear();
-			await act(async () => {
-				for (const callback of pending) callback(0);
-			});
-			expect(screen.queryByRole("group")).toBeNull();
-			expect(screen.queryByRole("dialog")).toBeNull();
-			expect(input.querySelector("strong")).toBeNull();
-			expect(input.textContent).toBe(boundary === "clear" ? "" : "Первоначальный текст");
-			expect(onChange).not.toHaveBeenCalled();
-		} finally {
-			schedule.mockRestore();
-			cancel.mockRestore();
-		}
+
+		expect(input.querySelector("a")).toBeNull();
+		expect(input.textContent).toBe(boundary === "clear" ? "" : "Первоначальный текст");
+		expect(onChange).not.toHaveBeenCalled();
 	});
 
 	it("отмена диалога возвращает фокус без изменения документа", async () => {

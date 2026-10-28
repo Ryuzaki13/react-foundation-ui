@@ -1,0 +1,31 @@
+@use "@/styles/mixins/mixin" as *;
+
+.surface {
+	min-inline-size: 0;
+	border: var(--border);
+	border-radius: var(--radius-sm);
+	background-color: var(--bg-surface);
+
+	// DOM-фокус остаётся в editable, а общий индикатор охватывает составное поле.
+	&:has([contenteditable]:focus-visible) {
+		@include focusVisible;
+
+		[contenteditable]:focus-visible {
+			outline: none;
+		}
+	}
+}
+
+.compact {
+	order: 2;
+}
+
+.content {
+	// Placeholder ограничен той же областью, что и текст, и не попадает под действия.
+	position: relative;
+	min-inline-size: 0;
+}
+
+.endAdornment {
+	padding: var(--space-xs);
+}

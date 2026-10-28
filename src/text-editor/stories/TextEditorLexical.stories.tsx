@@ -1,6 +1,9 @@
 import { type Meta, type StoryObj } from "@storybook/react-vite";
+import { Paperclip, SendHorizontal } from "lucide-react";
 import { fn } from "storybook/test";
 
+import { Button } from "../../button";
+import { FlexContainer } from "../../flex";
 import { LinkTypes, type TextEditorCoreProps, TextEditorLexical } from "../index";
 
 import { TextEditorCaretScrollExample } from "./TextEditorCaretScrollExample";
@@ -51,10 +54,14 @@ const meta = {
 			control: false
 		},
 		presentation: {
-			description: "document — обычная панель; compact — встроенный ввод с командами во всплывающей панели.",
+			description: "document — обычная панель; compact — встроенный ввод со скрытыми по умолчанию инструментами над полем.",
 			control: false
 		},
 		placeholder: { description: "Текст подсказки; null полностью убирает её.", control: false },
+		endAdornment: {
+			description: "Содержимое справа внутри рамки поля, отдельно от contenteditable. Состояниями и действиями управляет consumer.",
+			control: false
+		},
 		businessAdapters: { description: "Необязательные адаптеры consumer для предметных ссылок.", control: false }
 	}
 } satisfies Meta<typeof TextEditorLexical>;
@@ -108,7 +115,28 @@ export const Compact: Story = {
 	parameters: {
 		docs: {
 			description: {
-				story: "Встроенный редактор без внешней рамки и подсказки. Форматирование доступно одной кнопкой с сохранением исходного выделения; размеры целей нажатия не уменьшаются. Длинный текст прокручивается внутри поля. Проверяйте панель и переход к диалогу ссылки также на узком viewport."
+				story: "Встроенный редактор без внешней рамки и подсказки. Кнопка раскрывает инструменты над полем без всплывающего окна. Панель остаётся открытой после команды и форматирует текущее выделение, в том числе после его изменения. Повторное нажатие или Escape внутри панели скрывает инструменты. Размеры целей нажатия не уменьшаются; длинный текст и панель прокручиваются отдельно. Проверьте последовательное форматирование и переход к диалогу ссылки также на телефоне с экранной клавиатурой."
+			}
+		}
+	}
+};
+
+export const CompactWithActions: Story = {
+	...Compact,
+	name: "Компактный ввод: действия внутри поля справа",
+	args: {
+		...Compact.args,
+		endAdornment: (
+			<FlexContainer gap="xs" align="center">
+				<Button icon={<Paperclip />} title="Прикрепить" onClick={fn()} />
+				<Button icon={<SendHorizontal />} title="Отправить" tone="accent" onClick={fn()} />
+			</FlexContainer>
+		)
+	},
+	parameters: {
+		docs: {
+			description: {
+				story: "Кнопка форматирования остаётся слева снаружи поля. Скрепка и отправка находятся справа внутри общей рамки; текст занимает собственную область и не попадает под кнопки. Панель форматирования скрыта по умолчанию и раскрывается над полем. Введите несколько строк и проверьте узкую ширину. Кнопки демонстрируют компоновку: файлы не выбираются и сообщение не отправляется."
 			}
 		}
 	}

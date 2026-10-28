@@ -35,7 +35,6 @@ export function TextEditorInteractions({
 	const canEdit = useCallback(() => !readOnly && lifecycle.canEdit(editor, generation), [editor, generation, lifecycle, readOnly]);
 	const actions = useTextEditorLexicalActions({
 		editor,
-		toolbarState: state,
 		hasLocalLinkDialog: !!businessAdapters?.LocalLinkDialogComponent,
 		onOpenLinkDialog: setLinkTypeDialog,
 		onOpenTagDialog: setTagTypeDialog,

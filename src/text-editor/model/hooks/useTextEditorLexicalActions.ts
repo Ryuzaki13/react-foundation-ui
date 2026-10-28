@@ -26,12 +26,13 @@ import {
 import { $findSelectedInlineNode } from "../../lib/selection/findSelectedInlineNode";
 import { $restoreEditorDialogSelection } from "../../lib/selection/restoreEditorDialogSelection";
 import { getSemanticTagDepth } from "../../lib/semantic/getSemanticTagDepth";
+import { resolveBlockType } from "../../lib/toolbar/resolveToolbarState";
 import { getHeadingTagByStyle, getLexicalInlineStyle } from "../../lib/toolbar/styleMappers";
 import { $createAccessibleLinkNode, $isAccessibleLinkNode } from "../../nodes/AccessibleLinkNode";
 import { $createSemanticTagNode, $isSemanticTagNode, type SemanticTagNode } from "../../nodes/SemanticTagNode";
 import { LinkTypes, TagTypes } from "../../toolbar";
 import { type SemanticDialogState } from "../semanticDialogState";
-import { type LexicalToolbarState, type LinkType, type TextAlignment } from "../textEditorTypes";
+import { type LinkType, type TextAlignment } from "../textEditorTypes";
 import { useDeferredTextEditorFocus } from "../useDeferredTextEditorFocus";
 
 interface InsertLinkPayload {
@@ -44,7 +45,6 @@ interface InsertLinkPayload {
 
 interface UseTextEditorLexicalActionsParams {
 	editor: LexicalEditor | null;
-	toolbarState: LexicalToolbarState;
 	hasLocalLinkDialog: boolean;
 	onOpenLinkDialog: (type: LinkTypes) => void;
 	onOpenTagDialog: (type: TagTypes) => void;
@@ -53,7 +53,6 @@ interface UseTextEditorLexicalActionsParams {
 
 export function useTextEditorLexicalActions({
 	editor,
-	toolbarState,
 	hasLocalLinkDialog,
 	onOpenLinkDialog,
 	onOpenTagDialog,
@@ -72,28 +71,23 @@ export function useTextEditorLexicalActions({
 		(style: string) => {
 			if (!editor || !canEdit()) return;
 
-			if (style === "unordered-list-item") {
-				if (toolbarState.blockType === "unordered-list-item") {
-					editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-					return;
-				}
-				editor.dispatchCommand(INSERT_UNORDERED_LIST_COMMAND, undefined);
-				return;
-			}
-
-			if (style === "ordered-list-item") {
-				if (toolbarState.blockType === "ordered-list-item") {
-					editor.dispatchCommand(REMOVE_LIST_COMMAND, undefined);
-					return;
-				}
-				editor.dispatchCommand(INSERT_ORDERED_LIST_COMMAND, undefined);
-				return;
-			}
-
 			editor.update(() => {
 				if (!canEdit()) return;
 				const selection = $getSelection();
 				if (!$isRangeSelection(selection)) return;
+
+				// React state мог сброситься после перехода к кнопке. Решение принимает
+				// восстановленный диапазон, а не closure предыдущего render.
+				if (style === "unordered-list-item" || style === "ordered-list-item") {
+					const command =
+						resolveBlockType() === style
+							? REMOVE_LIST_COMMAND
+							: style === "unordered-list-item"
+								? INSERT_UNORDERED_LIST_COMMAND
+								: INSERT_ORDERED_LIST_COMMAND;
+					editor.dispatchCommand(command, undefined);
+					return;
+				}
 
 				if (style === "unstyled" || style === "paragraph") {
 					$setBlocksType(selection, () => $createParagraphNode());
@@ -111,7 +105,7 @@ export function useTextEditorLexicalActions({
 				}
 			});
 		},
-		[canEdit, editor, toolbarState.blockType]
+		[canEdit, editor]
 	);
 
 	const handleInlineStyleToggle = useCallback(
