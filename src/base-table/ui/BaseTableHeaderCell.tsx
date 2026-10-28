@@ -1,6 +1,6 @@
 import { ReactNode } from "react";
 
-import { type FoundationTableHeader } from "@ryuzaki13/react-foundation-lib/table";
+import { type FoundationTableHeader, type TableColumnSizingUnit } from "@ryuzaki13/react-foundation-lib/table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { TableHeaderInteractionCell } from "../../table-column-interactions";
@@ -16,6 +16,7 @@ interface BaseTableHeaderCellProps<TData extends object> {
 	enableColumnResizing: boolean;
 	enableColumnReordering: boolean;
 	columnResizeMinWidth: number | undefined;
+	columnSizingUnit?: TableColumnSizingUnit;
 	renderHeaderContent: (header: FoundationTableHeader<TData>) => ReactNode;
 	onResizeColumn: (columnId: string, width: number) => void;
 	onResetColumnWidth: (columnId: string) => void;
@@ -30,6 +31,7 @@ export function BaseTableHeaderCell<TData extends object>({
 	enableColumnResizing,
 	enableColumnReordering,
 	columnResizeMinWidth,
+	columnSizingUnit,
 	renderHeaderContent,
 	onResizeColumn,
 	onResetColumnWidth
@@ -51,6 +53,7 @@ export function BaseTableHeaderCell<TData extends object>({
 					? {
 							columnId: header.column.id,
 							minWidth: columnResizeMinWidth,
+							unit: columnSizingUnit,
 							onResize: onResizeColumn,
 							onReset: onResetColumnWidth
 						}

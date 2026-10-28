@@ -32,12 +32,7 @@ const columns = [
 	{ id: "name", accessorKey: "name", header: "Название" }
 ];
 
-<Table
-	data={rows}
-	columns={columns}
-	getRowId={(row) => row.id}
-	rowReordering={{ onReorder: setRows }}
-/>;
+<Table data={rows} columns={columns} getRowId={(row) => row.id} rowReordering={{ onReorder: setRows }} />;
 ```
 
 ## Основной сценарий
@@ -284,6 +279,30 @@ function DealsTable({ rows }: { rows: DealRow[] }) {
 ### useODataTableColumns: enrich
 
 <Canvas of={TableStories.WithUseODataTableColumnsEnrichHook} />
+
+## Относительные размеры и общая ширина
+
+<Canvas of={TableStories.RelativeColumnSizing} />
+
+`columnSizingUnit="em"` задаёт единицу для `columnSizing`, `defaultColumnSizing`, `columnResizeMinWidth` и `onColumnSizingChange`. Минимум по умолчанию составляет `4em`; для существующего режима `px` сохраняется минимум `60px`. `meta.width` с числом по-прежнему означает `em` независимо от единицы resize.
+
+`tableWidth="columns"` вычисляет ширину таблицы как сумму определённых размеров видимых колонок и включает фиксированную раскладку. Соседние колонки сохраняют свои размеры при resize; длинная таблица прокручивается в существующем контейнере. Расчёт доступен при SSR, не измеряет DOM и реагирует на скрытие, порядок и замену колонок.
+
+```tsx
+<Table
+	data={rows}
+	columns={columns}
+	columnSizingUnit="em"
+	tableWidth="columns"
+	columnSizing={columnSizing}
+	onColumnSizingChange={setColumnSizing}
+	enableColumnResizing
+/>
+```
+
+Если среди видимых ширин есть `auto` или проценты, суммарная ширина не задаётся и сохраняется браузерная раскладка. Режим по умолчанию — `tableWidth="auto"` и `columnSizingUnit="px"`. Все существующие callback-значения сохраняют прежний смысл.
+
+Профиль должен хранить единицу вместе с числами либо фиксировать её своей версией формата. Переключение `columnSizingUnit` не конвертирует старые размеры автоматически. Шаг указателя и `keyboardStep` измеряются в экранных px; resize переводит их в em по текущему шрифту таблицы. Масштаб измеряется один раз на pointer-жест.
 
 ## API
 

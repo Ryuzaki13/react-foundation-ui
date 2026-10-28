@@ -23,7 +23,9 @@ import {
 	type FoundationTableInstance,
 	type FoundationTableRow,
 	type TableColumnMeta,
-	type TableSelectionMode
+	type TableSelectionMode,
+	type TableColumnSizingUnit,
+	resolveTableColumnsWidth
 } from "@ryuzaki13/react-foundation-lib/table";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 import { flexRender } from "@tanstack/react-table";
@@ -81,6 +83,10 @@ export interface BaseTableProps<TData extends object> {
 	className?: string;
 	minHeight?: `${number}em` | `${number}%`;
 	tableClassName?: string;
+	/** Источник общей ширины; columns сохраняет определённые размеры col без перераспределения. */
+	tableWidth?: "auto" | "columns";
+	/** Единица sizing-state и resize minimum; по умолчанию px. */
+	columnSizingUnit?: TableColumnSizingUnit;
 	selectionMode?: TableSelectionMode;
 	scrollableRef?: Ref<HTMLDivElement>;
 	interactiveElementSelector?: string;
@@ -201,6 +207,8 @@ export function BaseTable<TData extends object>({
 	className,
 	minHeight = "15em",
 	tableClassName,
+	tableWidth = "auto",
+	columnSizingUnit = "px",
 	selectionMode = "none",
 	scrollableRef,
 	interactiveElementSelector,
@@ -218,14 +226,23 @@ export function BaseTable<TData extends object>({
 	columnResizeMinWidth,
 	afterTableContent
 }: BaseTableProps<TData>) {
-	const columnLayout = buildBaseTableColumnLayout(table, columnState);
+	// Список TanStack меняет identity при замене column definitions. Одного стабильного table instance недостаточно.
+	const leafColumns = table.getAllLeafColumns();
+	const columnLayout = useMemo(
+		() => (leafColumns.length > 0 ? buildBaseTableColumnLayout(table, columnState, columnSizingUnit) : []),
+		[table, columnState, columnSizingUnit, leafColumns]
+	);
+	const columnsWidth = useMemo(
+		() => (tableWidth === "columns" ? resolveTableColumnsWidth(columnLayout.map((column) => column.width)) : undefined),
+		[columnLayout, tableWidth]
+	);
 	const visibleColumns = useMemo(() => columnLayout.map((column) => column.column), [columnLayout]);
 	const visibleColumnIds = useMemo(() => columnLayout.map((column) => column.id), [columnLayout]);
 	const visibleColumnIndexById = useMemo(() => new Map(visibleColumnIds.map((columnId, index) => [columnId, index])), [visibleColumnIds]);
 	const visibleColumnIdSet = useMemo(() => new Set(visibleColumnIds), [visibleColumnIds]);
 	const sensors = useDndSortableSensors({ activationDistance: 8 });
 	const orderedHeaderGroups = buildOrderedHeaderGroups(table, visibleColumnIndexById);
-	const startPinnedOffsets = getStartPinnedColumnOffsets(table, columnState);
+	const startPinnedOffsets = getStartPinnedColumnOffsets(table, columnState, columnSizingUnit);
 	const lastPinnedColumnId = visibleColumns.filter((column) => column.getIsPinned() === "start").at(-1)?.id;
 	const pinnedStartColumnIds = useMemo(() => columnState.columnPinning.start ?? [], [columnState.columnPinning.start]);
 	const pinnedStartColumnIdSet = useMemo(() => new Set(pinnedStartColumnIds), [pinnedStartColumnIds]);
@@ -245,9 +262,9 @@ export function BaseTable<TData extends object>({
 
 	const handleResizeColumn = useCallback(
 		(columnId: string, width: number) => {
-			table.setColumnSizing((current) => patchTableColumnWidth(current, columnId, width, columnResizeMinWidth));
+			table.setColumnSizing((current) => patchTableColumnWidth(current, columnId, width, columnResizeMinWidth, columnSizingUnit));
 		},
-		[columnResizeMinWidth, table]
+		[columnResizeMinWidth, columnSizingUnit, table]
 	);
 
 	const handleResetColumnWidth = useCallback(
@@ -402,7 +419,9 @@ export function BaseTable<TData extends object>({
 			<div className="overflowHidden relative w100 h100">
 				<Scrollable ref={scrollableRef} className="w100 h100">
 					<>
-						<table className={cn(styles.table, tableClassName)}>
+						<table
+							className={cn(styles.table, tableClassName)}
+							style={columnsWidth ? { width: columnsWidth, tableLayout: "fixed" } : undefined}>
 							<colgroup>
 								{columnLayout.map((column) => (
 									<col key={column.id} style={column.width ? { width: column.width } : undefined} />
@@ -437,6 +456,7 @@ export function BaseTable<TData extends object>({
 																enableColumnResizing={enableColumnResizing}
 																enableColumnReordering={enableColumnReordering}
 																columnResizeMinWidth={columnResizeMinWidth}
+																columnSizingUnit={columnSizingUnit}
 																renderHeaderContent={renderHeaderContent}
 																onResizeColumn={handleResizeColumn}
 																onResetColumnWidth={handleResetColumnWidth}
@@ -468,6 +488,7 @@ export function BaseTable<TData extends object>({
 														enableColumnResizing={enableColumnResizing}
 														enableColumnReordering={enableColumnReordering}
 														columnResizeMinWidth={columnResizeMinWidth}
+														columnSizingUnit={columnSizingUnit}
 														renderHeaderContent={renderHeaderContent}
 														onResizeColumn={handleResizeColumn}
 														onResetColumnWidth={handleResetColumnWidth}

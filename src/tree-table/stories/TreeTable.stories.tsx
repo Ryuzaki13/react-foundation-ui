@@ -630,8 +630,18 @@ const meta = {
 			description: "Стартовый uncontrolled-порядок колонок.",
 			control: false
 		},
+		columnSizingUnit: {
+			description: "Единица sizing-state и resize minimum; em масштабируется со шрифтом таблицы.",
+			control: "inline-radio",
+			options: ["px", "em"]
+		},
+		tableWidth: {
+			description: "Общая ширина: auto или сумма определённых размеров колонок.",
+			control: "inline-radio",
+			options: ["auto", "columns"]
+		},
 		columnSizing: {
-			description: "Controlled-ширины колонок в px.",
+			description: "Controlled-ширины в columnSizingUnit (px по умолчанию).",
 			control: false
 		},
 		defaultColumnSizing: {
@@ -655,7 +665,7 @@ const meta = {
 			control: "boolean"
 		},
 		columnResizeMinWidth: {
-			description: "Минимальная ширина колонки при resize в px.",
+			description: "Минимальная ширина в columnSizingUnit: 60px или 4em по умолчанию.",
 			control: "number"
 		},
 		onColumnVisibilityChange: {

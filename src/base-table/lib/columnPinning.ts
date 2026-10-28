@@ -4,6 +4,7 @@ import {
 	type FoundationTableColumn,
 	type FoundationTableInstance,
 	type FoundationTableState,
+	type TableColumnSizingUnit,
 	getTableColumnMeta,
 	resolveTableColumnOrder,
 	resolveTableLength
@@ -59,11 +60,12 @@ export function normalizeTableColumnPinning(state?: TableColumnPinningState): Co
  */
 export function resolveBaseTableColumnWidth<TData extends object>(
 	column: FoundationTableColumn<TData>,
-	columnSizing?: Readonly<Record<string, number>>
+	columnSizing?: Readonly<Record<string, number>>,
+	unit: TableColumnSizingUnit = "px"
 ): string {
 	const resizedWidth = columnSizing?.[column.id];
 	if (typeof resizedWidth === "number" && Number.isFinite(resizedWidth) && resizedWidth > 0) {
-		return `${Math.floor(resizedWidth)}px`;
+		return unit === "em" ? `${resizedWidth}em` : `${Math.floor(resizedWidth)}px`;
 	}
 
 	const meta = getTableColumnMeta(column.columnDef);
@@ -112,7 +114,8 @@ export function getOrderedVisibleLeafColumns<TData extends object>(
 
 export function buildBaseTableColumnLayout<TData extends object>(
 	table: FoundationTableInstance<TData>,
-	columnState: BaseTableColumnState
+	columnState: BaseTableColumnState,
+	unit: TableColumnSizingUnit = "px"
 ): BaseTableColumnLayoutItem<TData>[] {
 	const columns = getOrderedVisibleLeafColumns(table, columnState);
 	const columnById = new Map(columns.map((column) => [column.id, column]));
@@ -121,7 +124,7 @@ export function buildBaseTableColumnLayout<TData extends object>(
 		ids: columns.map((column) => column.id),
 		getWidth: (id) => {
 			const column = columnById.get(id);
-			return column ? resolveBaseTableColumnWidth(column, columnState.columnSizing) : "0px";
+			return column ? resolveBaseTableColumnWidth(column, columnState.columnSizing, unit) : "0px";
 		}
 	}).flatMap((item) => {
 		const column = columnById.get(item.id);
@@ -144,7 +147,8 @@ export function buildBaseTableColumnLayout<TData extends object>(
  */
 export function getStartPinnedColumnOffsets<TData extends object>(
 	table: FoundationTableInstance<TData>,
-	columnState: BaseTableColumnState
+	columnState: BaseTableColumnState,
+	unit: TableColumnSizingUnit = "px"
 ): Readonly<Record<string, string>> {
 	const offsets: Record<string, string> = {};
 	const accumulatedWidths: string[] = [];
@@ -153,7 +157,7 @@ export function getStartPinnedColumnOffsets<TData extends object>(
 		if (column.getIsPinned() !== "start") continue;
 
 		offsets[column.id] = combineCssLengths(accumulatedWidths);
-		accumulatedWidths.push(resolveBaseTableColumnWidth(column, columnState.columnSizing));
+		accumulatedWidths.push(resolveBaseTableColumnWidth(column, columnState.columnSizing, unit));
 	}
 
 	return offsets;

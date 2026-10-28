@@ -10,6 +10,7 @@ import {
 	type FoundationTableRow,
 	type TableColumnOrderState,
 	type TableColumnSizingState,
+	type TableColumnSizingUnit,
 	type TableColumnVisibilityState
 } from "@ryuzaki13/react-foundation-lib/table";
 import { buildTreeTableRows, type TreeTableFlatHierarchy, type TreeTableRowNode } from "@ryuzaki13/react-foundation-lib/tree-table";
@@ -123,13 +124,17 @@ export interface TreeTableProps<TData extends object> {
 	 */
 	defaultColumnOrder?: readonly string[];
 	/**
-	 * Внешнее controlled-состояние ширин колонок в px.
+	 * Внешнее controlled-состояние ширин в columnSizingUnit (по умолчанию px).
 	 */
 	columnSizing?: TableColumnSizingState;
 	/**
-	 * Стартовое uncontrolled-состояние ширин колонок в px.
+	 * Стартовое uncontrolled-состояние ширин в columnSizingUnit.
 	 */
 	defaultColumnSizing?: TableColumnSizingState;
+	/** Единица sizing-state и columnResizeMinWidth. em масштабируется вместе со шрифтом таблицы. */
+	columnSizingUnit?: TableColumnSizingUnit;
+	/** Сумма определённых ширин колонок; auto и проценты сохраняют браузерную раскладку. */
+	tableWidth?: "auto" | "columns";
 	/**
 	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */
@@ -147,7 +152,7 @@ export interface TreeTableProps<TData extends object> {
 	 */
 	enableColumnReordering?: boolean;
 	/**
-	 * Минимальная ширина колонки при resize в px.
+	 * Минимальная ширина при resize в columnSizingUnit: по умолчанию 60px или 4em.
 	 */
 	columnResizeMinWidth?: number;
 	/**
@@ -294,6 +299,8 @@ export function TreeTable<TData extends object>({
 	defaultColumnOrder,
 	columnSizing,
 	defaultColumnSizing,
+	columnSizingUnit = "px",
+	tableWidth,
 	columnPinning,
 	defaultColumnPinning,
 	enableColumnResizing = false,
@@ -352,6 +359,7 @@ export function TreeTable<TData extends object>({
 	const { columnSizing: resolvedColumnSizing, onColumnSizingChange: handleColumnSizingChange } = useTableColumnSizing({
 		columnSizing,
 		defaultColumnSizing,
+		columnSizingUnit,
 		columnResizeMinWidth,
 		onColumnSizingChange
 	});
@@ -525,6 +533,8 @@ export function TreeTable<TData extends object>({
 			enableColumnResizing={enableColumnResizing}
 			enableColumnReordering={enableColumnReordering}
 			columnResizeMinWidth={columnResizeMinWidth}
+			columnSizingUnit={columnSizingUnit}
+			tableWidth={tableWidth}
 			renderCellContent={(args) => {
 				const originalRow = resolveOriginalRow(args.row, treeData.rowById);
 				const displayValue = formatPipelineDisplayValue({

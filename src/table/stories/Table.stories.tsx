@@ -2,10 +2,16 @@ import { useMemo, useState, type ComponentType } from "react";
 
 import { odataMetadataQueryOptions, useODataTableColumns } from "@ryuzaki13/react-foundation-api/odata";
 import { createQueryClient } from "@ryuzaki13/react-foundation-lib/query-client";
-import { enrichTableColumnsWithODataFormatting, type TableColumnDef } from "@ryuzaki13/react-foundation-lib/table";
+import {
+	enrichTableColumnsWithODataFormatting,
+	type TableColumnDef,
+	type TableColumnSizingState
+} from "@ryuzaki13/react-foundation-lib/table";
 import { QueryClientProvider } from "@tanstack/react-query";
 
+import { Button } from "../../button";
 import { createControlledStoryRender, type StoryArgsUpdater } from "../../development/storybook/createControlledStoryRender";
+import { FlexContainer } from "../../flex";
 import { Sortable } from "../../sortable";
 import { Table, type TableProps } from "../Table";
 
@@ -639,8 +645,18 @@ const meta = {
 			description: "Стартовый uncontrolled-порядок колонок.",
 			control: false
 		},
+		columnSizingUnit: {
+			description: "Единица sizing-state и resize minimum; em масштабируется со шрифтом таблицы.",
+			control: "inline-radio",
+			options: ["px", "em"]
+		},
+		tableWidth: {
+			description: "Общая ширина: auto или сумма определённых размеров колонок.",
+			control: "inline-radio",
+			options: ["auto", "columns"]
+		},
 		columnSizing: {
-			description: "Controlled-ширины колонок в px.",
+			description: "Controlled-ширины в columnSizingUnit (px по умолчанию).",
 			control: false
 		},
 		defaultColumnSizing: {
@@ -672,7 +688,7 @@ const meta = {
 			control: false
 		},
 		columnResizeMinWidth: {
-			description: "Минимальная ширина колонки при resize в px.",
+			description: "Минимальная ширина в columnSizingUnit: 60px или 4em по умолчанию.",
 			control: "number"
 		},
 		onColumnVisibilityChange: {
@@ -988,4 +1004,30 @@ export const WithUseODataTableColumnsEnrichHook: FormattingStory = {
 	render: createControlledStoryRender<TableProps<DealFormattingRow>>((args, updateArgs) => (
 		<HookEnrichTableStory args={args} updateArgs={updateArgs} />
 	))
+};
+
+/** Состояние resize остаётся тем же при смене шрифта; масштабирование выполняет CSS. */
+export const RelativeColumnSizing: Story = {
+	args: {
+		selectionMode: "none",
+		enableColumnResizing: true,
+		columnSizingUnit: "em",
+		tableWidth: "columns"
+	},
+	render: function RelativeColumnSizingStory(args) {
+		const [largeFont, setLargeFont] = useState(false);
+		const [sizing, setSizing] = useState<TableColumnSizingState>({});
+
+		return (
+			<FlexContainer column gap="md">
+				<Button onClick={() => setLargeFont((current) => !current)}>
+					{largeFont ? "Обычный размер шрифта" : "Увеличить шрифт"}
+				</Button>
+				<FlexContainer style={{ fontSize: largeFont ? "var(--font-size-lg)" : "var(--font-size-base)" }}>
+					<Table {...args} columnSizing={sizing} onColumnSizingChange={setSizing} />
+				</FlexContainer>
+				<output aria-label="Сохранённые размеры в em">{JSON.stringify(sizing)}</output>
+			</FlexContainer>
+		);
+	}
 };

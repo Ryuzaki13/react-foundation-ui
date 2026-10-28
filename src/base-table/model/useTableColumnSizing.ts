@@ -1,6 +1,6 @@
 import { useCallback, useMemo, useState } from "react";
 
-import { normalizeTableColumnSizing, type TableColumnSizingState } from "@ryuzaki13/react-foundation-lib/table";
+import { normalizeTableColumnSizing, type TableColumnSizingState, type TableColumnSizingUnit } from "@ryuzaki13/react-foundation-lib/table";
 import { functionalUpdate, type ColumnSizingState, type Updater } from "@tanstack/react-table";
 
 /**
@@ -8,15 +8,17 @@ import { functionalUpdate, type ColumnSizingState, type Updater } from "@tanstac
  */
 export interface UseTableColumnSizingArgs {
 	/**
-	 * Внешнее controlled-состояние ширин колонок в px.
+	 * Внешнее controlled-состояние ширин колонок в columnSizingUnit.
 	 */
 	columnSizing?: TableColumnSizingState;
 	/**
-	 * Стартовое uncontrolled-состояние ширин колонок в px.
+	 * Стартовое uncontrolled-состояние ширин колонок в columnSizingUnit.
 	 */
 	defaultColumnSizing?: TableColumnSizingState;
+	/** Единица всех чисел sizing-state; по умолчанию px. */
+	columnSizingUnit?: TableColumnSizingUnit;
 	/**
-	 * Минимальная ширина колонки в px.
+	 * Минимальная ширина колонки в columnSizingUnit.
 	 */
 	columnResizeMinWidth?: number;
 	/**
@@ -45,18 +47,28 @@ export interface UseTableColumnSizingResult {
 export function useTableColumnSizing({
 	columnSizing,
 	defaultColumnSizing,
+	columnSizingUnit = "px",
 	columnResizeMinWidth,
 	onColumnSizingChange
 }: UseTableColumnSizingArgs): UseTableColumnSizingResult {
 	const [uncontrolledColumnSizing, setUncontrolledColumnSizing] = useState<TableColumnSizingState | undefined>(undefined);
 	const resolvedColumnSizing = useMemo(
-		() => normalizeTableColumnSizing(columnSizing ?? uncontrolledColumnSizing ?? defaultColumnSizing, columnResizeMinWidth),
-		[columnResizeMinWidth, columnSizing, defaultColumnSizing, uncontrolledColumnSizing]
+		() =>
+			normalizeTableColumnSizing(
+				columnSizing ?? uncontrolledColumnSizing ?? defaultColumnSizing,
+				columnResizeMinWidth,
+				columnSizingUnit
+			),
+		[columnResizeMinWidth, columnSizing, columnSizingUnit, defaultColumnSizing, uncontrolledColumnSizing]
 	);
 
 	const handleColumnSizingChange = useCallback(
 		(updater: Updater<ColumnSizingState>) => {
-			const nextColumnSizing = normalizeTableColumnSizing(functionalUpdate(updater, resolvedColumnSizing), columnResizeMinWidth);
+			const nextColumnSizing = normalizeTableColumnSizing(
+				functionalUpdate(updater, resolvedColumnSizing),
+				columnResizeMinWidth,
+				columnSizingUnit
+			);
 
 			if (columnSizing === undefined) {
 				setUncontrolledColumnSizing(nextColumnSizing);
@@ -64,7 +76,7 @@ export function useTableColumnSizing({
 
 			onColumnSizingChange?.(nextColumnSizing);
 		},
-		[columnResizeMinWidth, columnSizing, onColumnSizingChange, resolvedColumnSizing]
+		[columnResizeMinWidth, columnSizing, columnSizingUnit, onColumnSizingChange, resolvedColumnSizing]
 	);
 
 	return {

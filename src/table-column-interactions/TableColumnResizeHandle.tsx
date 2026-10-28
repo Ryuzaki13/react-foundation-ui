@@ -1,6 +1,6 @@
 import { useRef, type KeyboardEvent as ReactKeyboardEvent, type PointerEvent as ReactPointerEvent } from "react";
 
-import { DEFAULT_TABLE_COLUMN_MIN_WIDTH, normalizeTableColumnWidth } from "@ryuzaki13/react-foundation-lib/table";
+import { normalizeTableColumnWidth, type TableColumnSizingUnit } from "@ryuzaki13/react-foundation-lib/table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import styles from "./TableColumnInteractions.module.scss";
@@ -11,25 +11,22 @@ export type TableColumnResizeHandleProps = {
 	columnId: string;
 	className?: string;
 	minWidth?: number;
+	/** Единица minimum и callback-значений; экранные координаты и keyboardStep остаются в px. */
+	unit?: TableColumnSizingUnit;
 	keyboardStep?: number;
 	ariaLabel?: string;
+	/** Необязательный источник измеренной экранной ширины в px. */
 	getStartWidth?: (columnId: string, element: HTMLElement) => number;
 	onResize: (columnId: string, width: number) => void;
 	onResizeEnd?: (columnId: string, width: number) => void;
 	onReset?: (columnId: string) => void;
 };
 
-function resolveHeaderCellWidth(element: HTMLElement, minWidth: number): number {
-	const headerCell = element.closest("th");
-	const width = headerCell?.getBoundingClientRect().width;
-
-	return normalizeTableColumnWidth(typeof width === "number" && Number.isFinite(width) ? width : minWidth, minWidth);
-}
-
 export function TableColumnResizeHandle({
 	columnId,
 	className,
 	minWidth,
+	unit = "px",
 	keyboardStep = DEFAULT_KEYBOARD_RESIZE_STEP,
 	ariaLabel = "Изменить ширину колонки",
 	getStartWidth,
@@ -37,26 +34,43 @@ export function TableColumnResizeHandle({
 	onResizeEnd,
 	onReset
 }: TableColumnResizeHandleProps) {
-	const resolvedMinWidth = minWidth ?? DEFAULT_TABLE_COLUMN_MIN_WIDTH;
+	const resolvedMinWidth = normalizeTableColumnWidth(0, minWidth, unit);
 	const startXRef = useRef(0);
 	const startWidthRef = useRef(0);
 	const lastWidthRef = useRef(0);
+	const pixelsPerUnitRef = useRef(1);
 	const activeRef = useRef(false);
 	const movedRef = useRef(false);
 
 	const resolveStartWidth = (element: HTMLElement) => {
-		const width = getStartWidth?.(columnId, element) ?? resolveHeaderCellWidth(element, resolvedMinWidth);
+		const headerCell = element.closest("th");
+		const tableElement = element.closest("table") ?? element;
+		const pixelsPerUnit =
+			unit === "em" ? Number.parseFloat(element.ownerDocument.defaultView?.getComputedStyle(tableElement).fontSize ?? "") : 1;
 
-		return normalizeTableColumnWidth(width, resolvedMinWidth);
+		if (!Number.isFinite(pixelsPerUnit) || pixelsPerUnit <= 0) {
+			throw new Error("Для относительного resize нужен вычисленный размер шрифта таблицы.");
+		}
+
+		const widthPx = getStartWidth?.(columnId, element) ?? headerCell?.getBoundingClientRect().width;
+
+		return {
+			width: normalizeTableColumnWidth((widthPx ?? resolvedMinWidth * pixelsPerUnit) / pixelsPerUnit, resolvedMinWidth, unit),
+			pixelsPerUnit
+		};
 	};
 
 	const handlePointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
 		if (event.button !== 0 && event.pointerType === "mouse") return;
 
+		const start = resolveStartWidth(event.currentTarget);
+
 		activeRef.current = true;
 		movedRef.current = false;
 		startXRef.current = event.clientX;
-		startWidthRef.current = resolveStartWidth(event.currentTarget);
+		startWidthRef.current = start.width;
+		// Масштаб измеряется один раз на жест, а не на каждом pointermove.
+		pixelsPerUnitRef.current = start.pixelsPerUnit;
 		lastWidthRef.current = startWidthRef.current;
 		event.currentTarget.setPointerCapture(event.pointerId);
 
@@ -67,7 +81,11 @@ export function TableColumnResizeHandle({
 	const handlePointerMove = (event: ReactPointerEvent<HTMLDivElement>) => {
 		if (!activeRef.current) return;
 
-		const nextWidth = normalizeTableColumnWidth(startWidthRef.current + event.clientX - startXRef.current, resolvedMinWidth);
+		const nextWidth = normalizeTableColumnWidth(
+			startWidthRef.current + (event.clientX - startXRef.current) / pixelsPerUnitRef.current,
+			resolvedMinWidth,
+			unit
+		);
 		lastWidthRef.current = nextWidth;
 		movedRef.current = true;
 		onResize(columnId, nextWidth);
@@ -109,8 +127,12 @@ export function TableColumnResizeHandle({
 		}
 
 		const direction = event.key === "ArrowRight" ? 1 : -1;
-		const currentWidth = resolveStartWidth(event.currentTarget);
-		const nextWidth = normalizeTableColumnWidth(currentWidth + direction * keyboardStep, resolvedMinWidth);
+		const current = resolveStartWidth(event.currentTarget);
+		const nextWidth = normalizeTableColumnWidth(
+			current.width + (direction * keyboardStep) / current.pixelsPerUnit,
+			resolvedMinWidth,
+			unit
+		);
 		onResize(columnId, nextWidth);
 		onResizeEnd?.(columnId, nextWidth);
 	};
