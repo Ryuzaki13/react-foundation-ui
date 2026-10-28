@@ -1,5 +1,5 @@
 import { ODataSingleSelectProps, useODataCollectionModel } from "@ryuzaki13/react-foundation-api/odata";
-import { CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
+import { type CollectionItem } from "@ryuzaki13/react-foundation-lib/odata-service";
 
 import { InputUILoading } from "../input";
 import { UiBaseProps } from "../types";

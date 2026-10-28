@@ -4,7 +4,8 @@ import { DEFAULT_VALUE_STATES, VALUE_STATE_COLOR_TOKENS } from "@ryuzaki13/react
 import { State } from "@ryuzaki13/react-foundation-lib/types";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { Select, SelectProps } from "../select";
+// Прямой импорт общего Select сохраняет независимость StateSelect от OData-адаптеров.
+import { Select, type SelectProps } from "../select/Select";
 import { UiBaseProps } from "../types";
 
 import styles from "./StateSelect.module.scss";

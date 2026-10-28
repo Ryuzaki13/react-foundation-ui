@@ -2,7 +2,8 @@ import { ReactNode } from "react";
 
 import { getPresetOption, type PresetOption } from "@ryuzaki13/react-foundation-lib/presets";
 
-import { Select, type SelectOptionState } from "../select";
+// Прямой импорт общего Select сохраняет независимость выбора пресетов от OData-адаптеров.
+import { Select, type SelectOptionState } from "../select/Select";
 
 import type { UiBaseProps } from "../types";
 
