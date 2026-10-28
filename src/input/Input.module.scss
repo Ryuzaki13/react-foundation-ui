@@ -59,6 +59,7 @@
 .clearButton {
 	width: var(--button-size);
 	height: var(--button-size);
+	flex: 0 0 var(--button-size);
 	display: flex;
 	align-items: center;
 	justify-content: center;

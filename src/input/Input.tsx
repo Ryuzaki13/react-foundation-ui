@@ -1,4 +1,4 @@
-import React, { type MouseEvent, CSSProperties, InputHTMLAttributes, ReactNode, type Ref, useLayoutEffect, useRef, useState } from "react";
+import React, { CSSProperties, InputHTMLAttributes, type MouseEvent, ReactNode, type Ref, useLayoutEffect, useRef, useState } from "react";
 
 import { toFiniteNumber } from "@ryuzaki13/react-foundation-lib/formatters";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
@@ -182,11 +182,11 @@ function resolveEndAdornmentWidth(hasAdornment: boolean, hasClearAction: boolean
 	}
 
 	if (hasAdornment && hasClearAction) {
-		return "calc((var(--control-height) * 2) + var(--space-xs))";
+		return "calc((var(--button-size) * 2) + var(--space-xs))";
 	}
 
 	if (hasAdornment || hasClearAction) {
-		return "var(--control-height)";
+		return "var(--button-size)";
 	}
 
 	return undefined;
@@ -199,8 +199,8 @@ function createEndAdornment({ endAdornment, onClear, disabled }: { endAdornment?
 
 	return (
 		<div className={styles.endAdornmentGroup}>
-			{endAdornment}
 			{onClear && <InputClearButton onClick={onClear} disabled={disabled} />}
+			{endAdornment}
 		</div>
 	);
 }
