@@ -1,0 +1,12 @@
+.blockquote {
+	// Геометрия остаётся у базового HTML-правила; общий tone-класс задаёт семантические цвета.
+	color: var(--tone-text);
+	background: var(--tone-bg);
+	border-inline-start-color: var(--tone-border);
+}
+
+.neutral {
+	// Нейтральная цитата сбрасывает фон и контур цветного родителя.
+	--tone-bg: var(--bg-surface);
+	--tone-border: var(--border-strong);
+}

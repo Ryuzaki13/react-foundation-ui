@@ -1,0 +1,56 @@
+import { ArgTypes, Canvas, Controls, Meta, Primary, Title } from "@storybook/addon-docs/blocks";
+import * as BlockquoteStories from "./Blockquote.stories";
+
+<Meta of={BlockquoteStories} />
+
+<Title>Blockquote</Title>
+
+Цитата с нейтральным, акцентным или статусным оформлением. Компонент сохраняет
+нативный HTML-тег `blockquote` и его базовые отступы и начальную границу.
+
+<Primary />
+
+```tsx
+import { Blockquote } from "@ryuzaki13/react-foundation-ui/blockquote";
+
+<Blockquote tone="warning">Проверьте данные перед продолжением.</Blockquote>;
+```
+
+## Тоны
+
+По умолчанию используется `neutral`: вторичный текст на поверхности темы с
+нейтральной границей. Доступны также `accent`, `info`, `success`, `warning` и
+`error`. Статусные варианты используют пары `--<status>-text` и
+`--<status>-bg`, а акцентный — `--accent-text`, `--accent-border` и
+`--bg-surface`. Тон не добавляет интерактивных состояний.
+
+<Canvas of={BlockquoteStories.Tones} />
+<Controls of={BlockquoteStories.Basic} />
+
+## Содержимое и источник
+
+В `children` можно передавать текст, параграфы и списки. `cite` сохраняет URL
+источника в HTML, но не выводит его на экран: видимую подпись добавляйте в
+содержимое. Нативные атрибуты, обработчики, `className`, `style` и `ref`
+передаются непосредственно на `blockquote`.
+
+<Canvas of={BlockquoteStories.RichContent} />
+
+Нейтральная вложенная цитата не наследует статусный фон и границу родителя.
+
+<Canvas of={BlockquoteStories.NestedNeutral} />
+
+## Семантика и доступность
+
+Используйте компонент для цитаты или выдержки. Смысл статуса передавайте
+текстом: цвет служит дополнительным указателем. `tone` сам по себе не
+назначает `role="status"`, `role="alert"` или `aria-live`. Если изменение
+цитаты должно озвучиваться, задавайте нужные ARIA-атрибуты явно.
+
+Компонент не обращается к browser API и одинаково рендерится на сервере и
+клиенте. Обычные HTML-цитаты в редакторе и других потребителях сохраняют
+базовое оформление без React-компонента.
+
+## API
+
+<ArgTypes of={BlockquoteStories} />

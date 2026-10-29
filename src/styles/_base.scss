@@ -157,7 +157,7 @@ mark {
 	background: var(--highlight-bg);
 }
 
-// выкинуть в отдельный компонент с настройкой status
+// Нативные цитаты сохраняют базовый вид; компонент Blockquote добавляет выбор тона.
 blockquote {
 	color: var(--text-secondary);
 	background: var(--bg-surface);

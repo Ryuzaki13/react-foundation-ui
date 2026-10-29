@@ -71,6 +71,10 @@
 			"types": "./dist/base-table/index.d.ts",
 			"import": "./dist/base-table/index.js"
 		},
+		"./blockquote": {
+			"types": "./dist/blockquote/index.d.ts",
+			"import": "./dist/blockquote/index.js"
+		},
 		"./barcode-scanner": {
 			"types": "./dist/barcode-scanner/index.d.ts",
 			"import": "./dist/barcode-scanner/index.js"
