@@ -11,6 +11,7 @@ export interface PickerTriggerProps extends Omit<PickerTriggerInputProps, "place
 	ref?: Ref<HTMLInputElement>;
 	open: boolean;
 	optionCount: number;
+	showOptionCount?: boolean;
 	placeholder?: string;
 	label?: ReactNode;
 	placeholderFallback?: string;
@@ -36,6 +37,7 @@ export function PickerTrigger({
 	ref,
 	open,
 	optionCount,
+	showOptionCount,
 	placeholder,
 	label,
 	placeholderFallback,
@@ -62,7 +64,9 @@ export function PickerTrigger({
 			ref={ref}
 			disabled={disabled}
 			placeholder={
-				showSelectedValue ? undefined : getPickerPlaceholder({ placeholder, label, optionCount, fallback: placeholderFallback })
+				showSelectedValue
+					? undefined
+					: getPickerPlaceholder({ placeholder, label, optionCount, showOptionCount, fallback: placeholderFallback })
 			}
 			inputClassName={inputClassName}
 			rootClassName={clearable ? styles.triggerHasClear : undefined}

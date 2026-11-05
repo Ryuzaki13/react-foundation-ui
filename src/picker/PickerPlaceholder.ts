@@ -6,6 +6,7 @@ type PickerPlaceholderParams = {
 	placeholder?: string;
 	label?: ReactNode;
 	optionCount: number;
+	showOptionCount?: boolean;
 	fallback?: string;
 };
 
@@ -13,9 +14,15 @@ type PickerPlaceholderParams = {
  * Формирует единый текст placeholder для picker-компонентов и всегда показывает
  * актуальное количество доступных вариантов.
  */
-export function getPickerPlaceholder({ placeholder, label, optionCount, fallback = "Выберите значение" }: PickerPlaceholderParams) {
+export function getPickerPlaceholder({
+	placeholder,
+	label,
+	optionCount,
+	showOptionCount = false,
+	fallback = "Выберите значение"
+}: PickerPlaceholderParams) {
 	const labelText = extractPickerTextContent(label);
 	const text = placeholder ?? labelText ?? fallback;
 
-	return `${text} <${optionCount}>`;
+	return showOptionCount ? `${text} <${optionCount}>` : text;
 }

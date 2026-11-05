@@ -46,6 +46,7 @@ export function MultiSelectCore<TOption>({
 	label,
 	description,
 	placeholder,
+	showOptionCount,
 	size,
 	query,
 	defaultQuery,
@@ -327,6 +328,7 @@ export function MultiSelectCore<TOption>({
 							disabled={disabled}
 							open={open}
 							optionCount={options.length}
+							showOptionCount={showOptionCount}
 							label={label}
 							placeholder={placeholder}
 							placeholderFallback="Выберите значения"

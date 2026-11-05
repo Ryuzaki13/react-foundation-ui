@@ -26,6 +26,7 @@ export type MultiSelectProps<TOption> = MultiSelectRenderers<TOption> &
 		getOptionGroup?: (option: TOption) => MultiSelectOptionGroup | undefined;
 		getOptionSearchText?: (option: TOption) => string | readonly string[];
 		getOptionDisabled?: (option: TOption, context: MultiSelectOptionDisableContext<TOption>) => boolean;
+		showOptionCount?: boolean;
 		query?: string;
 		defaultQuery?: string;
 		highlightQuery?: string;

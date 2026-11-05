@@ -410,7 +410,7 @@ describe("TreeSelect", () => {
 		});
 
 		expect(input.value).toBe("");
-		expect(input.placeholder).toBe("Выберите узел <3>");
+		expect(input.placeholder).toBe("Выберите узел");
 		expect(input.getAttribute("aria-expanded")).toBe("false");
 		expect(container?.querySelector('button[aria-label="Очистить выбор"]')).toBeNull();
 	});

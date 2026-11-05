@@ -46,6 +46,7 @@ type SelectSharedProps<TOption extends InputType> = Omit<UiBaseProps<TOption, TO
 	getOptionClassName?: (option: TOption, state: SelectOptionState) => string | undefined;
 	renderOption?: (option: TOption, state: SelectOptionState) => ReactNode;
 	renderValue?: (option: TOption) => ReactNode;
+	showOptionCount?: boolean;
 	className?: string;
 	/** Ошибка самого поля; состояние загрузки опций задаётся через errorState. */
 	error?: string;
@@ -86,6 +87,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 		placeholder,
 		size,
 		options,
+		showOptionCount,
 		value,
 		onChange,
 		getOptionKey,
@@ -287,6 +289,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 							isLoading={isLoading}
 							open={open}
 							optionCount={options.length}
+							showOptionCount={showOptionCount}
 							label={label}
 							placeholder={placeholder}
 							value={inputValue}
