@@ -36,11 +36,11 @@
 }
 
 .separator {
-	border-top: var(--border);
+	border-top: var(--border-width) solid var(--border-subtle);
 }
 
 .separatorVertical {
-	border-left: var(--border);
+	border-left: var(--border-width) solid var(--border-subtle);
 	height: 100%;
 	min-height: 1em;
 }
