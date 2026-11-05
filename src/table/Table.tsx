@@ -5,15 +5,15 @@ import { moveArrayItem } from "@ryuzaki13/react-foundation-lib/array";
 import { formatPipelineDisplayValue } from "@ryuzaki13/react-foundation-lib/formatters";
 import { TableFormulaRowData } from "@ryuzaki13/react-foundation-lib/formulas";
 import {
-	type FoundationTableRow,
 	foundationTableFeatures,
+	useTableRowSelection,
+	type FoundationTableRow,
 	type TableColumnDef,
 	type TableColumnOrderState,
 	type TableColumnSizingState,
 	type TableColumnSizingUnit,
 	type TableColumnVisibilityState,
-	type TableSelectionMode,
-	useTableRowSelection
+	type TableSelectionMode
 } from "@ryuzaki13/react-foundation-lib/table";
 import { useTable } from "@tanstack/react-table";
 
@@ -127,7 +127,7 @@ export interface TableProps<TData extends object> {
 	/** Единица sizing-state и columnResizeMinWidth. em масштабируется вместе со шрифтом таблицы. */
 	columnSizingUnit?: TableColumnSizingUnit;
 	/** Сумма определённых ширин колонок; auto и проценты сохраняют браузерную раскладку. */
-	tableWidth?: "auto" | "columns";
+	tableWidth?: "auto" | "columns" | "container";
 	/**
 	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */

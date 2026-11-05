@@ -18,14 +18,14 @@ import {
 	removeTableColumnWidth,
 	resolveReorderedTableHeaderColumns,
 	resolveTableColumnOrder,
+	resolveTableColumnsWidth,
 	type FoundationTableCell,
 	type FoundationTableHeader,
 	type FoundationTableInstance,
 	type FoundationTableRow,
 	type TableColumnMeta,
-	type TableSelectionMode,
 	type TableColumnSizingUnit,
-	resolveTableColumnsWidth
+	type TableSelectionMode
 } from "@ryuzaki13/react-foundation-lib/table";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 import { flexRender } from "@tanstack/react-table";
@@ -84,7 +84,7 @@ export interface BaseTableProps<TData extends object> {
 	minHeight?: `${number}em` | `${number}%`;
 	tableClassName?: string;
 	/** Источник общей ширины; columns сохраняет определённые размеры col без перераспределения. */
-	tableWidth?: "auto" | "columns";
+	tableWidth?: "auto" | "columns" | "container";
 	/** Единица sizing-state и resize minimum; по умолчанию px. */
 	columnSizingUnit?: TableColumnSizingUnit;
 	selectionMode?: TableSelectionMode;
@@ -233,7 +233,12 @@ export function BaseTable<TData extends object>({
 		[table, columnState, columnSizingUnit, leafColumns]
 	);
 	const columnsWidth = useMemo(
-		() => (tableWidth === "columns" ? resolveTableColumnsWidth(columnLayout.map((column) => column.width)) : undefined),
+		() =>
+			tableWidth === "columns"
+				? resolveTableColumnsWidth(columnLayout.map((column) => column.width))
+				: tableWidth === "container"
+					? "100%"
+					: undefined,
 		[columnLayout, tableWidth]
 	);
 	const visibleColumns = useMemo(() => columnLayout.map((column) => column.column), [columnLayout]);

@@ -134,7 +134,7 @@ export interface TreeTableProps<TData extends object> {
 	/** Единица sizing-state и columnResizeMinWidth. em масштабируется вместе со шрифтом таблицы. */
 	columnSizingUnit?: TableColumnSizingUnit;
 	/** Сумма определённых ширин колонок; auto и проценты сохраняют браузерную раскладку. */
-	tableWidth?: "auto" | "columns";
+	tableWidth?: "auto" | "columns" | "container";
 	/**
 	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */
