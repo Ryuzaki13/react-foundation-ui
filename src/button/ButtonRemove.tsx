@@ -4,16 +4,16 @@ import { XIcon } from "lucide-react";
 
 import { Button } from "./Button";
 
-interface ButtonRemoveProps {
-	onRemove: () => void;
-	onPreRemove?: () => void;
-	className?: string;
-}
+type ButtonRemoveProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type" | "onClick"> & {
+	confirmTimeout?: number;
+	onConfirm: () => void;
+	onPreConfirm?: () => void;
+};
 
 /**
  * Специализированная кнопка удаления сущности или вложения. Инкапсулирует подтверждающее поведение перед окончательным вызовом `onRemove`.
  */
-export function ButtonRemove({ onPreRemove, onRemove, className }: ButtonRemoveProps) {
+export function ButtonRemove({ onPreConfirm, onConfirm, confirmTimeout = 1500, ...props }: ButtonRemoveProps) {
 	const [confirmRemove, setConfirmRemove] = useState(false);
 	const timeoutRef = useRef<number | null>(null);
 
@@ -26,24 +26,16 @@ export function ButtonRemove({ onPreRemove, onRemove, className }: ButtonRemoveP
 		}
 
 		if (confirmRemove) {
-			onRemove();
+			onConfirm();
 			setConfirmRemove(false);
 		} else {
-			onPreRemove?.();
+			onPreConfirm?.();
 			setConfirmRemove(true);
 			timeoutRef.current = window.setTimeout(() => {
 				setConfirmRemove(false);
-			}, 1500);
+			}, confirmTimeout);
 		}
 	};
 
-	return (
-		<Button
-			icon={<XIcon />}
-			onClick={handleRemoveClick}
-			tone="error"
-			appearance={confirmRemove ? "solid" : "outline"}
-			className={className}
-		/>
-	);
+	return <Button {...props} icon={<XIcon />} onClick={handleRemoveClick} tone="error" appearance={confirmRemove ? "solid" : "outline"} />;
 }

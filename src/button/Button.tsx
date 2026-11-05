@@ -10,7 +10,7 @@ import styles from "./Button.module.scss";
 
 import type { UiAppearance, UiTone } from "../types";
 
-export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> {
+export type ButtonProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type"> & {
 	tone?: UiTone;
 	appearance?: UiAppearance;
 	icon?: React.ReactNode;
@@ -20,7 +20,7 @@ export interface ButtonProps extends Omit<React.ButtonHTMLAttributes<HTMLButtonE
 	 * По умолчанию делаем безопасное поведение в формах.
 	 */
 	type?: "button" | "submit" | "reset";
-}
+};
 
 /**
  * Базовая кнопка дизайн-системы для пользовательских действий.
