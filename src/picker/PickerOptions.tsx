@@ -53,9 +53,9 @@ export function PickerOptions({
 			data-ui="picker-options"
 			data-has-toolbar={resolvedToolbar ? "true" : undefined}>
 			{resolvedToolbar ? (
-				<div className={styles.optionsToolbar}>
+				<div>
 					{resolvedToolbar}
-					<Separator />
+					<Separator className="marginBlockXs" />
 				</div>
 			) : null}
 			<div
