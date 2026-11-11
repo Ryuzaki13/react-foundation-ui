@@ -45,7 +45,6 @@ $root-token-defaults: (
 	"--space-xl": 64px,
 	"--space-xxl": 128px,
 
-	"--ui-font-size": 16px,
 	"--ui-width-xs": 128px,
 	"--ui-width-sm": 176px,
 	"--ui-width-md": 224px,
@@ -54,9 +53,10 @@ $root-token-defaults: (
 
 	"--icon-size": 1.125em,
 
-	"--control-height-adoptive": 4px,
+	"--control-min-font-size": 16px,
+	"--control-height-adaptive": 4px,
 	"--control-height-base": 1em,
-	"--control-height": calc(var(--control-height-base) + var(--line-height-offset) + var(--control-height-adoptive)),
+	"--control-height": calc(var(--control-height-base) + var(--line-height-offset) + var(--control-height-adaptive)),
 	"--width-add": calc(10 * var(--letter-spacing) + 2 * var(--word-spacing)),
 	"--disabled-opacity": 0.4,
 	"--transition-fast": 0.2s,
