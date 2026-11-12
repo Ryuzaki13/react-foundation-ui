@@ -6,7 +6,7 @@
 
 .wrapper {
 	--check-box-size: var(--text-height);
-	--check-icon-size: calc(var(--text-height) - 6px);
+	--check-icon-size: calc(var(--text-height) - 4px);
 
 	width: var(--check-box-control-size, var(--control-height));
 	height: var(--check-box-control-size, var(--control-height));

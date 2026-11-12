@@ -178,38 +178,26 @@
 	&:checked,
 	&:indeterminate,
 	&[aria-checked="mixed"] {
-		--ui-background: var(--selection-bg);
-		--ui-background-hover: var(--selection-bg-hover);
-		--ui-background-pressed: var(--selection-bg-pressed);
+		--ui-background: var(--selection-fill);
+		--ui-background-hover: var(--selection-fill-hover);
+		--ui-background-pressed: var(--selection-fill-pressed);
 		--ui-border: var(--selection-border);
 		--ui-border-hover: var(--selection-border-hover);
 		--ui-border-pressed: var(--selection-border-pressed);
 		--ui-color: var(--selection-text);
 		--ui-color-hover: var(--selection-text-hover);
 		--ui-color-pressed: var(--selection-text-pressed);
-		--ui-disabled-background: var(--selection-bg-disabled);
+		--ui-disabled-background: var(--selection-fill-disabled);
 		--ui-disabled-border: var(--selection-border-disabled);
 		--ui-disabled-color: var(--selection-text-disabled);
 
 		// Иконка — сосед нативного input и не наследует его текущий color.
 		& + .uiSelectionIcon {
-			color: var(--selection-text);
-		}
-
-		&:enabled {
-			@include hover(false, false) {
-				& + .uiSelectionIcon {
-					color: var(--selection-text-hover);
-				}
-			}
-
-			&:active + .uiSelectionIcon {
-				color: var(--selection-text-pressed);
-			}
+			color: var(--selection-on-fill);
 		}
 
 		&:disabled + .uiSelectionIcon {
-			color: var(--selection-text-disabled);
+			color: var(--selection-on-fill-disabled);
 		}
 	}
 
@@ -219,6 +207,8 @@
 }
 
 .uiSelectionIcon {
+	--stroke-width: 4px;
+
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;

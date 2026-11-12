@@ -61,7 +61,7 @@ export function RadioButton({
 						onChange={(event) => onChange?.(event.currentTarget.checked)}
 					/>
 					<div className={cn(uiStyles.uiSelectionIcon, baseStyles.icon)} aria-hidden="true">
-						<CircleIcon fill="currentColor" />
+						<CircleIcon />
 					</div>
 				</div>
 				{text && (

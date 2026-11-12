@@ -18,12 +18,12 @@ declare const styles: {
   readonly required: "required";
   readonly uiControl: "uiControl";
   readonly uiSelectionControl: "uiSelectionControl";
-  readonly uiSelectionIcon: "uiSelectionIcon";
   readonly uiPopupOption: "uiPopupOption";
   readonly disabled: "disabled";
   readonly selected: "selected";
   readonly uiToggleButton: "uiToggleButton";
   readonly invalid: "invalid";
+  readonly uiSelectionIcon: "uiSelectionIcon";
   readonly uiElement: "uiElement";
   readonly uiOptionText: "uiOptionText";
   readonly uiOptionCode: "uiOptionCode";
