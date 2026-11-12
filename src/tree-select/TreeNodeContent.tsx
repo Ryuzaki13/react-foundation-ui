@@ -89,6 +89,7 @@ export function TreeNodeContent({
 						tabIndex={-1}
 						disabled={node.disabled}
 						aria-label={`Выбрать только «${node.label}»`}
+						title={node.label}
 						text={node.label}
 						code={node.code}
 						searchText={highlight}
