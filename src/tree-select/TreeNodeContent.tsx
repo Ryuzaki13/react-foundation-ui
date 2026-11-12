@@ -129,6 +129,7 @@ export function TreeNodeContent({
 					className={styles.treeNodeButton}
 					tabIndex={-1}
 					disabled={node.disabled}
+					title={node.label}
 					text={node.label}
 					code={node.code}
 					searchText={highlight}

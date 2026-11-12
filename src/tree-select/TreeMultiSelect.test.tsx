@@ -499,6 +499,8 @@ describe("TreeMultiSelect columns layout", () => {
 			throw new Error("Не найдена кнопка текста узла «Филиал 1»");
 		}
 
+		expect(optionButton.getAttribute("title")).toBe("Филиал 1");
+
 		await clickElement(optionButton);
 
 		expect(container?.querySelector('input[role="combobox"]')?.getAttribute("aria-expanded")).toBe("false");
