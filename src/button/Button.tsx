@@ -60,9 +60,8 @@ export function Button({
 				styles.button,
 				getUiToneClassName(scheme.tone),
 				getUiAppearanceClassName(scheme.appearance),
-				iconOnly ? styles.iconOnly : "",
-				"textNoWrap",
-				className ?? ""
+				iconOnly && styles.iconOnly,
+				className
 			)}>
 			<span className={styles.buttonInner}>
 				{icon && !iconEnd && (
@@ -71,7 +70,7 @@ export function Button({
 					</span>
 				)}
 
-				{hasChildren && <span className="flexEllipsis">{children}</span>}
+				{hasChildren && <span>{children}</span>}
 
 				{icon && iconEnd && (
 					<span aria-hidden="true" className={styles.buttonIcon}>
