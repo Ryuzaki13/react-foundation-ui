@@ -70,7 +70,7 @@ export function Button({
 					</span>
 				)}
 
-				{hasChildren && <span>{children}</span>}
+				{hasChildren && <>{children}</>}
 
 				{icon && iconEnd && (
 					<span aria-hidden="true" className={styles.buttonIcon}>
