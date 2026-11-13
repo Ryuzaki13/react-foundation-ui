@@ -41,7 +41,8 @@ export function Button({
 	...props
 }: ButtonProps & { ref?: Ref<HTMLButtonElement> }) {
 	const hasChildren = Children.count(children) > 0;
-	const iconOnly = !!icon && !hasChildren;
+	const hasIcon = !!icon;
+	const iconOnly = hasIcon && !hasChildren;
 	const scheme = resolveUiScheme({ tone, appearance });
 
 	// Если кнопка только с иконкой, нужен aria-label или title.
@@ -63,7 +64,7 @@ export function Button({
 				iconOnly && styles.iconOnly,
 				className
 			)}>
-			<span className={styles.buttonInner}>
+			<span className={cn(styles.buttonInner, hasIcon && styles.hasIcon)}>
 				{icon && !iconEnd && (
 					<span aria-hidden="true" className={styles.buttonIcon}>
 						{icon}
