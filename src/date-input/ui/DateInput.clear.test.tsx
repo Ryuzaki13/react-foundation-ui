@@ -59,6 +59,25 @@ async function typeText(text: string) {
 	});
 }
 
+function calendarDialog(): HTMLElement {
+	const dialog = document.querySelector<HTMLElement>('[role="dialog"]');
+	if (!dialog) {
+		throw new Error("Диалог календаря не открыт.");
+	}
+
+	return dialog;
+}
+
+async function closeCalendarWithEscape(target: HTMLElement) {
+	await act(async () => {
+		target.focus();
+		expect(document.activeElement).toBe(target);
+		target.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true, cancelable: true }));
+	});
+
+	expect(document.querySelector('[role="dialog"]')).toBeNull();
+}
+
 describe("встроенная очистка DateInput", () => {
 	it("очищает одну дату в null и возвращает фокус в тот же input", async () => {
 		const onChange = vi.fn<(value: Date | null) => void>();
@@ -90,7 +109,7 @@ describe("встроенная очистка DateInput", () => {
 		expect(document.activeElement).toBe(input());
 
 		await act(async () => button("open-calendar").click());
-		await act(async () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })));
+		await closeCalendarWithEscape(calendarDialog());
 		expect(input().value).toBe("");
 		expect(onChange).toHaveBeenCalledExactlyOnceWith(null);
 	});
@@ -126,7 +145,9 @@ describe("встроенная очистка DateInput", () => {
 
 		await act(async () => day.click());
 		expect(onChange).not.toHaveBeenCalled();
-		await act(async () => document.dispatchEvent(new KeyboardEvent("keydown", { key: "Escape", bubbles: true })));
+		expect(input().value).not.toBe(before);
+
+		await closeCalendarWithEscape(day);
 
 		expect(input().value).toBe(before);
 		expect(onChange).not.toHaveBeenCalled();
