@@ -5,6 +5,7 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { FlexContainer, FlexItem } from "../flex";
 
 import { type TextEditorCoreProps } from "./editorModel";
+import { TEXT_EDITOR_PRESENTATION_COMPACT } from "./model/textEditorPresentationConstants";
 import styles from "./TextEditorInputSurface.module.scss";
 
 type TextEditorInputSurfaceProps = {
@@ -20,7 +21,7 @@ type TextEditorInputSurfaceProps = {
  */
 export function TextEditorInputSurface({ presentation, endAdornment, children }: TextEditorInputSurfaceProps) {
 	return (
-		<FlexContainer align="stretch" className={cn(styles.surface, presentation === "compact" && styles.compact)}>
+		<FlexContainer align="stretch" className={cn(styles.surface, presentation === TEXT_EDITOR_PRESENTATION_COMPACT && styles.compact)}>
 			<FlexItem grow basis="0" className={styles.content}>
 				{children}
 			</FlexItem>

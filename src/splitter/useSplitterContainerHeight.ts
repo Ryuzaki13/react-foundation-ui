@@ -9,6 +9,8 @@ import {
 
 import { clampNumberScaleValue, offsetNumberScaleValue, resolveNumberScaleBounds } from "@ryuzaki13/react-foundation-lib/number-scale";
 
+import { SPLITTER_POINTER_CANCEL_EVENT, SPLITTER_POINTER_MOVE_EVENT, SPLITTER_POINTER_UP_EVENT } from "./splitterConstants";
+
 type UseSplitterContainerHeightParams = {
 	height?: number;
 	defaultHeight: number;
@@ -132,14 +134,14 @@ export function useSplitterContainerHeight({
 		};
 
 		cleanupDragRef.current = () => {
-			document.removeEventListener("pointermove", handlePointerMove);
-			document.removeEventListener("pointerup", handlePointerUp);
-			document.removeEventListener("pointercancel", handlePointerUp);
+			document.removeEventListener(SPLITTER_POINTER_MOVE_EVENT, handlePointerMove);
+			document.removeEventListener(SPLITTER_POINTER_UP_EVENT, handlePointerUp);
+			document.removeEventListener(SPLITTER_POINTER_CANCEL_EVENT, handlePointerUp);
 		};
 
-		document.addEventListener("pointermove", handlePointerMove);
-		document.addEventListener("pointerup", handlePointerUp);
-		document.addEventListener("pointercancel", handlePointerUp);
+		document.addEventListener(SPLITTER_POINTER_MOVE_EVENT, handlePointerMove);
+		document.addEventListener(SPLITTER_POINTER_UP_EVENT, handlePointerUp);
+		document.addEventListener(SPLITTER_POINTER_CANCEL_EVENT, handlePointerUp);
 	};
 
 	const handleSeparatorKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {

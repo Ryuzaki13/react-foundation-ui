@@ -4,6 +4,7 @@ import { assertValidAccept, assertValidAllowedMime } from "@ryuzaki13/react-foun
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { InputControl, InputUI, useInputFieldIds } from "../input";
+import { READ_FILE_MODE_ARRAY_BUFFER } from "../input-file/readFileModeConstants";
 import uiStyles from "../ui.module.scss";
 
 import styles from "./InputFiles.module.scss";
@@ -71,7 +72,7 @@ export function InputFiles(props: InputFilesProps) {
 	}, [disabled, isLimitReached]);
 
 	const filesList =
-		props.readMode === "array-buffer" ? (
+		props.readMode === READ_FILE_MODE_ARRAY_BUFFER ? (
 			<InputFilesList
 				files={props.value}
 				disabled={disabled}

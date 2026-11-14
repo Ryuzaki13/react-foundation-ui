@@ -6,6 +6,9 @@ import { FloatingArrow } from "../floating-arrow/FloatingArrow";
 
 import styles from "./Popover.module.scss";
 
+const TOOLTIP_ANCHOR_GAP_PX = 6;
+const TOOLTIP_VIEWPORT_PADDING_PX = 16;
+
 export function FloatingTooltip({ x, y, children }: { x: number; y: number; children: React.ReactNode }) {
 	const arrowRef = useRef<HTMLDivElement | null>(null);
 
@@ -18,7 +21,7 @@ export function FloatingTooltip({ x, y, children }: { x: number; y: number; chil
 		strategy: "absolute",
 		placement: "top",
 		// eslint-disable-next-line react-hooks/refs
-		middleware: [offset(6), flip(), shift({ padding: 16 }), arrow({ element: arrowRef })]
+		middleware: [offset(TOOLTIP_ANCHOR_GAP_PX), flip(), shift({ padding: TOOLTIP_VIEWPORT_PADDING_PX }), arrow({ element: arrowRef })]
 	});
 
 	useEffect(() => {

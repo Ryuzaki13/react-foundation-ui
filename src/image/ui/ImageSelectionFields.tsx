@@ -5,6 +5,7 @@ import { InputText } from "../../input";
 import { InputFiles } from "../../input-files";
 import { getImageCropPreviewStyle, type ImageNaturalSize } from "../lib/getImageCropPreviewStyle";
 import { getImageSelectionKey } from "../lib/getImageSelectionKey";
+import { IMAGE_CROP_DEFAULT_ASPECT } from "../model/imageCropConstants";
 import { type ImageSelectionPanelProps, type ImageSelectionState } from "../model/imageSelectionTypes";
 
 import { ImageCropper } from "./ImageCropper";
@@ -20,7 +21,7 @@ interface ImageSelectionFieldsProps extends Pick<
 
 /** Поля выбора файлов, crop и альтернативного текста для активного изображения. */
 export function ImageSelectionFields({
-	aspect = 16 / 9,
+	aspect = IMAGE_CROP_DEFAULT_ASPECT,
 	disabled,
 	allowedMime = DEFAULT_ALLOWED_IMAGE_MIME,
 	maxBytes,

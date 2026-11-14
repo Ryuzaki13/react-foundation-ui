@@ -3,7 +3,7 @@ import { type ReactNode, useContext } from "react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import styles from "./Detail.module.scss";
-import { DetailContext } from "./DetailContext";
+import { DETAIL_SEMANTIC_DESCRIPTION, DETAIL_SEMANTIC_LIST, DETAIL_VERTICAL_CENTER, DetailContext } from "./DetailContext";
 
 export interface DetailItemProps {
 	label: ReactNode;
@@ -13,7 +13,14 @@ export interface DetailItemProps {
 }
 
 export function DetailItem({ label, value, withColon, required }: DetailItemProps) {
-	const { semantic, inline, noWrap, center, vertical = "center", withColon: withColonParent = true } = useContext(DetailContext);
+	const {
+		semantic,
+		inline,
+		noWrap,
+		center,
+		vertical = DETAIL_VERTICAL_CENTER,
+		withColon: withColonParent = true
+	} = useContext(DetailContext);
 	const detailClass = cn(styles.detail, center && styles.textCenter, inline && styles.inline, noWrap && styles.noWrap, styles[vertical]);
 
 	const labelContent = (
@@ -32,7 +39,7 @@ export function DetailItem({ label, value, withColon, required }: DetailItemProp
 	);
 
 	switch (semantic) {
-		case "detail":
+		case DETAIL_SEMANTIC_DESCRIPTION:
 			return (
 				<div className={detailClass}>
 					<dt className={styles.dt}>{labelContent}</dt>
@@ -40,7 +47,7 @@ export function DetailItem({ label, value, withColon, required }: DetailItemProp
 				</div>
 			);
 
-		case "list":
+		case DETAIL_SEMANTIC_LIST:
 			return (
 				<li className={detailClass}>
 					<div className={styles.dt}>{labelContent}</div>

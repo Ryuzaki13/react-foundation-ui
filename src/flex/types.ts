@@ -2,10 +2,12 @@ import type { CSSProperties, HTMLAttributes, JSX } from "react";
 
 import { ResponsiveValue } from "@ryuzaki13/react-foundation-lib/media";
 
+import { type FLEX_BASIS_AUTO, type FLEX_BASIS_ZERO, type FLEX_GAP_NONE } from "./flexConstants";
+
 export type FlexAlign = "start" | "center" | "end" | "stretch" | "baseline";
 export type FlexJustify = "start" | "center" | "end" | "stretch" | "between" | "around" | "evenly";
-export type FlexGap = "none" | "xs" | "sm" | "md" | "lg" | "xl";
-export type FlexBasis = "0" | "auto";
+export type FlexGap = typeof FLEX_GAP_NONE | "xs" | "sm" | "md" | "lg" | "xl";
+export type FlexBasis = typeof FLEX_BASIS_ZERO | typeof FLEX_BASIS_AUTO;
 
 export interface FlexContainerProps extends HTMLAttributes<HTMLElement> {
 	/** Тип display `flex | inline-flex` */
@@ -34,9 +36,9 @@ export interface FlexContainerProps extends HTMLAttributes<HTMLElement> {
 	/** Gap */
 	gap?: ResponsiveValue<FlexGap>;
 	/** Row gap */
-	gapRow?: ResponsiveValue<Exclude<FlexGap, "none">>;
+	gapRow?: ResponsiveValue<Exclude<FlexGap, typeof FLEX_GAP_NONE>>;
 	/** Column gap */
-	gapColumn?: ResponsiveValue<Exclude<FlexGap, "none">>;
+	gapColumn?: ResponsiveValue<Exclude<FlexGap, typeof FLEX_GAP_NONE>>;
 
 	/** Дочерние элементы */
 	children: React.ReactNode;

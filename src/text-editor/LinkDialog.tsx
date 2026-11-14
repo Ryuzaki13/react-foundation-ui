@@ -7,6 +7,7 @@ import { CheckBox } from "../check-box";
 import { GridContainer } from "../grid";
 import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
+import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT } from "../uiSchemeConstants";
 
 import { LinkType } from "./linkTypes";
 
@@ -99,7 +100,7 @@ export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = tru
 			</ModalContent>
 			<ModalFooter>
 				<Button onClick={handleClose}>Отмена</Button>
-				<Button appearance="solid" tone="accent" onClick={handleConfirm} disabled={!url || !ariaLabel}>
+				<Button appearance={UI_APPEARANCE_SOLID} tone={UI_TONE_ACCENT} onClick={handleConfirm} disabled={!url || !ariaLabel}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

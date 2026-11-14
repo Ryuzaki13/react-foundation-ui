@@ -1,5 +1,6 @@
 import { Button } from "../../button";
 import { Modal, ModalContent, ModalFooter } from "../../modal";
+import { UI_TONE_SUCCESS } from "../../uiSchemeConstants";
 import { type ImageSelectionModalProps } from "../model/imageSelectionTypes";
 import { useImageSelectionState } from "../model/useImageSelectionState";
 
@@ -31,7 +32,7 @@ export function ImageSelectionModal({
 				<ImageSelectionFields {...props} disabled={disabled} state={state} />
 			</ModalContent>
 			<ModalFooter>
-				<Button disabled={!state.canApply} tone="success" onClick={state.apply}>
+				<Button disabled={!state.canApply} tone={UI_TONE_SUCCESS} onClick={state.apply}>
 					Применить
 				</Button>
 			</ModalFooter>

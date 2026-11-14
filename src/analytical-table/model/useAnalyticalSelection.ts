@@ -8,13 +8,14 @@ import {
 	type TableCellCoordinates
 } from "@ryuzaki13/react-foundation-lib/table";
 
+import { TABLE_SELECTION_MODE_NONE } from "../../base-table/lib/tableSelectionConstants";
 import { type AnalyticalTableProps, type AnalyticalTableRuntime } from "../types/analyticalTable";
 
 /** Выбор принадлежит UI; исчезнувшие координаты удаляются до отрисовки нового снимка. */
 export function useAnalyticalSelection<T>(props: AnalyticalTableProps<T>, runtime: AnalyticalTableRuntime<T>) {
 	const { getRowCanSelect } = props;
-	const rowMode = props.rowSelectionMode ?? "none";
-	const cellMode = props.cellSelectionMode ?? "none";
+	const rowMode = props.rowSelectionMode ?? TABLE_SELECTION_MODE_NONE;
+	const cellMode = props.cellSelectionMode ?? TABLE_SELECTION_MODE_NONE;
 	const rowIds = useMemo(() => runtime.model.flatRows.map((row) => row.id), [runtime.model.flatRows]);
 	const selectableIds = useMemo(
 		() => runtime.model.flatRows.filter((row) => getRowCanSelect?.(row) !== false).map((row) => row.id),
@@ -27,7 +28,7 @@ export function useAnalyticalSelection<T>(props: AnalyticalTableProps<T>, runtim
 		rowById: runtime.model.rowById,
 		selectionMode: rowMode,
 		selectedRowIds: props.selectedRowIds,
-		onRowSelectionChange: rowMode === "none" ? undefined : props.onRowSelectionChange
+		onRowSelectionChange: rowMode === TABLE_SELECTION_MODE_NONE ? undefined : props.onRowSelectionChange
 	});
 	// Cell intent сохраняется между фильтрами; активная проекция исключает недоступные координаты.
 	const [storedCells, setStoredCells] = useState<readonly TableCellCoordinates[]>([]);

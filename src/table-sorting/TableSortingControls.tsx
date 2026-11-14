@@ -2,8 +2,10 @@ import { BrushCleaningIcon, SortAscIcon, SortDescIcon } from "lucide-react";
 
 import { ContextMenu } from "../context-menu";
 
-export type TableSortDirection = "asc" | "desc";
-export type TableSortingMenuAction = TableSortDirection | "clear";
+import { TABLE_SORT_ASC, TABLE_SORT_DESC, TABLE_SORT_CLEAR } from "./tableSortingConstants";
+
+export type TableSortDirection = typeof TABLE_SORT_ASC | typeof TABLE_SORT_DESC;
+export type TableSortingMenuAction = TableSortDirection | typeof TABLE_SORT_CLEAR;
 
 type TableSortIndicatorProps = {
 	direction?: TableSortDirection;
@@ -27,7 +29,7 @@ export function TableSortIndicator({ direction, order, className }: TableSortInd
 
 	return (
 		<span className={className} aria-hidden>
-			{direction === "desc" ? <SortDescIcon /> : <SortAscIcon />}
+			{direction === TABLE_SORT_DESC ? <SortDescIcon /> : <SortAscIcon />}
 			{typeof order === "number" ? <span className="fontSizeXs">{order}</span> : null}
 		</span>
 	);
@@ -42,13 +44,13 @@ export function TableSortingMenuItems({ onSelect, labels }: TableSortingMenuItem
 	return (
 		<>
 			<ContextMenu.GroupLabel>Сортировка</ContextMenu.GroupLabel>
-			<ContextMenu.Item icon={<SortAscIcon />} onSelect={() => onSelect("asc")}>
+			<ContextMenu.Item icon={<SortAscIcon />} onSelect={() => onSelect(TABLE_SORT_ASC)}>
 				{resolvedLabels.asc}
 			</ContextMenu.Item>
-			<ContextMenu.Item icon={<SortDescIcon />} onSelect={() => onSelect("desc")}>
+			<ContextMenu.Item icon={<SortDescIcon />} onSelect={() => onSelect(TABLE_SORT_DESC)}>
 				{resolvedLabels.desc}
 			</ContextMenu.Item>
-			<ContextMenu.Item icon={<BrushCleaningIcon />} onSelect={() => onSelect("clear")}>
+			<ContextMenu.Item icon={<BrushCleaningIcon />} onSelect={() => onSelect(TABLE_SORT_CLEAR)}>
 				{resolvedLabels.clear}
 			</ContextMenu.Item>
 		</>

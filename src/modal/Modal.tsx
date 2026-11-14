@@ -8,12 +8,20 @@ import { createPortal } from "react-dom";
 
 import { Button } from "../button";
 import { GridContainer } from "../grid";
+import { UI_APPEARANCE_GHOST } from "../uiSchemeConstants";
 
 import styles from "./Modal.module.scss";
 import { type ModalCompositionProps } from "./modalCompositionTypes";
 import { ModalContent } from "./ModalContent";
 import { ModalFooter } from "./ModalFooter";
-import { modalMotionTransition, modalMotionVariants, reducedModalMotionTransition } from "./modalMotion";
+import {
+	MODAL_MOTION_HIDDEN,
+	MODAL_MOTION_VISIBLE,
+	modalMotionTransition,
+	modalMotionVariants,
+	reducedModalMotionTransition
+} from "./modalMotion";
+import { MODAL_PORTAL_ROOT_ID } from "./modalPortalConstants";
 import { ModalToolbar } from "./ModalToolbar";
 import { useModalViewportFrame } from "./model/useModalViewportFrame";
 import { ModalSize } from "./types";
@@ -112,7 +120,7 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 		});
 	}
 
-	const modalRoot = getOrCreatePortalRoot("modal-root");
+	const modalRoot = getOrCreatePortalRoot(MODAL_PORTAL_ROOT_ID);
 
 	if (!modalRoot) {
 		return null;
@@ -154,9 +162,9 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 					aria-modal="true"
 					aria-labelledby={titleId}
 					aria-describedby={`${titleId}-content`}
-					initial="hidden"
-					animate="visible"
-					exit="hidden"
+					initial={MODAL_MOTION_HIDDEN}
+					animate={MODAL_MOTION_VISIBLE}
+					exit={MODAL_MOTION_HIDDEN}
 					variants={modalMotionVariants}
 					transition={shouldReduceMotion ? reducedModalMotionTransition : modalMotionTransition}>
 					<div className={cn(styles.header, toolbar ? "" : "borderBottom")}>
@@ -165,7 +173,7 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 						</h3>
 						<Button
 							icon={<X />}
-							appearance="ghost"
+							appearance={UI_APPEARANCE_GHOST}
 							className={styles.headerButton}
 							aria-label={"Закрыть модальное окно"}
 							onClick={onClose}

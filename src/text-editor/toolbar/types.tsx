@@ -20,6 +20,27 @@ import {
 	Underline
 } from "lucide-react";
 
+import {
+	TEXT_EDITOR_BLOCK_STYLE_UNSTYLED,
+	TEXT_EDITOR_BLOCK_STYLE_PARAGRAPH,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_ONE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_TWO,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX,
+	TEXT_EDITOR_BLOCK_STYLE_CODE_BLOCK,
+	TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE,
+	TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM,
+	TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM,
+	TEXT_EDITOR_INLINE_STYLE_CODE,
+	TEXT_EDITOR_INLINE_STYLE_BOLD,
+	TEXT_EDITOR_INLINE_STYLE_UNDERLINE,
+	TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH,
+	TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT,
+	TEXT_EDITOR_INLINE_STYLE_ITALIC
+} from "../model/textEditorStyleConstants";
+
 import type { TextEditorElementTypes } from "../types";
 
 interface TextEditorElement {
@@ -30,24 +51,84 @@ interface TextEditorElement {
 }
 
 const TextEditorElements: Record<TextEditorElementTypes, TextEditorElement> = {
-	unstyled: { label: "Параграф", node: "p", style: "unstyled", icon: <Type /> },
-	paragraph: { label: "Параграф", node: "p", style: "paragraph", icon: <Pilcrow /> },
-	"header-one": { label: "Заголовок первого уровня", node: "h1", style: "header-one", icon: <Heading1 /> },
-	"header-two": { label: "Заголовок второго уровня", node: "h2", style: "header-two", icon: <Heading2 /> },
-	"header-three": { label: "Заголовок третьего уровня", node: "h3", style: "header-three", icon: <Heading3 /> },
-	"header-four": { label: "Заголовок четвертого уровня", node: "h4", style: "header-four", icon: <Heading4 /> },
-	"header-five": { label: "Заголовок пятого уровня", node: "h5", style: "header-five", icon: <Heading5 /> },
-	"header-six": { label: "Заголовок шестого уровня", node: "h6", style: "header-six", icon: <Heading6 /> },
-	"code-block": { label: "Блок кода", node: "pre", style: "code-block", icon: <Code /> },
-	blockquote: { label: "Цитата", node: "blockquote", style: "blockquote", icon: <TextQuote /> },
-	"unordered-list-item": { label: "Маркированный список", node: "ul", style: "unordered-list-item", icon: <List /> },
-	"ordered-list-item": { label: "Нумерованный список", node: "ol", style: "ordered-list-item", icon: <ListOrdered /> },
-	CODE: { label: "Моноширинный код", node: "code", style: "CODE", icon: <Code /> },
-	BOLD: { label: "Выделение жирным", node: "strong", style: "BOLD", icon: <Bold /> },
-	UNDERLINE: { label: "Выделение подчеркнутым", node: "u", style: "UNDERLINE", icon: <Underline /> },
-	STRIKETHROUGH: { label: "Выделение зачеркнутым", node: "s", style: "STRIKETHROUGH", icon: <Strikethrough /> },
-	HIGHLIGHT: { label: "Подсветка цветом", node: "span", style: "HIGHLIGHT", icon: <Highlighter /> },
-	ITALIC: { label: "Выделение курсивным", node: "i", style: "ITALIC", icon: <Italic /> }
+	[TEXT_EDITOR_BLOCK_STYLE_UNSTYLED]: { label: "Параграф", node: "p", style: TEXT_EDITOR_BLOCK_STYLE_UNSTYLED, icon: <Type /> },
+	[TEXT_EDITOR_BLOCK_STYLE_PARAGRAPH]: { label: "Параграф", node: "p", style: TEXT_EDITOR_BLOCK_STYLE_PARAGRAPH, icon: <Pilcrow /> },
+	[TEXT_EDITOR_BLOCK_STYLE_HEADER_ONE]: {
+		label: "Заголовок первого уровня",
+		node: "h1",
+		style: TEXT_EDITOR_BLOCK_STYLE_HEADER_ONE,
+		icon: <Heading1 />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_HEADER_TWO]: {
+		label: "Заголовок второго уровня",
+		node: "h2",
+		style: TEXT_EDITOR_BLOCK_STYLE_HEADER_TWO,
+		icon: <Heading2 />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE]: {
+		label: "Заголовок третьего уровня",
+		node: "h3",
+		style: TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE,
+		icon: <Heading3 />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR]: {
+		label: "Заголовок четвертого уровня",
+		node: "h4",
+		style: TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR,
+		icon: <Heading4 />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE]: {
+		label: "Заголовок пятого уровня",
+		node: "h5",
+		style: TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE,
+		icon: <Heading5 />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX]: {
+		label: "Заголовок шестого уровня",
+		node: "h6",
+		style: TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX,
+		icon: <Heading6 />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_CODE_BLOCK]: { label: "Блок кода", node: "pre", style: TEXT_EDITOR_BLOCK_STYLE_CODE_BLOCK, icon: <Code /> },
+	[TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE]: {
+		label: "Цитата",
+		node: "blockquote",
+		style: TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE,
+		icon: <TextQuote />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM]: {
+		label: "Маркированный список",
+		node: "ul",
+		style: TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM,
+		icon: <List />
+	},
+	[TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM]: {
+		label: "Нумерованный список",
+		node: "ol",
+		style: TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM,
+		icon: <ListOrdered />
+	},
+	[TEXT_EDITOR_INLINE_STYLE_CODE]: { label: "Моноширинный код", node: "code", style: TEXT_EDITOR_INLINE_STYLE_CODE, icon: <Code /> },
+	[TEXT_EDITOR_INLINE_STYLE_BOLD]: { label: "Выделение жирным", node: "strong", style: TEXT_EDITOR_INLINE_STYLE_BOLD, icon: <Bold /> },
+	[TEXT_EDITOR_INLINE_STYLE_UNDERLINE]: {
+		label: "Выделение подчеркнутым",
+		node: "u",
+		style: TEXT_EDITOR_INLINE_STYLE_UNDERLINE,
+		icon: <Underline />
+	},
+	[TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH]: {
+		label: "Выделение зачеркнутым",
+		node: "s",
+		style: TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH,
+		icon: <Strikethrough />
+	},
+	[TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT]: {
+		label: "Подсветка цветом",
+		node: "span",
+		style: TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT,
+		icon: <Highlighter />
+	},
+	[TEXT_EDITOR_INLINE_STYLE_ITALIC]: { label: "Выделение курсивным", node: "i", style: TEXT_EDITOR_INLINE_STYLE_ITALIC, icon: <Italic /> }
 };
 
 export const getElementFromElementStyle = (style: TextEditorElementTypes) => {
@@ -67,23 +148,23 @@ export const getTagFromElementStyle = (style: TextEditorElementTypes) => {
 };
 
 export const TextEditorBlockControls = [
-	TextEditorElements.unstyled,
-	TextEditorElements["header-three"],
-	TextEditorElements["header-four"],
-	TextEditorElements["header-five"],
-	TextEditorElements["header-six"],
-	TextEditorElements["ordered-list-item"],
-	TextEditorElements["unordered-list-item"],
-	TextEditorElements.blockquote
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_UNSTYLED],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM],
+	TextEditorElements[TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE]
 ];
 
 export const TextEditorInlineControls = [
-	TextEditorElements.BOLD,
-	TextEditorElements.ITALIC,
-	TextEditorElements.UNDERLINE,
-	TextEditorElements.STRIKETHROUGH,
-	TextEditorElements.HIGHLIGHT,
-	TextEditorElements.CODE
+	TextEditorElements[TEXT_EDITOR_INLINE_STYLE_BOLD],
+	TextEditorElements[TEXT_EDITOR_INLINE_STYLE_ITALIC],
+	TextEditorElements[TEXT_EDITOR_INLINE_STYLE_UNDERLINE],
+	TextEditorElements[TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH],
+	TextEditorElements[TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT],
+	TextEditorElements[TEXT_EDITOR_INLINE_STYLE_CODE]
 ];
 
 export const TextEditorStyleClasses = {

@@ -34,6 +34,12 @@ import {
 	type BaseTableProps,
 	type TableColumnPinningState
 } from "../base-table";
+import { TABLE_SELECTION_MODE_NONE, TABLE_SELECTION_MODE_MULTI } from "../base-table/lib/tableSelectionConstants";
+import {
+	type TABLE_WIDTH_MODE_AUTO,
+	type TABLE_WIDTH_MODE_COLUMNS,
+	type TABLE_WIDTH_MODE_CONTAINER
+} from "../base-table/lib/tableWidthModeConstants";
 
 import styles from "./TreeTable.module.scss";
 
@@ -134,7 +140,7 @@ export interface TreeTableProps<TData extends object> {
 	/** Единица sizing-state и columnResizeMinWidth. em масштабируется вместе со шрифтом таблицы. */
 	columnSizingUnit?: TableColumnSizingUnit;
 	/** Сумма определённых ширин колонок; auto и проценты сохраняют браузерную раскладку. */
-	tableWidth?: "auto" | "columns" | "container";
+	tableWidth?: typeof TABLE_WIDTH_MODE_AUTO | typeof TABLE_WIDTH_MODE_COLUMNS | typeof TABLE_WIDTH_MODE_CONTAINER;
 	/**
 	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */
@@ -286,7 +292,7 @@ export function TreeTable<TData extends object>({
 	data,
 	columns,
 	hierarchy,
-	selectionMode = "none",
+	selectionMode = TABLE_SELECTION_MODE_NONE,
 	expandFirstLevel = false,
 	defaultExpandedRowIds,
 	treeColumnId,
@@ -467,9 +473,9 @@ export function TreeTable<TData extends object>({
 		onColumnSizingChange: handleColumnSizingChange,
 		onColumnVisibilityChange: handleColumnVisibilityChange,
 		onExpandedChange: setExpanded,
-		enableMultiRowSelection: selectionMode === "multi",
+		enableMultiRowSelection: selectionMode === TABLE_SELECTION_MODE_MULTI,
 		enableRowSelection: (row) => {
-			if (selectionMode === "none") {
+			if (selectionMode === TABLE_SELECTION_MODE_NONE) {
 				return false;
 			}
 
@@ -515,8 +521,8 @@ export function TreeTable<TData extends object>({
 			selectionMode={selectionMode}
 			scrollableRef={scrollableRef}
 			interactiveElementSelector='[data-tree-table-interactive="true"]'
-			onActivateRow={selectionMode !== "none" || onRowClick ? activateRow : undefined}
-			isRowInteractive={(row) => Boolean(onRowClick || (selectionMode !== "none" && row.getCanSelect()))}
+			onActivateRow={selectionMode !== TABLE_SELECTION_MODE_NONE || onRowClick ? activateRow : undefined}
+			isRowInteractive={(row) => Boolean(onRowClick || (selectionMode !== TABLE_SELECTION_MODE_NONE && row.getCanSelect()))}
 			getRowClassName={(row) => {
 				const originalRow = resolveOriginalRow(row, treeData.rowById);
 

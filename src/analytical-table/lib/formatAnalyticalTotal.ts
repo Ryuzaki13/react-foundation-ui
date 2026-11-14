@@ -3,13 +3,21 @@ import { formatPipelineDisplayValue, type FormattersPipelineRuntimeField } from 
 
 import { type AnalyticalTableColumn } from "../types/columns";
 
+import { ANALYTICAL_FORMAT_ROW_KIND_TOTALS } from "./analyticalTableConstants";
+
 /** Итог не является строкой snapshot: renderer исходных строк к нему не применяется. */
 export function resolveAnalyticalTotalDisplay<T>(
 	column: AnalyticalTableColumn<T>,
 	values: AnalyticalValues,
 	field: Readonly<FormattersPipelineRuntimeField>
 ) {
-	const display = formatPipelineDisplayValue({ field, rawValue: values[column.id], rowData: values, rowKind: "totals", rowLevel: 0 });
+	const display = formatPipelineDisplayValue({
+		field,
+		rawValue: values[column.id],
+		rowData: values,
+		rowKind: ANALYTICAL_FORMAT_ROW_KIND_TOTALS,
+		rowLevel: 0
+	});
 	return column.formatTotal ? { ...display, value: column.formatTotal(values[column.id]) } : display;
 }
 

@@ -1,3 +1,4 @@
+import { DATE_TIME_INPUT_MODE_DATE_TIME } from "./dateTimeInputModes";
 import { getTimeRangeForDay } from "./dateTimeValue";
 
 import type { DateTimeInputMode } from "./dateTimeValue";
@@ -16,7 +17,12 @@ export interface TimePanelState {
 /**
  * Собирает состояние часов и минут для панели выбора времени.
  */
-export function buildTimePanelState(value: Date, minDate?: Date, maxDate?: Date, mode: DateTimeInputMode = "date-time"): TimePanelState {
+export function buildTimePanelState(
+	value: Date,
+	minDate?: Date,
+	maxDate?: Date,
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
+): TimePanelState {
 	const timeRange = getTimeRangeForDay(value, minDate, maxDate, mode);
 	const selectedHour = value.getHours();
 	const selectedMinute = value.getMinutes();

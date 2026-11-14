@@ -15,6 +15,11 @@ import {
 	usePickerQuery,
 	usePickerTriggerController
 } from "../picker";
+import {
+	PICKER_TRIGGER_MODE_DISPLAY,
+	PICKER_TRIGGER_MODE_SEARCH_MULTI,
+	PICKER_TRIGGER_MODE_SEARCH_SINGLE
+} from "../picker/model/pickerTriggerModes";
 import { UiBaseProps } from "../types";
 
 import { buildTreeColumnsLayoutDescriptor } from "./model/buildTreeColumnsLayoutDescriptor";
@@ -31,7 +36,19 @@ import {
 } from "./model/treeUtils";
 import { TreeNodeContent } from "./TreeNodeContent";
 import styles from "./TreeSelect.module.scss";
+import {
+	TREE_OPTIONS_LAYOUT_TREE,
+	TREE_OPTIONS_LAYOUT_COLUMNS,
+	TREE_SELECTION_MODE_SINGLE,
+	TREE_SELECTION_MODE_MULTI,
+	TREE_TRIGGER_MODE_DISPLAY,
+	TREE_TRIGGER_MODE_SEARCH
+} from "./treeSelectConstants";
 import { TreeMultiSelectOptionsLayout, TreeSelectNode } from "./types";
+
+const TREE_KEY_NEXT_NODE = "ArrowDown";
+const TREE_KEY_FIRST_NODE = "Home";
+const TREE_KEY_TAB = "Tab";
 
 type TreePickerBulkActions = {
 	onSelectAll: () => void;
@@ -42,7 +59,7 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	nodes: readonly TreeSelectNode[];
 	selectedIds: Set<string>;
 	partialIds: Set<string>;
-	selectionMode: "single" | "multi";
+	selectionMode: typeof TREE_SELECTION_MODE_SINGLE | typeof TREE_SELECTION_MODE_MULTI;
 	optionsLayout?: TreeMultiSelectOptionsLayout;
 	defaultExpandedCodeKeys?: readonly string[];
 	/** Узлы, которые текущий multi-select contract не может безопасно сериализовать. */
@@ -50,7 +67,7 @@ type TreePickerBaseProps = Omit<UiBaseProps<never>, "value" | "onChange"> & {
 	open?: boolean;
 	onOpenChange?: (open: boolean) => void;
 	bulkActions?: TreePickerBulkActions;
-	triggerMode?: "display" | "search";
+	triggerMode?: typeof TREE_TRIGGER_MODE_DISPLAY | typeof TREE_TRIGGER_MODE_SEARCH;
 	selectedSummary?: ReactNode;
 	selectedSummaryText?: string;
 	query?: string;
@@ -77,13 +94,13 @@ export function TreePickerBase({
 	selectedIds,
 	partialIds,
 	selectionMode,
-	optionsLayout = "tree",
+	optionsLayout = TREE_OPTIONS_LAYOUT_TREE,
 	defaultExpandedCodeKeys,
 	unavailableNodeIds,
 	open: controlledOpen,
 	onOpenChange,
 	bulkActions,
-	triggerMode = "display",
+	triggerMode = TREE_TRIGGER_MODE_DISPLAY,
 	selectedSummary,
 	selectedSummaryText,
 	query,
@@ -107,7 +124,12 @@ export function TreePickerBase({
 	const isOpenControlled = controlledOpen !== undefined;
 	const open = isOpenControlled ? controlledOpen : uncontrolledOpen;
 	const [manualExpansionById, setManualExpansionById] = useState<ReadonlyMap<string, boolean>>(() => new Map());
-	const resolvedTriggerMode = triggerMode === "search" ? (selectionMode === "multi" ? "search-multi" : "search-single") : "display";
+	const resolvedTriggerMode =
+		triggerMode === TREE_TRIGGER_MODE_SEARCH
+			? selectionMode === TREE_SELECTION_MODE_MULTI
+				? PICKER_TRIGGER_MODE_SEARCH_MULTI
+				: PICKER_TRIGGER_MODE_SEARCH_SINGLE
+			: PICKER_TRIGGER_MODE_DISPLAY;
 	const treeIndex = useMemo(() => createTreeNodeIndex(nodes), [nodes]);
 	const defaultExpandedCodeKeySet = useMemo(() => new Set(defaultExpandedCodeKeys), [defaultExpandedCodeKeys]);
 	const {
@@ -151,7 +173,7 @@ export function TreePickerBase({
 	);
 	const resolvedExpandedIds = useMemo(
 		() =>
-			optionsLayout === "columns"
+			optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS
 				? allExpandedIds
 				: new Set([...configuredExpandedIds, ...searchExpandedIds, ...selectedExpandedIds]),
 		[allExpandedIds, configuredExpandedIds, optionsLayout, searchExpandedIds, selectedExpandedIds]
@@ -215,14 +237,14 @@ export function TreePickerBase({
 		closeOnSelect: true,
 		allowOpenWithoutOptions: true,
 		triggerMode: resolvedTriggerMode,
-		placementStrategy: optionsLayout === "columns" ? "auto" : "flip",
-		resolveFloatingSize: optionsLayout === "columns" ? resolveColumnsFloatingSize : undefined
+		placementStrategy: optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? "auto" : "flip",
+		resolveFloatingSize: optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? resolveColumnsFloatingSize : undefined
 	});
 	const focusedOptionIndex = focusedNodeId ? visibleEntries.findIndex((entry) => entry.node.id === focusedNodeId) : -1;
 	const renderedActiveIndex = focusedOptionIndex >= 0 ? focusedOptionIndex : listboxActiveIndex;
 	const updateFloatingLayout = context.update;
 	const hasSelection = selectedIds.size > 0;
-	const showTriggerQuery = triggerMode === "search" && (open || currentQuery.length > 0);
+	const showTriggerQuery = triggerMode === TREE_TRIGGER_MODE_SEARCH && (open || currentQuery.length > 0);
 	const triggerValue = showTriggerQuery ? currentQuery : (selectedSummaryText ?? "");
 	const triggerController = usePickerTriggerController({
 		mode: resolvedTriggerMode,
@@ -235,8 +257,8 @@ export function TreePickerBase({
 		close,
 		toggleOpen
 	});
-	const showBulkActions = (optionsLayout === "columns" || selectionMode === "multi") && bulkActions;
-	const showPopupSearch = triggerMode === "display";
+	const showBulkActions = (optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS || selectionMode === TREE_SELECTION_MODE_MULTI) && bulkActions;
+	const showPopupSearch = triggerMode === TREE_TRIGGER_MODE_DISPLAY;
 	const popupHeader =
 		showBulkActions || showPopupSearch ? (
 			<div className={styles.treePopupHeader}>
@@ -254,7 +276,7 @@ export function TreePickerBase({
 						onClear={() => setQuery("")}
 						placeholder="Поиск по дереву"
 						onKeyDown={(event) => {
-							if (event.key !== "Escape" && event.key !== "Tab") {
+							if (event.key !== "Escape" && event.key !== TREE_KEY_TAB) {
 								event.stopPropagation();
 							}
 						}}
@@ -267,7 +289,7 @@ export function TreePickerBase({
 		) : undefined;
 
 	useLayoutEffect(() => {
-		if (open && optionsLayout === "columns") {
+		if (open && optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS) {
 			updateFloatingLayout();
 		}
 	}, [columnsLayoutDescriptor.signature, open, optionsLayout, updateFloatingLayout]);
@@ -279,7 +301,7 @@ export function TreePickerBase({
 		onClearSelection?.();
 		setQuery("");
 
-		if (selectionMode === "single") {
+		if (selectionMode === TREE_SELECTION_MODE_SINGLE) {
 			close();
 		}
 	};
@@ -310,24 +332,24 @@ export function TreePickerBase({
 			return;
 		}
 
-		if (event.key === "ArrowDown" || event.key === "ArrowUp") {
+		if (event.key === TREE_KEY_NEXT_NODE || event.key === "ArrowUp") {
 			event.preventDefault();
-			const direction = event.key === "ArrowDown" ? 1 : -1;
+			const direction = event.key === TREE_KEY_NEXT_NODE ? 1 : -1;
 			focusOptionAtIndex(findNextEnabledIndex(visibleEntries, optionIndex, direction, isEntryDisabled));
 			return;
 		}
 
-		if (event.key === "Home" || event.key === "End") {
+		if (event.key === TREE_KEY_FIRST_NODE || event.key === "End") {
 			event.preventDefault();
 			const boundaryIndex =
-				event.key === "Home"
+				event.key === TREE_KEY_FIRST_NODE
 					? findFirstEnabledIndex(visibleEntries, isEntryDisabled)
 					: findLastEnabledIndex(visibleEntries, isEntryDisabled);
 			focusOptionAtIndex(boundaryIndex);
 			return;
 		}
 
-		if (optionsLayout === "tree" && event.key === "ArrowRight") {
+		if (optionsLayout === TREE_OPTIONS_LAYOUT_TREE && event.key === "ArrowRight") {
 			event.preventDefault();
 			if (entry.hasChildren && !entry.isExpanded) {
 				toggleExpand(entry);
@@ -341,7 +363,7 @@ export function TreePickerBase({
 			return;
 		}
 
-		if (optionsLayout === "tree" && event.key === "ArrowLeft") {
+		if (optionsLayout === TREE_OPTIONS_LAYOUT_TREE && event.key === "ArrowLeft") {
 			event.preventDefault();
 			if (entry.hasChildren && entry.isExpanded) {
 				toggleExpand(entry);
@@ -354,7 +376,7 @@ export function TreePickerBase({
 			return;
 		}
 
-		if (event.key === " " && selectionMode === "multi" && !isEntryDisabled(entry)) {
+		if (event.key === " " && selectionMode === TREE_SELECTION_MODE_MULTI && !isEntryDisabled(entry)) {
 			event.preventDefault();
 			onNodeToggleSelection?.(entry.node, selectionScopeIndex);
 			return;
@@ -365,7 +387,7 @@ export function TreePickerBase({
 			selectOption(entry);
 		}
 	};
-	const isTreeMultiGrid = optionsLayout === "tree" && selectionMode === "multi";
+	const isTreeMultiGrid = optionsLayout === TREE_OPTIONS_LAYOUT_TREE && selectionMode === TREE_SELECTION_MODE_MULTI;
 	const handlePopupKeyDown = (event: KeyboardEvent<HTMLElement>) => {
 		if (isTreeMultiGrid && event.target === event.currentTarget && event.key === " ") {
 			event.preventDefault();
@@ -382,7 +404,7 @@ export function TreePickerBase({
 	return (
 		<PickerField label={label} description={description} disabled={disabled} size={size} error={fieldError} required={required}>
 			{({ controlId, labelId, describedBy }) => {
-				const listId = `${controlId}-${optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}`;
+				const listId = `${controlId}-${optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}`;
 				const popupAriaLabel = typeof label === "string" ? label : placeholder;
 
 				return (
@@ -400,12 +422,13 @@ export function TreePickerBase({
 							optionCount={treeIndex.nodeById.size}
 							label={label}
 							placeholder={placeholder}
-							readOnly={triggerMode !== "search"}
+							readOnly={triggerMode !== TREE_TRIGGER_MODE_SEARCH}
 							value={triggerValue}
 							selectedValue={selectedSummary ?? selectedSummaryText}
 							hasSelection={hasSelection}
 							showSelectedValue={
-								hasSelection && (resolvedTriggerMode === "search-multi" ? currentQuery.length === 0 : !showTriggerQuery)
+								hasSelection &&
+								(resolvedTriggerMode === PICKER_TRIGGER_MODE_SEARCH_MULTI ? currentQuery.length === 0 : !showTriggerQuery)
 							}
 							clearable={onClearSelection !== undefined}
 							onClear={handleClearSelection}
@@ -416,15 +439,19 @@ export function TreePickerBase({
 							aria-describedby={describedBy}
 							aria-required={required || undefined}
 							aria-invalid={Boolean(fieldError) || undefined}
-							aria-haspopup={optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "grid" : "tree"}
+							aria-haspopup={optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? "dialog" : isTreeMultiGrid ? "grid" : "tree"}
 							aria-expanded={open}
 							aria-controls={open ? listId : undefined}
-							aria-autocomplete={optionsLayout !== "columns" && triggerMode === "search" ? "list" : "none"}
+							aria-autocomplete={
+								optionsLayout !== TREE_OPTIONS_LAYOUT_COLUMNS && triggerMode === TREE_TRIGGER_MODE_SEARCH ? "list" : "none"
+							}
 							aria-activedescendant={
-								optionsLayout !== "columns" && open && visibleEntries.length > 0 ? getActiveOptionId(listId) : undefined
+								optionsLayout !== TREE_OPTIONS_LAYOUT_COLUMNS && open && visibleEntries.length > 0
+									? getActiveOptionId(listId)
+									: undefined
 							}
 							onChange={(event) => {
-								if (triggerMode !== "search") {
+								if (triggerMode !== TREE_TRIGGER_MODE_SEARCH) {
 									return;
 								}
 
@@ -437,9 +464,9 @@ export function TreePickerBase({
 							}}
 							onKeyDown={(event) => {
 								if (
-									optionsLayout === "columns" &&
+									optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS &&
 									open &&
-									event.key === "Tab" &&
+									event.key === TREE_KEY_TAB &&
 									!event.shiftKey &&
 									selectAllButtonRef.current
 								) {
@@ -471,7 +498,7 @@ export function TreePickerBase({
 											selectOption(activeEntry);
 										}
 									},
-									enableSpaceActivation: triggerMode === "display"
+									enableSpaceActivation: triggerMode === TREE_TRIGGER_MODE_DISPLAY
 								});
 							}}
 						/>
@@ -485,26 +512,29 @@ export function TreePickerBase({
 							popupAriaLabel={popupAriaLabel}
 							descriptionId={describedBy}
 							activeOptionId={
-								optionsLayout !== "columns" && visibleEntries.length > 0 ? getActiveOptionId(listId) : undefined
+								optionsLayout !== TREE_OPTIONS_LAYOUT_COLUMNS && visibleEntries.length > 0
+									? getActiveOptionId(listId)
+									: undefined
 							}
 							ariaMultiselectable={isTreeMultiGrid}
-							popupRole={optionsLayout === "columns" ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}
+							popupRole={optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? "dialog" : isTreeMultiGrid ? "treegrid" : "tree"}
 							setFloating={setFloating}
 							getFloatingProps={getFloatingProps}
 							onKeyDown={handlePopupKeyDown}
-							layoutClassName={optionsLayout === "columns" ? styles.treeColumnsPopupLayout : undefined}
+							layoutClassName={optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? styles.treeColumnsPopupLayout : undefined}
 							bodyClassName="scrollable"
 							toolbar={popupHeader}>
-							<div role="presentation" className={cn(optionsLayout === "columns" && styles.treeColumns)}>
+							<div role="presentation" className={cn(optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS && styles.treeColumns)}>
 								{visibleEntries.length === 0 ? (
 									<PickerStatus errorState={error} emptyState={!error && !isLoading ? "Нет данных" : undefined} />
 								) : (
 									visibleEntries.map((entry, index) => {
 										const selected =
-											selectionMode === "multi"
+											selectionMode === TREE_SELECTION_MODE_MULTI
 												? isTreeNodeSelected(entry.node.id, selectedIds, treeIndex)
 												: selectedIds.has(entry.node.id);
-										const partial = selectionMode === "multi" && !selected && partialIds.has(entry.node.id);
+										const partial =
+											selectionMode === TREE_SELECTION_MODE_MULTI && !selected && partialIds.has(entry.node.id);
 										const active = index === renderedActiveIndex;
 										const optionDisabled =
 											entry.node.disabled === true || unavailableNodeIds?.has(entry.node.id) === true;
@@ -515,39 +545,51 @@ export function TreePickerBase({
 												data-ui="tree-select-option"
 												id={getOptionId(listId, index)}
 												ref={
-													optionsLayout === "tree"
+													optionsLayout === TREE_OPTIONS_LAYOUT_TREE
 														? (node) => {
 																optionRefs.current[index] = node;
 																setOptionRef(index, node);
 															}
 														: undefined
 												}
-												tabIndex={optionsLayout === "tree" ? -1 : undefined}
-												role={optionsLayout === "tree" ? (isTreeMultiGrid ? "row" : "treeitem") : undefined}
-												aria-level={optionsLayout === "tree" ? entry.level + 1 : undefined}
-												aria-expanded={optionsLayout === "tree" && entry.hasChildren ? entry.isExpanded : undefined}
-												aria-selected={optionsLayout === "columns" ? undefined : selected}
+												tabIndex={optionsLayout === TREE_OPTIONS_LAYOUT_TREE ? -1 : undefined}
+												role={
+													optionsLayout === TREE_OPTIONS_LAYOUT_TREE
+														? isTreeMultiGrid
+															? "row"
+															: "treeitem"
+														: undefined
+												}
+												aria-level={optionsLayout === TREE_OPTIONS_LAYOUT_TREE ? entry.level + 1 : undefined}
+												aria-expanded={
+													optionsLayout === TREE_OPTIONS_LAYOUT_TREE && entry.hasChildren
+														? entry.isExpanded
+														: undefined
+												}
+												aria-selected={optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? undefined : selected}
 												aria-disabled={optionDisabled || undefined}
 												disabled={optionDisabled}
 												active={active}
 												selected={selected}
 												onFocus={() => setFocusedNodeId(entry.node.id)}
 												onKeyDown={
-													optionsLayout === "tree"
+													optionsLayout === TREE_OPTIONS_LAYOUT_TREE
 														? (event) => handleTreeOptionKeyDown(event, entry, index)
 														: undefined
 												}
 												onMouseDown={
-													optionsLayout === "tree" && !isTreeMultiGrid
+													optionsLayout === TREE_OPTIONS_LAYOUT_TREE && !isTreeMultiGrid
 														? (event) => event.preventDefault()
 														: undefined
 												}
 												onClick={
-													optionsLayout === "tree" && !isTreeMultiGrid ? () => selectOption(entry) : undefined
+													optionsLayout === TREE_OPTIONS_LAYOUT_TREE && !isTreeMultiGrid
+														? () => selectOption(entry)
+														: undefined
 												}
-												className={optionsLayout === "columns" ? styles.treeColumnRow : undefined}
+												className={optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS ? styles.treeColumnRow : undefined}
 												style={
-													optionsLayout === "columns"
+													optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS
 														? ({
 																"--tree-option-column": `var(--tree-option-${index}-column, auto)`,
 																"--tree-option-row": `var(--tree-option-${index}-row, auto)`
@@ -565,7 +607,7 @@ export function TreePickerBase({
 													selectionMode={selectionMode}
 													optionsLayout={optionsLayout}
 													actionRef={
-														optionsLayout === "columns"
+														optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS
 															? (node) => {
 																	optionRefs.current[index] = node;
 																	setOptionRef(index, node);

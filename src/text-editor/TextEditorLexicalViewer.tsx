@@ -5,6 +5,7 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { type TextEditorLexicalRaw } from "./editorModel";
 import { getTextEditorViewerElementStyle } from "./lib/viewer/getTextEditorViewerElementStyle";
 import { parseTextEditorViewerDocument } from "./lib/viewer/parseTextEditorViewerDocument";
+import { TEXT_EDITOR_VIEWER_INVALID } from "./model/textEditorViewerStatusConstants";
 import styles from "./TextEditorLexicalViewer.module.scss";
 import { TextEditorViewerNode } from "./ui/viewer/TextEditorViewerNode";
 
@@ -22,7 +23,7 @@ export function TextEditorLexicalViewer({
 }: TextEditorLexicalViewerProps) {
 	// Повторный render карточки не должен заново обходить неизменившийся документ.
 	const document = useMemo(() => parseTextEditorViewerDocument(raw), [raw]);
-	if (document.status === "invalid") {
+	if (document.status === TEXT_EDITOR_VIEWER_INVALID) {
 		return (
 			<div className={cn(styles.viewer, className)} data-text-editor-viewer="unsupported">
 				{fallback}

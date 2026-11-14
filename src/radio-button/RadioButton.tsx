@@ -6,6 +6,7 @@ import { CircleIcon } from "lucide-react";
 import baseStyles from "../check-box/CheckBox.module.scss";
 import uiStyles from "../ui.module.scss";
 import { getUiToneClassName } from "../uiClasses";
+import { UI_TONE_NEUTRAL } from "../uiSchemeConstants";
 
 import styles from "./RadioButton.module.scss";
 
@@ -48,7 +49,7 @@ export function RadioButton({
 				className
 			)}>
 			<div className={baseStyles.row}>
-				<div className={cn(baseStyles.wrapper, getUiToneClassName("neutral"))}>
+				<div className={cn(baseStyles.wrapper, getUiToneClassName(UI_TONE_NEUTRAL))}>
 					<input
 						{...props}
 						id={id}

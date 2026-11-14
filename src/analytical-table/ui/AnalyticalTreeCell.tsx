@@ -2,6 +2,7 @@ import { type AnalyticalModelRow } from "@ryuzaki13/react-foundation-lib/analyti
 import { ChevronDownIcon, ChevronRightIcon } from "lucide-react";
 
 import { analyticalCellId } from "../lib/analyticalCellId";
+import { ANALYTICAL_TREE_LEVEL_INDENT_PX, ANALYTICAL_ROW_KIND_GROUP } from "../lib/analyticalTableConstants";
 import { ANALYTICAL_TREE_COLUMN } from "../lib/analyticalTableLayout";
 import { isAnalyticalGroupingDisplayed } from "../lib/isAnalyticalGroupingDisplayed";
 import { type AnalyticalFocus } from "../model/useAnalyticalFocus";
@@ -59,7 +60,7 @@ export function AnalyticalTreeCell<T>({
 					event.stopPropagation();
 				}
 			}}>
-			<div className={styles.treeCellInner} style={{ paddingInlineStart: row.level * 8 + 3 }}>
+			<div className={styles.treeCellInner} style={{ paddingInlineStart: row.level * ANALYTICAL_TREE_LEVEL_INDENT_PX + 3 }}>
 				{row.isExpandable ? (
 					<button
 						type="button"
@@ -67,7 +68,14 @@ export function AnalyticalTreeCell<T>({
 						data-row-id={row.id}
 						className={styles.treeExpanderButton}
 						data-has-label={Boolean(label) || undefined}
-						style={{ maxWidth: Math.max(24, (row.kind === "group" && label ? labelWidth : treeWidth) - row.level * 8 - 3) }}
+						style={{
+							maxWidth: Math.max(
+								24,
+								(row.kind === ANALYTICAL_ROW_KIND_GROUP && label ? labelWidth : treeWidth) -
+									row.level * ANALYTICAL_TREE_LEVEL_INDENT_PX -
+									3
+							)
+						}}
 						title={typeof label === "string" ? label : undefined}
 						aria-expanded={row.isExpanded}
 						aria-label={`${row.isExpanded ? "Свернуть" : "Развернуть"} ${options.getRowLabel?.(row) ?? "строку"}`}

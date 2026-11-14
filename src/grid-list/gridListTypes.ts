@@ -2,8 +2,10 @@ import { type ReactNode } from "react";
 
 import { type CollectionGrouping } from "../collection-layout/model/collectionLayoutTypes";
 
+import { type GRID_LIST_NO_GAP, type GRID_LIST_DEFAULT_GAP } from "./model/gridListGapConstants";
+
 /** Отступы сетки используют те же токены, что и GridContainer. */
-export type GridListGap = "none" | "xs" | "sm" | "md" | "lg" | "xl";
+export type GridListGap = typeof GRID_LIST_NO_GAP | "xs" | "sm" | typeof GRID_LIST_DEFAULT_GAP | "lg" | "xl";
 
 /** Заголовки групп занимают весь ряд; карточки разных групп не смешиваются. */
 export type GridListGrouping<T> = CollectionGrouping<T>;

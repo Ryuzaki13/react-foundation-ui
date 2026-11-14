@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 
 import { type AnalyticalTableModel } from "@ryuzaki13/react-foundation-lib/analytical-table";
 
+import { TABLE_SELECTION_MODE_NONE } from "../../base-table/lib/tableSelectionConstants";
 import { ContextMenu } from "../../context-menu";
 import { type AnalyticalTableLayout } from "../lib/analyticalTableLayout";
 import { type AnalyticalFocus } from "../model/useAnalyticalFocus";
@@ -39,7 +40,7 @@ export function AnalyticalTableBody<T>({ instanceId, runtime, layout, selection,
 		if (cell?.dataset.analyticalRowId && cell.dataset.analyticalColumnId)
 			setTarget({ rowId: cell.dataset.analyticalRowId, columnId: cell.dataset.analyticalColumnId, model: runtime.model });
 	};
-	const colSpan = runtime.visibleColumns.length + (selection.rowMode === "none" ? 1 : 2);
+	const colSpan = runtime.visibleColumns.length + (selection.rowMode === TABLE_SELECTION_MODE_NONE ? 1 : 2);
 	const first = viewport.items[0];
 	const last = viewport.items.at(-1);
 	return (

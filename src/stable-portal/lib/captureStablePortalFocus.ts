@@ -1,3 +1,4 @@
+import { STABLE_PORTAL_SELECTION_DIRECTION_NONE } from "../model/stablePortalSelectionConstants";
 import { type StablePortalFocusSnapshot } from "../model/stablePortalTransferTypes";
 
 /** Range живой: сохраняем boundary nodes/offsets, чтобы удаление DOM-parent не схлопнуло сохранённый caret. */
@@ -15,7 +16,11 @@ export function captureStablePortalFocus(container: HTMLElement): StablePortalFo
 		(element instanceof HTMLInputElement || element instanceof HTMLTextAreaElement) &&
 		element.selectionStart !== null &&
 		element.selectionEnd !== null
-			? { start: element.selectionStart, end: element.selectionEnd, direction: element.selectionDirection ?? "none" }
+			? {
+					start: element.selectionStart,
+					end: element.selectionEnd,
+					direction: element.selectionDirection ?? STABLE_PORTAL_SELECTION_DIRECTION_NONE
+				}
 			: null;
 	const selection =
 		documentSelection?.anchorNode &&

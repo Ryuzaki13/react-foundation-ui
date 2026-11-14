@@ -1,5 +1,6 @@
 import { type CSSProperties, type ImgHTMLAttributes, type ReactNode, useEffect, useRef, useState } from "react";
 
+import { IMAGE_LAYOUT_COVER, IMAGE_LAYOUT_INTRINSIC, IMAGE_VIEW_DEFAULT_ASPECT_RATIO } from "../model/imageLayoutConstants";
 import { type ImageLayout, type ImageSource } from "../model/imageTypes";
 
 import { ImagePlaceholder } from "./ImagePlaceholder";
@@ -35,7 +36,7 @@ export function ImageRenderer({
 	caption,
 	fallback,
 	useFigure = false,
-	layout = "cover",
+	layout = IMAGE_LAYOUT_COVER,
 	width = "100%",
 	height = "100%",
 	aspectRatio,
@@ -81,10 +82,12 @@ export function ImageRenderer({
 		return () => observer.disconnect();
 	}, []);
 
-	const isIntrinsic = layout === "intrinsic";
+	const isIntrinsic = layout === IMAGE_LAYOUT_INTRINSIC;
 	const resolvedHeight = isIntrinsic ? "auto" : height;
 	const intrinsicAspectRatio = intrinsicWidth && intrinsicHeight ? `${intrinsicWidth} / ${intrinsicHeight}` : undefined;
-	const resolvedAspectRatio = isIntrinsic ? (intrinsicAspectRatio ?? aspectRatio ?? "auto") : (aspectRatio ?? "16 / 9");
+	const resolvedAspectRatio = isIntrinsic
+		? (intrinsicAspectRatio ?? aspectRatio ?? "auto")
+		: (aspectRatio ?? IMAGE_VIEW_DEFAULT_ASPECT_RATIO);
 	const placeholderHeight = isIntrinsic && resolvedAspectRatio !== "auto" && resolvedAspectRatio !== "unset" ? "100%" : resolvedHeight;
 	const sizesAttr = containerWidth ? `${containerWidth}px` : "100vw";
 	const defaultFallback = <ImagePlaceholder width={width} height={placeholderHeight} aspectRatio={resolvedAspectRatio} />;

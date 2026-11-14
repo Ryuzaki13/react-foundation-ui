@@ -11,6 +11,9 @@ import { TableEditorGrid } from "./TableEditorGrid";
 import { TableEditorStructure } from "./TableEditorStructure";
 import { TableEditorToolbar } from "./TableEditorToolbar";
 
+const TABLE_EDITOR_MIN_COLUMN_WIDTH_PX = 40;
+const TABLE_EDITOR_MAX_COLUMN_WIDTH_PX = 1600;
+
 /** Host задаёт редактор содержимого: plain text, Lexical или ссылки на документы без KTK-зависимости пакета. */
 export type TableEditorValueProps<T> = {
 	readonly cell: TableDocumentCell<T>;
@@ -90,11 +93,12 @@ export function TableEditor<T>({
 				<InputNumber
 					label="Ширина выбранного столбца, px"
 					value={document.columns[focus.column].width ?? undefined}
-					min={40}
-					max={1600}
+					min={TABLE_EDITOR_MIN_COLUMN_WIDTH_PX}
+					max={TABLE_EDITOR_MAX_COLUMN_WIDTH_PX}
 					disabled={disabled}
 					onChange={(width) => {
-						if (width !== undefined && (width < 40 || width > 1600)) return;
+						if (width !== undefined && (width < TABLE_EDITOR_MIN_COLUMN_WIDTH_PX || width > TABLE_EDITOR_MAX_COLUMN_WIDTH_PX))
+							return;
 						editor.change({
 							...document,
 							columns: document.columns.map((column, c) =>

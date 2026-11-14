@@ -1,6 +1,7 @@
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { OneStepScroller } from "../../misc";
+import { TABS_ORIENTATION_HORIZONTAL } from "../model/tabsConstants";
 import { type TabsDescriptor } from "../model/types";
 import { type TabsStateModel } from "../model/useTabsState";
 
@@ -42,7 +43,7 @@ export function TabsTabList({ items, state, className, ariaLabel, ariaLabelledBy
 		</div>
 	);
 
-	if (state.orientation === "horizontal") {
+	if (state.orientation === TABS_ORIENTATION_HORIZONTAL) {
 		return <OneStepScroller itemSelector="[role='tab']">{tabList}</OneStepScroller>;
 	}
 

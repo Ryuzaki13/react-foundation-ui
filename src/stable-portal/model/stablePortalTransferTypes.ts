@@ -1,7 +1,13 @@
+import { type STABLE_PORTAL_SELECTION_DIRECTION_NONE } from "./stablePortalSelectionConstants";
+
 /** Нативный interaction snapshot одного transfer; не сериализуется и не является состоянием редактора. */
 export type StablePortalFocusSnapshot = Readonly<{
 	element: HTMLElement;
-	inputSelection: Readonly<{ start: number; end: number; direction: "forward" | "backward" | "none" }> | null;
+	inputSelection: Readonly<{
+		start: number;
+		end: number;
+		direction: "forward" | "backward" | typeof STABLE_PORTAL_SELECTION_DIRECTION_NONE;
+	}> | null;
 	ranges: ReadonlyArray<Readonly<{ start: Node; startOffset: number; end: Node; endOffset: number }>>;
 	selection: Readonly<{ anchor: Node; anchorOffset: number; focus: Node; focusOffset: number }> | null;
 }>;

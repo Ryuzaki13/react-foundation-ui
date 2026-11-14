@@ -1,5 +1,7 @@
 import { useId } from "react";
 
+import { IMAGE_VIEW_DEFAULT_ASPECT_RATIO } from "../model/imageLayoutConstants";
+
 export interface ImagePlaceholderProps {
 	width?: number | string;
 	height?: number | string;
@@ -7,7 +9,12 @@ export interface ImagePlaceholderProps {
 	className?: string;
 }
 
-export function ImagePlaceholder({ width = "100%", height = "100%", aspectRatio = "16 / 9", className }: ImagePlaceholderProps) {
+export function ImagePlaceholder({
+	width = "100%",
+	height = "100%",
+	aspectRatio = IMAGE_VIEW_DEFAULT_ASPECT_RATIO,
+	className
+}: ImagePlaceholderProps) {
 	const maskId = useId();
 
 	return (

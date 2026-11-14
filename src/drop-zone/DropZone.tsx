@@ -11,6 +11,7 @@ import {
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 import { UploadIcon } from "lucide-react";
 
+import { READ_FILE_MODE_ARRAY_BUFFER } from "../input-file/readFileModeConstants";
 import { InputFilesList } from "../input-files";
 
 import styles from "./DropZone.module.scss";
@@ -98,8 +99,8 @@ export function DropZone({
 
 	const readDroppedFile = useCallback(
 		(file: File) => {
-			if (readMode === "array-buffer") {
-				return readFile(file, { allowedMime, maxBytes, mode: "array-buffer" });
+			if (readMode === READ_FILE_MODE_ARRAY_BUFFER) {
+				return readFile(file, { allowedMime, maxBytes, mode: READ_FILE_MODE_ARRAY_BUFFER });
 			}
 
 			return readFile(file, { allowedMime, maxBytes });

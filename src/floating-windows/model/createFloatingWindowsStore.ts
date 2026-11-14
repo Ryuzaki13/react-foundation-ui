@@ -1,9 +1,14 @@
 import { createStore } from "zustand/vanilla";
 
 import { constrainFloatingWindowPosition } from "../lib/constrainFloatingWindowPosition";
-import { isFloatingWindowId } from "../lib/isFloatingWindowId";
+import { INVALID_FLOATING_WINDOW_ID_MESSAGE, isFloatingWindowId } from "../lib/isFloatingWindowId";
 import { selectFloatingWindowCascadePosition } from "../lib/selectFloatingWindowCascadePosition";
 
+import {
+	FLOATING_WINDOW_DEFAULT_CASCADE_OFFSET_PX,
+	FLOATING_WINDOW_DEFAULT_POSITION_INSET_PX,
+	FLOATING_WINDOW_INVALID_CASCADE_OFFSET_MESSAGE
+} from "./floatingWindowPlacementConstants";
 import {
 	type FloatingWindowPosition,
 	type FloatingWindowSnapshot,
@@ -17,9 +22,11 @@ import {
  * подписок React и storage: последовательные команды всегда читают актуальный
  * snapshot, а неизменённые окна сохраняют identity для узких UI-подписок.
  */
-export function createFloatingWindowsStore({ cascadeOffset = 24 }: FloatingWindowsStoreOptions = {}): FloatingWindowsStore {
+export function createFloatingWindowsStore({
+	cascadeOffset = FLOATING_WINDOW_DEFAULT_CASCADE_OFFSET_PX
+}: FloatingWindowsStoreOptions = {}): FloatingWindowsStore {
 	if (!Number.isFinite(cascadeOffset) || cascadeOffset < 0) {
-		throw new RangeError("Смещение каскада должно быть конечным неотрицательным числом.");
+		throw new RangeError(FLOATING_WINDOW_INVALID_CASCADE_OFFSET_MESSAGE);
 	}
 
 	return createStore<FloatingWindowsState>()((set, get) => ({
@@ -28,9 +35,12 @@ export function createFloatingWindowsStore({ cascadeOffset = 24 }: FloatingWindo
 		order: [],
 		bounds: null,
 
-		register: (id, defaultPosition = { x: 24, y: 24 }) => {
+		register: (
+			id,
+			defaultPosition = { x: FLOATING_WINDOW_DEFAULT_POSITION_INSET_PX, y: FLOATING_WINDOW_DEFAULT_POSITION_INSET_PX }
+		) => {
 			if (!isFloatingWindowId(id)) {
-				throw new Error("Идентификатор плавающего окна должен содержать от 1 до 256 символов и не состоять из пробелов.");
+				throw new Error(INVALID_FLOATING_WINDOW_ID_MESSAGE);
 			}
 			const state = get();
 			if (state.windows.has(id)) {
@@ -155,7 +165,7 @@ export function createFloatingWindowsStore({ cascadeOffset = 24 }: FloatingWindo
 			// Сначала проверяем весь snapshot: ошибка не должна частично применить восстановление.
 			for (const [id, position] of restoredPositions) {
 				if (!isFloatingWindowId(id)) {
-					throw new Error("Идентификатор плавающего окна должен содержать от 1 до 256 символов и не состоять из пробелов.");
+					throw new Error(INVALID_FLOATING_WINDOW_ID_MESSAGE);
 				}
 				constrainFloatingWindowPosition(position, null, null);
 			}

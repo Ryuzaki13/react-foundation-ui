@@ -5,11 +5,16 @@ import { getCollectionRowAnchorKeys } from "../../collection-layout/lib/getColle
 import { getCollectionRowKey } from "../../collection-layout/lib/getCollectionRowKey";
 import { getCollectionRowVisibleKeys } from "../../collection-layout/lib/getCollectionRowVisibleKeys";
 import { projectCollectionPaginationItems } from "../../collection-layout/lib/projectCollectionPaginationItems";
+import {
+	COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX,
+	COLLECTION_VIRTUALIZER_OVERSCAN_ROWS
+} from "../../virtualized-collection/model/collectionVirtualizerDefaults";
 import { useCollectionVirtualizer } from "../../virtualized-collection/model/useCollectionVirtualizer";
 import { type GridListContentProps } from "../gridListTypes";
 import { projectGridListWindow } from "../lib/projectGridListWindow";
 
 import { type GridListContentModel } from "./gridListContentModelTypes";
+import { GRID_LIST_DEFAULT_GAP } from "./gridListGapConstants";
 import { useGridListLayout } from "./useGridListLayout";
 
 /** Упаковка всего источника зависит от реальной ширины, а не от прежних границ рядов. */
@@ -18,11 +23,11 @@ export function useGridListContent<T>({
 	getKey,
 	grouping,
 	minItemWidth,
-	gap = "md",
+	gap = GRID_LIST_DEFAULT_GAP,
 	maxColumns,
 	hasNextPage = false,
-	estimateSize = 120,
-	overscan = 5,
+	estimateSize = COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX,
+	overscan = COLLECTION_VIRTUALIZER_OVERSCAN_ROWS,
 	preserveScrollAnchor = true,
 	resetKey,
 	onVisibleKeysChange

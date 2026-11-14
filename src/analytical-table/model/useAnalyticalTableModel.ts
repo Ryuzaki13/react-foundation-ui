@@ -8,7 +8,13 @@ import {
 import { compileFormattersPipelineRuntime, type FormattersPipelineRuntimeField } from "@ryuzaki13/react-foundation-lib/formatters";
 import { normalizeTableColumnWidth } from "@ryuzaki13/react-foundation-lib/table";
 
+import { TABLE_SORT_ASC, TABLE_SORT_DESC, TABLE_SORT_CLEAR } from "../../table-sorting/tableSortingConstants";
 import { indexAnalyticalHeaderGroups } from "../lib/analyticalHeaderGroups";
+import {
+	ANALYTICAL_COLUMN_KIND_DIMENSION,
+	ANALYTICAL_COLUMN_KIND_MEASURE,
+	ANALYTICAL_MIN_COLUMN_WIDTH_PX
+} from "../lib/analyticalTableConstants";
 import { type AnalyticalTableProps, type AnalyticalTableRuntime } from "../types/analyticalTable";
 
 import { useAnalyticalTableState } from "./useAnalyticalTableState";
@@ -47,7 +53,7 @@ export function useAnalyticalTableModel<T>(props: AnalyticalTableProps<T>): Anal
 					column.id,
 					compileFormattersPipelineRuntime<FormattersPipelineRuntimeField>({
 						id: column.id,
-						role: column.kind ?? "dimension",
+						role: column.kind ?? ANALYTICAL_COLUMN_KIND_DIMENSION,
 						type:
 							column.valueType === "number"
 								? "decimal"
@@ -127,13 +133,14 @@ export function useAnalyticalTableModel<T>(props: AnalyticalTableProps<T>): Anal
 		if (!columns.some((column) => column.id === id && column.sortable !== false)) return;
 		const sorting = state.sorting ?? [];
 		const current = sorting.find((item) => item.id === id);
-		const nextDirection = direction ?? (!current ? "asc" : !current.desc ? "desc" : "clear");
-		const rest = multi || direction === "clear" ? sorting.filter((item) => item.id !== id) : [];
-		patchState({ sorting: nextDirection === "clear" ? rest : [...rest, { id, desc: nextDirection === "desc" }] });
+		const nextDirection = direction ?? (!current ? TABLE_SORT_ASC : !current.desc ? TABLE_SORT_DESC : TABLE_SORT_CLEAR);
+		const rest = multi || direction === TABLE_SORT_CLEAR ? sorting.filter((item) => item.id !== id) : [];
+		patchState({ sorting: nextDirection === TABLE_SORT_CLEAR ? rest : [...rest, { id, desc: nextDirection === TABLE_SORT_DESC }] });
 	};
 	const groupColumn = (id: string) => {
 		const column = columns.find((item) => item.id === id);
-		if (!column || props.enableGrouping === false || column.groupable === false || column.kind === "measure") return;
+		if (!column || props.enableGrouping === false || column.groupable === false || column.kind === ANALYTICAL_COLUMN_KIND_MEASURE)
+			return;
 		const group = column?.grouping ?? { id, keyColumnIds: [id], displayColumnIds: [id], label: column?.label };
 		if (state.grouping?.some((item) => item.id === group.id)) return;
 		patchState({ grouping: [...(state.grouping ?? []), group] });
@@ -184,7 +191,12 @@ export function useAnalyticalTableModel<T>(props: AnalyticalTableProps<T>): Anal
 		resizeColumn: (id, width) => {
 			const column = columns.find((column) => column.id === id);
 			if (column && props.enableColumnResizing !== false)
-				patchState({ columnWidths: { ...state.columnWidths, [id]: normalizeTableColumnWidth(width, column.minWidth ?? 60) } });
+				patchState({
+					columnWidths: {
+						...state.columnWidths,
+						[id]: normalizeTableColumnWidth(width, column.minWidth ?? ANALYTICAL_MIN_COLUMN_WIDTH_PX)
+					}
+				});
 		}
 	};
 }

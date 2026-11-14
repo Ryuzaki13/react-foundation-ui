@@ -2,6 +2,7 @@ import { cloneElement, type HTMLAttributes, type KeyboardEvent, type MouseEvent,
 
 import { assignRef } from "./helpers";
 import { useMenuContext } from "./MenuContext";
+import { MENU_TRIGGER_CONTEXT_MENU } from "./menuInteractionConstants";
 
 export interface ContextMenuTriggerProps {
 	children: ReactElement<HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement> }>;
@@ -12,7 +13,7 @@ export interface ContextMenuTriggerProps {
 export function ContextMenuTrigger({ children, resolveTrigger }: ContextMenuTriggerProps) {
 	const { mode, open, menuId, triggerId, registerTriggerElement, onTriggerContextMenu, onTriggerKeyDown } = useMenuContext();
 
-	if (mode !== "contextmenu") {
+	if (mode !== MENU_TRIGGER_CONTEXT_MENU) {
 		throw new Error("ContextMenu.Trigger must be used within <ContextMenu>");
 	}
 

@@ -15,6 +15,7 @@ import {
 	type DateInputSelectionMode,
 	type DatePickerLevel
 } from "../lib";
+import { DATE_INPUT_WEEK_END_SUNDAY, DATE_INPUT_SELECTION_MODE_DAY, DATE_PICKER_LEVEL_DAY } from "../lib/dateInputCalendarConstants";
 import { type DateInputControlProps } from "../lib/dateInputProps";
 import { resolveDateInputSelectionModeOptions } from "../lib/resolveDateInputSelectionModeOptions";
 import { useDateInput } from "../model";
@@ -34,7 +35,7 @@ export function DateInputControl({
 	datePreset,
 	datePickerLevel,
 	selectionMode: controlledSelectionMode,
-	weekEndDay = "sunday",
+	weekEndDay = DATE_INPUT_WEEK_END_SUNDAY,
 	allowSelectionModeChange,
 	selectionModeOptions,
 	selectionModeDatePresets,
@@ -45,13 +46,13 @@ export function DateInputControl({
 
 	const configuredSelectionModes = normalizeDateInputSelectionModes(selectionModeOptions, DATE_INPUT_SELECTION_MODES);
 	const [uncontrolledSelectionMode, setUncontrolledSelectionMode] = useState<DateInputSelectionMode>(
-		() => controlledSelectionMode ?? configuredSelectionModes[0] ?? "day"
+		() => controlledSelectionMode ?? configuredSelectionModes[0] ?? DATE_INPUT_SELECTION_MODE_DAY
 	);
 
 	const selectionMode = controlledSelectionMode ?? uncontrolledSelectionMode;
 	const activeDatePreset = allowSelectionModeChange ? (selectionModeDatePresets?.[selectionMode] ?? datePreset) : datePreset;
 
-	const minDatePickerLevel = datePickerLevel ?? "day";
+	const minDatePickerLevel = datePickerLevel ?? DATE_PICKER_LEVEL_DAY;
 	const preferredCalendarType = resolveAvailableDatePickerLevel(selectionMode, minDatePickerLevel);
 	const [calendarTypeState, setCalendarTypeState] = useState<DateInputCalendarState>(() => ({
 		view: preferredCalendarType,

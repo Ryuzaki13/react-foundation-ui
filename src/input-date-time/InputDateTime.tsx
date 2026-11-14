@@ -4,6 +4,7 @@ import { InputClearButton, InputControl, InputUI, useInputFieldIds } from "../in
 import { UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
+import { DATE_MASK_SEGMENT_LITERAL } from "./dateMaskSegmentKinds";
 import styles from "./InputDateTime.module.scss";
 import { useMaskedSegments } from "./useMaskedSegments";
 
@@ -81,7 +82,7 @@ function InputDateTimeBase({
 							if (e.target === e.currentTarget) focusFirstEmpty();
 						}}>
 						{segments.map((segment, index) => {
-							if (segment.kind === "literal") {
+							if (segment.kind === DATE_MASK_SEGMENT_LITERAL) {
 								return (
 									<span key={index} className={styles.separator} data-disabled={disabled || undefined}>
 										{segment.text}

@@ -1,4 +1,5 @@
 import { Button } from "../../button";
+import { UI_TONE_SUCCESS } from "../../uiSchemeConstants";
 import { type ImageSelectionActionsData, type ImageSelectionPanelProps } from "../model/imageSelectionTypes";
 import { useImageSelectionState } from "../model/useImageSelectionState";
 
@@ -22,7 +23,7 @@ export function ImageSelectionPanel({ disabled, renderActions, ...props }: Image
 				? renderActions(actionsData)
 				: props.onApply && (
 						<div>
-							<Button disabled={!state.canApply} tone="success" onClick={state.apply}>
+							<Button disabled={!state.canApply} tone={UI_TONE_SUCCESS} onClick={state.apply}>
 								Применить
 							</Button>
 						</div>

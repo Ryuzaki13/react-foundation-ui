@@ -1,5 +1,7 @@
 import { type CSSProperties } from "react";
 
+import { type IMAGE_CROPPER_FIT_CONTAIN } from "./imageCropConstants";
+
 /** Координаты смещения изображения внутри cropper. */
 export type ImageCropPoint = {
 	x: number;
@@ -15,7 +17,7 @@ export type ImageCropArea = {
 };
 
 /** Способ начального вписывания исходника в область cropper. */
-export type ImageCropperObjectFit = "contain" | "cover" | "horizontal-cover" | "vertical-cover";
+export type ImageCropperObjectFit = typeof IMAGE_CROPPER_FIT_CONTAIN | "cover" | "horizontal-cover" | "vertical-cover";
 
 export interface ImageCropperProps {
 	image: string;

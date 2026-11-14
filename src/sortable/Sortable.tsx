@@ -15,9 +15,13 @@ import { CSS } from "@dnd-kit/utilities";
 import { useDndSortableSensors } from "@ryuzaki13/react-foundation-lib/hooks";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
-import { resolveSortableStrategy, type SortableLayout } from "./sortableUtils";
+import { resolveSortableStrategy, SORTABLE_LAYOUT_VERTICAL, type SortableLayout } from "./sortableUtils";
 
 import type { UniqueIdentifier } from "@dnd-kit/core";
+
+const SORTABLE_DRAG_ACTIVATOR_HANDLE = "handle";
+const SORTABLE_DRAG_ACTIVATOR_ITEM = "item";
+const SORTABLE_DRAGGING_OPACITY = 0.6;
 
 type SortableItemRenderState = {
 	isDragging: boolean;
@@ -55,7 +59,7 @@ type SortableItemBaseProps = {
 	className?: string;
 	style?: CSSProperties;
 	disabled?: boolean;
-	dragActivator?: "handle" | "item";
+	dragActivator?: typeof SORTABLE_DRAG_ACTIVATOR_HANDLE | typeof SORTABLE_DRAG_ACTIVATOR_ITEM;
 };
 
 type SortableItemProps<E extends ElementType = "div"> = SortableItemBaseProps &
@@ -122,7 +126,7 @@ export function SortableRoot(props: SortableRootProps) {
 }
 
 export function SortableContainer(props: SortableContainerProps) {
-	const { children, containerId, items, layout = "vertical", strategy } = props;
+	const { children, containerId, items, layout = SORTABLE_LAYOUT_VERTICAL, strategy } = props;
 
 	return (
 		<SortableContext id={String(containerId)} items={[...items]} strategy={resolveSortableStrategy(layout, strategy)}>
@@ -132,7 +136,7 @@ export function SortableContainer(props: SortableContainerProps) {
 }
 
 export function SortableItem<E extends ElementType = "div">(props: SortableItemProps<E>) {
-	const { as, id, children, className, style, disabled = false, dragActivator = "handle", ...restProps } = props;
+	const { as, id, children, className, style, disabled = false, dragActivator = SORTABLE_DRAG_ACTIVATOR_HANDLE, ...restProps } = props;
 	const Component = (as ?? "div") as ElementType;
 	const { attributes, listeners, setActivatorNodeRef, setNodeRef, transform, transition, isDragging, isOver, isSorting } = useSortable({
 		id,
@@ -143,16 +147,18 @@ export function SortableItem<E extends ElementType = "div">(props: SortableItemP
 		transform: CSS.Transform.toString(transform),
 		transition,
 		zIndex: !disabled && isDragging ? 2 : 1,
-		opacity: !disabled && isDragging ? 0.6 : undefined,
+		opacity: !disabled && isDragging ? SORTABLE_DRAGGING_OPACITY : undefined,
 		...style
 	};
 	const handleContextValue = useMemo<SortableHandleContextValue>(
 		() => ({
 			attributes: attributes as unknown as Record<string, unknown>,
 			listeners:
-				dragActivator === "handle" ? (listeners as Record<string, ((event: unknown) => void) | undefined> | undefined) : undefined,
+				dragActivator === SORTABLE_DRAG_ACTIVATOR_HANDLE
+					? (listeners as Record<string, ((event: unknown) => void) | undefined> | undefined)
+					: undefined,
 			setActivatorNodeRef,
-			disabled: disabled || dragActivator !== "handle",
+			disabled: disabled || dragActivator !== SORTABLE_DRAG_ACTIVATOR_HANDLE,
 			isDragging
 		}),
 		[attributes, listeners, setActivatorNodeRef, disabled, dragActivator, isDragging]
@@ -163,7 +169,7 @@ export function SortableItem<E extends ElementType = "div">(props: SortableItemP
 		isSorting,
 		disabled
 	};
-	const dragBindings = dragActivator === "item" && !disabled ? { ...attributes, ...listeners } : {};
+	const dragBindings = dragActivator === SORTABLE_DRAG_ACTIVATOR_ITEM && !disabled ? { ...attributes, ...listeners } : {};
 
 	return (
 		<SortableHandleContext.Provider value={handleContextValue}>

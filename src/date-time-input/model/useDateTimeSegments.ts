@@ -9,7 +9,17 @@ import {
 	parseDateSegmentMask
 } from "@ryuzaki13/react-foundation-lib/date-segments";
 
+import {
+	DATE_MASK_KEY_NEXT_SEGMENT,
+	DATE_MASK_KEY_PREVIOUS_SEGMENT,
+	DATE_MASK_KEY_INCREMENT,
+	DATE_MASK_KEY_DECREMENT,
+	DATE_MASK_KEY_BACKSPACE,
+	DATE_MASK_KEY_DELETE
+} from "../../input-date-time/dateMaskKeys";
+import { DATE_MASK_SEGMENT_EDITABLE } from "../../input-date-time/dateMaskSegmentKinds";
 import { createTimeOnlyBaseDate, getDateTimeInputFormat, isDateTimeWithinRange, normalizeDateTimeValue } from "../lib";
+import { DATE_TIME_INPUT_MODE_DATE_TIME, DATE_TIME_INPUT_MODE_TIME } from "../lib/dateTimeInputModes";
 
 import type { DateTimeInputMode } from "../lib";
 
@@ -27,7 +37,7 @@ function resolveEditableIndices(segments: readonly { kind: string }[]): number[]
 	const indices: number[] = [];
 
 	segments.forEach((segment, index) => {
-		if (segment.kind === "editable") {
+		if (segment.kind === DATE_MASK_SEGMENT_EDITABLE) {
 			indices.push(index);
 		}
 	});
@@ -45,7 +55,7 @@ export function useDateTimeSegments({
 	disabled,
 	minDate,
 	maxDate,
-	mode = "date-time"
+	mode = DATE_TIME_INPUT_MODE_DATE_TIME
 }: UseDateTimeSegmentsOptions) {
 	const inputFormat = useMemo(() => getDateTimeInputFormat(mode), [mode]);
 	const segments = useMemo(() => parseDateSegmentMask(inputFormat), [inputFormat]);
@@ -92,7 +102,10 @@ export function useDateTimeSegments({
 			}
 
 			const nextDate = indexedSegmentsToDate(segments, updatedValues, {
-				defaultDate: mode === "time" ? (normalizeDateTimeValue(value, "time") ?? createTimeOnlyBaseDate()) : undefined
+				defaultDate:
+					mode === DATE_TIME_INPUT_MODE_TIME
+						? (normalizeDateTimeValue(value, DATE_TIME_INPUT_MODE_TIME) ?? createTimeOnlyBaseDate())
+						: undefined
 			});
 			if (!nextDate) return null;
 			if (!isDateTimeWithinRange(nextDate, minDate, maxDate, mode)) return null;
@@ -166,7 +179,7 @@ export function useDateTimeSegments({
 			if (disabled) return;
 
 			const segment = segments[index];
-			if (segment.kind !== "editable") return;
+			if (segment.kind !== DATE_MASK_SEGMENT_EDITABLE) return;
 
 			const rawValue = event.target.value.replace(/\D/g, "");
 			const clampedValue = rawValue.slice(0, segment.length);
@@ -195,13 +208,13 @@ export function useDateTimeSegments({
 			if (disabled) return;
 
 			const segment = segments[index];
-			if (segment.kind !== "editable") return;
+			if (segment.kind !== DATE_MASK_SEGMENT_EDITABLE) return;
 
 			const currentValue = segmentValues.get(index) ?? "";
 			const element = event.currentTarget;
 
 			switch (event.key) {
-				case "ArrowRight": {
+				case DATE_MASK_KEY_NEXT_SEGMENT: {
 					if (element.selectionStart === currentValue.length || currentValue === "") {
 						event.preventDefault();
 						const nextIndex = getNextEditable(index);
@@ -209,7 +222,7 @@ export function useDateTimeSegments({
 					}
 					break;
 				}
-				case "ArrowLeft": {
+				case DATE_MASK_KEY_PREVIOUS_SEGMENT: {
 					if (element.selectionStart === 0 || currentValue === "") {
 						event.preventDefault();
 						const previousIndex = getPreviousEditable(index);
@@ -217,7 +230,7 @@ export function useDateTimeSegments({
 					}
 					break;
 				}
-				case "ArrowUp": {
+				case DATE_MASK_KEY_INCREMENT: {
 					event.preventDefault();
 					let numericValue = currentValue === "" ? segment.min : Number.parseInt(currentValue, 10) + 1;
 					if (numericValue > segment.max) numericValue = segment.min;
@@ -229,7 +242,7 @@ export function useDateTimeSegments({
 					requestAnimationFrame(() => element.select());
 					break;
 				}
-				case "ArrowDown": {
+				case DATE_MASK_KEY_DECREMENT: {
 					event.preventDefault();
 					let numericValue = currentValue === "" ? segment.max : Number.parseInt(currentValue, 10) - 1;
 					if (numericValue < segment.min) numericValue = segment.max;
@@ -241,7 +254,7 @@ export function useDateTimeSegments({
 					requestAnimationFrame(() => element.select());
 					break;
 				}
-				case "Backspace": {
+				case DATE_MASK_KEY_BACKSPACE: {
 					if (currentValue === "") {
 						event.preventDefault();
 						const previousIndex = getPreviousEditable(index);
@@ -249,7 +262,7 @@ export function useDateTimeSegments({
 					}
 					break;
 				}
-				case "Delete": {
+				case DATE_MASK_KEY_DELETE: {
 					event.preventDefault();
 					const updatedValues = new Map(segmentValues);
 					updatedValues.set(index, "");
@@ -293,7 +306,10 @@ export function useDateTimeSegments({
 			}
 
 			const nextDate = indexedSegmentsToDate(segments, currentValues, {
-				defaultDate: mode === "time" ? (normalizeDateTimeValue(value, "time") ?? createTimeOnlyBaseDate()) : undefined
+				defaultDate:
+					mode === DATE_TIME_INPUT_MODE_TIME
+						? (normalizeDateTimeValue(value, DATE_TIME_INPUT_MODE_TIME) ?? createTimeOnlyBaseDate())
+						: undefined
 			});
 			if (!nextDate || !isDateTimeWithinRange(nextDate, minDate, maxDate, mode)) {
 				setDirtyValues(null);

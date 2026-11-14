@@ -13,8 +13,16 @@ import {
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { type DateInputSelectionMode, type DateInputWeekEndDay } from "../lib";
+import {
+	DATE_INPUT_WEEK_END_SUNDAY,
+	DATE_INPUT_SELECTION_MODE_DAY,
+	DATE_INPUT_SELECTION_MODE_WEEK
+} from "../lib/dateInputCalendarConstants";
 
 import styles from "./CalendarDayView.module.scss";
+
+const CALENDAR_WEEK_ROWS = 6;
+const DAYS_PER_WEEK = 7;
 
 const weekDays = ["Пн", "Вт", "Ср", "Чт", "Пт", "Сб", "Вс"];
 const dayLabelFormatter = new Intl.DateTimeFormat("ru-RU", {
@@ -47,8 +55,8 @@ export function CalendarDayView({
 	minDate,
 	maxDate,
 	selectsRange,
-	selectionMode = "day",
-	weekEndDay = "sunday"
+	selectionMode = DATE_INPUT_SELECTION_MODE_DAY,
+	weekEndDay = DATE_INPUT_WEEK_END_SUNDAY
 }: DayViewProps) {
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
 	const selectionOptions: CalendarPeriodOptions = {
@@ -66,7 +74,7 @@ export function CalendarDayView({
 		const firstDay = createCalendarDate(year, month, 1);
 		const lastDay = createCalendarDate(year, month + 1, 0);
 		const prevMonthDays = firstDay.getDay() === 0 ? 6 : firstDay.getDay() - 1;
-		const nextMonthDays = 6 * 7 - (prevMonthDays + lastDay.getDate());
+		const nextMonthDays = CALENDAR_WEEK_ROWS * DAYS_PER_WEEK - (prevMonthDays + lastDay.getDate());
 
 		const days: Date[] = [];
 		const prevMonthLastDay = createCalendarDate(year, month, 0).getDate();
@@ -98,7 +106,7 @@ export function CalendarDayView({
 	const selectedSinglePeriod = getCalendarPeriod(selectedDate, selectionOptions);
 	const hoveredPeriod = getCalendarPeriod(hoveredDate, selectionOptions);
 	const previewEndDate = selectedEndDate ?? (selectedStartDate ? (hoveredPeriod?.end ?? null) : null);
-	const previewsWeekPeriod = selectionMode === "week";
+	const previewsWeekPeriod = selectionMode === DATE_INPUT_SELECTION_MODE_WEEK;
 	const previewsStandalonePeriod = previewsWeekPeriod && (!selectsRange || !selectedStartDate);
 
 	/**
@@ -178,7 +186,7 @@ export function CalendarDayView({
 									data-action="select-calendar-day"
 									className={cn(styles.day, {
 										[styles.outsideMonth]: !isCurrentMonth,
-										[styles.periodSelection]: selectionMode === "week",
+										[styles.periodSelection]: selectionMode === DATE_INPUT_SELECTION_MODE_WEEK,
 										[styles.periodPreview]: isPeriodPreview && !isSelected,
 										[styles.selected]: isSelected,
 										[styles.range]: isRange && !isStart && !isEnd,

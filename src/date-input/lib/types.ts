@@ -4,7 +4,9 @@ import {
 	type NullableDateRange
 } from "@ryuzaki13/react-foundation-lib/formatters";
 
-export type DatePickerLevel = "day" | "month" | "year";
+import { type DATE_PICKER_LEVEL_DAY, type DATE_PICKER_LEVEL_MONTH, type DATE_PICKER_LEVEL_YEAR } from "./dateInputCalendarConstants";
+
+export type DatePickerLevel = typeof DATE_PICKER_LEVEL_DAY | typeof DATE_PICKER_LEVEL_MONTH | typeof DATE_PICKER_LEVEL_YEAR;
 export type CalendarType = DatePickerLevel;
 export type DateInputSelectionMode = CalendarPeriodSelectionMode;
 export type DateInputWeekEndDay = CalendarWeekEndDay;

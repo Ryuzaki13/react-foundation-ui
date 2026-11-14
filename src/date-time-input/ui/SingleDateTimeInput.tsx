@@ -4,8 +4,11 @@ import { getStartOfDay, isDateRangeTuple, NullableDateRange } from "@ryuzaki13/r
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CalendarDaysIcon, Clock3Icon } from "lucide-react";
 
+import { DATE_INPUT_SELECTION_MODE_DAY, DATE_PICKER_LEVEL_DAY } from "../../date-input/lib/dateInputCalendarConstants";
+import { type DatePickerLevel } from "../../date-input/lib/types";
 import { CalendarView } from "../../date-input/ui";
 import { InputControl, InputUI, useInputFieldIds } from "../../input";
+import { DATE_MASK_SEGMENT_LITERAL } from "../../input-date-time/dateMaskSegmentKinds";
 import { Popover } from "../../popover";
 import { UiBaseProps } from "../../types";
 import uiStyles from "../../ui.module.scss";
@@ -17,6 +20,7 @@ import {
 	normalizeDateTimeValue,
 	resolvePickerBaseDate
 } from "../lib";
+import { DATE_TIME_INPUT_MODE_DATE_TIME, DATE_TIME_INPUT_MODE_TIME } from "../lib/dateTimeInputModes";
 import { useDateTimeSegments } from "../model";
 
 import styles from "./SingleDateTimeInput.module.scss";
@@ -24,12 +28,14 @@ import { TimePanel } from "./TimePanel";
 
 import type { DateTimeInputMode } from "../lib";
 
+const TIME_PANEL_PLACEMENT_RIGHT = "right";
+
 interface BaseSingleDateTimeInputProps {
 	error?: string;
 	onClearError?: () => void;
 	minDate?: Date;
 	maxDate?: Date;
-	timePanelPlacement?: "bottom" | "right";
+	timePanelPlacement?: "bottom" | typeof TIME_PANEL_PLACEMENT_RIGHT;
 	mode?: DateTimeInputMode;
 }
 
@@ -50,8 +56,8 @@ export function SingleDateTimeInput({
 	onClearError,
 	minDate,
 	maxDate,
-	timePanelPlacement = "right",
-	mode = "date-time"
+	timePanelPlacement = TIME_PANEL_PLACEMENT_RIGHT,
+	mode = DATE_TIME_INPUT_MODE_DATE_TIME
 }: SingleDateTimeInputProps): JSX.Element {
 	const normalizedValue = useMemo(() => normalizeDateTimeValue(value, mode), [mode, value]);
 
@@ -59,7 +65,7 @@ export function SingleDateTimeInput({
 
 	const [open, setOpen] = useState(false);
 	const [draftValue, setDraftValue] = useState<Date | null>(normalizedValue ?? null);
-	const [calendarView, setCalendarView] = useState<"day" | "month" | "year">("day");
+	const [calendarView, setCalendarView] = useState<DatePickerLevel>(DATE_PICKER_LEVEL_DAY);
 	const [pickerDate, setPickerDate] = useState<Date>(() => resolvePickerBaseDate(normalizedValue, fallbackPickerDate, mode));
 
 	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
@@ -92,7 +98,7 @@ export function SingleDateTimeInput({
 	 * Выбирает дату в календаре и сохраняет текущее время.
 	 */
 	const handleCalendarSelect = (nextDate: Date | NullableDateRange) => {
-		if (mode === "time" || isDateRangeTuple(nextDate) || disabled) return;
+		if (mode === DATE_TIME_INPUT_MODE_TIME || isDateRangeTuple(nextDate) || disabled) return;
 
 		const baseValue = draftValue ?? normalizedValue ?? pickerDate;
 		const mergedDate = mergeDateWithTime(nextDate, baseValue);
@@ -141,9 +147,9 @@ export function SingleDateTimeInput({
 		}
 	};
 
-	const panelPlacementClass = timePanelPlacement === "right" ? styles.timePanelPaneRight : styles.timePanelPaneBottom;
-	const buttonAriaLabel = mode === "time" ? "Открыть выбор времени" : "Открыть календарь даты и времени";
-	const inputPlaceholder = placeholder ?? (mode === "time" ? "чч:мм" : "дд.мм.гггг чч:мм");
+	const panelPlacementClass = timePanelPlacement === TIME_PANEL_PLACEMENT_RIGHT ? styles.timePanelPaneRight : styles.timePanelPaneBottom;
+	const buttonAriaLabel = mode === DATE_TIME_INPUT_MODE_TIME ? "Открыть выбор времени" : "Открыть календарь даты и времени";
+	const inputPlaceholder = placeholder ?? (mode === DATE_TIME_INPUT_MODE_TIME ? "чч:мм" : "дд.мм.гггг чч:мм");
 	const pickerValue = draftValue ?? normalizedValue ?? pickerDate;
 
 	return (
@@ -169,7 +175,7 @@ export function SingleDateTimeInput({
 									aria-label={buttonAriaLabel}
 									aria-haspopup="dialog"
 									className={uiStyles.uiToggleButton}>
-									{mode === "time" ? <Clock3Icon /> : <CalendarDaysIcon />}
+									{mode === DATE_TIME_INPUT_MODE_TIME ? <Clock3Icon /> : <CalendarDaysIcon />}
 								</button>
 							</Popover.Trigger>
 						</div>
@@ -193,7 +199,7 @@ export function SingleDateTimeInput({
 								}
 							}}>
 							{segments.map((segment, index) => {
-								if (segment.kind === "literal") {
+								if (segment.kind === DATE_MASK_SEGMENT_LITERAL) {
 									return (
 										<span key={index} className={styles.separator} data-disabled={disabled || undefined}>
 											{segment.text}
@@ -229,9 +235,9 @@ export function SingleDateTimeInput({
 			<Popover.Content
 				background="primary"
 				role="dialog"
-				aria-label={mode === "time" ? "Выбор времени" : "Выбор даты и времени"}
+				aria-label={mode === DATE_TIME_INPUT_MODE_TIME ? "Выбор времени" : "Выбор даты и времени"}
 				onClose={handlePopoverClose}>
-				{mode === "time" ? (
+				{mode === DATE_TIME_INPUT_MODE_TIME ? (
 					<div className={styles.timeOnlyPopoverContent}>
 						<TimePanel
 							value={pickerValue}
@@ -247,8 +253,8 @@ export function SingleDateTimeInput({
 						<div className={styles.calendarPane}>
 							<CalendarView
 								view={calendarView}
-								datePickerLevel="day"
-								selectionMode="day"
+								datePickerLevel={DATE_PICKER_LEVEL_DAY}
+								selectionMode={DATE_INPUT_SELECTION_MODE_DAY}
 								onViewChange={setCalendarView}
 								value={pickerValue}
 								onChange={handleCalendarSelect}

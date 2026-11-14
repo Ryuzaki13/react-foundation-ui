@@ -9,6 +9,21 @@ import { PickerOptions } from "../../picker";
 import styles from "../ContextMenu.module.scss";
 
 import { useMenuContext } from "./MenuContext";
+import {
+	MENU_INITIAL_FOCUS_LAST,
+	MENU_KEY_ARROW_DOWN,
+	MENU_KEY_ARROW_UP,
+	MENU_KEY_END,
+	MENU_KEY_HOME,
+	MENU_KEY_SPACE,
+	MENU_KEY_TAB,
+	MENU_NAVIGABLE_ITEM_SELECTOR,
+	MENU_TRIGGER_CONTEXT_MENU
+} from "./menuInteractionConstants";
+
+const MENU_CLOSED_SCALE = 0.96;
+const MENU_CLOSED_OFFSET_PX = -2;
+const MENU_TRANSITION_SECONDS = 0.14;
 
 export interface MenuContentProps {
 	children: ReactNode | ((ctx: { closeMenu: () => void }) => ReactNode);
@@ -49,14 +64,14 @@ export function MenuContent({
 		const floatingElement = floatingRef.current;
 		if (!floatingElement) return [];
 
-		return Array.from(floatingElement.querySelectorAll<HTMLElement>('[data-menu-item="true"]:not([data-disabled="true"])'));
+		return Array.from(floatingElement.querySelectorAll<HTMLElement>(MENU_NAVIGABLE_ITEM_SELECTOR));
 	}, [floatingRef]);
 
 	useOverlayFocus<HTMLElement>({
 		active: open,
 		initialFocus: (container) => {
 			const items = getNavigableItems();
-			return (initialFocus === "last" ? items[items.length - 1] : items[0]) ?? container;
+			return (initialFocus === MENU_INITIAL_FOCUS_LAST ? items[items.length - 1] : items[0]) ?? container;
 		},
 		restoreFocus,
 		restoreFocusTarget: () => triggerRef.current,
@@ -64,7 +79,7 @@ export function MenuContent({
 	});
 
 	useEffect(() => {
-		if (!open || openSource !== "contextmenu" || !anchorPoint) return;
+		if (!open || openSource !== MENU_TRIGGER_CONTEXT_MENU || !anchorPoint) return;
 
 		const rafId = window.requestAnimationFrame(() => {
 			const focusTarget = getNavigableItems()[0] ?? floatingRef.current;
@@ -92,7 +107,7 @@ export function MenuContent({
 
 	const onMenuKeyDown = useCallback(
 		(event: KeyboardEvent<HTMLElement>) => {
-			if (event.key === "Tab") {
+			if (event.key === MENU_KEY_TAB) {
 				// Возвращаем точку отсчёта в tab-порядок до browser default action:
 				// так Tab и Shift+Tab продолжают обход относительно trigger, а не portal в конце body.
 				triggerRef.current?.focus({ preventScroll: true });
@@ -108,33 +123,33 @@ export function MenuContent({
 			const activeElement = document.activeElement as HTMLElement | null;
 			const currentIndex = activeElement ? items.indexOf(activeElement) : -1;
 
-			if (event.key === "ArrowDown") {
+			if (event.key === MENU_KEY_ARROW_DOWN) {
 				event.preventDefault();
 				const nextIndex = currentIndex >= 0 ? (currentIndex + 1) % items.length : 0;
 				items[nextIndex]?.focus();
 				return;
 			}
 
-			if (event.key === "ArrowUp") {
+			if (event.key === MENU_KEY_ARROW_UP) {
 				event.preventDefault();
 				const nextIndex = currentIndex >= 0 ? (currentIndex - 1 + items.length) % items.length : items.length - 1;
 				items[nextIndex]?.focus();
 				return;
 			}
 
-			if (event.key === "Home") {
+			if (event.key === MENU_KEY_HOME) {
 				event.preventDefault();
 				items[0]?.focus();
 				return;
 			}
 
-			if (event.key === "End") {
+			if (event.key === MENU_KEY_END) {
 				event.preventDefault();
 				items[items.length - 1]?.focus();
 				return;
 			}
 
-			if (event.key.length === 1 && event.key !== " " && !event.altKey && !event.ctrlKey && !event.metaKey) {
+			if (event.key.length === 1 && event.key !== MENU_KEY_SPACE && !event.altKey && !event.ctrlKey && !event.metaKey) {
 				const query = event.key.toLocaleLowerCase();
 				const nextItems = [...items.slice(currentIndex + 1), ...items.slice(0, currentIndex + 1)];
 				const match = nextItems.find((item) => item.textContent?.trim().toLocaleLowerCase().startsWith(query));
@@ -162,10 +177,10 @@ export function MenuContent({
 					tabIndex={-1}
 					className={styles.menuPositioner}
 					onKeyDown={onMenuKeyDown}
-					initial={{ opacity: 0, scale: 0.96, y: -2 }}
+					initial={{ opacity: 0, scale: MENU_CLOSED_SCALE, y: MENU_CLOSED_OFFSET_PX }}
 					animate={{ opacity: 1, scale: 1, y: 0 }}
-					exit={{ opacity: 0, scale: 0.96, y: -2 }}
-					transition={{ duration: 0.14, ease: "easeOut" }}>
+					exit={{ opacity: 0, scale: MENU_CLOSED_SCALE, y: MENU_CLOSED_OFFSET_PX }}
+					transition={{ duration: MENU_TRANSITION_SECONDS, ease: "easeOut" }}>
 					<PickerOptions className={cn(styles.menuOptions, className)}>
 						{typeof children === "function" ? children({ closeMenu }) : children}
 					</PickerOptions>

@@ -3,6 +3,7 @@ import React, { Component } from "react";
 import { captureRuntimeErrorReport } from "@ryuzaki13/react-foundation-lib/error-report";
 
 import { ErrorDisplay } from "./ErrorDisplay";
+import { REACT_ERROR_REPORT_CATEGORY } from "./errorPageConstants";
 
 interface ErrorBoundaryProps {
 	children: React.ReactNode;
@@ -36,7 +37,7 @@ export class ErrorBoundary extends Component<ErrorBoundaryProps, ErrorBoundarySt
 		this.setState({ componentStack: errorInfo.componentStack ?? undefined, draftId: null });
 
 		captureRuntimeErrorReport(error, {
-			category: "react",
+			category: REACT_ERROR_REPORT_CATEGORY,
 			componentStack: errorInfo.componentStack ?? undefined
 		}).then((draft) => {
 			if (draft && this.state.error === error) {

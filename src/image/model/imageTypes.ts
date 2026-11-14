@@ -1,5 +1,7 @@
+import { type IMAGE_LAYOUT_COVER, type IMAGE_LAYOUT_INTRINSIC } from "./imageLayoutConstants";
+
 /** Режим размещения изображения внутри доступной области. */
-export type ImageLayout = "cover" | "contain" | "intrinsic";
+export type ImageLayout = typeof IMAGE_LAYOUT_COVER | "contain" | typeof IMAGE_LAYOUT_INTRINSIC;
 
 /** Готовый source-дескриптор для прямого отображения через picture. */
 export type ImageSource = {

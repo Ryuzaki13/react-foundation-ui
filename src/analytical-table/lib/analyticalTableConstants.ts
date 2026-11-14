@@ -1,0 +1,7 @@
+export const ANALYTICAL_COLUMN_KIND_MEASURE = "measure";
+export const ANALYTICAL_COLUMN_KIND_DIMENSION = "dimension";
+export const ANALYTICAL_ROW_KIND_GROUP = "group";
+export const ANALYTICAL_FORMAT_ROW_KIND_TOTALS = "totals";
+export const ANALYTICAL_DEFAULT_COLUMN_WIDTH_PX = 160;
+export const ANALYTICAL_MIN_COLUMN_WIDTH_PX = 60;
+export const ANALYTICAL_TREE_LEVEL_INDENT_PX = 8;

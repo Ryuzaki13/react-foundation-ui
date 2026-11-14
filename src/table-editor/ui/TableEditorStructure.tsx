@@ -10,9 +10,14 @@ import {
 
 import { Button } from "../../button";
 import { Dialog } from "../../dialog";
+import { UI_TONE_ERROR } from "../../uiSchemeConstants";
 import { type TableEditorController } from "../model/useTableEditor";
 
 import styles from "./TableEditor.module.scss";
+
+const TABLE_DOCUMENT_AXIS_ROW = "row";
+const TABLE_DOCUMENT_AXIS_COLUMN = "column";
+const TABLE_DOCUMENT_ROW_HEADER = "header";
 
 type TableEditorStructureProps<T> = {
 	readonly editor: TableEditorController<T>;
@@ -22,7 +27,7 @@ type TableEditorStructureProps<T> = {
 
 /** Вставка и доступный reorder без обязательного drag; удаление подтверждает весь затронутый блок. */
 export function TableEditorStructure<T>({ editor, createEmptyValue, disabled }: TableEditorStructureProps<T>) {
-	const [removing, setRemoving] = useState<"row" | "column" | null>(null);
+	const [removing, setRemoving] = useState<typeof TABLE_DOCUMENT_AXIS_ROW | typeof TABLE_DOCUMENT_AXIS_COLUMN | null>(null);
 	const { document, focus } = editor;
 	const group = removing
 		? getTableDocumentAxisGroups(document, removing).find(
@@ -33,16 +38,20 @@ export function TableEditorStructure<T>({ editor, createEmptyValue, disabled }: 
 		<>
 			<details className={styles.structure}>
 				<summary>Строки и столбцы</summary>
-				{(["row", "column"] as const).map((axis) => (
-					<div key={axis} className={styles.toolbar} role="group" aria-label={axis === "row" ? "Строки" : "Столбцы"}>
-						<strong>{axis === "row" ? "Строка" : "Столбец"}</strong>
+				{([TABLE_DOCUMENT_AXIS_ROW, TABLE_DOCUMENT_AXIS_COLUMN] as const).map((axis) => (
+					<div
+						key={axis}
+						className={styles.toolbar}
+						role="group"
+						aria-label={axis === TABLE_DOCUMENT_AXIS_ROW ? "Строки" : "Столбцы"}>
+						<strong>{axis === TABLE_DOCUMENT_AXIS_ROW ? "Строка" : "Столбец"}</strong>
 						{([0, 1] as const).map((offset) => (
 							<Button
 								key={offset}
 								disabled={disabled}
 								onClick={() => {
 									const cells = Array.from(
-										{ length: axis === "row" ? document.columns.length : document.rows.length },
+										{ length: axis === TABLE_DOCUMENT_AXIS_ROW ? document.columns.length : document.rows.length },
 										() => ({ id: uuidv4(), value: createEmptyValue() })
 									);
 									const id = uuidv4();
@@ -53,7 +62,7 @@ export function TableEditorStructure<T>({ editor, createEmptyValue, disabled }: 
 											focus[axis] + offset,
 											id,
 											cells,
-											focus.row < document.headerRowCount ? "header" : "body"
+											focus.row < document.headerRowCount ? TABLE_DOCUMENT_ROW_HEADER : "body"
 										)
 									);
 								}}>
@@ -67,11 +76,18 @@ export function TableEditorStructure<T>({ editor, createEmptyValue, disabled }: 
 								onClick={() =>
 									editor.execute((current) => moveTableDocumentAxisGroup(current, axis, focus[axis], direction))
 								}>
-								Переместить {axis === "row" ? (direction === -1 ? "выше" : "ниже") : direction === -1 ? "левее" : "правее"}
+								Переместить{" "}
+								{axis === TABLE_DOCUMENT_AXIS_ROW
+									? direction === -1
+										? "выше"
+										: "ниже"
+									: direction === -1
+										? "левее"
+										: "правее"}
 							</Button>
 						))}
-						<Button tone="error" disabled={disabled} onClick={() => setRemoving(axis)}>
-							Удалить {axis === "row" ? "строку" : "столбец"}
+						<Button tone={UI_TONE_ERROR} disabled={disabled} onClick={() => setRemoving(axis)}>
+							Удалить {axis === TABLE_DOCUMENT_AXIS_ROW ? "строку" : "столбец"}
 						</Button>
 					</div>
 				))}
@@ -80,7 +96,16 @@ export function TableEditorStructure<T>({ editor, createEmptyValue, disabled }: 
 					onClick={() => {
 						const cells = document.columns.map(() => ({ id: uuidv4(), value: createEmptyValue() }));
 						const id = uuidv4();
-						editor.execute((current) => insertTableDocumentAxis(current, "row", current.headerRowCount, id, cells, "header"));
+						editor.execute((current) =>
+							insertTableDocumentAxis(
+								current,
+								TABLE_DOCUMENT_AXIS_ROW,
+								current.headerRowCount,
+								id,
+								cells,
+								TABLE_DOCUMENT_ROW_HEADER
+							)
+						);
 					}}>
 					Добавить строку заголовка
 				</Button>
@@ -89,11 +114,11 @@ export function TableEditorStructure<T>({ editor, createEmptyValue, disabled }: 
 				open={Boolean(removing)}
 				onClose={() => setRemoving(null)}
 				title="Удалить часть таблицы?"
-				description={`Будет удалено ${group?.count ?? 0} ${removing === "row" ? "строк" : "столбцов"}, включая скрытое объединением содержимое. Объединённая группа удаляется целиком. До сохранения действие можно отменить.`}>
+				description={`Будет удалено ${group?.count ?? 0} ${removing === TABLE_DOCUMENT_AXIS_ROW ? "строк" : "столбцов"}, включая скрытое объединением содержимое. Объединённая группа удаляется целиком. До сохранения действие можно отменить.`}>
 				<div className={styles.toolbar}>
 					<Button onClick={() => setRemoving(null)}>Не удалять</Button>
 					<Button
-						tone="error"
+						tone={UI_TONE_ERROR}
 						disabled={disabled}
 						onClick={() => {
 							if (removing) editor.execute((current) => deleteTableDocumentAxisGroup(current, removing, focus[removing]));

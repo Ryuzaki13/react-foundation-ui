@@ -2,6 +2,7 @@ import { type PropsWithChildren, useId } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { SPLITTER_DIRECTION_HORIZONTAL } from "./splitterConstants";
 import styles from "./SplitterHeightContainer.module.scss";
 import { useSplitterContainerHeight } from "./useSplitterContainerHeight";
 
@@ -69,7 +70,7 @@ export function SplitterHeightContainer({
 			<div
 				role="separator"
 				aria-label={separatorAriaLabel}
-				aria-orientation="horizontal"
+				aria-orientation={SPLITTER_DIRECTION_HORIZONTAL}
 				aria-controls={viewportId}
 				aria-valuemin={state.minHeight}
 				aria-valuemax={state.maxHeight}

@@ -13,6 +13,15 @@ import {
 	type NullableDateRange
 } from "@ryuzaki13/react-foundation-lib/formatters";
 
+import {
+	DATE_INPUT_SELECTION_MODE_DAY,
+	DATE_INPUT_SELECTION_MODE_WEEK,
+	DATE_INPUT_SELECTION_MODE_MONTH,
+	DATE_INPUT_SELECTION_MODE_YEAR
+} from "./dateInputCalendarConstants";
+
+const DATE_INPUT_DEFAULT_PRECISION = "day" satisfies DateFormatPrecision;
+
 /**
  * Пресет даты по умолчанию для текстового поля.
  */
@@ -54,15 +63,15 @@ export type DateInputValueOptionsInput = string | DateInputValueOptions | undefi
  * Возвращает точность форматирования поля даты.
  */
 function resolveDateInputPrecision(options: DateInputValueOptions): DateFormatPrecision {
-	if (options.selectionMode === "day" || options.selectionMode === "week") {
-		return "day";
+	if (options.selectionMode === DATE_INPUT_SELECTION_MODE_DAY || options.selectionMode === DATE_INPUT_SELECTION_MODE_WEEK) {
+		return DATE_INPUT_DEFAULT_PRECISION;
 	}
 
-	if (options.selectionMode === "month" || options.selectionMode === "year") {
+	if (options.selectionMode === DATE_INPUT_SELECTION_MODE_MONTH || options.selectionMode === DATE_INPUT_SELECTION_MODE_YEAR) {
 		return options.selectionMode;
 	}
 
-	return options.datePickerLevel ?? "day";
+	return options.datePickerLevel ?? DATE_INPUT_DEFAULT_PRECISION;
 }
 
 function resolveCalendarPeriodOptions(options?: DateInputValueOptions): CalendarPeriodOptions {
@@ -183,7 +192,7 @@ export function formatSingleDateValue(
 	const period = getCalendarPeriod(date, resolveCalendarPeriodOptions(options));
 
 	// Single-поле хранит начало недели, но показывает обе включительные границы выбранного периода.
-	if (options.selectionMode === "week" && period) {
+	if (options.selectionMode === DATE_INPUT_SELECTION_MODE_WEEK && period) {
 		return formatDateRange(period.start, period.end, resolveDateInputPresetName(options.datePreset), {
 			precision: resolveDateInputPrecision(options)
 		});
@@ -246,7 +255,7 @@ export function parseSingleDateValue(
 ): Date | null {
 	const options = normalizeDateInputValueOptions(optionsOrPreset, datePickerLevel);
 	// Для отображаемого диапазона single-week источником значения остаётся его первая граница.
-	const singleValue = options.selectionMode === "week" ? (value.split(RANGE_SEPARATOR)[0] ?? "") : value;
+	const singleValue = options.selectionMode === DATE_INPUT_SELECTION_MODE_WEEK ? (value.split(RANGE_SEPARATOR)[0] ?? "") : value;
 
 	return normalizeSingleDateValue(parseDateTimeValue(singleValue, options), options);
 }

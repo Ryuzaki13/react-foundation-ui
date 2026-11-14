@@ -11,6 +11,8 @@ import {
 
 import type { UiBaseProps } from "../types";
 
+const MISSING_DATE_SIGNATURE = "null";
+
 export interface DateRangePresetSelectProps extends UiBaseProps<DateRangePresetOption["id"] | undefined> {
 	options?: readonly DateRangePresetOption[];
 	referenceDate?: Date;
@@ -24,7 +26,7 @@ function getPayloadSignature(payload: DateRangePresetChangePayload | null): stri
 	if (!payload) return "__empty__";
 
 	const [startDate, endDate] = payload.range;
-	return [payload.id, startDate?.getTime() ?? "null", endDate?.getTime() ?? "null"].join("|");
+	return [payload.id, startDate?.getTime() ?? MISSING_DATE_SIGNATURE, endDate?.getTime() ?? MISSING_DATE_SIGNATURE].join("|");
 }
 
 /**

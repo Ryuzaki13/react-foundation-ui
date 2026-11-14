@@ -10,10 +10,21 @@ import {
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { resolveDateInputPeriodRangeState } from "../lib";
+import {
+	CALENDAR_LAST_HOUR,
+	CALENDAR_LAST_MINUTE,
+	CALENDAR_LAST_SECOND,
+	DATE_INPUT_WEEK_END_SUNDAY,
+	DATE_INPUT_SELECTION_MODE_DAY,
+	CALENDAR_YEAR_PAGE_SIZE
+} from "../lib/dateInputCalendarConstants";
 
 import styles from "./CalendarYearView.module.scss";
 
 import type { DateInputSelectionMode, DateInputWeekEndDay } from "../lib";
+
+const LAST_MONTH_INDEX = 11;
+const LAST_DAY_OF_YEAR = 31;
 
 interface YearViewProps {
 	currentDate: Date;
@@ -38,12 +49,12 @@ export function CalendarYearView({
 	maxDate,
 	selectsRange,
 	selectsPeriod,
-	selectionMode = "day",
-	weekEndDay = "sunday"
+	selectionMode = DATE_INPUT_SELECTION_MODE_DAY,
+	weekEndDay = DATE_INPUT_WEEK_END_SUNDAY
 }: YearViewProps) {
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
-	const startYear = Math.floor(currentDate.getFullYear() / 12) * 12;
-	const years = Array.from({ length: 12 }, (_, index) => startYear + index);
+	const startYear = Math.floor(currentDate.getFullYear() / CALENDAR_YEAR_PAGE_SIZE) * CALENDAR_YEAR_PAGE_SIZE;
+	const years = Array.from({ length: CALENDAR_YEAR_PAGE_SIZE }, (_, index) => startYear + index);
 	const selectionOptions: CalendarPeriodOptions = {
 		selectionMode,
 		weekEndDay
@@ -58,7 +69,14 @@ export function CalendarYearView({
 		if (!minDate && !maxDate) return false;
 
 		const yearStart = createCalendarDate(year, 0, 1);
-		const yearEnd = createCalendarDate(year, 11, 31, 23, 59, 59);
+		const yearEnd = createCalendarDate(
+			year,
+			LAST_MONTH_INDEX,
+			LAST_DAY_OF_YEAR,
+			CALENDAR_LAST_HOUR,
+			CALENDAR_LAST_MINUTE,
+			CALENDAR_LAST_SECOND
+		);
 
 		if (selectsPeriod) {
 			return !isCalendarPeriodWithinDateBounds(getCalendarPeriod(yearStart, selectionOptions), { minDate, maxDate });

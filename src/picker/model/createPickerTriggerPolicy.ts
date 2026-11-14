@@ -1,4 +1,6 @@
-export type PickerTriggerMode = "display" | "search-single" | "search-multi";
+import { PICKER_TRIGGER_MODE_DISPLAY, PICKER_TRIGGER_MODE_SEARCH_SINGLE, PICKER_TRIGGER_MODE_SEARCH_MULTI } from "./pickerTriggerModes";
+export type PickerTriggerMode =
+	typeof PICKER_TRIGGER_MODE_DISPLAY | typeof PICKER_TRIGGER_MODE_SEARCH_SINGLE | typeof PICKER_TRIGGER_MODE_SEARCH_MULTI;
 
 interface PickerTriggerTextFocusParams {
 	open: boolean;
@@ -22,7 +24,7 @@ export interface PickerTriggerPolicy {
  */
 export function createPickerTriggerPolicy(mode: PickerTriggerMode): PickerTriggerPolicy {
 	switch (mode) {
-		case "search-single":
+		case PICKER_TRIGGER_MODE_SEARCH_SINGLE:
 			return {
 				focusFloatingOnOpen: false,
 				restoreFocusOnClose: false,
@@ -33,7 +35,7 @@ export function createPickerTriggerPolicy(mode: PickerTriggerMode): PickerTrigge
 				shouldSelectTriggerTextOnFocus: ({ open, currentQuery, hasDisplayValue }) =>
 					!open && currentQuery.length === 0 && hasDisplayValue
 			};
-		case "search-multi":
+		case PICKER_TRIGGER_MODE_SEARCH_MULTI:
 			return {
 				focusFloatingOnOpen: false,
 				restoreFocusOnClose: false,
@@ -43,7 +45,7 @@ export function createPickerTriggerPolicy(mode: PickerTriggerMode): PickerTrigge
 				shouldFocusReferenceOnToggle: (open) => !open,
 				shouldSelectTriggerTextOnFocus: () => false
 			};
-		case "display":
+		case PICKER_TRIGGER_MODE_DISPLAY:
 		default:
 			return {
 				focusFloatingOnOpen: true,

@@ -1,4 +1,5 @@
 import { type CollectionLayoutOptions } from "../model/collectionLayoutTypes";
+import { COLLECTION_ROW_KIND_GROUP, COLLECTION_ROW_KIND_ITEMS } from "../model/collectionRowConstants";
 import { type CollectionRow, type CollectionRowEntry, type CollectionRows } from "../model/collectionRowTypes";
 
 /**
@@ -23,8 +24,8 @@ export function buildCollectionRows<T>({ items, getKey, columns, grouping }: Col
 	for (const [groupKey, sourceEntries] of groups) {
 		if (grouping) {
 			rows.push({
-				kind: "group",
-				key: JSON.stringify(["group", groupKey]),
+				kind: COLLECTION_ROW_KIND_GROUP,
+				key: JSON.stringify([COLLECTION_ROW_KIND_GROUP, groupKey]),
 				groupKey,
 				items: sourceEntries.map((entry) => entry.item)
 			});
@@ -34,9 +35,9 @@ export function buildCollectionRows<T>({ items, getKey, columns, grouping }: Col
 			const first = entries[0];
 			if (first === undefined) continue;
 			rows.push({
-				kind: "items",
+				kind: COLLECTION_ROW_KIND_ITEMS,
 				// Без новых настроек сохраняем опубликованную React identity одиночной записи.
-				key: grouping || columns ? JSON.stringify(["items", groupKey, first.key]) : first.key,
+				key: grouping || columns ? JSON.stringify([COLLECTION_ROW_KIND_ITEMS, groupKey, first.key]) : first.key,
 				entries
 			});
 		}

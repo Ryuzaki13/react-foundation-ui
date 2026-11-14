@@ -8,6 +8,8 @@ import {
 	parseDateSegmentMask
 } from "@ryuzaki13/react-foundation-lib/date-segments";
 
+import { DATE_MASK_SEGMENT_EDITABLE } from "./dateMaskSegmentKinds";
+
 /**
  * Совместимый тип сегмента для существующего `InputDateTime`.
  */
@@ -34,7 +36,9 @@ export type Segment = EditableSegment | LiteralSegment;
  * Разбирает строковую маску, сохраняя прежний контракт `InputDateTime`.
  */
 export function parseMask(mask: string): Segment[] {
-	return parseDateSegmentMask(mask).map((segment) => (segment.kind === "editable" ? { ...segment, type: segment.id } : segment));
+	return parseDateSegmentMask(mask).map((segment) =>
+		segment.kind === DATE_MASK_SEGMENT_EDITABLE ? { ...segment, type: segment.id } : segment
+	);
 }
 
 /**
@@ -45,7 +49,7 @@ export function dateToSegmentValues(date: Date | undefined, segments: Segment[])
 	const values = new Map<SegmentType, string>();
 
 	segments.forEach((segment, index) => {
-		if (segment.kind !== "editable") return;
+		if (segment.kind !== DATE_MASK_SEGMENT_EDITABLE) return;
 		values.set(segment.type, indexedValues.get(index) ?? "");
 	});
 
@@ -59,7 +63,7 @@ export function segmentsToDate(segments: Segment[], values: Map<SegmentType, str
 	const indexedValues = new Map<number, string>();
 
 	segments.forEach((segment, index) => {
-		if (segment.kind !== "editable") return;
+		if (segment.kind !== DATE_MASK_SEGMENT_EDITABLE) return;
 		indexedValues.set(index, values.get(segment.type) ?? "");
 	});
 

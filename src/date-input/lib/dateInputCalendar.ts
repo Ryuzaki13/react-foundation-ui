@@ -7,19 +7,36 @@ import {
 	type NullableDateRange
 } from "@ryuzaki13/react-foundation-lib/formatters";
 
+import {
+	DATE_PICKER_LEVEL_DAY,
+	DATE_PICKER_LEVEL_MONTH,
+	DATE_PICKER_LEVEL_YEAR,
+	DATE_INPUT_SELECTION_MODE_MONTH,
+	DATE_INPUT_SELECTION_MODE_YEAR,
+	DATE_INPUT_WEEK_END_SUNDAY
+} from "./dateInputCalendarConstants";
+
 import type { DateInputSelectionMode, DateInputWeekEndDay, DatePickerLevel } from "./types";
 
-export const DATE_PICKER_LEVELS = ["day", "month", "year"] as const satisfies readonly DatePickerLevel[];
-export const DATE_INPUT_WEEK_END_DAYS = ["friday", "saturday", "sunday"] as const satisfies readonly DateInputWeekEndDay[];
+export const DATE_PICKER_LEVELS = [
+	DATE_PICKER_LEVEL_DAY,
+	DATE_PICKER_LEVEL_MONTH,
+	DATE_PICKER_LEVEL_YEAR
+] as const satisfies readonly DatePickerLevel[];
+export const DATE_INPUT_WEEK_END_DAYS = [
+	"friday",
+	"saturday",
+	DATE_INPUT_WEEK_END_SUNDAY
+] as const satisfies readonly DateInputWeekEndDay[];
 
 /**
  * Возвращает календарный вид, который удобнее всего открывать для выбранного размера периода.
  */
 export function getDatePickerLevelForSelectionMode(selectionMode: DateInputSelectionMode): DatePickerLevel {
-	if (selectionMode === "month") return "month";
-	if (selectionMode === "year") return "year";
+	if (selectionMode === DATE_INPUT_SELECTION_MODE_MONTH) return DATE_PICKER_LEVEL_MONTH;
+	if (selectionMode === DATE_INPUT_SELECTION_MODE_YEAR) return DATE_PICKER_LEVEL_YEAR;
 
-	return "day";
+	return DATE_PICKER_LEVEL_DAY;
 }
 
 /**

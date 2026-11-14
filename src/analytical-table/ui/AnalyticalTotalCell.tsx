@@ -2,6 +2,7 @@ import { resolveValueStateClassName } from "@ryuzaki13/react-foundation-lib/form
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { RenderStateIcon } from "../../misc";
+import { ANALYTICAL_COLUMN_KIND_MEASURE } from "../lib/analyticalTableConstants";
 import { resolveAnalyticalTotalDisplay } from "../lib/formatAnalyticalTotal";
 import { type AnalyticalTableColumn } from "../types/columns";
 import { type AnalyticalTableRuntime } from "../types/runtime";
@@ -26,10 +27,13 @@ export function AnalyticalTotalCell<T>({ column, runtime, offset }: AnalyticalTo
 				offset !== undefined && styles.cellPinned,
 				resolveValueStateClassName(display.state)
 			)}
-			style={{ insetInlineStart: offset, textAlign: column.align ?? (column.kind === "measure" ? "end" : "start") }}>
+			style={{
+				insetInlineStart: offset,
+				textAlign: column.align ?? (column.kind === ANALYTICAL_COLUMN_KIND_MEASURE ? "end" : "start")
+			}}>
 			{column.renderTotal ? (
 				column.renderTotal(totals[column.id])
-			) : column.kind === "measure" ? (
+			) : column.kind === ANALYTICAL_COLUMN_KIND_MEASURE ? (
 				<div className={styles.cellContent} data-measure>
 					{display.showIcon && display.iconPosition === "left" ? <RenderStateIcon state={display.icon} /> : null}
 					{display.showValue ? (

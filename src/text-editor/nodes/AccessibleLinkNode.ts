@@ -12,6 +12,8 @@ import {
 	Spread
 } from "lexical";
 
+import { LEXICAL_NODE_TYPE_ACCESSIBLE_LINK } from "../model/textEditorLexicalNodeConstants";
+
 export type AccessibleLinkAttributes = LinkAttributes & {
 	ariaLabel?: null | string;
 	qrCode?: boolean;
@@ -63,7 +65,7 @@ export class AccessibleLinkNode extends LinkNode {
 	__text: null | string;
 
 	static getType(): string {
-		return "accessible-link";
+		return LEXICAL_NODE_TYPE_ACCESSIBLE_LINK;
 	}
 
 	static clone(node: AccessibleLinkNode): AccessibleLinkNode {
@@ -117,7 +119,7 @@ export class AccessibleLinkNode extends LinkNode {
 	exportJSON(): SerializedAccessibleLinkNode {
 		return {
 			...super.exportJSON(),
-			type: "accessible-link",
+			type: LEXICAL_NODE_TYPE_ACCESSIBLE_LINK,
 			version: 1,
 			ariaLabel: this.getAriaLabel(),
 			qrCode: this.getQrCode(),

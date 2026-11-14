@@ -55,6 +55,8 @@ export function normalizeTableColumnPinning(state?: TableColumnPinningState): Co
 	};
 }
 
+const MIN_COLUMN_WIDTH_EM = 4;
+
 /**
  * Возвращает ширину колонки в том же формате, что и colgroup базовой таблицы.
  */
@@ -70,10 +72,10 @@ export function resolveBaseTableColumnWidth<TData extends object>(
 
 	const meta = getTableColumnMeta(column.columnDef);
 
-	let width = meta?.width ?? 4;
+	let width = meta?.width ?? MIN_COLUMN_WIDTH_EM;
 
 	if (typeof width === "number") {
-		width = Math.max(width, 4);
+		width = Math.max(width, MIN_COLUMN_WIDTH_EM);
 	}
 
 	return resolveTableLength(width);

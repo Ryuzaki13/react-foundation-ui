@@ -2,11 +2,13 @@ import { type Breakpoint, resolveProps, type ResolvedProps } from "@ryuzaki13/re
 
 import {
 	hasResponsiveLayoutValue,
+	LAYOUT_BREAKPOINT_LAPTOP,
 	RESPONSIVE_LAYOUT_BREAKPOINTS,
 	resolveLayoutPropsForBreakpoints
 } from "../responsive-layout/responsiveLayout";
 
 import styles from "./Flex.module.scss";
+import { FLEX_BASIS_AUTO, FLEX_BASIS_ZERO, FLEX_GAP_NONE } from "./flexConstants";
 import { type FlexContainerLayoutProps, type FlexItemLayoutProps } from "./types";
 
 type ClassName = string | undefined | null | false;
@@ -84,7 +86,7 @@ function getContainerModifierClasses(props: ResolvedFlexContainerProps, breakpoi
 		);
 	}
 
-	if (props.gap === "none") classes.push(getStyleClass("gapNone", breakpoint));
+	if (props.gap === FLEX_GAP_NONE) classes.push(getStyleClass("gapNone", breakpoint));
 	else if (props.gap) {
 		classes.push(getStyleClass(`gap${props.gap.charAt(0).toUpperCase() + props.gap.slice(1)}` as keyof typeof styles, breakpoint));
 	}
@@ -115,8 +117,8 @@ function getItemModifierClasses(props: ResolvedFlexItemProps, breakpoint?: Break
 		classes.push(getStyleClass(props.grow ? "grow" : "grow0", breakpoint));
 		classes.push(getStyleClass(props.shrink === false ? "shrink0" : "shrink", breakpoint));
 
-		if (props.basis === "0") classes.push(getStyleClass("basis0", breakpoint));
-		else if (props.basis === "auto") classes.push(getStyleClass("basisAuto", breakpoint));
+		if (props.basis === FLEX_BASIS_ZERO) classes.push(getStyleClass("basis0", breakpoint));
+		else if (props.basis === FLEX_BASIS_AUTO) classes.push(getStyleClass("basisAuto", breakpoint));
 	}
 
 	if (props.alignSelf) {
@@ -144,7 +146,7 @@ export function getFlexContainerClasses(props: FlexContainerLayoutProps): string
 	const classes: ClassName[] = [styles.container];
 
 	if (!hasResponsiveLayoutValue(values)) {
-		classes.push(...getContainerModifierClasses(resolveProps(props, "laptop", CONTAINER_RESPONSIVE_KEYS)));
+		classes.push(...getContainerModifierClasses(resolveProps(props, LAYOUT_BREAKPOINT_LAPTOP, CONTAINER_RESPONSIVE_KEYS)));
 		return classes.filter(Boolean).join(" ");
 	}
 
@@ -161,7 +163,7 @@ export function getFlexItemClasses(props: FlexItemLayoutProps): string {
 	const classes: ClassName[] = [styles.item];
 
 	if (!hasResponsiveLayoutValue(values)) {
-		classes.push(...getItemModifierClasses(resolveProps(props, "laptop", ITEM_RESPONSIVE_KEYS)));
+		classes.push(...getItemModifierClasses(resolveProps(props, LAYOUT_BREAKPOINT_LAPTOP, ITEM_RESPONSIVE_KEYS)));
 		return classes.filter(Boolean).join(" ");
 	}
 

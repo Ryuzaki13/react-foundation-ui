@@ -7,8 +7,13 @@ import { getCollectionRowAnchorKeys } from "../collection-layout/lib/getCollecti
 import { getCollectionRowKey } from "../collection-layout/lib/getCollectionRowKey";
 import { getCollectionRowVisibleKeys } from "../collection-layout/lib/getCollectionRowVisibleKeys";
 import { projectCollectionPaginationItems } from "../collection-layout/lib/projectCollectionPaginationItems";
+import { COLLECTION_ROW_KIND_ITEMS, COLLECTION_ROW_KIND_GROUP } from "../collection-layout/model/collectionRowConstants";
 import { LoadingMessage, Scrollable } from "../misc";
 import { CollectionPaginationEffect } from "../virtualized-collection/CollectionPaginationEffect";
+import {
+	COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX,
+	COLLECTION_VIRTUALIZER_OVERSCAN_ROWS
+} from "../virtualized-collection/model/collectionVirtualizerDefaults";
 import { useCollectionVirtualizer } from "../virtualized-collection/model/useCollectionVirtualizer";
 
 import { ListRowContent } from "./ListRowContent";
@@ -28,8 +33,8 @@ export function ListVirtualizedContent<T>({
 	isLoading,
 	hasNextPage = false,
 	fetchNextPage,
-	estimateSize = 120,
-	overscan = 5,
+	estimateSize = COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX,
+	overscan = COLLECTION_VIRTUALIZER_OVERSCAN_ROWS,
 	preserveScrollAnchor = true,
 	resetKey,
 	onVisibleKeysChange,
@@ -88,19 +93,24 @@ export function ListVirtualizedContent<T>({
 						// Последняя строка DOM-окна не обязательно завершает набор. Реальная
 						// последняя запись сохраняет разделитель перед следующей страницей,
 						// а служебный loading sentinel собственного разделителя не получает.
-						const showSeparator = separated && entry?.row.kind === "items" && (entry.index < rows.length - 1 || hasNextPage);
-						const isItem = entry?.row.kind === "items" && columns === undefined;
+						const showSeparator =
+							separated && entry?.row.kind === COLLECTION_ROW_KIND_ITEMS && (entry.index < rows.length - 1 || hasNextPage);
+						const isItem = entry?.row.kind === COLLECTION_ROW_KIND_ITEMS && columns === undefined;
 						return (
 							<li
 								key={row.key}
 								ref={measureElement}
 								data-index={entry?.index ?? rows.length}
 								role={
-									entry?.row.kind === "group" || columns !== undefined || (grouping !== undefined && entry === undefined)
+									entry?.row.kind === COLLECTION_ROW_KIND_GROUP ||
+									columns !== undefined ||
+									(grouping !== undefined && entry === undefined)
 										? "presentation"
 										: undefined
 								}
-								aria-posinset={isItem && entry?.row.kind === "items" ? entry.row.entries[0]?.position : undefined}
+								aria-posinset={
+									isItem && entry?.row.kind === COLLECTION_ROW_KIND_ITEMS ? entry.row.entries[0]?.position : undefined
+								}
 								aria-setsize={isItem ? itemCount : undefined}
 								style={{ position: "absolute", top: 0, left: 0, width: "100%", transform: `translateY(${row.start}px)` }}
 								className={cn(styles.item, showSeparator && styles.separator)}>

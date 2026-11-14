@@ -1,7 +1,11 @@
 import { type DragEndEvent, type UniqueIdentifier } from "@dnd-kit/core";
 import { horizontalListSortingStrategy, rectSortingStrategy, verticalListSortingStrategy, type SortingStrategy } from "@dnd-kit/sortable";
 
-export type SortableLayout = "vertical" | "horizontal" | "grid";
+export const SORTABLE_LAYOUT_VERTICAL = "vertical";
+const SORTABLE_LAYOUT_HORIZONTAL = "horizontal";
+const SORTABLE_LAYOUT_GRID = "grid";
+
+export type SortableLayout = typeof SORTABLE_LAYOUT_VERTICAL | typeof SORTABLE_LAYOUT_HORIZONTAL | typeof SORTABLE_LAYOUT_GRID;
 
 export interface SortableReorderResult {
 	containerId: UniqueIdentifier;
@@ -34,11 +38,11 @@ export function resolveSortableStrategy(layout: SortableLayout, strategy?: Sorti
 	}
 
 	switch (layout) {
-		case "horizontal":
+		case SORTABLE_LAYOUT_HORIZONTAL:
 			return horizontalListSortingStrategy;
-		case "grid":
+		case SORTABLE_LAYOUT_GRID:
 			return rectSortingStrategy;
-		case "vertical":
+		case SORTABLE_LAYOUT_VERTICAL:
 		default:
 			return verticalListSortingStrategy;
 	}

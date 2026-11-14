@@ -1,3 +1,7 @@
+import {
+	FLOATING_WINDOW_DEFAULT_CASCADE_OFFSET_PX,
+	FLOATING_WINDOW_INVALID_CASCADE_OFFSET_MESSAGE
+} from "../model/floatingWindowPlacementConstants";
 import { type FloatingWindowPosition } from "../model/floatingWindowsTypes";
 
 /**
@@ -8,10 +12,10 @@ import { type FloatingWindowPosition } from "../model/floatingWindowsTypes";
 export function selectFloatingWindowCascadePosition(
 	defaultPosition: FloatingWindowPosition,
 	occupiedPositions: readonly FloatingWindowPosition[],
-	cascadeOffset = 24
+	cascadeOffset = FLOATING_WINDOW_DEFAULT_CASCADE_OFFSET_PX
 ): FloatingWindowPosition {
 	if (!Number.isFinite(cascadeOffset) || cascadeOffset < 0) {
-		throw new RangeError("Смещение каскада должно быть конечным неотрицательным числом.");
+		throw new RangeError(FLOATING_WINDOW_INVALID_CASCADE_OFFSET_MESSAGE);
 	}
 
 	for (const position of [defaultPosition, ...occupiedPositions]) {

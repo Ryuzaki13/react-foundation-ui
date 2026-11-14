@@ -4,6 +4,7 @@ import { ImageMime, ReadImageError, readImageFile, ReadImageResult, ReadMode } f
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { InputClearButton, InputControl, InputUI, useInputFieldIds } from "../input";
+import { READ_FILE_MODE_ARRAY_BUFFER } from "../input-file/readFileModeConstants";
 import { UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
@@ -77,8 +78,8 @@ export function InputImage({
 
 	const readSelectedImage = useCallback(
 		(file: File) => {
-			if (readMode === "array-buffer") {
-				return readImageFile(file, { allowedMime, maxBytes, mode: "array-buffer" });
+			if (readMode === READ_FILE_MODE_ARRAY_BUFFER) {
+				return readImageFile(file, { allowedMime, maxBytes, mode: READ_FILE_MODE_ARRAY_BUFFER });
 			}
 
 			return readImageFile(file, { allowedMime, maxBytes });

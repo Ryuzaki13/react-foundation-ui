@@ -13,6 +13,10 @@ import {
 } from "./lib/wheelPickerMath";
 import styles from "./WheelPicker.module.scss";
 
+const WHEEL_SCROLL_EVENT = "scroll";
+const WHEEL_INPUT_EVENT = "wheel";
+const WHEEL_KEY_PREVIOUS_VALUE = "ArrowUp";
+
 /**
  * Пропсы внутреннего wheel-picker.
  */
@@ -153,12 +157,12 @@ export function WheelPicker<T>({
 			scheduleSnap();
 		};
 
-		scroller.addEventListener("scroll", handleScroll, { passive: true });
-		scroller.addEventListener("wheel", handleWheel, { passive: false });
+		scroller.addEventListener(WHEEL_SCROLL_EVENT, handleScroll, { passive: true });
+		scroller.addEventListener(WHEEL_INPUT_EVENT, handleWheel, { passive: false });
 
 		return () => {
-			scroller.removeEventListener("scroll", handleScroll);
-			scroller.removeEventListener("wheel", handleWheel);
+			scroller.removeEventListener(WHEEL_SCROLL_EVENT, handleScroll);
+			scroller.removeEventListener(WHEEL_INPUT_EVENT, handleWheel);
 		};
 	}, [disabled, items, onChange, scheduleSnap]);
 
@@ -176,10 +180,10 @@ export function WheelPicker<T>({
 	const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
 		if (disabled || items.length === 0) return;
 
-		if (event.key !== "ArrowUp" && event.key !== "ArrowDown") return;
+		if (event.key !== WHEEL_KEY_PREVIOUS_VALUE && event.key !== "ArrowDown") return;
 		event.preventDefault();
 
-		const delta = event.key === "ArrowUp" ? -1 : 1;
+		const delta = event.key === WHEEL_KEY_PREVIOUS_VALUE ? -1 : 1;
 		const nextIndex = clampWheelIndex(valueIndex + delta, items.length);
 		if (nextIndex === valueIndex) return;
 

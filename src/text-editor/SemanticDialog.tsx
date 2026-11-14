@@ -4,6 +4,7 @@ import { Button } from "../button";
 import { GridContainer } from "../grid";
 import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
+import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT } from "../uiSchemeConstants";
 
 export interface AttributeField {
 	name: string;
@@ -120,7 +121,7 @@ export function SemanticDialog({ onClose, onConfirm, config, initialText = "", i
 			</ModalContent>
 			<ModalFooter>
 				<Button onClick={onClose}>Отмена</Button>
-				<Button appearance="solid" tone="accent" onClick={handleConfirm}>
+				<Button appearance={UI_APPEARANCE_SOLID} tone={UI_TONE_ACCENT} onClick={handleConfirm}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

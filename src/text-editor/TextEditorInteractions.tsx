@@ -5,6 +5,7 @@ import { useLexicalComposerContext } from "@lexical/react/LexicalComposerContext
 import { type TextEditorCoreProps } from "./editorModel";
 import { useTextEditorLexicalActions } from "./model/hooks/useTextEditorLexicalActions";
 import { type TextEditorLifecycle } from "./model/textEditorLifecycleTypes";
+import { TEXT_EDITOR_PRESENTATION_COMPACT } from "./model/textEditorPresentationConstants";
 import { type LexicalToolbarState } from "./model/textEditorTypes";
 import { TextEditorDialogs } from "./TextEditorDialogs";
 import { type LinkTypes, type TagTypes, TextEditorToolbarLexical } from "./toolbar";
@@ -56,7 +57,7 @@ export function TextEditorInteractions({
 
 	return (
 		<>
-			{presentation === "compact" ? (
+			{presentation === TEXT_EDITOR_PRESENTATION_COMPACT ? (
 				<TextEditorCompactToolbar {...toolbarProps} canEdit={canEdit} />
 			) : (
 				<TextEditorToolbarLexical {...toolbarProps} />

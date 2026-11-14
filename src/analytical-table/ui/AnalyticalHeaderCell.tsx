@@ -5,6 +5,8 @@ import { ContextMenu, DropdownMenu } from "../../context-menu";
 import { FlexContainer } from "../../flex";
 import { TableHeaderInteractionCell } from "../../table-column-interactions";
 import { TableSortIndicator } from "../../table-sorting";
+import { TABLE_SORT_DESC, TABLE_SORT_ASC } from "../../table-sorting/tableSortingConstants";
+import { ANALYTICAL_MIN_COLUMN_WIDTH_PX, ANALYTICAL_DEFAULT_COLUMN_WIDTH_PX } from "../lib/analyticalTableConstants";
 import { type AnalyticalTableLayout } from "../lib/analyticalTableLayout";
 import { type AnalyticalTableColumn, type AnalyticalTableProps, type AnalyticalTableRuntime } from "../types/analyticalTable";
 
@@ -37,10 +39,11 @@ export function AnalyticalHeaderCell<T>({ column, runtime, layout, options }: An
 					? undefined
 					: {
 							columnId: column.id,
-							minWidth: column.minWidth ?? 60,
-							getStartWidth: () => runtime.state.columnWidths?.[column.id] ?? column.width ?? 160,
+							minWidth: column.minWidth ?? ANALYTICAL_MIN_COLUMN_WIDTH_PX,
+							getStartWidth: () =>
+								runtime.state.columnWidths?.[column.id] ?? column.width ?? ANALYTICAL_DEFAULT_COLUMN_WIDTH_PX,
 							onResize: runtime.resizeColumn,
-							onReset: () => runtime.resizeColumn(column.id, column.width ?? 160)
+							onReset: () => runtime.resizeColumn(column.id, column.width ?? ANALYTICAL_DEFAULT_COLUMN_WIDTH_PX)
 						}
 			}>
 			{({ listeners, attributes, setActivatorElement }) => (
@@ -60,7 +63,7 @@ export function AnalyticalHeaderCell<T>({ column, runtime, layout, options }: An
 								<FlexContainer align="center" justify="between" gap="xs">
 									<span>{column.label ?? column.id}</span>
 									<TableSortIndicator
-										direction={sort ? (sort.desc ? "desc" : "asc") : undefined}
+										direction={sort ? (sort.desc ? TABLE_SORT_DESC : TABLE_SORT_ASC) : undefined}
 										order={sort ? sortIndex + 1 : undefined}
 									/>
 								</FlexContainer>

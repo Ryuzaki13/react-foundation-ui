@@ -23,6 +23,7 @@ import { createLexicalRaw } from "./lib/serialization/createLexicalRaw";
 import { initializeTextEditorHtml } from "./lib/serialization/initializeTextEditorHtml";
 import { createTextEditorHistory } from "./model/createTextEditorHistory";
 import { createTextEditorLifecycle } from "./model/createTextEditorLifecycle";
+import { TEXT_EDITOR_PRESENTATION_DOCUMENT, TEXT_EDITOR_PRESENTATION_COMPACT } from "./model/textEditorPresentationConstants";
 import { DEFAULT_TOOLBAR_STATE, type LexicalToolbarState } from "./model/textEditorTypes";
 import { AccessibleLinkNode } from "./nodes/AccessibleLinkNode";
 import { SemanticTagNode } from "./nodes/SemanticTagNode";
@@ -47,7 +48,7 @@ export function TextEditorLexicalClient({
 	readOnly = false,
 	autoFocus = false,
 	ref,
-	presentation = "document",
+	presentation = TEXT_EDITOR_PRESENTATION_DOCUMENT,
 	placeholder,
 	endAdornment
 }: TextEditorLexicalClientProps) {
@@ -112,7 +113,7 @@ export function TextEditorLexicalClient({
 			<div
 				className={cn(styles.textEditorContent, {
 					[styles.focused]: isFocused,
-					[styles.compact]: presentation === "compact"
+					[styles.compact]: presentation === TEXT_EDITOR_PRESENTATION_COMPACT
 				})}>
 				<LexicalComposer initialConfig={initialConfig}>
 					<TextEditorInteractions
@@ -139,7 +140,7 @@ export function TextEditorLexicalClient({
 									className={cn(
 										styles.lexicalEditorContentEditable,
 										"scrollableY",
-										presentation === "compact" && styles.compactEditable
+										presentation === TEXT_EDITOR_PRESENTATION_COMPACT && styles.compactEditable
 									)}
 									onFocus={() => setIsFocused(true)}
 									onBlur={() => setIsFocused(false)}
@@ -153,7 +154,7 @@ export function TextEditorLexicalClient({
 					{clipboardOptions?.profile && (
 						<TextEditorClipboardProfilePlugin profile={clipboardOptions.profile} onError={handleError} />
 					)}
-					{presentation === "compact" && <TextEditorCompactCaretScrollPlugin />}
+					{presentation === TEXT_EDITOR_PRESENTATION_COMPACT && <TextEditorCompactCaretScrollPlugin />}
 					<ListPlugin />
 					<SelectionStatePlugin onStateChange={setToolbarState} />
 					<OnChangePlugin onChange={handleChange} ignoreSelectionChange />

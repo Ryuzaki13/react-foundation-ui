@@ -5,6 +5,8 @@ import { useDocumentScrollLock } from "@ryuzaki13/react-foundation-lib/dom";
 
 import { ModalManagerContext } from "./useModalManager";
 
+const MODAL_INERT_ATTRIBUTE = "inert";
+
 export interface ModalManagerProviderProps {
 	children: React.ReactNode;
 	/** Компенсирует исчезновение скроллбара правым padding у body. */
@@ -39,12 +41,12 @@ export function ModalManagerProvider({ children, compensateScrollbar = false }: 
 		// Сохраняем опубликованную границу inert: provider не угадывает состав app shell.
 		const appRoot = document.querySelector("#app-root");
 		if (!appRoot) return;
-		const previousInert = appRoot.getAttribute("inert");
-		appRoot.setAttribute("inert", "true");
+		const previousInert = appRoot.getAttribute(MODAL_INERT_ATTRIBUTE);
+		appRoot.setAttribute(MODAL_INERT_ATTRIBUTE, "true");
 		return () => {
-			if (appRoot.getAttribute("inert") !== "true") return;
-			if (previousInert === null) appRoot.removeAttribute("inert");
-			else appRoot.setAttribute("inert", previousInert);
+			if (appRoot.getAttribute(MODAL_INERT_ATTRIBUTE) !== "true") return;
+			if (previousInert === null) appRoot.removeAttribute(MODAL_INERT_ATTRIBUTE);
+			else appRoot.setAttribute(MODAL_INERT_ATTRIBUTE, previousInert);
 		};
 	}, [active]);
 

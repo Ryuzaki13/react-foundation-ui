@@ -4,6 +4,7 @@ import { UiBaseProps } from "../types";
 
 import { createTreeNodeIndex, treeSelectValueToId } from "./model/treeUtils";
 import { TreePickerBase } from "./TreePickerBase";
+import { TREE_SELECTION_MODE_SINGLE, TREE_TRIGGER_MODE_SEARCH } from "./treeSelectConstants";
 import { TreeSelectNode, TreeSelectValue } from "./types";
 
 export interface TreeSelectProps extends Omit<UiBaseProps<TreeSelectValue | undefined>, "placeholder"> {
@@ -70,9 +71,9 @@ export function TreeSelect({
 			nodes={nodes}
 			selectedIds={selectedId ? new Set([selectedId]) : new Set()}
 			partialIds={new Set()}
-			selectionMode="single"
+			selectionMode={TREE_SELECTION_MODE_SINGLE}
 			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
-			triggerMode="search"
+			triggerMode={TREE_TRIGGER_MODE_SEARCH}
 			selectedSummaryText={formatTreeNodeSummary(selectedNode)}
 			query={query}
 			defaultQuery={defaultQuery}

@@ -36,6 +36,8 @@ import { LoadingMessage, NoData, Scrollable } from "../../misc";
 import { getSortableReorderResult, Sortable } from "../../sortable";
 import { BaseTableColumnState, buildBaseTableColumnLayout, getStartPinnedColumnOffsets } from "../lib/columnPinning";
 import { BaseTableCellLayout } from "../lib/mergeDuplicates";
+import { TABLE_SELECTION_MODE_NONE } from "../lib/tableSelectionConstants";
+import { TABLE_WIDTH_MODE_AUTO, TABLE_WIDTH_MODE_COLUMNS, TABLE_WIDTH_MODE_CONTAINER } from "../lib/tableWidthModeConstants";
 
 import styles from "./BaseTable.module.scss";
 import { BaseTableHeaderCell } from "./BaseTableHeaderCell";
@@ -84,7 +86,7 @@ export interface BaseTableProps<TData extends object> {
 	minHeight?: `${number}em` | `${number}%`;
 	tableClassName?: string;
 	/** Источник общей ширины; columns сохраняет определённые размеры col без перераспределения. */
-	tableWidth?: "auto" | "columns" | "container";
+	tableWidth?: typeof TABLE_WIDTH_MODE_AUTO | typeof TABLE_WIDTH_MODE_COLUMNS | typeof TABLE_WIDTH_MODE_CONTAINER;
 	/** Единица sizing-state и resize minimum; по умолчанию px. */
 	columnSizingUnit?: TableColumnSizingUnit;
 	selectionMode?: TableSelectionMode;
@@ -207,9 +209,9 @@ export function BaseTable<TData extends object>({
 	className,
 	minHeight = "15em",
 	tableClassName,
-	tableWidth = "auto",
+	tableWidth = TABLE_WIDTH_MODE_AUTO,
 	columnSizingUnit = "px",
-	selectionMode = "none",
+	selectionMode = TABLE_SELECTION_MODE_NONE,
 	scrollableRef,
 	interactiveElementSelector,
 	onActivateRow,
@@ -234,9 +236,9 @@ export function BaseTable<TData extends object>({
 	);
 	const columnsWidth = useMemo(
 		() =>
-			tableWidth === "columns"
+			tableWidth === TABLE_WIDTH_MODE_COLUMNS
 				? resolveTableColumnsWidth(columnLayout.map((column) => column.width))
-				: tableWidth === "container"
+				: tableWidth === TABLE_WIDTH_MODE_CONTAINER
 					? "100%"
 					: undefined,
 		[columnLayout, tableWidth]
@@ -397,7 +399,7 @@ export function BaseTable<TData extends object>({
 				row.getIsSelected() && styles.bodyRowSelected,
 				getRowClassName?.(row)
 			),
-			"aria-selected": selectionMode !== "none" ? row.getIsSelected() : undefined,
+			"aria-selected": selectionMode !== TABLE_SELECTION_MODE_NONE ? row.getIsSelected() : undefined,
 			tabIndex: interactive ? 0 : undefined,
 			onClick: (event: ReactMouseEvent<HTMLTableRowElement>) => handleRowClick(event, row),
 			onKeyDown: (event: ReactKeyboardEvent<HTMLTableRowElement>) => handleRowKeyDown(event, row)

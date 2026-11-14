@@ -13,7 +13,18 @@ import {
 import { ChevronLeft, ChevronRight } from "lucide-react";
 
 import { Button } from "../../button";
+import { UI_APPEARANCE_GHOST } from "../../uiSchemeConstants";
 import { isDatePickerLevelAvailable, type CalendarType, type DateInputSelectionMode, type DateInputWeekEndDay } from "../lib";
+import {
+	DATE_INPUT_WEEK_END_SUNDAY,
+	DATE_INPUT_SELECTION_MODE_DAY,
+	DATE_INPUT_SELECTION_MODE_MONTH,
+	DATE_INPUT_SELECTION_MODE_YEAR,
+	DATE_PICKER_LEVEL_DAY,
+	DATE_PICKER_LEVEL_MONTH,
+	DATE_PICKER_LEVEL_YEAR,
+	CALENDAR_YEAR_PAGE_SIZE
+} from "../lib/dateInputCalendarConstants";
 
 import { CalendarDayView } from "./CalendarDayView";
 import { CalendarMonthView } from "./CalendarMonthView";
@@ -57,8 +68,8 @@ function resolveValueCurrentDate(value: Date | NullableDateRange | null, selects
 export function CalendarView({
 	view,
 	datePickerLevel,
-	selectionMode = "day",
-	weekEndDay = "sunday",
+	selectionMode = DATE_INPUT_SELECTION_MODE_DAY,
+	weekEndDay = DATE_INPUT_WEEK_END_SUNDAY,
 	onViewChange,
 	...props
 }: CalendarViewProps) {
@@ -97,34 +108,34 @@ export function CalendarView({
 	 * Переключает видимую область календаря назад.
 	 */
 	const goToPrevious = () => {
-		if (view === "day") {
+		if (view === DATE_PICKER_LEVEL_DAY) {
 			setCurrentDate((prev) => addCalendarMonths(prev, -1));
 			return;
 		}
 
-		if (view === "month") {
+		if (view === DATE_PICKER_LEVEL_MONTH) {
 			setCurrentDate((prev) => addCalendarYears(prev, -1));
 			return;
 		}
 
-		setCurrentDate((prev) => addCalendarYears(prev, -12));
+		setCurrentDate((prev) => addCalendarYears(prev, -CALENDAR_YEAR_PAGE_SIZE));
 	};
 
 	/**
 	 * Переключает видимую область календаря вперёд.
 	 */
 	const goToNext = () => {
-		if (view === "day") {
+		if (view === DATE_PICKER_LEVEL_DAY) {
 			setCurrentDate((prev) => addCalendarMonths(prev, 1));
 			return;
 		}
 
-		if (view === "month") {
+		if (view === DATE_PICKER_LEVEL_MONTH) {
 			setCurrentDate((prev) => addCalendarYears(prev, 1));
 			return;
 		}
 
-		setCurrentDate((prev) => addCalendarYears(prev, 12));
+		setCurrentDate((prev) => addCalendarYears(prev, CALENDAR_YEAR_PAGE_SIZE));
 	};
 
 	/**
@@ -134,20 +145,20 @@ export function CalendarView({
 		let title = "";
 		let previousLabel = "Предыдущий период лет";
 		let nextLabel = "Следующий период лет";
-		if (view === "day") {
+		if (view === DATE_PICKER_LEVEL_DAY) {
 			title = currentDate.toLocaleDateString("ru-RU", {
 				month: "long",
 				year: "numeric"
 			});
 			previousLabel = "Предыдущий месяц";
 			nextLabel = "Следующий месяц";
-		} else if (view === "month") {
+		} else if (view === DATE_PICKER_LEVEL_MONTH) {
 			title = currentDate.getFullYear().toString();
 			previousLabel = "Предыдущий год";
 			nextLabel = "Следующий год";
 		} else {
-			const startYear = Math.floor(currentDate.getFullYear() / 12) * 12;
-			const endYear = startYear + 11;
+			const startYear = Math.floor(currentDate.getFullYear() / CALENDAR_YEAR_PAGE_SIZE) * CALENDAR_YEAR_PAGE_SIZE;
+			const endYear = startYear + CALENDAR_YEAR_PAGE_SIZE - 1;
 			title = `${startYear} - ${endYear}`;
 		}
 
@@ -156,22 +167,26 @@ export function CalendarView({
 				<Button
 					icon={<ChevronLeft />}
 					onClick={goToPrevious}
-					appearance="ghost"
+					appearance={UI_APPEARANCE_GHOST}
 					aria-label={previousLabel}
 					data-action="calendar-previous"
 				/>
 
 				<Button
 					onClick={() => {
-						if (view === "day") onViewChange("month");
-						else if (view === "month") onViewChange("year");
+						if (view === DATE_PICKER_LEVEL_DAY) onViewChange(DATE_PICKER_LEVEL_MONTH);
+						else if (view === DATE_PICKER_LEVEL_MONTH) onViewChange(DATE_PICKER_LEVEL_YEAR);
 					}}
-					appearance="ghost"
+					appearance={UI_APPEARANCE_GHOST}
 					className="flex1"
 					aria-label={
-						view === "day" ? `Выбрать месяц, сейчас ${title}` : view === "month" ? `Выбрать год, сейчас ${title}` : title
+						view === DATE_PICKER_LEVEL_DAY
+							? `Выбрать месяц, сейчас ${title}`
+							: view === DATE_PICKER_LEVEL_MONTH
+								? `Выбрать год, сейчас ${title}`
+								: title
 					}
-					aria-disabled={view === "year" || undefined}
+					aria-disabled={view === DATE_PICKER_LEVEL_YEAR || undefined}
 					data-ui="calendar-view-switch-button"
 					data-action="calendar-switch-view">
 					{title}
@@ -180,7 +195,7 @@ export function CalendarView({
 				<Button
 					icon={<ChevronRight />}
 					onClick={goToNext}
-					appearance="ghost"
+					appearance={UI_APPEARANCE_GHOST}
 					aria-label={nextLabel}
 					data-ui="calendar-next-button"
 					data-action="calendar-next"
@@ -229,27 +244,27 @@ export function CalendarView({
 		const handleMonthSelect = (date: Date) => {
 			setCurrentDate(date);
 
-			if (selectionMode === "month" || !isDatePickerLevelAvailable("day", datePickerLevel)) {
+			if (selectionMode === DATE_INPUT_SELECTION_MODE_MONTH || !isDatePickerLevelAvailable(DATE_PICKER_LEVEL_DAY, datePickerLevel)) {
 				handleDateSelect(date);
 				return;
 			}
 
-			onViewChange("day");
+			onViewChange(DATE_PICKER_LEVEL_DAY);
 		};
 
 		const handleYearSelect = (date: Date) => {
 			setCurrentDate(date);
 
-			if (selectionMode === "year" || !isDatePickerLevelAvailable("month", datePickerLevel)) {
+			if (selectionMode === DATE_INPUT_SELECTION_MODE_YEAR || !isDatePickerLevelAvailable(DATE_PICKER_LEVEL_MONTH, datePickerLevel)) {
 				handleDateSelect(date);
 				return;
 			}
 
-			onViewChange("month");
+			onViewChange(DATE_PICKER_LEVEL_MONTH);
 		};
 
 		switch (view) {
-			case "day":
+			case DATE_PICKER_LEVEL_DAY:
 				return (
 					<CalendarDayView
 						now={dateNow}
@@ -263,7 +278,7 @@ export function CalendarView({
 						weekEndDay={weekEndDay}
 					/>
 				);
-			case "month":
+			case DATE_PICKER_LEVEL_MONTH:
 				return (
 					<CalendarMonthView
 						currentDate={currentDate}
@@ -272,12 +287,15 @@ export function CalendarView({
 						minDate={props.minDate}
 						maxDate={props.maxDate}
 						selectsRange={props.selectsRange}
-						selectsPeriod={selectionMode === "month" || !isDatePickerLevelAvailable("day", datePickerLevel)}
+						selectsPeriod={
+							selectionMode === DATE_INPUT_SELECTION_MODE_MONTH ||
+							!isDatePickerLevelAvailable(DATE_PICKER_LEVEL_DAY, datePickerLevel)
+						}
 						selectionMode={selectionMode}
 						weekEndDay={weekEndDay}
 					/>
 				);
-			case "year":
+			case DATE_PICKER_LEVEL_YEAR:
 				return (
 					<CalendarYearView
 						currentDate={currentDate}
@@ -286,7 +304,10 @@ export function CalendarView({
 						minDate={props.minDate}
 						maxDate={props.maxDate}
 						selectsRange={props.selectsRange}
-						selectsPeriod={selectionMode === "year" || !isDatePickerLevelAvailable("month", datePickerLevel)}
+						selectsPeriod={
+							selectionMode === DATE_INPUT_SELECTION_MODE_YEAR ||
+							!isDatePickerLevelAvailable(DATE_PICKER_LEVEL_MONTH, datePickerLevel)
+						}
 						selectionMode={selectionMode}
 						weekEndDay={weekEndDay}
 					/>

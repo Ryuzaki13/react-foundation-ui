@@ -5,6 +5,7 @@ import zxingReaderWasmUrl from "zxing-wasm/reader/zxing_reader.wasm?url";
 
 import { Button } from "../button";
 import { Modal, ModalContent } from "../modal";
+import { UI_APPEARANCE_OUTLINE, UI_TONE_INFO } from "../uiSchemeConstants";
 
 import styles from "./BarcodeScannerDialog.module.scss";
 
@@ -61,10 +62,14 @@ export type BarcodeScannerDialogProps = {
 
 const defaultFormats = ["ean_13", "ean_8", "upc_a", "upc_e", "code_128"] satisfies BarcodeScannerFormat[];
 
+const SCANNER_CAMERA_IDEAL_WIDTH = 1280;
+const SCANNER_CAMERA_IDEAL_HEIGHT = 720;
+const SCANNER_VISIBILITY_CHANGE_EVENT = "visibilitychange";
+
 const defaultConstraints = {
 	facingMode: { ideal: "environment" },
-	width: { ideal: 1280 },
-	height: { ideal: 720 }
+	width: { ideal: SCANNER_CAMERA_IDEAL_WIDTH },
+	height: { ideal: SCANNER_CAMERA_IDEAL_HEIGHT }
 } satisfies MediaTrackConstraints;
 
 const defaultControls = {
@@ -155,8 +160,8 @@ export function BarcodeScannerDialog({
 			if (document.visibilityState === "hidden") closeScanner();
 		};
 
-		document.addEventListener("visibilitychange", handleVisibilityChange);
-		return () => document.removeEventListener("visibilitychange", handleVisibilityChange);
+		document.addEventListener(SCANNER_VISIBILITY_CHANGE_EVENT, handleVisibilityChange);
+		return () => document.removeEventListener(SCANNER_VISIBILITY_CHANGE_EVENT, handleVisibilityChange);
 	}, [closeScanner, closeWhenDocumentHidden]);
 
 	const handleScan = useCallback(
@@ -197,7 +202,7 @@ export function BarcodeScannerDialog({
 						{error ? (
 							<div className={styles.error}>
 								<p role="alert">{visibleErrorMessage}</p>
-								<Button type="button" tone="info" appearance="outline" onClick={retryScanning}>
+								<Button type="button" tone={UI_TONE_INFO} appearance={UI_APPEARANCE_OUTLINE} onClick={retryScanning}>
 									{retryLabel}
 								</Button>
 							</div>

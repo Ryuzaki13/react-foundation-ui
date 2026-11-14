@@ -32,6 +32,14 @@ import { $createAccessibleLinkNode, $isAccessibleLinkNode } from "../../nodes/Ac
 import { $createSemanticTagNode, $isSemanticTagNode, type SemanticTagNode } from "../../nodes/SemanticTagNode";
 import { LinkTypes, TagTypes } from "../../toolbar";
 import { type SemanticDialogState } from "../semanticDialogState";
+import { TEXT_EDITOR_LINK_TARGET_BLANK, TEXT_EDITOR_EXTERNAL_LINK_REL } from "../textEditorLinkConstants";
+import {
+	TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM,
+	TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM,
+	TEXT_EDITOR_BLOCK_STYLE_UNSTYLED,
+	TEXT_EDITOR_BLOCK_STYLE_PARAGRAPH,
+	TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE
+} from "../textEditorStyleConstants";
 import { type LinkType, type TextAlignment } from "../textEditorTypes";
 import { useDeferredTextEditorFocus } from "../useDeferredTextEditorFocus";
 
@@ -78,23 +86,23 @@ export function useTextEditorLexicalActions({
 
 				// React state мог сброситься после перехода к кнопке. Решение принимает
 				// восстановленный диапазон, а не closure предыдущего render.
-				if (style === "unordered-list-item" || style === "ordered-list-item") {
+				if (style === TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM || style === TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM) {
 					const command =
 						resolveBlockType() === style
 							? REMOVE_LIST_COMMAND
-							: style === "unordered-list-item"
+							: style === TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM
 								? INSERT_UNORDERED_LIST_COMMAND
 								: INSERT_ORDERED_LIST_COMMAND;
 					editor.dispatchCommand(command, undefined);
 					return;
 				}
 
-				if (style === "unstyled" || style === "paragraph") {
+				if (style === TEXT_EDITOR_BLOCK_STYLE_UNSTYLED || style === TEXT_EDITOR_BLOCK_STYLE_PARAGRAPH) {
 					$setBlocksType(selection, () => $createParagraphNode());
 					return;
 				}
 
-				if (style === "blockquote") {
+				if (style === TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE) {
 					$setBlocksType(selection, () => $createQuoteNode());
 					return;
 				}
@@ -179,8 +187,8 @@ export function useTextEditorLexicalActions({
 					if (!finalText.trim()) return;
 
 					const linkNode = $createAccessibleLinkNode(payload.url, {
-						target: "_blank",
-						rel: "noopener noreferrer",
+						target: TEXT_EDITOR_LINK_TARGET_BLANK,
+						rel: TEXT_EDITOR_EXTERNAL_LINK_REL,
 						ariaLabel: payload.ariaLabel || selectionText || finalText,
 						qrCode: payload.qrCode,
 						add: payload.add || null,

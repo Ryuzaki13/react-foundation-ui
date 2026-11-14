@@ -2,6 +2,7 @@ import { useId, useMemo, type CSSProperties } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { TABLE_SELECTION_MODE_NONE } from "../base-table/lib/tableSelectionConstants";
 import { FlexContainer } from "../flex";
 import { Notice } from "../misc";
 
@@ -34,7 +35,7 @@ export function AnalyticalTable<T = unknown>(options: AnalyticalTableProps<T>) {
 		Boolean(runtime.model.grandTotals && options.showGrandTotals !== false)
 	);
 	const { setElement } = viewport;
-	const hasSelection = selection.rowMode !== "none";
+	const hasSelection = selection.rowMode !== TABLE_SELECTION_MODE_NONE;
 	const layout = useMemo(() => buildAnalyticalTableLayout(runtime, hasSelection), [runtime, hasSelection]);
 	const focus = useAnalyticalFocus(instanceId, runtime, viewport, layout);
 	return (

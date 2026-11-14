@@ -1,3 +1,5 @@
+import { TABS_MOUNT_KEEP_MOUNTED, TABS_MOUNT_LAZY } from "../model/tabsConstants";
+
 import type { TabsDescriptor, TabsMountStrategy } from "../model/types";
 
 /**
@@ -37,5 +39,5 @@ interface ShouldMountTabPanelOptions {
  * Определяет, должна ли панель оставаться смонтированной с учётом стратегии монтирования.
  */
 export function shouldMountTabPanel({ mountStrategy, isSelected, isVisited }: ShouldMountTabPanelOptions) {
-	return mountStrategy === "keep-mounted" || isSelected || (mountStrategy === "lazy" && isVisited);
+	return mountStrategy === TABS_MOUNT_KEEP_MOUNTED || isSelected || (mountStrategy === TABS_MOUNT_LAZY && isVisited);
 }

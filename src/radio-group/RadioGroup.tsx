@@ -6,11 +6,15 @@ import uiStyles from "../ui.module.scss";
 
 import styles from "./RadioGroup.module.scss";
 
+const RADIO_GROUP_ORIENTATION_HORIZONTAL = "horizontal";
+
+type RadioGroupOrientation = "vertical" | typeof RADIO_GROUP_ORIENTATION_HORIZONTAL;
+
 interface RadioGroupContextValue {
 	value?: unknown;
 	onChange?: (value: unknown) => void;
 	disabled?: boolean;
-	orientation: "vertical" | "horizontal";
+	orientation: RadioGroupOrientation;
 	groupId: string;
 	labelId?: string;
 	descriptionId?: string;
@@ -28,7 +32,7 @@ interface RadioGroupProps<T> {
 	disabled?: boolean;
 	className?: string;
 	noWrap?: true;
-	orientation?: "vertical" | "horizontal";
+	orientation?: RadioGroupOrientation;
 	"aria-label"?: string;
 	children: React.ReactNode;
 }
@@ -44,7 +48,7 @@ export function RadioGroup<T>({
 	disabled,
 	className,
 	noWrap,
-	orientation = "horizontal",
+	orientation = RADIO_GROUP_ORIENTATION_HORIZONTAL,
 	"aria-label": ariaLabel,
 	children
 }: RadioGroupProps<T>) {

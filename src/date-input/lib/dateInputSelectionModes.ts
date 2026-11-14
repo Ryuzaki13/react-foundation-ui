@@ -1,5 +1,12 @@
 import { normalizePresetIds, resolvePresetOptionsByIds, type PresetOption } from "@ryuzaki13/react-foundation-lib/presets";
 
+import {
+	DATE_INPUT_SELECTION_MODE_DAY,
+	DATE_INPUT_SELECTION_MODE_WEEK,
+	DATE_INPUT_SELECTION_MODE_MONTH,
+	DATE_INPUT_SELECTION_MODE_YEAR
+} from "./dateInputCalendarConstants";
+
 import type { DateInputSelectionMode } from "./types";
 
 /**
@@ -11,20 +18,20 @@ export interface DateInputSelectionModeOption extends PresetOption<DateInputSele
  * Канонический список режимов выбора даты.
  */
 export const DATE_INPUT_SELECTION_MODES = Object.freeze([
-	"day",
-	"week",
-	"month",
-	"year"
+	DATE_INPUT_SELECTION_MODE_DAY,
+	DATE_INPUT_SELECTION_MODE_WEEK,
+	DATE_INPUT_SELECTION_MODE_MONTH,
+	DATE_INPUT_SELECTION_MODE_YEAR
 ] as const satisfies readonly DateInputSelectionMode[]);
 
 /**
  * Встроенные режимы выбора даты с пользовательскими подписями.
  */
 export const DATE_INPUT_SELECTION_MODE_OPTIONS: readonly DateInputSelectionModeOption[] = Object.freeze([
-	{ id: "day", label: "День" },
-	{ id: "week", label: "Неделя" },
-	{ id: "month", label: "Месяц" },
-	{ id: "year", label: "Год" }
+	{ id: DATE_INPUT_SELECTION_MODE_DAY, label: "День" },
+	{ id: DATE_INPUT_SELECTION_MODE_WEEK, label: "Неделя" },
+	{ id: DATE_INPUT_SELECTION_MODE_MONTH, label: "Месяц" },
+	{ id: DATE_INPUT_SELECTION_MODE_YEAR, label: "Год" }
 ]);
 
 const DATE_INPUT_SELECTION_MODE_SET: ReadonlySet<string> = new Set(DATE_INPUT_SELECTION_MODES);

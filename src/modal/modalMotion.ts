@@ -1,16 +1,20 @@
 import { type Transition, type Variants } from "motion/react";
 
+/** Motion обращается к тем же именам, что и ключи таблицы вариантов. */
+export const MODAL_MOTION_HIDDEN = "hidden";
+export const MODAL_MOTION_VISIBLE = "visible";
+
 /**
  * Варианты задают единый спокойный переход для появления и удаления modal-панели.
  * Конфигурация приватна для primitive: потребители управляют только состоянием `isOpen`.
  */
 export const modalMotionVariants = {
-	hidden: {
+	[MODAL_MOTION_HIDDEN]: {
 		opacity: 0,
 		scale: 0.96,
 		y: 12
 	},
-	visible: {
+	[MODAL_MOTION_VISIBLE]: {
 		opacity: 1,
 		scale: 1,
 		y: 0

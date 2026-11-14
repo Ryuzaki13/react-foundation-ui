@@ -1,5 +1,6 @@
 import { ContextMenu } from "../../context-menu";
 import { TableSortingMenuItems } from "../../table-sorting";
+import { ANALYTICAL_COLUMN_KIND_MEASURE } from "../lib/analyticalTableConstants";
 import { type AnalyticalTableColumn, type AnalyticalTableRuntime } from "../types/analyticalTable";
 
 import { AnalyticalGroupingMenu } from "./AnalyticalGroupingMenu";
@@ -19,7 +20,7 @@ export function AnalyticalColumnMenu<T>({ column, runtime, enableGrouping }: Ana
 			{column.sortable !== false ? (
 				<TableSortingMenuItems onSelect={(direction) => runtime.sortColumn(column.id, direction, true)} />
 			) : null}
-			{enableGrouping && column.groupable !== false && column.kind !== "measure" ? (
+			{enableGrouping && column.groupable !== false && column.kind !== ANALYTICAL_COLUMN_KIND_MEASURE ? (
 				<div data-action="group-analytical-column">
 					<ContextMenu.Item onSelect={() => (grouped ? runtime.ungroupColumn(groupId) : runtime.groupColumn(column.id))}>
 						{grouped ? "Разгруппировать" : "Группировать"}

@@ -5,6 +5,7 @@ import { CheckIcon, MinusIcon } from "lucide-react";
 
 import uiStyles from "../ui.module.scss";
 import { getUiToneClassName } from "../uiClasses";
+import { UI_TONE_NEUTRAL } from "../uiSchemeConstants";
 
 import styles from "./CheckBox.module.scss";
 
@@ -51,7 +52,7 @@ export function CheckBox({
 			className={cn(uiStyles.uiElement, size && uiStyles.uiSizable, size && uiStyles[size], disabled && uiStyles.disabled, className)}
 			aria-disabled={disabled || undefined}>
 			<div className={styles.row}>
-				<div className={cn(styles.wrapper, getUiToneClassName("neutral"))}>
+				<div className={cn(styles.wrapper, getUiToneClassName(UI_TONE_NEUTRAL))}>
 					<input
 						{...props}
 						ref={setInputNode}

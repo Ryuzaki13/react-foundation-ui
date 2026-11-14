@@ -1,5 +1,6 @@
 import { type ReactNode } from "react";
 
+import { COLLECTION_ROW_KIND_GROUP } from "../collection-layout/model/collectionRowConstants";
 import { type CollectionRow } from "../collection-layout/model/collectionRowTypes";
 import { GridContainer } from "../grid";
 
@@ -16,7 +17,7 @@ type ListRowContentProps<T> = {
 
 /** Ячейки сохраняют семантику исходного списка; внешний ряд служит только измерению и раскладке. */
 export function ListRowContent<T>({ row, render, columns, grouping, itemCount }: ListRowContentProps<T>) {
-	if (row.kind === "group") return grouping?.render(row.groupKey, row.items);
+	if (row.kind === COLLECTION_ROW_KIND_GROUP) return grouping?.render(row.groupKey, row.items);
 	if (columns === undefined) {
 		const entry = row.entries[0];
 		return entry === undefined ? null : render(entry.item);

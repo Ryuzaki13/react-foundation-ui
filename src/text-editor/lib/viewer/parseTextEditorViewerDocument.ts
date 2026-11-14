@@ -2,6 +2,23 @@ import { isPlainObject, isRecord } from "@ryuzaki13/react-foundation-lib/validat
 import { IS_BOLD, IS_CODE, IS_HIGHLIGHT, IS_ITALIC, IS_STRIKETHROUGH, IS_SUBSCRIPT, IS_SUPERSCRIPT, IS_UNDERLINE } from "lexical";
 
 import {
+	LEXICAL_NODE_TYPE_TEXT,
+	LEXICAL_NODE_TYPE_LINEBREAK,
+	LEXICAL_NODE_TYPE_LINK,
+	LEXICAL_NODE_TYPE_PARAGRAPH,
+	LEXICAL_NODE_TYPE_QUOTE,
+	LEXICAL_NODE_TYPE_HEADING,
+	LEXICAL_NODE_TYPE_LIST,
+	LEXICAL_NODE_TYPE_LISTITEM,
+	LEXICAL_SERIALIZED_NODE_VERSION,
+	LEXICAL_LIST_TYPE_BULLET,
+	LEXICAL_LIST_TYPE_NUMBER,
+	LEXICAL_NODE_TYPE_ACCESSIBLE_LINK
+} from "../../model/textEditorLexicalNodeConstants";
+import { TEXT_EDITOR_LEXICAL_RAW_FORMAT, TEXT_EDITOR_LEXICAL_RAW_VERSION } from "../../model/textEditorLexicalRawConstants";
+import { TEXT_EDITOR_LINK_TARGET_SELF, TEXT_EDITOR_LINK_TARGET_BLANK } from "../../model/textEditorLinkConstants";
+import { TEXT_EDITOR_VIEWER_INVALID, TEXT_EDITOR_VIEWER_VALID } from "../../model/textEditorViewerStatusConstants";
+import {
 	type TextEditorViewerBlock,
 	type TextEditorViewerDocument,
 	type TextEditorViewerElement,
@@ -23,7 +40,7 @@ const INLINE_FORMAT_MASK = IS_BOLD | IS_ITALIC | IS_STRIKETHROUGH | IS_UNDERLINE
 const ELEMENT_FIELDS = ["type", "version", "children", "direction", "format", "indent", "textFormat", "textStyle"];
 const LINK_FIELDS = [...ELEMENT_FIELDS, "url", "target", "rel", "title"];
 const ACCESSIBLE_LINK_FIELDS = [...LINK_FIELDS, "ariaLabel", "qrCode", "add", "text"];
-const INVALID_DOCUMENT: TextEditorViewerDocument = { status: "invalid" };
+const INVALID_DOCUMENT: TextEditorViewerDocument = { status: TEXT_EDITOR_VIEWER_INVALID };
 
 type ViewerParseBudget = { nodes: number; textUnits: number };
 
@@ -86,23 +103,28 @@ function readElement(input: Record<string, unknown>): TextEditorViewerElement | 
 }
 
 function isInline(node: TextEditorViewerNode): node is TextEditorViewerInline {
-	return node.type === "text" || node.type === "linebreak" || node.type === "link";
+	return node.type === LEXICAL_NODE_TYPE_TEXT || node.type === LEXICAL_NODE_TYPE_LINEBREAK || node.type === LEXICAL_NODE_TYPE_LINK;
 }
 
 function isLinkChild(node: TextEditorViewerNode): node is TextEditorViewerText | TextEditorViewerLineBreak {
-	return node.type === "text" || node.type === "linebreak";
+	return node.type === LEXICAL_NODE_TYPE_TEXT || node.type === LEXICAL_NODE_TYPE_LINEBREAK;
 }
 
 function isBlock(node: TextEditorViewerNode): node is TextEditorViewerBlock {
-	return node.type === "paragraph" || node.type === "quote" || node.type === "heading" || node.type === "list";
+	return (
+		node.type === LEXICAL_NODE_TYPE_PARAGRAPH ||
+		node.type === LEXICAL_NODE_TYPE_QUOTE ||
+		node.type === LEXICAL_NODE_TYPE_HEADING ||
+		node.type === LEXICAL_NODE_TYPE_LIST
+	);
 }
 
 function isListItem(node: TextEditorViewerNode): node is TextEditorViewerListItem {
-	return node.type === "listitem";
+	return node.type === LEXICAL_NODE_TYPE_LISTITEM;
 }
 
 function isListItemChild(node: TextEditorViewerNode): node is TextEditorViewerInline | TextEditorViewerList {
-	return isInline(node) || node.type === "list";
+	return isInline(node) || node.type === LEXICAL_NODE_TYPE_LIST;
 }
 
 /** Только плотный JSON-массив: не вызываем собственные iterator/getter, depth/node budget отсекают циклы. */
@@ -128,8 +150,8 @@ function readChildren<Node extends TextEditorViewerNode>(
 function readNode(input: unknown, budget: ViewerParseBudget, depth: number): TextEditorViewerNode | null {
 	if (++budget.nodes > MAX_NODE_COUNT || depth > MAX_NODE_DEPTH) return null;
 	const node = readPlainRecord(input);
-	if (!node || node.version !== 1) return null;
-	if (node.type === "text") {
+	if (!node || node.version !== LEXICAL_SERIALIZED_NODE_VERSION) return null;
+	if (node.type === LEXICAL_NODE_TYPE_TEXT) {
 		if (
 			!hasOnlyFields(node, ["type", "version", "detail", "format", "mode", "style", "text"]) ||
 			node.detail !== 0 ||
@@ -139,33 +161,38 @@ function readNode(input: unknown, budget: ViewerParseBudget, depth: number): Tex
 			!consumeText(node.text, budget)
 		)
 			return null;
-		return { type: "text", text: node.text, format: node.format };
+		return { type: LEXICAL_NODE_TYPE_TEXT, text: node.text, format: node.format };
 	}
-	if (node.type === "linebreak") return hasOnlyFields(node, ["type", "version"]) ? { type: "linebreak" } : null;
+	if (node.type === LEXICAL_NODE_TYPE_LINEBREAK)
+		return hasOnlyFields(node, ["type", "version"]) ? { type: LEXICAL_NODE_TYPE_LINEBREAK } : null;
 	const element = readElement(node);
 	if (!element) return null;
 	switch (node.type) {
-		case "paragraph":
-		case "quote": {
+		case LEXICAL_NODE_TYPE_PARAGRAPH:
+		case LEXICAL_NODE_TYPE_QUOTE: {
 			if (!hasOnlyFields(node, ELEMENT_FIELDS)) return null;
 			const children = readChildren(node.children, budget, depth + 1, isInline);
 			return children ? { ...element, type: node.type, children } : null;
 		}
-		case "heading": {
+		case LEXICAL_NODE_TYPE_HEADING: {
 			if (!hasOnlyFields(node, [...ELEMENT_FIELDS, "tag"])) return null;
 			const tag = node.tag;
 			if (tag !== "h1" && tag !== "h2" && tag !== "h3" && tag !== "h4" && tag !== "h5" && tag !== "h6") return null;
 			const children = readChildren(node.children, budget, depth + 1, isInline);
-			return children ? { ...element, type: "heading", tag, children } : null;
+			return children ? { ...element, type: LEXICAL_NODE_TYPE_HEADING, tag, children } : null;
 		}
-		case "list": {
+		case LEXICAL_NODE_TYPE_LIST: {
 			if (!hasOnlyFields(node, [...ELEMENT_FIELDS, "listType", "tag", "start"]) || !isPositiveInteger(node.start)) return null;
 			const listType = node.listType;
-			if (!((listType === "bullet" && node.tag === "ul") || (listType === "number" && node.tag === "ol"))) return null;
+			if (!(
+				(listType === LEXICAL_LIST_TYPE_BULLET && node.tag === "ul") ||
+				(listType === LEXICAL_LIST_TYPE_NUMBER && node.tag === "ol")
+			))
+				return null;
 			const children = readChildren(node.children, budget, depth + 1, isListItem);
-			return children ? { ...element, type: "list", listType, start: node.start, children } : null;
+			return children ? { ...element, type: LEXICAL_NODE_TYPE_LIST, listType, start: node.start, children } : null;
 		}
-		case "listitem": {
+		case LEXICAL_NODE_TYPE_LISTITEM: {
 			if (
 				!hasOnlyFields(node, [...ELEMENT_FIELDS, "value", "checked"]) ||
 				!isPositiveInteger(node.value) ||
@@ -173,19 +200,25 @@ function readNode(input: unknown, budget: ViewerParseBudget, depth: number): Tex
 			)
 				return null;
 			const children = readChildren(node.children, budget, depth + 1, isListItemChild);
-			return children ? { ...element, type: "listitem", value: node.value, children } : null;
+			return children ? { ...element, type: LEXICAL_NODE_TYPE_LISTITEM, value: node.value, children } : null;
 		}
-		case "link":
-		case "accessible-link": {
-			if (!hasOnlyFields(node, node.type === "link" ? LINK_FIELDS : ACCESSIBLE_LINK_FIELDS)) return null;
+		case LEXICAL_NODE_TYPE_LINK:
+		case LEXICAL_NODE_TYPE_ACCESSIBLE_LINK: {
+			if (!hasOnlyFields(node, node.type === LEXICAL_NODE_TYPE_LINK ? LINK_FIELDS : ACCESSIBLE_LINK_FIELDS)) return null;
 			if (!consumeText(node.url, budget)) return null;
 			const url = resolveTextEditorViewerLink(node.url);
-			if (!url || (node.target !== null && node.target !== undefined && node.target !== "_self" && node.target !== "_blank"))
+			if (
+				!url ||
+				(node.target !== null &&
+					node.target !== undefined &&
+					node.target !== TEXT_EDITOR_LINK_TARGET_SELF &&
+					node.target !== TEXT_EDITOR_LINK_TARGET_BLANK)
+			)
 				return null;
 			if (node.rel !== undefined && node.rel !== null && !consumeText(node.rel, budget)) return null;
 			if (node.title !== undefined && node.title !== null && !consumeText(node.title, budget)) return null;
 			if (
-				node.type === "accessible-link" &&
+				node.type === LEXICAL_NODE_TYPE_ACCESSIBLE_LINK &&
 				((node.qrCode !== undefined && node.qrCode !== false) ||
 					(node.add !== undefined && node.add !== null) ||
 					(node.text !== undefined && node.text !== null && !consumeText(node.text, budget)) ||
@@ -196,9 +229,9 @@ function readNode(input: unknown, budget: ViewerParseBudget, depth: number): Tex
 			if (!children) return null;
 			return {
 				...element,
-				type: "link",
+				type: LEXICAL_NODE_TYPE_LINK,
 				url,
-				target: node.target === "_blank" ? "_blank" : "_self",
+				target: node.target === TEXT_EDITOR_LINK_TARGET_BLANK ? TEXT_EDITOR_LINK_TARGET_BLANK : TEXT_EDITOR_LINK_TARGET_SELF,
 				ariaLabel: typeof node.ariaLabel === "string" ? node.ariaLabel : null,
 				title: typeof node.title === "string" ? node.title : null,
 				children
@@ -215,16 +248,17 @@ export function parseTextEditorViewerDocument(input: unknown): TextEditorViewerD
 	if (
 		!envelope ||
 		!hasOnlyFields(envelope, ["format", "version", "editorState"]) ||
-		envelope.format !== "lexical" ||
-		envelope.version !== 1
+		envelope.format !== TEXT_EDITOR_LEXICAL_RAW_FORMAT ||
+		envelope.version !== TEXT_EDITOR_LEXICAL_RAW_VERSION
 	)
 		return INVALID_DOCUMENT;
 	const editorState = readPlainRecord(envelope.editorState);
 	if (!editorState || !hasOnlyFields(editorState, ["root"])) return INVALID_DOCUMENT;
 	const root = readPlainRecord(editorState.root);
-	if (!root || !hasOnlyFields(root, ELEMENT_FIELDS) || root.type !== "root" || root.version !== 1) return INVALID_DOCUMENT;
+	if (!root || !hasOnlyFields(root, ELEMENT_FIELDS) || root.type !== "root" || root.version !== LEXICAL_SERIALIZED_NODE_VERSION)
+		return INVALID_DOCUMENT;
 	const element = readElement(root);
 	if (!element) return INVALID_DOCUMENT;
 	const children = readChildren(root.children, { nodes: 1, textUnits: 0 }, 1, isBlock);
-	return children ? { status: "valid", element, children } : INVALID_DOCUMENT;
+	return children ? { status: TEXT_EDITOR_VIEWER_VALID, element, children } : INVALID_DOCUMENT;
 }

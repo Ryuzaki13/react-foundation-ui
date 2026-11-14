@@ -7,7 +7,10 @@ import uiStyles from "../ui.module.scss";
 
 import styles from "./Toggle.module.scss";
 
-type ToggleLabelPosition = "before" | "after";
+const TOGGLE_LABEL_BEFORE = "before";
+const TOGGLE_LABEL_AFTER = "after";
+
+type ToggleLabelPosition = typeof TOGGLE_LABEL_BEFORE | typeof TOGGLE_LABEL_AFTER;
 
 export interface ToggleProps
 	extends Omit<React.InputHTMLAttributes<HTMLInputElement>, "size" | "checked" | "value" | "onChange" | "type">, UiBaseProps<boolean> {
@@ -31,7 +34,7 @@ export function Toggle({
 	id: externalId,
 	checkedText = "ВКЛ",
 	uncheckedText = "ВЫКЛ",
-	labelPosition = "before",
+	labelPosition = TOGGLE_LABEL_BEFORE,
 	...props
 }: ToggleProps) {
 	const autoId = useId();
@@ -52,7 +55,7 @@ export function Toggle({
 			className={cn(uiStyles.uiElement, disabled && uiStyles.disabled, size && uiStyles.uiSizable, size && uiStyles[size], className)}
 			aria-disabled={disabled || undefined}>
 			<div className={styles.row}>
-				{labelPosition === "before" && labelElement}
+				{labelPosition === TOGGLE_LABEL_BEFORE && labelElement}
 				<div className={styles.wrapper}>
 					<input
 						{...props}
@@ -73,7 +76,7 @@ export function Toggle({
 						<div className={cn(styles.option, styles.checked)}>{checkedText}</div>
 					</div>
 				</div>
-				{labelPosition === "after" && labelElement}
+				{labelPosition === TOGGLE_LABEL_AFTER && labelElement}
 			</div>
 			{description && (
 				<p id={descriptionId} className={uiStyles.uiDescription}>

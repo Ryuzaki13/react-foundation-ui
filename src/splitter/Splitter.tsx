@@ -15,9 +15,20 @@ import {
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import styles from "./Splitter.module.scss";
+import {
+	SPLITTER_DIRECTION_HORIZONTAL,
+	SPLITTER_DIRECTION_VERTICAL,
+	SPLITTER_POINTER_CANCEL_EVENT,
+	SPLITTER_POINTER_MOVE_EVENT,
+	SPLITTER_POINTER_UP_EVENT
+} from "./splitterConstants";
 
-type SplitterDirection = "vertical" | "horizontal";
-type SplitterPane = "start" | "end";
+const SPLITTER_PANE_START = "start";
+const SPLITTER_PANE_END = "end";
+const PERCENT_SCALE = 100;
+
+type SplitterDirection = typeof SPLITTER_DIRECTION_VERTICAL | typeof SPLITTER_DIRECTION_HORIZONTAL;
+type SplitterPane = typeof SPLITTER_PANE_START | typeof SPLITTER_PANE_END;
 
 export type SplitterProps = PropsWithChildren<{
 	direction?: SplitterDirection;
@@ -84,20 +95,20 @@ function normalizeBounds(min: number, max: number) {
 }
 
 function getPointerCoordinate(direction: SplitterDirection, event: PointerEvent | ReactPointerEvent<HTMLDivElement>) {
-	return direction === "vertical" ? event.clientX : event.clientY;
+	return direction === SPLITTER_DIRECTION_VERTICAL ? event.clientX : event.clientY;
 }
 
 function getContainerDimension(direction: SplitterDirection, rect: DOMRect) {
-	return direction === "vertical" ? rect.width : rect.height;
+	return direction === SPLITTER_DIRECTION_VERTICAL ? rect.width : rect.height;
 }
 
 function getKeyboardDelta(direction: SplitterDirection, key: string) {
-	if (direction === "vertical") {
+	if (direction === SPLITTER_DIRECTION_VERTICAL) {
 		if (key === "ArrowLeft") return -KEYBOARD_STEP;
 		if (key === "ArrowRight") return KEYBOARD_STEP;
 	}
 
-	if (direction === "horizontal") {
+	if (direction === SPLITTER_DIRECTION_HORIZONTAL) {
 		if (key === "ArrowUp") return -KEYBOARD_STEP;
 		if (key === "ArrowDown") return KEYBOARD_STEP;
 	}
@@ -106,8 +117,8 @@ function getKeyboardDelta(direction: SplitterDirection, key: string) {
 }
 
 function resolveTopLeftBasis(ratio: number, collapsedPane: SplitterPane | null) {
-	if (collapsedPane === "start") return 0;
-	if (collapsedPane === "end") return 1;
+	if (collapsedPane === SPLITTER_PANE_START) return 0;
+	if (collapsedPane === SPLITTER_PANE_END) return 1;
 
 	return ratio;
 }
@@ -131,8 +142,8 @@ function useSplitterLogic({ direction, initial, min, max, onChange, collapsedPan
 	const applyRatio = useCallback(
 		(nextRatio: number) => {
 			ratioRef.current = nextRatio;
-			topLeftRef.current?.style.setProperty("flex-basis", `${resolveTopLeftBasis(nextRatio, collapsedPane) * 100}%`);
-			separatorRef.current?.setAttribute("aria-valuenow", `${Math.round(nextRatio * 100)}`);
+			topLeftRef.current?.style.setProperty("flex-basis", `${resolveTopLeftBasis(nextRatio, collapsedPane) * PERCENT_SCALE}%`);
+			separatorRef.current?.setAttribute("aria-valuenow", `${Math.round(nextRatio * PERCENT_SCALE)}`);
 		},
 		[collapsedPane]
 	);
@@ -214,14 +225,14 @@ function useSplitterLogic({ direction, initial, min, max, onChange, collapsedPan
 		};
 
 		cleanupDragRef.current = () => {
-			document.removeEventListener("pointermove", handlePointerMove);
-			document.removeEventListener("pointerup", handlePointerUp);
-			document.removeEventListener("pointercancel", handlePointerUp);
+			document.removeEventListener(SPLITTER_POINTER_MOVE_EVENT, handlePointerMove);
+			document.removeEventListener(SPLITTER_POINTER_UP_EVENT, handlePointerUp);
+			document.removeEventListener(SPLITTER_POINTER_CANCEL_EVENT, handlePointerUp);
 		};
 
-		document.addEventListener("pointermove", handlePointerMove);
-		document.addEventListener("pointerup", handlePointerUp);
-		document.addEventListener("pointercancel", handlePointerUp);
+		document.addEventListener(SPLITTER_POINTER_MOVE_EVENT, handlePointerMove);
+		document.addEventListener(SPLITTER_POINTER_UP_EVENT, handlePointerUp);
+		document.addEventListener(SPLITTER_POINTER_CANCEL_EVENT, handlePointerUp);
 	};
 
 	const handleSeparatorKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
@@ -289,13 +300,17 @@ function useSplitterLogic({ direction, initial, min, max, onChange, collapsedPan
 function SplitterView({ className, direction, left, right, collapsedPane, logic }: SplitterViewProps) {
 	const { containerRef, topLeftRef, separatorRef, ratio, minRatio, maxRatio, handleSeparatorPointerDown, handleSeparatorKeyDown } = logic;
 	const topLeftBasis = resolveTopLeftBasis(ratio, collapsedPane);
-	const isStartPaneCollapsed = collapsedPane === "start";
-	const isEndPaneCollapsed = collapsedPane === "end";
+	const isStartPaneCollapsed = collapsedPane === SPLITTER_PANE_START;
+	const isEndPaneCollapsed = collapsedPane === SPLITTER_PANE_END;
 	const isSeparatorVisible = collapsedPane === null;
 
 	return (
 		<div ref={containerRef} className={cn(styles.splitter, styles[direction], className)}>
-			<div ref={topLeftRef} className={styles.topLeft} style={{ flexBasis: `${topLeftBasis * 100}%` }} hidden={isStartPaneCollapsed}>
+			<div
+				ref={topLeftRef}
+				className={styles.topLeft}
+				style={{ flexBasis: `${topLeftBasis * PERCENT_SCALE}%` }}
+				hidden={isStartPaneCollapsed}>
 				{left}
 			</div>
 
@@ -303,10 +318,10 @@ function SplitterView({ className, direction, left, right, collapsedPane, logic 
 				ref={separatorRef}
 				hidden={!isSeparatorVisible}
 				role="separator"
-				aria-orientation={direction === "vertical" ? "vertical" : "horizontal"}
-				aria-valuemin={Math.round(minRatio * 100)}
-				aria-valuemax={Math.round(maxRatio * 100)}
-				aria-valuenow={Math.round(ratio * 100)}
+				aria-orientation={direction === SPLITTER_DIRECTION_VERTICAL ? SPLITTER_DIRECTION_VERTICAL : SPLITTER_DIRECTION_HORIZONTAL}
+				aria-valuemin={Math.round(minRatio * PERCENT_SCALE)}
+				aria-valuemax={Math.round(maxRatio * PERCENT_SCALE)}
+				aria-valuenow={Math.round(ratio * PERCENT_SCALE)}
 				tabIndex={isSeparatorVisible ? 0 : -1}
 				onPointerDown={handleSeparatorPointerDown}
 				onKeyDown={handleSeparatorKeyDown}
@@ -320,7 +335,7 @@ function SplitterView({ className, direction, left, right, collapsedPane, logic 
 }
 
 export function Splitter({
-	direction = "vertical",
+	direction = SPLITTER_DIRECTION_VERTICAL,
 	initial = DEFAULT_INITIAL,
 	min = DEFAULT_MIN,
 	max = DEFAULT_MAX,

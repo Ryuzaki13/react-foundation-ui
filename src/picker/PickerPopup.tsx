@@ -6,6 +6,8 @@ import { AnimatePresence, motion } from "motion/react";
 import styles from "./Picker.module.scss";
 import { PickerOptions, type PickerSelectionActions } from "./PickerOptions";
 
+const POPUP_TRANSITION_SCALE = 0.95;
+
 interface PickerPopupProps {
 	open: boolean;
 	context: FloatingContext;
@@ -96,9 +98,9 @@ export function PickerPopup({
 							ref={setFloating}
 							style={{ ...floatingStyles, maxWidth }}
 							className={styles.popupPositioner}
-							initial={{ opacity: 0, scale: 0.95 }}
+							initial={{ opacity: 0, scale: POPUP_TRANSITION_SCALE }}
 							animate={{ opacity: 1, scale: 1 }}
-							exit={{ opacity: 0, scale: 0.95 }}
+							exit={{ opacity: 0, scale: POPUP_TRANSITION_SCALE }}
 							tabIndex={isDialog ? undefined : -1}
 							onMouseDown={stopNestedFloatingMouseDown}
 							onFocus={isDialog ? undefined : handlePositionerFocus}

@@ -6,6 +6,10 @@ import { moveStablePortalContainer } from "../lib/moveStablePortalContainer";
 import { createStablePortalScrollTracking } from "./createStablePortalScrollTracking";
 import { type StablePortalFocusSnapshot, type StablePortalTransfer } from "./stablePortalTransferTypes";
 
+const STABLE_PORTAL_FOCUS_IN_EVENT = "focusin";
+const STABLE_PORTAL_SELECTION_CHANGE_EVENT = "selectionchange";
+const STABLE_PORTAL_SELECT_EVENT = "select";
+
 /**
  * Запоминает только interaction boundary: host может быть удалён раньше transfer
  * layout-effect. Selection events не сканируют subtree и не снимают scroll snapshot.
@@ -24,14 +28,14 @@ export function useStablePortalTransfer(container: HTMLElement | null): StablePo
 			const current = captureStablePortalFocus(container);
 			if (current !== null) snapshot.current = current;
 		};
-		document.addEventListener("focusin", captureFocus);
-		document.addEventListener("selectionchange", captureSelection);
-		container.addEventListener("select", captureSelection, true);
+		document.addEventListener(STABLE_PORTAL_FOCUS_IN_EVENT, captureFocus);
+		document.addEventListener(STABLE_PORTAL_SELECTION_CHANGE_EVENT, captureSelection);
+		container.addEventListener(STABLE_PORTAL_SELECT_EVENT, captureSelection, true);
 		return () => {
 			stopScrollTracking?.();
-			document.removeEventListener("focusin", captureFocus);
-			document.removeEventListener("selectionchange", captureSelection);
-			container.removeEventListener("select", captureSelection, true);
+			document.removeEventListener(STABLE_PORTAL_FOCUS_IN_EVENT, captureFocus);
+			document.removeEventListener(STABLE_PORTAL_SELECTION_CHANGE_EVENT, captureSelection);
+			container.removeEventListener(STABLE_PORTAL_SELECT_EVENT, captureSelection, true);
 		};
 	}, [container, scrollTracking]);
 	return useCallback(

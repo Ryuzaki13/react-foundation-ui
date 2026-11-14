@@ -1,5 +1,6 @@
 import { type ReadFileError, type ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 
+import { type READ_FILE_MODE_ARRAY_BUFFER, type READ_FILE_MODE_DATA_URL } from "../input-file/readFileModeConstants";
 import { type UiBaseProps } from "../types";
 
 interface InputFilesCommonProps extends Omit<UiBaseProps<undefined>, "value" | "onChange"> {
@@ -25,8 +26,8 @@ interface InputFilesCommonProps extends Omit<UiBaseProps<undefined>, "value" | "
 	className?: string;
 }
 
-type InputFilesDataUrlResult = Extract<ReadFileResult, { mode: "data-url" }>;
-type InputFilesArrayBufferResult = Extract<ReadFileResult, { mode: "array-buffer" }>;
+type InputFilesDataUrlResult = Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_DATA_URL }>;
+type InputFilesArrayBufferResult = Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_ARRAY_BUFFER }>;
 
 /**
  * Пропсы компонента InputFiles.
@@ -42,11 +43,11 @@ export type InputFilesProps =
 			value: InputFilesDataUrlResult[];
 			onChange: (value: InputFilesDataUrlResult[]) => void;
 			/** Режим чтения: "data-url" по умолчанию */
-			readMode?: "data-url";
+			readMode?: typeof READ_FILE_MODE_DATA_URL;
 	  })
 	| (InputFilesCommonProps & {
 			value: InputFilesArrayBufferResult[];
 			onChange: (value: InputFilesArrayBufferResult[]) => void;
 			/** Режим чтения файла как ArrayBuffer */
-			readMode: "array-buffer";
+			readMode: typeof READ_FILE_MODE_ARRAY_BUFFER;
 	  });

@@ -32,6 +32,12 @@ import {
 	type BaseTableProps,
 	type TableColumnPinningState
 } from "../base-table";
+import { TABLE_SELECTION_MODE_NONE, TABLE_SELECTION_MODE_MULTI } from "../base-table/lib/tableSelectionConstants";
+import {
+	type TABLE_WIDTH_MODE_AUTO,
+	type TABLE_WIDTH_MODE_COLUMNS,
+	type TABLE_WIDTH_MODE_CONTAINER
+} from "../base-table/lib/tableWidthModeConstants";
 import { getSortableReorderResult } from "../sortable";
 
 import styles from "./Table.module.scss";
@@ -127,7 +133,7 @@ export interface TableProps<TData extends object> {
 	/** Единица sizing-state и columnResizeMinWidth. em масштабируется вместе со шрифтом таблицы. */
 	columnSizingUnit?: TableColumnSizingUnit;
 	/** Сумма определённых ширин колонок; auto и проценты сохраняют браузерную раскладку. */
-	tableWidth?: "auto" | "columns" | "container";
+	tableWidth?: typeof TABLE_WIDTH_MODE_AUTO | typeof TABLE_WIDTH_MODE_COLUMNS | typeof TABLE_WIDTH_MODE_CONTAINER;
 	/**
 	 * Внешнее controlled-состояние start-pinning для колонок.
 	 */
@@ -211,7 +217,7 @@ export function Table<TData extends object>({
 	isFetching,
 	data,
 	columns,
-	selectionMode = "none",
+	selectionMode = TABLE_SELECTION_MODE_NONE,
 	selectedRowIds,
 	getRowId,
 	className,
@@ -336,9 +342,9 @@ export function Table<TData extends object>({
 		onColumnSizingChange: handleColumnSizingChange,
 		onColumnVisibilityChange: handleColumnVisibilityChange,
 		getRowId: (row, index) => resolveRowId(row, index),
-		enableMultiRowSelection: selectionMode === "multi",
+		enableMultiRowSelection: selectionMode === TABLE_SELECTION_MODE_MULTI,
 		enableRowSelection: (row) => {
-			if (selectionMode === "none") {
+			if (selectionMode === TABLE_SELECTION_MODE_NONE) {
 				return false;
 			}
 
@@ -393,8 +399,8 @@ export function Table<TData extends object>({
 			tableClassName={tableClassName}
 			selectionMode={selectionMode}
 			scrollableRef={scrollableRef}
-			onActivateRow={selectionMode !== "none" || onRowClick ? activateRow : undefined}
-			isRowInteractive={(row) => Boolean(onRowClick || (selectionMode !== "none" && row.getCanSelect()))}
+			onActivateRow={selectionMode !== TABLE_SELECTION_MODE_NONE || onRowClick ? activateRow : undefined}
+			isRowInteractive={(row) => Boolean(onRowClick || (selectionMode !== TABLE_SELECTION_MODE_NONE && row.getCanSelect()))}
 			getRowClassName={(row) => getRowClassName?.(row.original)}
 			getCellClassName={({ row, cell }) =>
 				cell.column.id === leadingColumnId && row.getIsSelected() ? styles.selectedIndicatorCell : undefined

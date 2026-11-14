@@ -10,12 +10,14 @@ import {
 
 import {
 	hasResponsiveLayoutValue,
+	LAYOUT_BREAKPOINT_LAPTOP,
 	RESPONSIVE_LAYOUT_BREAKPOINTS,
 	resolveLayoutPropsForBreakpoints,
 	resolveLayoutValueForBreakpoints
 } from "../responsive-layout/responsiveLayout";
 
 import styles from "./Grid.module.scss";
+import { GRID_GAP_NONE, GRID_VARIANT_AUTO_1FR, GRID_VARIANT_AUTO_1FR_ROWS_AUTO, GRID_VARIANT_SINGLE_COLUMN } from "./gridConstants";
 
 import type { GridContainerLayoutProps, GridItemLayoutProps } from "./types";
 
@@ -93,7 +95,7 @@ function getContainerModifierClasses(props: ResolvedGridContainerProps, breakpoi
 		);
 	}
 
-	if (props.gap === "none") classes.push(getStyleClass("gapNone", breakpoint));
+	if (props.gap === GRID_GAP_NONE) classes.push(getStyleClass("gapNone", breakpoint));
 	else if (props.gap) {
 		classes.push(getStyleClass(`gap${props.gap.charAt(0).toUpperCase() + props.gap.slice(1)}` as keyof typeof styles, breakpoint));
 	}
@@ -111,9 +113,9 @@ function getContainerModifierClasses(props: ResolvedGridContainerProps, breakpoi
 		);
 	}
 
-	if (props.variant === "single-column") classes.push(getStyleClass("singleColumn", breakpoint));
-	else if (props.variant === "auto-1fr") classes.push(getStyleClass("autoRows1fr", breakpoint));
-	else if (props.variant === "auto1fr-rows-auto") classes.push(getStyleClass("columnsAuto1fr", breakpoint));
+	if (props.variant === GRID_VARIANT_SINGLE_COLUMN) classes.push(getStyleClass("singleColumn", breakpoint));
+	else if (props.variant === GRID_VARIANT_AUTO_1FR) classes.push(getStyleClass("autoRows1fr", breakpoint));
+	else if (props.variant === GRID_VARIANT_AUTO_1FR_ROWS_AUTO) classes.push(getStyleClass("columnsAuto1fr", breakpoint));
 
 	return classes;
 }
@@ -167,7 +169,7 @@ export function getGridContainerClasses(props: GridContainerLayoutProps): string
 	const classes: ClassName[] = [styles.grid];
 
 	if (!hasResponsiveLayoutValue(values)) {
-		classes.push(...getContainerModifierClasses(resolveProps(props, "laptop", CONTAINER_CLASS_KEYS)));
+		classes.push(...getContainerModifierClasses(resolveProps(props, LAYOUT_BREAKPOINT_LAPTOP, CONTAINER_CLASS_KEYS)));
 		return classes.filter(Boolean).join(" ");
 	}
 
@@ -199,7 +201,7 @@ export function getGridItemClasses(props: GridItemLayoutProps): string {
 	const classes: ClassName[] = [styles.item];
 
 	if (!hasResponsiveLayoutValue(values)) {
-		classes.push(...getItemModifierClasses(resolveProps(props, "laptop", ITEM_CLASS_KEYS)));
+		classes.push(...getItemModifierClasses(resolveProps(props, LAYOUT_BREAKPOINT_LAPTOP, ITEM_CLASS_KEYS)));
 		return classes.filter(Boolean).join(" ");
 	}
 

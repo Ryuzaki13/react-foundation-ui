@@ -23,6 +23,13 @@ import { FloatingArrow } from "../floating-arrow/FloatingArrow";
 import { FloatingPopoverAnchor } from "./FloatingPopoverAnchor";
 import styles from "./Popover.module.scss";
 
+const DEFAULT_PLACEMENT = "bottom";
+const DEFAULT_OPEN_DELAY_MS = 200;
+const DEFAULT_CLOSE_DELAY_MS = 100;
+const POPOVER_ANCHOR_GAP_PX = 8;
+const POPOVER_VIEWPORT_PADDING_PX = 8;
+const POPOVER_ARROW_PADDING_PX = 8;
+
 /**
  * Пассивная floating-подсказка. По умолчанию создаёт span для произвольного
  * содержимого; asChild сохраняет участие самого trigger в Grid/Flex-раскладке.
@@ -62,9 +69,9 @@ export function FloatingPopover({
 	children,
 	asChild = false,
 	openOnHover = true,
-	placement = "bottom",
-	openDelay = 200,
-	closeDelay = 100,
+	placement = DEFAULT_PLACEMENT,
+	openDelay = DEFAULT_OPEN_DELAY_MS,
+	closeDelay = DEFAULT_CLOSE_DELAY_MS,
 	maxWidth,
 	state,
 	tooltip,
@@ -85,10 +92,10 @@ export function FloatingPopover({
 		onOpenChange: setOpen,
 		placement,
 		middleware: [
-			offset(8),
-			flip({ fallbackAxisSideDirection: "end", fallbackPlacements: ["top", "right", "bottom"] }),
-			shift({ padding: 8 }),
-			arrow({ element: arrowRef, padding: 8 })
+			offset(POPOVER_ANCHOR_GAP_PX),
+			flip({ fallbackAxisSideDirection: "end", fallbackPlacements: ["top", "right", DEFAULT_PLACEMENT] }),
+			shift({ padding: POPOVER_VIEWPORT_PADDING_PX }),
+			arrow({ element: arrowRef, padding: POPOVER_ARROW_PADDING_PX })
 		],
 		whileElementsMounted: autoUpdate
 	});

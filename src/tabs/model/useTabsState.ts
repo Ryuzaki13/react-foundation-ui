@@ -5,6 +5,8 @@ import { getRovingFocusTargetIndex } from "@ryuzaki13/react-foundation-lib/utils
 
 import { getEnabledTabs, getSafeTabId } from "../lib/tabs";
 
+import { TABS_ORIENTATION_HORIZONTAL, TABS_ACTIVATION_AUTOMATIC } from "./tabsConstants";
+
 import type { TabsActivationMode, TabsDescriptor, TabsOrientation } from "./types";
 
 interface UseTabsStateOptions {
@@ -43,8 +45,8 @@ export function useTabsState({
 	value,
 	defaultValue,
 	onValueChange,
-	orientation = "horizontal",
-	activationMode = "automatic",
+	orientation = TABS_ORIENTATION_HORIZONTAL,
+	activationMode = TABS_ACTIVATION_AUTOMATIC,
 	loop = true
 }: UseTabsStateOptions): TabsStateModel {
 	const isControlled = value !== undefined;
@@ -129,7 +131,7 @@ export function useTabsState({
 		setFocusedTabId(nextTabId);
 		focusTab(nextTabId);
 
-		if (activationMode === "automatic") {
+		if (activationMode === TABS_ACTIVATION_AUTOMATIC) {
 			activateTab(nextTabId);
 		}
 	};

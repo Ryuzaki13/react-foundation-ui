@@ -7,7 +7,13 @@ import {
 	parseDateByPattern
 } from "@ryuzaki13/react-foundation-lib/formatters";
 
-export type DateTimeInputMode = "date-time" | "time";
+import { DATE_TIME_INPUT_MODE_DATE_TIME, DATE_TIME_INPUT_MODE_TIME } from "./dateTimeInputModes";
+
+const MINUTES_PER_HOUR = 60;
+const LAST_HOUR_OF_DAY = 23;
+const LAST_MINUTE_OF_HOUR = 59;
+
+export type DateTimeInputMode = typeof DATE_TIME_INPUT_MODE_DATE_TIME | typeof DATE_TIME_INPUT_MODE_TIME;
 
 /**
  * Фиксированный формат нового поля даты-времени.
@@ -32,16 +38,16 @@ export function createTimeOnlyBaseDate(hours = 0, minutes = 0): Date {
 /**
  * Возвращает формат пользовательского ввода для выбранного режима.
  */
-export function getDateTimeInputFormat(mode: DateTimeInputMode = "date-time"): string {
-	return mode === "time" ? TIME_INPUT_FORMAT : DATE_TIME_INPUT_FORMAT;
+export function getDateTimeInputFormat(mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME): string {
+	return mode === DATE_TIME_INPUT_MODE_TIME ? TIME_INPUT_FORMAT : DATE_TIME_INPUT_FORMAT;
 }
 
 /**
  * Создаёт временную предустановку форматирования для нового поля даты-времени.
  */
-export function createDateTimeInputPreset(mode: DateTimeInputMode = "date-time"): DateFormatPreset {
+export function createDateTimeInputPreset(mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME): DateFormatPreset {
 	return {
-		name: mode === "time" ? TIME_INPUT_PRESET_NAME : DATE_TIME_INPUT_PRESET_NAME,
+		name: mode === DATE_TIME_INPUT_MODE_TIME ? TIME_INPUT_PRESET_NAME : DATE_TIME_INPUT_PRESET_NAME,
 		pattern: getDateTimeInputFormat(mode),
 		locale: "ru-RU",
 		invalidFallback: ""
@@ -51,13 +57,16 @@ export function createDateTimeInputPreset(mode: DateTimeInputMode = "date-time")
 /**
  * Нормализует внешнее значение к валидному Date без timezone-сдвига.
  */
-export function normalizeDateTimeValue(value: Date | null | undefined, mode: DateTimeInputMode = "date-time"): Date | null {
+export function normalizeDateTimeValue(
+	value: Date | null | undefined,
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
+): Date | null {
 	if (value == null) return null;
 
 	const parsedValue = parseDate(value);
 	if (!parsedValue) return null;
 
-	if (mode === "time") {
+	if (mode === DATE_TIME_INPUT_MODE_TIME) {
 		return createTimeOnlyBaseDate(parsedValue.getHours(), parsedValue.getMinutes());
 	}
 
@@ -67,7 +76,7 @@ export function normalizeDateTimeValue(value: Date | null | undefined, mode: Dat
 /**
  * Форматирует значение поля даты-времени в фиксированный пользовательский формат.
  */
-export function formatDateTimeInputValue(value: Date | null | undefined, mode: DateTimeInputMode = "date-time"): string {
+export function formatDateTimeInputValue(value: Date | null | undefined, mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME): string {
 	if (!value) return "";
 	return formatDate(normalizeDateTimeValue(value, mode), createDateTimeInputPreset(mode));
 }
@@ -75,8 +84,8 @@ export function formatDateTimeInputValue(value: Date | null | undefined, mode: D
 /**
  * Строго парсит строку пользовательского ввода в Date.
  */
-export function parseDateTimeInputValue(value: string, mode: DateTimeInputMode = "date-time"): Date | null {
-	if (mode === "time") {
+export function parseDateTimeInputValue(value: string, mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME): Date | null {
+	if (mode === DATE_TIME_INPUT_MODE_TIME) {
 		const match = /^\d{2}:\d{2}$/.exec(value.trim());
 		if (!match) return null;
 
@@ -98,22 +107,27 @@ export function parseDateTimeInputValue(value: string, mode: DateTimeInputMode =
 /**
  * Проверяет, попадает ли дата-время в допустимый диапазон.
  */
-export function isDateTimeWithinRange(value: Date, minDate?: Date, maxDate?: Date, mode: DateTimeInputMode = "date-time"): boolean {
+export function isDateTimeWithinRange(
+	value: Date,
+	minDate?: Date,
+	maxDate?: Date,
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
+): boolean {
 	const normalizedValue = normalizeDateTimeValue(value, mode);
 	if (!normalizedValue) return false;
 
-	if (mode === "time") {
-		const valueMinutes = normalizedValue.getHours() * 60 + normalizedValue.getMinutes();
-		const normalizedMinDate = minDate ? normalizeDateTimeValue(minDate, "time") : null;
-		const normalizedMaxDate = maxDate ? normalizeDateTimeValue(maxDate, "time") : null;
+	if (mode === DATE_TIME_INPUT_MODE_TIME) {
+		const valueMinutes = normalizedValue.getHours() * MINUTES_PER_HOUR + normalizedValue.getMinutes();
+		const normalizedMinDate = minDate ? normalizeDateTimeValue(minDate, DATE_TIME_INPUT_MODE_TIME) : null;
+		const normalizedMaxDate = maxDate ? normalizeDateTimeValue(maxDate, DATE_TIME_INPUT_MODE_TIME) : null;
 
 		if (normalizedMinDate) {
-			const minMinutes = normalizedMinDate.getHours() * 60 + normalizedMinDate.getMinutes();
+			const minMinutes = normalizedMinDate.getHours() * MINUTES_PER_HOUR + normalizedMinDate.getMinutes();
 			if (valueMinutes < minMinutes) return false;
 		}
 
 		if (normalizedMaxDate) {
-			const maxMinutes = normalizedMaxDate.getHours() * 60 + normalizedMaxDate.getMinutes();
+			const maxMinutes = normalizedMaxDate.getHours() * MINUTES_PER_HOUR + normalizedMaxDate.getMinutes();
 			if (valueMinutes > maxMinutes) return false;
 		}
 
@@ -140,8 +154,13 @@ export function mergeDateWithTime(datePart: Date, timeSource?: Date | null): Dat
 /**
  * Переносит часы и минуты в базовую календарную дату.
  */
-export function mergeTimeIntoDate(baseDate: Date, hours: number, minutes: number, mode: DateTimeInputMode = "date-time"): Date {
-	if (mode === "time") {
+export function mergeTimeIntoDate(
+	baseDate: Date,
+	hours: number,
+	minutes: number,
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
+): Date {
+	if (mode === DATE_TIME_INPUT_MODE_TIME) {
 		return createTimeOnlyBaseDate(hours, minutes);
 	}
 
@@ -151,9 +170,13 @@ export function mergeTimeIntoDate(baseDate: Date, hours: number, minutes: number
 /**
  * Создаёт рабочую дату для picker-сценариев без выбранного значения.
  */
-export function resolvePickerBaseDate(value: Date | null | undefined, fallbackDate: Date, mode: DateTimeInputMode = "date-time"): Date {
-	if (mode === "time") {
-		return normalizeDateTimeValue(value, "time") ?? createTimeOnlyBaseDate();
+export function resolvePickerBaseDate(
+	value: Date | null | undefined,
+	fallbackDate: Date,
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
+): Date {
+	if (mode === DATE_TIME_INPUT_MODE_TIME) {
+		return normalizeDateTimeValue(value, DATE_TIME_INPUT_MODE_TIME) ?? createTimeOnlyBaseDate();
 	}
 
 	return normalizeDateTimeValue(value, mode) ?? fallbackDate;
@@ -166,7 +189,7 @@ export function getTimeRangeForDay(
 	day: Date,
 	minDate?: Date,
 	maxDate?: Date,
-	mode: DateTimeInputMode = "date-time"
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
 ): {
 	disabled: boolean;
 	minHour: number;
@@ -189,9 +212,9 @@ export function getTimeRangeForDay(
 		normalizedDay.getDate() === normalizedMaxDate.getDate();
 
 	const minHour = isSameMinDay ? normalizedMinDate!.getHours() : 0;
-	const maxHour = isSameMaxDay ? normalizedMaxDate!.getHours() : 23;
+	const maxHour = isSameMaxDay ? normalizedMaxDate!.getHours() : LAST_HOUR_OF_DAY;
 	const minMinuteAtBoundary = isSameMinDay && minHour === maxHour ? normalizedMinDate!.getMinutes() : 0;
-	const maxMinuteAtBoundary = isSameMaxDay && minHour === maxHour ? normalizedMaxDate!.getMinutes() : 59;
+	const maxMinuteAtBoundary = isSameMaxDay && minHour === maxHour ? normalizedMaxDate!.getMinutes() : LAST_MINUTE_OF_HOUR;
 	const disabled = minHour > maxHour || (minHour === maxHour && minMinuteAtBoundary > maxMinuteAtBoundary);
 
 	return {
@@ -203,8 +226,8 @@ export function getTimeRangeForDay(
 			return isSameMinDay && hour === minHour ? normalizedMinDate!.getMinutes() : 0;
 		},
 		maxMinuteByHour: (hour) => {
-			if (disabled) return 59;
-			return isSameMaxDay && hour === maxHour ? normalizedMaxDate!.getMinutes() : 59;
+			if (disabled) return LAST_MINUTE_OF_HOUR;
+			return isSameMaxDay && hour === maxHour ? normalizedMaxDate!.getMinutes() : LAST_MINUTE_OF_HOUR;
 		}
 	};
 }
@@ -218,7 +241,7 @@ export function clampTimeForDay(
 	minutes: number,
 	minDate?: Date,
 	maxDate?: Date,
-	mode: DateTimeInputMode = "date-time"
+	mode: DateTimeInputMode = DATE_TIME_INPUT_MODE_DATE_TIME
 ): { hours: number; minutes: number } {
 	const range = getTimeRangeForDay(day, minDate, maxDate, mode);
 	if (range.disabled) {

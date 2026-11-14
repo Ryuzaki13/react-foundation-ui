@@ -5,7 +5,9 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { Scrollable } from "../../misc";
 import uiStyles from "../../ui.module.scss";
 import { getUiPanelToneClassName } from "../../uiClasses";
+import { UI_PANEL_TONE_SURFACE } from "../../uiSchemeConstants";
 import { shouldMountTabPanel } from "../lib/tabs";
+import { TABS_ORIENTATION_HORIZONTAL, TABS_ACTIVATION_MANUAL, TABS_MOUNT_LAZY } from "../model/tabsConstants";
 import { useTabsState } from "../model/useTabsState";
 
 import styles from "./Tabs.module.scss";
@@ -168,11 +170,11 @@ export function TabsLayout({
 	defaultValue,
 	onValueChange,
 	className,
-	orientation = "horizontal",
-	activationMode = "manual",
-	mountStrategy = "lazy",
+	orientation = TABS_ORIENTATION_HORIZONTAL,
+	activationMode = TABS_ACTIVATION_MANUAL,
+	mountStrategy = TABS_MOUNT_LAZY,
 	loop = true,
-	tone = "surface",
+	tone = UI_PANEL_TONE_SURFACE,
 	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy

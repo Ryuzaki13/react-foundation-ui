@@ -13,6 +13,7 @@ import {
 import { $restoreEditorDialogSelection } from "../lib/selection/restoreEditorDialogSelection";
 import { resolveToolbarState } from "../lib/toolbar/resolveToolbarState";
 
+import { COMPACT_TOOLBAR_FOCUS_EDITOR, COMPACT_TOOLBAR_FOCUS_DIALOG } from "./compactToolbarFocusConstants";
 import { type LexicalToolbarState } from "./textEditorTypes";
 
 type FormattingSession = {
@@ -79,20 +80,23 @@ export function useCompactTextEditorToolbar(canEdit: () => boolean) {
 	);
 
 	const runCommand = useCallback(
-		(command: () => void, nextFocus: "editor" | "dialog" = "editor") => {
+		(
+			command: () => void,
+			nextFocus: typeof COMPACT_TOOLBAR_FOCUS_EDITOR | typeof COMPACT_TOOLBAR_FOCUS_DIALOG = COMPACT_TOOLBAR_FOCUS_EDITOR
+		) => {
 			if (!session || !canEdit()) return;
 			const root = editor.getRootElement();
 			if (!root?.isConnected) return;
 
 			const snapshot = latestSelection.current ?? session;
-			if (nextFocus === "editor") root.focus({ preventScroll: true });
+			if (nextFocus === COMPACT_TOOLBAR_FOCUS_EDITOR) root.focus({ preventScroll: true });
 			// Отдельный selection-only commit сохраняет baseline undo перед первой
 			// командой. Диалог получает диапазон, не конкурируя за DOM-фокус.
 			editor.update(() => $restoreEditorDialogSelection(snapshot.selection), {
 				discrete: true,
 				tag: [HISTORY_MERGE_TAG, SKIP_DOM_SELECTION_TAG, SKIP_SCROLL_INTO_VIEW_TAG]
 			});
-			if (nextFocus === "dialog") command();
+			if (nextFocus === COMPACT_TOOLBAR_FOCUS_DIALOG) command();
 			else editor.update(command, { discrete: true, tag: SKIP_SCROLL_INTO_VIEW_TAG });
 		},
 		[canEdit, editor, session]

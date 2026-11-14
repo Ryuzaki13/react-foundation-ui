@@ -1,6 +1,7 @@
 import { type MouseEvent, type ReactNode } from "react";
 
 import { Button } from "../../button";
+import { UI_APPEARANCE_OUTLINE } from "../../uiSchemeConstants";
 
 import styles from "./Toolbar.module.scss";
 
@@ -29,7 +30,7 @@ export function ToolbarControl({ isActive, disabled, style, title, icon, onClick
 			data-text-editor-command={style}
 			title={title}
 			disabled={disabled}
-			appearance="outline"
+			appearance={UI_APPEARANCE_OUTLINE}
 			aria-pressed={isActive}
 			onMouseDown={handleMouseDown}
 			onClick={() => onClick?.(style || "")}

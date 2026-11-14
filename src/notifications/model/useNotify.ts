@@ -1,6 +1,12 @@
 import { type NotificationPushInput, type NotificationType } from "@ryuzaki13/react-foundation-lib/notifications";
 import { useStore } from "zustand";
 
+import {
+	NOTIFICATION_TYPE_SUCCESS,
+	NOTIFICATION_TYPE_INFO,
+	NOTIFICATION_TYPE_WARNING,
+	NOTIFICATION_TYPE_ERROR
+} from "./notificationTypeConstants";
 import { useNotificationsStore } from "./useNotificationsStore";
 
 /** Возвращает действия notification-store и сокращённые методы для каждого типа уведомления. */
@@ -13,9 +19,9 @@ export function useNotify() {
 
 	return {
 		...actions,
-		success: createShortcut("success"),
-		info: createShortcut("info"),
-		warning: createShortcut("warning"),
-		error: createShortcut("error")
+		success: createShortcut(NOTIFICATION_TYPE_SUCCESS),
+		info: createShortcut(NOTIFICATION_TYPE_INFO),
+		warning: createShortcut(NOTIFICATION_TYPE_WARNING),
+		error: createShortcut(NOTIFICATION_TYPE_ERROR)
 	};
 }

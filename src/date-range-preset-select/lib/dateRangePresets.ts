@@ -9,10 +9,21 @@ import {
 } from "@ryuzaki13/react-foundation-lib/formatters";
 import { getPresetOption, normalizePresetIds, type PresetOption, resolvePresetOptionsByIds } from "@ryuzaki13/react-foundation-lib/presets";
 
+const DATE_RANGE_PRESET_MONTH_START_TO_YESTERDAY = "monthStartToYesterday";
+const DATE_RANGE_PRESET_MONTH_START_TO_TODAY = "monthStartToToday";
+const DATE_RANGE_PRESET_TODAY = "today";
+const DATE_RANGE_PRESET_YESTERDAY = "yesterday";
+const DATE_RANGE_PRESET_MONTH_AGO = "monthAgo";
+
 /**
  * Идентификаторы встроенных пресетов диапазона дат.
  */
-export type DateRangePresetId = "monthStartToYesterday" | "monthStartToToday" | "today" | "yesterday" | "monthAgo";
+export type DateRangePresetId =
+	| typeof DATE_RANGE_PRESET_MONTH_START_TO_YESTERDAY
+	| typeof DATE_RANGE_PRESET_MONTH_START_TO_TODAY
+	| typeof DATE_RANGE_PRESET_TODAY
+	| typeof DATE_RANGE_PRESET_YESTERDAY
+	| typeof DATE_RANGE_PRESET_MONTH_AGO;
 
 /**
  * Описание одного пресета диапазона дат.
@@ -39,27 +50,27 @@ export interface DateRangePresetChangePayload {
  */
 export const DATE_RANGE_PRESET_OPTIONS: readonly BuiltInDateRangePresetOption[] = Object.freeze([
 	{
-		id: "monthStartToYesterday",
+		id: DATE_RANGE_PRESET_MONTH_START_TO_YESTERDAY,
 		label: "С начала месяца по вчера",
 		resolveRange: resolveMonthStartToYesterdayRange
 	},
 	{
-		id: "monthStartToToday",
+		id: DATE_RANGE_PRESET_MONTH_START_TO_TODAY,
 		label: "С начала месяца по сегодня",
 		resolveRange: resolveMonthStartToTodayRange
 	},
 	{
-		id: "today",
+		id: DATE_RANGE_PRESET_TODAY,
 		label: "За сегодня",
 		resolveRange: resolveTodayRange
 	},
 	{
-		id: "yesterday",
+		id: DATE_RANGE_PRESET_YESTERDAY,
 		label: "За вчера",
 		resolveRange: resolveYesterdayRange
 	},
 	{
-		id: "monthAgo",
+		id: DATE_RANGE_PRESET_MONTH_AGO,
 		label: "Месяц назад",
 		resolveRange: resolveMonthAgoRange
 	}
@@ -69,10 +80,10 @@ export const DATE_RANGE_PRESET_OPTIONS: readonly BuiltInDateRangePresetOption[] 
  * Идентификаторы пресетов, которые включены в контрол по умолчанию.
  */
 export const DEFAULT_DATE_RANGE_PRESET_IDS = Object.freeze([
-	"monthStartToYesterday",
-	"monthStartToToday",
-	"today",
-	"yesterday"
+	DATE_RANGE_PRESET_MONTH_START_TO_YESTERDAY,
+	DATE_RANGE_PRESET_MONTH_START_TO_TODAY,
+	DATE_RANGE_PRESET_TODAY,
+	DATE_RANGE_PRESET_YESTERDAY
 ] as const satisfies readonly DateRangePresetId[]);
 
 const DATE_RANGE_PRESET_ID_SET: ReadonlySet<string> = new Set(DATE_RANGE_PRESET_OPTIONS.map((option) => option.id));

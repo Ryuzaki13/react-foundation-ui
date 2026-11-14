@@ -1,29 +1,51 @@
+import {
+	LEXICAL_TEXT_FORMAT_BOLD,
+	LEXICAL_TEXT_FORMAT_ITALIC,
+	LEXICAL_TEXT_FORMAT_UNDERLINE,
+	LEXICAL_TEXT_FORMAT_STRIKETHROUGH,
+	LEXICAL_TEXT_FORMAT_HIGHLIGHT,
+	LEXICAL_TEXT_FORMAT_CODE
+} from "../../model/textEditorLexicalFormatConstants";
+import {
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX,
+	TEXT_EDITOR_BLOCK_STYLE_UNSTYLED,
+	TEXT_EDITOR_INLINE_STYLE_BOLD,
+	TEXT_EDITOR_INLINE_STYLE_ITALIC,
+	TEXT_EDITOR_INLINE_STYLE_UNDERLINE,
+	TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH,
+	TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT,
+	TEXT_EDITOR_INLINE_STYLE_CODE
+} from "../../model/textEditorStyleConstants";
+
 import type { TextEditorBlockStyle } from "../../model/textEditorTypes";
 
 export const getHeadingBlockType = (tag: string): TextEditorBlockStyle => {
 	switch (tag) {
 		case "h3":
-			return "header-three";
+			return TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE;
 		case "h4":
-			return "header-four";
+			return TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR;
 		case "h5":
-			return "header-five";
+			return TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE;
 		case "h6":
-			return "header-six";
+			return TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX;
 		default:
-			return "unstyled";
+			return TEXT_EDITOR_BLOCK_STYLE_UNSTYLED;
 	}
 };
 
 export const getHeadingTagByStyle = (style: string): "h3" | "h4" | "h5" | "h6" | null => {
 	switch (style) {
-		case "header-three":
+		case TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE:
 			return "h3";
-		case "header-four":
+		case TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR:
 			return "h4";
-		case "header-five":
+		case TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE:
 			return "h5";
-		case "header-six":
+		case TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX:
 			return "h6";
 		default:
 			return null;
@@ -32,18 +54,18 @@ export const getHeadingTagByStyle = (style: string): "h3" | "h4" | "h5" | "h6" |
 
 export const getLexicalInlineStyle = (style: string): string | null => {
 	switch (style) {
-		case "BOLD":
-			return "bold";
-		case "ITALIC":
-			return "italic";
-		case "UNDERLINE":
-			return "underline";
-		case "STRIKETHROUGH":
-			return "strikethrough";
-		case "HIGHLIGHT":
-			return "highlight";
-		case "CODE":
-			return "code";
+		case TEXT_EDITOR_INLINE_STYLE_BOLD:
+			return LEXICAL_TEXT_FORMAT_BOLD;
+		case TEXT_EDITOR_INLINE_STYLE_ITALIC:
+			return LEXICAL_TEXT_FORMAT_ITALIC;
+		case TEXT_EDITOR_INLINE_STYLE_UNDERLINE:
+			return LEXICAL_TEXT_FORMAT_UNDERLINE;
+		case TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH:
+			return LEXICAL_TEXT_FORMAT_STRIKETHROUGH;
+		case TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT:
+			return LEXICAL_TEXT_FORMAT_HIGHLIGHT;
+		case TEXT_EDITOR_INLINE_STYLE_CODE:
+			return LEXICAL_TEXT_FORMAT_CODE;
 		default:
 			return null;
 	}

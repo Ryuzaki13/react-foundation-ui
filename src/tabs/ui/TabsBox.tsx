@@ -2,7 +2,9 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import uiStyles from "../../ui.module.scss";
 import { getUiPanelToneClassName } from "../../uiClasses";
+import { UI_PANEL_TONE_SURFACE } from "../../uiSchemeConstants";
 import { shouldMountTabPanel } from "../lib/tabs";
+import { TABS_ORIENTATION_HORIZONTAL, TABS_ACTIVATION_AUTOMATIC, TABS_MOUNT_UNMOUNT } from "../model/tabsConstants";
 import { type TabsBoxProps } from "../model/types";
 import { useTabsState } from "../model/useTabsState";
 
@@ -24,11 +26,11 @@ export function TabsBox({
 	className,
 	isLoading,
 	loadingText,
-	orientation = "horizontal",
-	activationMode = "automatic",
-	mountStrategy = "unmount",
+	orientation = TABS_ORIENTATION_HORIZONTAL,
+	activationMode = TABS_ACTIVATION_AUTOMATIC,
+	mountStrategy = TABS_MOUNT_UNMOUNT,
 	loop = true,
-	tone = "surface",
+	tone = UI_PANEL_TONE_SURFACE,
 	clean = false,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy

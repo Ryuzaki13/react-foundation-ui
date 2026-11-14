@@ -9,6 +9,7 @@ import { FlexContainer } from "../flex";
 import { BadRequestPage } from "./BadRequestPage";
 import { BoomExplosion } from "./BoomExplosion";
 import { ERROR_BOOM_MESSAGES } from "./constants";
+import { HTTP_STATUS_BAD_REQUEST, HTTP_STATUS_FORBIDDEN, HTTP_STATUS_NOT_FOUND, REACT_ERROR_REPORT_CATEGORY } from "./errorPageConstants";
 import { ForbiddenPage } from "./ForbiddenPage";
 import { NotFoundPage } from "./NotFoundPage";
 
@@ -27,7 +28,7 @@ export function ErrorDisplay({ error, componentStack, draftId }: { error: Error;
 		void captureRuntimeErrorReport(
 			error,
 			{
-				category: "react",
+				category: REACT_ERROR_REPORT_CATEGORY,
 				componentStack
 			},
 			queryClient
@@ -38,11 +39,11 @@ export function ErrorDisplay({ error, componentStack, draftId }: { error: Error;
 
 	if (httpStatusCode) {
 		switch (httpStatusCode) {
-			case 400:
+			case HTTP_STATUS_BAD_REQUEST:
 				return <BadRequestPage />;
-			case 403:
+			case HTTP_STATUS_FORBIDDEN:
 				return <ForbiddenPage />;
-			case 404:
+			case HTTP_STATUS_NOT_FOUND:
 				return <NotFoundPage />;
 		}
 	}

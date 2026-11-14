@@ -7,10 +7,20 @@ import {
 import { getPresetOption, normalizePresetIds, type PresetOption, resolvePresetOptionsByIds } from "@ryuzaki13/react-foundation-lib/presets";
 import { isRecord } from "@ryuzaki13/react-foundation-lib/validators";
 
+const PERIOD_SELECT_PRESET_DAY = "day";
+const PERIOD_SELECT_PRESET_WEEK = "week";
+const PERIOD_SELECT_PRESET_MONTH = "month";
+const PERIOD_SELECT_PRESET_YEAR = "year";
+const DAYS_PER_WEEK = 7;
+
 /**
  * Идентификаторы встроенных уровней детализации периода.
  */
-export type PeriodSelectPresetId = "day" | "week" | "month" | "year";
+export type PeriodSelectPresetId =
+	| typeof PERIOD_SELECT_PRESET_DAY
+	| typeof PERIOD_SELECT_PRESET_WEEK
+	| typeof PERIOD_SELECT_PRESET_MONTH
+	| typeof PERIOD_SELECT_PRESET_YEAR;
 export type PeriodSelectId = PeriodSelectPresetId | (string & {});
 
 /**
@@ -46,7 +56,7 @@ export type PeriodSelectOptionsConfig = PeriodSelectThresholds & {
 	labels?: Partial<PeriodSelectLabels>;
 };
 
-export const DEFAULT_PERIOD_SELECT_PRESET_ID = "day" satisfies PeriodSelectPresetId;
+export const DEFAULT_PERIOD_SELECT_PRESET_ID = PERIOD_SELECT_PRESET_DAY satisfies PeriodSelectPresetId;
 export const DEFAULT_PERIOD_SELECT_MAX_DAY_RANGE_DAYS = 31;
 export const DEFAULT_PERIOD_SELECT_MAX_WEEK_RANGE_WEEKS = 26;
 
@@ -56,19 +66,19 @@ export const DEFAULT_PERIOD_SELECT_MAX_WEEK_RANGE_WEEKS = 26;
  */
 export const PERIOD_SELECT_OPTIONS: readonly BuiltInPeriodSelectOption[] = Object.freeze([
 	{
-		id: "day",
+		id: PERIOD_SELECT_PRESET_DAY,
 		label: "по дням"
 	},
 	{
-		id: "week",
+		id: PERIOD_SELECT_PRESET_WEEK,
 		label: "по неделям"
 	},
 	{
-		id: "month",
+		id: PERIOD_SELECT_PRESET_MONTH,
 		label: "по месяцам"
 	},
 	{
-		id: "year",
+		id: PERIOD_SELECT_PRESET_YEAR,
 		label: "по годам"
 	}
 ]);
@@ -77,10 +87,10 @@ export const PERIOD_SELECT_OPTIONS: readonly BuiltInPeriodSelectOption[] = Objec
  * Полный набор встроенных вариантов, доступный при отсутствии явного allow-list.
  */
 export const DEFAULT_PERIOD_SELECT_PRESET_IDS = Object.freeze([
-	"day",
-	"week",
-	"month",
-	"year"
+	PERIOD_SELECT_PRESET_DAY,
+	PERIOD_SELECT_PRESET_WEEK,
+	PERIOD_SELECT_PRESET_MONTH,
+	PERIOD_SELECT_PRESET_YEAR
 ] as const satisfies readonly PeriodSelectPresetId[]);
 
 const PERIOD_SELECT_PRESET_ID_SET: ReadonlySet<string> = new Set(PERIOD_SELECT_OPTIONS.map((option) => option.id));
@@ -138,17 +148,17 @@ export function createPeriodSelectOptions({
 			label: labels?.[option.id] ?? option.label
 		};
 
-		if (option.id === "day" && dayLimit !== undefined) {
+		if (option.id === PERIOD_SELECT_PRESET_DAY && dayLimit !== undefined) {
 			return {
 				...resolvedOption,
 				maxRangeDays: dayLimit
 			};
 		}
 
-		if (option.id === "week" && weekLimit !== undefined) {
+		if (option.id === PERIOD_SELECT_PRESET_WEEK && weekLimit !== undefined) {
 			return {
 				...resolvedOption,
-				maxRangeDays: weekLimit * 7
+				maxRangeDays: weekLimit * DAYS_PER_WEEK
 			};
 		}
 

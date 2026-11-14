@@ -1,6 +1,8 @@
 import { flattenODataDependentServices, type ODataDependentBaseProps } from "@ryuzaki13/react-foundation-api/odata";
 
 import { useODataDependentSelection } from "../../odata-dependent";
+import { ODATA_SELECTION_SEQUENTIAL } from "../../odata-dependent/model/odataDependentSelectionModes";
+import { DEFAULT_ODATA_DEPENDENT_SELECT_WIDTH_EM } from "../../select/lib/odataDependentSelectDimensions";
 
 import { ODataDependentSegmentMultiSelect } from "./ODataDependentSegmentMultiSelect";
 
@@ -17,10 +19,22 @@ export type ODataDependentMultiSelectProps = Omit<ODataDependentBaseProps, "depe
 	};
 
 export function ODataDependentMultiSelect(props: ODataDependentMultiSelectProps) {
-	const { width = 15, odata, segments, model, values, defaultValues, onChange, selectionMode, segmentOrder } = props;
+	const {
+		width = DEFAULT_ODATA_DEPENDENT_SELECT_WIDTH_EM,
+		odata,
+		segments,
+		model,
+		values,
+		defaultValues,
+		onChange,
+		selectionMode,
+		segmentOrder
+	} = props;
 	const selection = useODataDependentSelection({ values, defaultValues, onChange });
-	const segmentSelectionProps =
-		selectionMode === "sequential" ? { selectionMode: "sequential" as const, segmentOrder } : { selectionMode, segmentOrder };
+	const segmentSelectionProps: UseODataDependentSelectionOptions =
+		selectionMode === ODATA_SELECTION_SEQUENTIAL
+			? { selectionMode: ODATA_SELECTION_SEQUENTIAL, segmentOrder }
+			: { selectionMode, segmentOrder };
 	const items = flattenODataDependentServices([
 		{
 			odata,

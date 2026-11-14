@@ -1,3 +1,4 @@
+import { COLLECTION_SCROLL_ANCHOR_START } from "./collectionScrollAnchorConstants";
 import { type CollectionScrollAnchor, type ResolvedCollectionScrollAnchor } from "./collectionScrollAnchorTypes";
 
 /**
@@ -9,7 +10,7 @@ export function resolveCollectionScrollAnchor(
 	anchor: CollectionScrollAnchor,
 	keys: readonly string[]
 ): ResolvedCollectionScrollAnchor | null {
-	if (anchor.type === "start" || keys.length === 0) return null;
+	if (anchor.type === COLLECTION_SCROLL_ANCHOR_START || keys.length === 0) return null;
 
 	const currentIndexes = new Map(keys.map((key, index) => [key, index]));
 	const currentIndex = currentIndexes.get(anchor.key);

@@ -9,6 +9,7 @@ import { PopoverContext } from "./PopoverContext";
 import { PopoverTrigger } from "./PopoverTrigger";
 
 const POPOVER_VIEWPORT_PADDING = 16;
+const POPOVER_ANCHOR_GAP_PX = 8;
 
 export interface PopoverProps {
 	children: React.ReactNode;
@@ -50,7 +51,7 @@ export function Popover({ children, open: controlledOpen, defaultOpen, onOpenCha
 		onOpenChange: setOpen,
 		placement,
 		middleware: [
-			offset(8),
+			offset(POPOVER_ANCHOR_GAP_PX),
 			flip({ padding: POPOVER_VIEWPORT_PADDING }),
 			shift({ padding: POPOVER_VIEWPORT_PADDING }),
 			floatingSize({

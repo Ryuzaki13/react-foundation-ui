@@ -21,7 +21,20 @@ import {
 } from "./lib";
 import { SliderBase } from "./Slider";
 import styles from "./Slider.module.scss";
+import {
+	SLIDER_MARKS_DISPLAY_FULL,
+	SLIDER_MARKS_POSITION_VALUE,
+	SLIDER_MODE_RANGE,
+	SLIDER_MODE_SINGLE,
+	SLIDER_NEGATIVE_INFINITY_LABEL,
+	SLIDER_POSITIVE_INFINITY_LABEL
+} from "./sliderConstants";
 import { SliderPopoverToggle } from "./SliderPopoverToggle";
+
+const SLIDER_RANGE_START = "start";
+const SLIDER_RANGE_END = "end";
+
+type SliderRangeEndpoint = typeof SLIDER_RANGE_START | typeof SLIDER_RANGE_END;
 
 interface SliderInputCommonProps {
 	/**
@@ -86,8 +99,8 @@ function formatRangeDraft(
 	const normalized = normalizeRangeSliderValue(value, options);
 
 	return {
-		start: normalized[0] === null ? "-∞" : String(normalized[0]),
-		end: normalized[1] === null ? "∞" : String(normalized[1])
+		start: normalized[0] === null ? SLIDER_NEGATIVE_INFINITY_LABEL : String(normalized[0]),
+		end: normalized[1] === null ? SLIDER_POSITIVE_INFINITY_LABEL : String(normalized[1])
 	};
 }
 
@@ -100,14 +113,14 @@ function parseRangeDraftSegment(value: string, infinityText: string) {
 	return toFiniteNumber(trimmed);
 }
 
-function getRangeMarkByOutputValue(value: number | null, marks: readonly SliderRangeMark[], endpoint: "start" | "end") {
+function getRangeMarkByOutputValue(value: number | null, marks: readonly SliderRangeMark[], endpoint: SliderRangeEndpoint) {
 	const matchingMarks = marks.filter((mark) => getRangeMarkOutputValue(mark) === value);
 
 	if (!matchingMarks.length) {
 		return undefined;
 	}
 
-	return value === null && endpoint === "end" ? matchingMarks[matchingMarks.length - 1] : matchingMarks[0];
+	return value === null && endpoint === SLIDER_RANGE_END ? matchingMarks[matchingMarks.length - 1] : matchingMarks[0];
 }
 
 function getRangeMarkReadonlyLabel(mark: SliderRangeMark | undefined, value: number | null) {
@@ -122,7 +135,7 @@ function getRangeMarkReadonlyLabel(mark: SliderRangeMark | undefined, value: num
 	return value === null ? "" : String(value);
 }
 
-function getRangeEndpointLabel(value: number | null, marks: readonly SliderRangeMark[], endpoint: "start" | "end") {
+function getRangeEndpointLabel(value: number | null, marks: readonly SliderRangeMark[], endpoint: SliderRangeEndpoint) {
 	const mark = getRangeMarkByOutputValue(value, marks, endpoint);
 	return getRangeMarkReadonlyLabel(mark, value);
 }
@@ -137,18 +150,18 @@ function getRangeReadonlyText(value: SliderRangeValue, marks: readonly SliderRan
 	}
 
 	if (isStartOpen) {
-		return `Меньше ${getRangeEndpointLabel(end, marks, "end")}`;
+		return `Меньше ${getRangeEndpointLabel(end, marks, SLIDER_RANGE_END)}`;
 	}
 
 	if (isEndOpen) {
-		return `Больше ${getRangeEndpointLabel(start, marks, "start")}`;
+		return `Больше ${getRangeEndpointLabel(start, marks, SLIDER_RANGE_START)}`;
 	}
 
 	if (start === end) {
-		return `Равно ${getRangeEndpointLabel(start, marks, "start")}`;
+		return `Равно ${getRangeEndpointLabel(start, marks, SLIDER_RANGE_START)}`;
 	}
 
-	return `От ${getRangeEndpointLabel(start, marks, "start")} до ${getRangeEndpointLabel(end, marks, "end")}`;
+	return `От ${getRangeEndpointLabel(start, marks, SLIDER_RANGE_START)} до ${getRangeEndpointLabel(end, marks, SLIDER_RANGE_END)}`;
 }
 
 export function SliderInput({
@@ -158,7 +171,7 @@ export function SliderInput({
 	max: rawMax,
 	step,
 	marks,
-	marksPosition = "value",
+	marksPosition = SLIDER_MARKS_POSITION_VALUE,
 	className,
 	error,
 	onClearError,
@@ -250,13 +263,13 @@ export function SliderInput({
 			<Popover.Content background="primary" role="dialog" aria-label="Выбор значения">
 				<div className={styles.popoverContent}>
 					<SliderBase
-						mode="single"
+						mode={SLIDER_MODE_SINGLE}
 						min={min}
 						max={max}
 						step={step}
 						marks={normalizedMarks}
 						marksPosition={marksPosition}
-						marksDisplay="full"
+						marksDisplay={SLIDER_MARKS_DISPLAY_FULL}
 						value={value}
 						onChange={handleSliderChange}
 						disabled={disabled}
@@ -274,7 +287,7 @@ export function SliderRangeInput({
 	max: rawMax,
 	step,
 	marks,
-	marksPosition = "value",
+	marksPosition = SLIDER_MARKS_POSITION_VALUE,
 	className,
 	error,
 	onClearError,
@@ -338,8 +351,8 @@ export function SliderRangeInput({
 			return;
 		}
 
-		const parsedStart = parseRangeDraftSegment(draftStart, "-∞");
-		const parsedEnd = parseRangeDraftSegment(draftEnd, "∞");
+		const parsedStart = parseRangeDraftSegment(draftStart, SLIDER_NEGATIVE_INFINITY_LABEL);
+		const parsedEnd = parseRangeDraftSegment(draftEnd, SLIDER_POSITIVE_INFINITY_LABEL);
 
 		if (parsedStart === undefined || parsedEnd === undefined) {
 			rollbackDraftValue();
@@ -478,13 +491,13 @@ export function SliderRangeInput({
 			<Popover.Content background="primary" role="dialog" aria-label="Выбор диапазона значений">
 				<div className={styles.popoverContent}>
 					<SliderBase
-						mode="range"
+						mode={SLIDER_MODE_RANGE}
 						min={min}
 						max={max}
 						step={step}
 						marks={normalizedMarks}
 						marksPosition={marksPosition}
-						marksDisplay="full"
+						marksDisplay={SLIDER_MARKS_DISPLAY_FULL}
 						value={popoverValue}
 						onChange={handleSliderChange}
 						disabled={disabled}

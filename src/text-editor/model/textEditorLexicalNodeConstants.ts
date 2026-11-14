@@ -1,0 +1,13 @@
+export const LEXICAL_NODE_TYPE_TEXT = "text";
+export const LEXICAL_NODE_TYPE_LINEBREAK = "linebreak";
+export const LEXICAL_NODE_TYPE_PARAGRAPH = "paragraph";
+export const LEXICAL_NODE_TYPE_QUOTE = "quote";
+export const LEXICAL_NODE_TYPE_HEADING = "heading";
+export const LEXICAL_NODE_TYPE_LIST = "list";
+export const LEXICAL_NODE_TYPE_LISTITEM = "listitem";
+export const LEXICAL_NODE_TYPE_LINK = "link";
+export const LEXICAL_NODE_TYPE_ACCESSIBLE_LINK = "accessible-link";
+export const LEXICAL_NODE_TYPE_SEMANTIC_TAG = "semantic-tag";
+export const LEXICAL_LIST_TYPE_BULLET = "bullet";
+export const LEXICAL_LIST_TYPE_NUMBER = "number";
+export const LEXICAL_SERIALIZED_NODE_VERSION = 1;

@@ -1,13 +1,14 @@
 import { useEffect, useEffectEvent, useMemo, useState } from "react";
 
 import { encodeQrCode } from "./encodeQrCode";
+import { QR_CODE_ERROR_UNAVAILABLE, QR_CODE_STATUS_ERROR, QR_CODE_STATUS_LOADING, QR_CODE_STATUS_READY } from "./qrCodeConstants";
 
 import type { QrCodeError, QrCodeProps } from "./qrCodeTypes";
 
 type QrCodeRequest = Readonly<{ value: string; level: NonNullable<QrCodeProps["errorCorrectionLevel"]> }>;
 type QrCodeImage =
-	| { readonly request: QrCodeRequest; readonly status: "ready"; readonly url: string }
-	| { readonly request: QrCodeRequest; readonly status: "error"; readonly error: QrCodeError };
+	| { readonly request: QrCodeRequest; readonly status: typeof QR_CODE_STATUS_READY; readonly url: string }
+	| { readonly request: QrCodeRequest; readonly status: typeof QR_CODE_STATUS_ERROR; readonly error: QrCodeError };
 
 /** Ресурс принадлежит одной генерации изображения, а не всему lifetime компонента. */
 export function useQrCodeImage(value: string, level: QrCodeRequest["level"], onError: QrCodeProps["onError"]) {
@@ -25,13 +26,13 @@ export function useQrCodeImage(value: string, level: QrCodeRequest["level"], onE
 			else {
 				try {
 					objectUrl = URL.createObjectURL(new Blob([result.svg], { type: "image/svg+xml" }));
-					setImage({ request, status: "ready", url: objectUrl });
+					setImage({ request, status: QR_CODE_STATUS_READY, url: objectUrl });
 					return;
 				} catch {
-					error = { kind: "unavailable" };
+					error = { kind: QR_CODE_ERROR_UNAVAILABLE };
 				}
 			}
-			setImage({ request, status: "error", error });
+			setImage({ request, status: QR_CODE_STATUS_ERROR, error });
 			reportEncodingError(error);
 		});
 		return () => {
@@ -44,12 +45,12 @@ export function useQrCodeImage(value: string, level: QrCodeRequest["level"], onE
 	// Старый QR исчезает на первом render новых props, до выполнения cleanup/effect.
 	const current = image?.request === request ? image : null;
 	return {
-		status: current?.status ?? "loading",
-		url: current?.status === "ready" ? current.url : undefined,
+		status: current?.status ?? QR_CODE_STATUS_LOADING,
+		url: current?.status === QR_CODE_STATUS_READY ? current.url : undefined,
 		onImageError: () => {
-			if (current?.status !== "ready") return;
-			const error: QrCodeError = { kind: "unavailable" };
-			setImage({ request, status: "error", error });
+			if (current?.status !== QR_CODE_STATUS_READY) return;
+			const error: QrCodeError = { kind: QR_CODE_ERROR_UNAVAILABLE };
+			setImage({ request, status: QR_CODE_STATUS_ERROR, error });
 			onError?.(error);
 		}
 	};

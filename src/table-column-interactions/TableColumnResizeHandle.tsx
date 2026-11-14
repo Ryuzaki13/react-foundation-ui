@@ -6,6 +6,9 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import styles from "./TableColumnInteractions.module.scss";
 
 const DEFAULT_KEYBOARD_RESIZE_STEP = 8;
+const RESIZE_KEY_DECREASE = "ArrowLeft";
+const RESIZE_KEY_INCREASE = "ArrowRight";
+const RESIZE_KEY_RESET = "Home";
 
 export type TableColumnResizeHandleProps = {
 	columnId: string;
@@ -114,19 +117,19 @@ export function TableColumnResizeHandle({
 	};
 
 	const handleKeyDown = (event: ReactKeyboardEvent<HTMLDivElement>) => {
-		if (event.key !== "ArrowLeft" && event.key !== "ArrowRight" && event.key !== "Home") {
+		if (event.key !== RESIZE_KEY_DECREASE && event.key !== RESIZE_KEY_INCREASE && event.key !== RESIZE_KEY_RESET) {
 			return;
 		}
 
 		event.preventDefault();
 		event.stopPropagation();
 
-		if (event.key === "Home") {
+		if (event.key === RESIZE_KEY_RESET) {
 			onReset?.(columnId);
 			return;
 		}
 
-		const direction = event.key === "ArrowRight" ? 1 : -1;
+		const direction = event.key === RESIZE_KEY_INCREASE ? 1 : -1;
 		const current = resolveStartWidth(event.currentTarget);
 		const nextWidth = normalizeTableColumnWidth(
 			current.width + (direction * keyboardStep) / current.pixelsPerUnit,

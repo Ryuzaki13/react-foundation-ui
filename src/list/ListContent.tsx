@@ -3,6 +3,7 @@ import { useMemo, type ReactNode } from "react";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { buildCollectionRows } from "../collection-layout/lib/buildCollectionRows";
+import { COLLECTION_ROW_KIND_GROUP, COLLECTION_ROW_KIND_ITEMS } from "../collection-layout/model/collectionRowConstants";
 import { Scrollable } from "../misc";
 
 import { type ListColumns, type ListGrouping } from "./listLayoutTypes";
@@ -33,10 +34,14 @@ export function ListContent<T>({ items, getKey, render, separated, className, co
 				{rows.map((row) => (
 					<li
 						key={row.key}
-						role={row.kind === "group" || columns !== undefined ? "presentation" : undefined}
-						aria-posinset={grouping && columns === undefined && row.kind === "items" ? row.entries[0]?.position : undefined}
-						aria-setsize={grouping && columns === undefined && row.kind === "items" ? itemCount : undefined}
-						className={cn(separated && row.kind === "items" && "borderBottom")}>
+						role={row.kind === COLLECTION_ROW_KIND_GROUP || columns !== undefined ? "presentation" : undefined}
+						aria-posinset={
+							grouping && columns === undefined && row.kind === COLLECTION_ROW_KIND_ITEMS
+								? row.entries[0]?.position
+								: undefined
+						}
+						aria-setsize={grouping && columns === undefined && row.kind === COLLECTION_ROW_KIND_ITEMS ? itemCount : undefined}
+						className={cn(separated && row.kind === COLLECTION_ROW_KIND_ITEMS && "borderBottom")}>
 						<ListRowContent row={row} render={render} columns={columns} grouping={grouping} itemCount={itemCount} />
 					</li>
 				))}

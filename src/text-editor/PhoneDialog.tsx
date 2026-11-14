@@ -8,6 +8,7 @@ import { FlexContainer } from "../flex";
 import { GridContainer } from "../grid";
 import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
+import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT } from "../uiSchemeConstants";
 
 import { LinkType } from "./linkTypes";
 
@@ -111,7 +112,7 @@ export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogPro
 			</ModalContent>
 			<ModalFooter>
 				<Button onClick={handleClose}>Отмена</Button>
-				<Button appearance="solid" tone="accent" onClick={handleConfirm} disabled={!phone || !ariaLabel}>
+				<Button appearance={UI_APPEARANCE_SOLID} tone={UI_TONE_ACCENT} onClick={handleConfirm} disabled={!phone || !ariaLabel}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

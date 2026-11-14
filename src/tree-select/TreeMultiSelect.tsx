@@ -14,6 +14,7 @@ import {
 	treeSelectedIdsToMultiValue
 } from "./model/treeUtils";
 import { TreePickerBase } from "./TreePickerBase";
+import { TREE_OPTIONS_LAYOUT_TREE, TREE_SELECTION_MODE_MULTI, TREE_TRIGGER_MODE_SEARCH } from "./treeSelectConstants";
 import { TreeMultiSelectOptionsLayout, TreeMultiSelectValue, TreeSelectNode } from "./types";
 
 export interface TreeMultiSelectProps extends Omit<UiBaseProps<TreeMultiSelectValue>, "placeholder"> {
@@ -92,7 +93,7 @@ export function TreeMultiSelect({
 	error,
 	fieldError,
 	required,
-	optionsLayout = "tree",
+	optionsLayout = TREE_OPTIONS_LAYOUT_TREE,
 	defaultExpandedCodeKeys
 }: TreeMultiSelectProps) {
 	const [open, setOpen] = useState(false);
@@ -148,7 +149,7 @@ export function TreeMultiSelect({
 			nodes={nodes}
 			selectedIds={selectionState.selectedIds}
 			partialIds={selectionState.partialIds}
-			selectionMode="multi"
+			selectionMode={TREE_SELECTION_MODE_MULTI}
 			optionsLayout={optionsLayout}
 			defaultExpandedCodeKeys={defaultExpandedCodeKeys}
 			unavailableNodeIds={unavailableNodeIds}
@@ -158,7 +159,7 @@ export function TreeMultiSelect({
 				onSelectAll: selectAll,
 				onDeselectAll: () => setDraftValue({})
 			}}
-			triggerMode="search"
+			triggerMode={TREE_TRIGGER_MODE_SEARCH}
 			selectedSummary={selectedSummary}
 			query={query}
 			defaultQuery={defaultQuery}

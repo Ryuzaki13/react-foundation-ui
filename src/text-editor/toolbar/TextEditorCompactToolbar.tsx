@@ -3,6 +3,8 @@ import { type KeyboardEvent, useId, useRef } from "react";
 import { TextCursorInput } from "lucide-react";
 
 import { Button } from "../../button";
+import { UI_APPEARANCE_GHOST, UI_APPEARANCE_SOLID, UI_TONE_ACCENT, UI_TONE_NEUTRAL } from "../../uiSchemeConstants";
+import { COMPACT_TOOLBAR_FOCUS_DIALOG } from "../model/compactToolbarFocusConstants";
 import { useCompactTextEditorToolbar } from "../model/useCompactTextEditorToolbar";
 
 import { TextEditorToolbarLexical, type TextEditorToolbarLexicalProps } from "./TextEditorToolbarLexical";
@@ -32,8 +34,8 @@ export function TextEditorCompactToolbar({ state, canEdit, ...props }: TextEdito
 				data-action="toggle-text-editor-formatting"
 				disabled={props.disabled}
 				title="Форматирование"
-				appearance={panel.open ? "solid" : "ghost"}
-				tone={panel.open ? "accent" : "neutral"}
+				appearance={panel.open ? UI_APPEARANCE_SOLID : UI_APPEARANCE_GHOST}
+				tone={panel.open ? UI_TONE_ACCENT : UI_TONE_NEUTRAL}
 				icon={<TextCursorInput />}
 				aria-expanded={panel.open}
 				aria-controls={panelId}
@@ -54,8 +56,8 @@ export function TextEditorCompactToolbar({ state, canEdit, ...props }: TextEdito
 						onBlockStyleToggle={(style) => panel.runCommand(() => props.onBlockStyleToggle(style))}
 						onInlineStyleToggle={(style) => panel.runCommand(() => props.onInlineStyleToggle(style))}
 						onAlignmentChange={(alignment) => panel.runCommand(() => props.onAlignmentChange(alignment))}
-						onLinkClick={(type) => panel.runCommand(() => props.onLinkClick(type), "dialog")}
-						onTagClick={(type) => panel.runCommand(() => props.onTagClick(type), "dialog")}
+						onLinkClick={(type) => panel.runCommand(() => props.onLinkClick(type), COMPACT_TOOLBAR_FOCUS_DIALOG)}
+						onTagClick={(type) => panel.runCommand(() => props.onTagClick(type), COMPACT_TOOLBAR_FOCUS_DIALOG)}
 						onUndo={() => panel.runCommand(props.onUndo)}
 						onRedo={() => panel.runCommand(props.onRedo)}
 						onCleanTag={() => panel.runCommand(() => props.onCleanTag?.())}

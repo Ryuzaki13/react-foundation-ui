@@ -12,6 +12,8 @@ import {
 	Spread
 } from "lexical";
 
+import { LEXICAL_NODE_TYPE_SEMANTIC_TAG } from "../model/textEditorLexicalNodeConstants";
+
 export type SemanticTagAttributes = Record<string, string>;
 
 export type SerializedSemanticTagNode = Spread<
@@ -61,7 +63,7 @@ export class SemanticTagNode extends ElementNode {
 	__text: null | string;
 
 	static getType(): string {
-		return "semantic-tag";
+		return LEXICAL_NODE_TYPE_SEMANTIC_TAG;
 	}
 
 	static clone(node: SemanticTagNode): SemanticTagNode {
@@ -102,7 +104,7 @@ export class SemanticTagNode extends ElementNode {
 	exportJSON(): SerializedSemanticTagNode {
 		return {
 			...super.exportJSON(),
-			type: "semantic-tag",
+			type: LEXICAL_NODE_TYPE_SEMANTIC_TAG,
 			version: 1,
 			tag: this.getTag(),
 			attributes: this.getAttributes(),

@@ -1,6 +1,7 @@
 import { useCallback } from "react";
 
 import { useODataDependentSelection } from "../../odata-dependent";
+import { DEFAULT_ODATA_DEPENDENT_SELECT_WIDTH_EM } from "../../select/lib/odataDependentSelectDimensions";
 
 import { ODataMultiSelect } from "./ODataMultiSelect";
 
@@ -9,7 +10,7 @@ import type { ODataDependentSegmentControlProps } from "../../odata-dependent";
 export type ODataDependentSegmentMultiSelectProps = ODataDependentSegmentControlProps;
 
 export function ODataDependentSegmentMultiSelect(props: ODataDependentSegmentMultiSelectProps) {
-	const { item, disabled, label, description, required, fieldError, size, width = 15 } = props;
+	const { item, disabled, label, description, required, fieldError, size, width = DEFAULT_ODATA_DEPENDENT_SELECT_WIDTH_EM } = props;
 	const selection = useODataDependentSelection(props);
 	const { updateSegment } = selection;
 	const widthStyle = `calc(${width}em + var(--width-add))`;

@@ -4,7 +4,14 @@ import { AlertCircleIcon, CheckCircle2Icon, InfoIcon, TriangleAlertIcon, XIcon }
 
 import { Button } from "../../button";
 import { FlexContainer } from "../../flex";
+import { UI_APPEARANCE_GHOST, UI_APPEARANCE_OUTLINE } from "../../uiSchemeConstants";
 import { useNotifications, useNotify } from "../model";
+import {
+	NOTIFICATION_TYPE_SUCCESS,
+	NOTIFICATION_TYPE_INFO,
+	NOTIFICATION_TYPE_WARNING,
+	NOTIFICATION_TYPE_ERROR
+} from "../model/notificationTypeConstants";
 
 import styles from "./Notification.module.scss";
 
@@ -15,19 +22,19 @@ const notificationConfig: Record<
 		Icon: typeof InfoIcon;
 	}
 > = {
-	info: {
+	[NOTIFICATION_TYPE_INFO]: {
 		title: "Информация",
 		Icon: InfoIcon
 	},
-	success: {
+	[NOTIFICATION_TYPE_SUCCESS]: {
 		title: "Успешно",
 		Icon: CheckCircle2Icon
 	},
-	warning: {
+	[NOTIFICATION_TYPE_WARNING]: {
 		title: "Предупреждение",
 		Icon: TriangleAlertIcon
 	},
-	error: {
+	[NOTIFICATION_TYPE_ERROR]: {
 		title: "Ошибка",
 		Icon: AlertCircleIcon
 	}
@@ -52,7 +59,7 @@ export function NotificationsHost() {
 				return (
 					<div
 						key={notification.id}
-						role={notification.type === "error" ? "alert" : "status"}
+						role={notification.type === NOTIFICATION_TYPE_ERROR ? "alert" : "status"}
 						aria-atomic="true"
 						className={cn(styles.card, styles[notification.type])}>
 						<FlexContainer align="start" justify="between" gap="sm" className={styles.header}>
@@ -72,7 +79,7 @@ export function NotificationsHost() {
 												<Button
 													key={action.label}
 													tone={action.tone ?? notification.type}
-													appearance="outline"
+													appearance={UI_APPEARANCE_OUTLINE}
 													data-ui="notification-action-button"
 													data-action="notification-action"
 													onClick={() => void action.onClick()}>
@@ -87,7 +94,7 @@ export function NotificationsHost() {
 							{notification.dismissible !== false ? (
 								<Button
 									icon={<XIcon />}
-									appearance="ghost"
+									appearance={UI_APPEARANCE_GHOST}
 									tone={notification.type}
 									onClick={() => dismiss(notification.id)}
 									aria-label={`Закрыть уведомление «${title}»`}

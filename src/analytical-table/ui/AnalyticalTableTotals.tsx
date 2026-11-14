@@ -1,5 +1,6 @@
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { ANALYTICAL_COLUMN_KIND_MEASURE } from "../lib/analyticalTableConstants";
 import { type AnalyticalTableLayout } from "../lib/analyticalTableLayout";
 import { type AnalyticalTableProps, type AnalyticalTableRuntime } from "../types/analyticalTable";
 
@@ -19,7 +20,9 @@ export function AnalyticalTableTotals<T>({ runtime, layout, options, selection, 
 	const totals = runtime.model.grandTotals;
 	if (!totals || options.showGrandTotals === false) return null;
 
-	const firstValueIndex = runtime.visibleColumns.findIndex((column) => column.kind === "measure" || column.renderTotal);
+	const firstValueIndex = runtime.visibleColumns.findIndex(
+		(column) => column.kind === ANALYTICAL_COLUMN_KIND_MEASURE || column.renderTotal
+	);
 	const labelColumnCount = firstValueIndex < 0 ? runtime.visibleColumns.length : firstValueIndex;
 	const leadingDimensions = runtime.visibleColumns.slice(0, labelColumnCount);
 	const firstUnpinned = leadingDimensions.findIndex((column) => !layout.pinnedOffsets.has(column.id));

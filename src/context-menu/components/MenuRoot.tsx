@@ -11,6 +11,20 @@ import {
 } from "@ryuzaki13/react-foundation-lib/context-menu";
 
 import { MenuContext, type MenuInitialFocus, type MenuTriggerMode } from "./MenuContext";
+import {
+	MENU_INITIAL_FOCUS_FIRST,
+	MENU_INITIAL_FOCUS_LAST,
+	MENU_KEY_ARROW_DOWN,
+	MENU_KEY_ARROW_UP,
+	MENU_OPEN_SOURCE_KEYBOARD,
+	MENU_TRIGGER_CLICK,
+	MENU_TRIGGER_CONTEXT_MENU
+} from "./menuInteractionConstants";
+
+const MENU_ANCHOR_ELEMENT = "element";
+const MENU_ANCHOR_POINT = "point";
+const MENU_ANCHOR_GAP_PX = 6;
+const MENU_VIEWPORT_PADDING_PX = 8;
 
 interface MenuRootProps {
 	children: ReactNode;
@@ -24,7 +38,7 @@ interface MenuRootProps {
 export function MenuRoot({
 	children,
 	mode,
-	placement = mode === "click" ? "bottom-start" : "right-start",
+	placement = mode === MENU_TRIGGER_CLICK ? "bottom-start" : "right-start",
 	open: controlledOpen,
 	defaultOpen,
 	onOpenChange
@@ -33,7 +47,7 @@ export function MenuRoot({
 	const menuId = `${generatedId}-menu`;
 	const defaultTriggerId = `${generatedId}-trigger`;
 	const [menuState, setMenuState] = useState(initialMenuState);
-	const [initialFocus, setInitialFocus] = useState<MenuInitialFocus>("first");
+	const [initialFocus, setInitialFocus] = useState<MenuInitialFocus>(MENU_INITIAL_FOCUS_FIRST);
 	const [triggerId, setTriggerId] = useState(defaultTriggerId);
 	const [uncontrolledOpen, setUncontrolledOpen] = useState(defaultOpen ?? false);
 	const isControlled = controlledOpen !== undefined;
@@ -43,9 +57,9 @@ export function MenuRoot({
 
 	const { refs, floatingStyles, update } = useFloating({
 		placement,
-		strategy: mode === "contextmenu" ? "fixed" : "absolute",
+		strategy: mode === MENU_TRIGGER_CONTEXT_MENU ? "fixed" : "absolute",
 		transform: false,
-		middleware: [offset(6), flip({ padding: 8 }), shift({ padding: 8 })],
+		middleware: [offset(MENU_ANCHOR_GAP_PX), flip({ padding: MENU_VIEWPORT_PADDING_PX }), shift({ padding: MENU_VIEWPORT_PADDING_PX })],
 		whileElementsMounted: autoUpdate
 	});
 
@@ -67,14 +81,18 @@ export function MenuRoot({
 	}, [setOpen]);
 
 	const openAtElement = useCallback(
-		(element: HTMLElement, source: "click" | "keyboard", nextInitialFocus: MenuInitialFocus = "first") => {
+		(
+			element: HTMLElement,
+			source: typeof MENU_TRIGGER_CLICK | typeof MENU_OPEN_SOURCE_KEYBOARD,
+			nextInitialFocus: MenuInitialFocus = MENU_INITIAL_FOCUS_FIRST
+		) => {
 			refs.setReference(element);
 			setInitialFocus(nextInitialFocus);
 			setMenuState(
 				openMenu({
 					source,
 					anchor: {
-						type: "element",
+						type: MENU_ANCHOR_ELEMENT,
 						element
 					}
 				})
@@ -85,14 +103,18 @@ export function MenuRoot({
 	);
 
 	const openAtPoint = useCallback(
-		(point: { x: number; y: number }, source: "contextmenu" | "keyboard", contextElement?: HTMLElement | null) => {
+		(
+			point: { x: number; y: number },
+			source: typeof MENU_TRIGGER_CONTEXT_MENU | typeof MENU_OPEN_SOURCE_KEYBOARD,
+			contextElement?: HTMLElement | null
+		) => {
 			refs.setReference(createVirtualAnchor(point, contextElement));
-			setInitialFocus("first");
+			setInitialFocus(MENU_INITIAL_FOCUS_FIRST);
 			setMenuState(
 				openMenu({
 					source,
 					anchor: {
-						type: "point",
+						type: MENU_ANCHOR_POINT,
 						point,
 						contextElement
 					}
@@ -116,7 +138,7 @@ export function MenuRoot({
 			if (triggerElementRef.current === null || triggerElementRef.current === previous) {
 				triggerElementRef.current = node;
 			}
-			if (mode === "click") {
+			if (mode === MENU_TRIGGER_CLICK) {
 				refs.setReference(node);
 			}
 		},
@@ -125,37 +147,41 @@ export function MenuRoot({
 
 	const onTriggerClick = useCallback(
 		(event: MouseEvent<HTMLElement>) => {
-			if (mode !== "click") return;
+			if (mode !== MENU_TRIGGER_CLICK) return;
 			const element = event.currentTarget;
 
-			if (open && menuState.anchor?.type === "element" && menuState.anchor.element === element) {
+			if (open && menuState.anchor?.type === MENU_ANCHOR_ELEMENT && menuState.anchor.element === element) {
 				closeMenuHandler();
 				return;
 			}
 
-			openAtElement(element, "click");
+			openAtElement(element, MENU_TRIGGER_CLICK);
 		},
 		[mode, open, menuState.anchor, closeMenuHandler, openAtElement]
 	);
 
 	const onTriggerContextMenu = useCallback(
 		(event: MouseEvent<HTMLElement>, triggerElement = event.currentTarget) => {
-			if (mode !== "contextmenu") return;
+			if (mode !== MENU_TRIGGER_CONTEXT_MENU) return;
 			event.preventDefault();
 
 			const point = getMenuPointFromEvent(event);
 			triggerElementRef.current = triggerElement;
-			openAtPoint(point, "contextmenu", triggerElement);
+			openAtPoint(point, MENU_TRIGGER_CONTEXT_MENU, triggerElement);
 		},
 		[mode, openAtPoint]
 	);
 
 	const onTriggerKeyDown = useCallback(
 		(event: KeyboardEvent<HTMLElement>, triggerElement = event.currentTarget) => {
-			if (mode === "click" && (event.key === "ArrowDown" || event.key === "ArrowUp")) {
+			if (mode === MENU_TRIGGER_CLICK && (event.key === MENU_KEY_ARROW_DOWN || event.key === MENU_KEY_ARROW_UP)) {
 				event.preventDefault();
 				triggerElementRef.current = triggerElement;
-				openAtElement(triggerElement, "keyboard", event.key === "ArrowUp" ? "last" : "first");
+				openAtElement(
+					triggerElement,
+					MENU_OPEN_SOURCE_KEYBOARD,
+					event.key === MENU_KEY_ARROW_UP ? MENU_INITIAL_FOCUS_LAST : MENU_INITIAL_FOCUS_FIRST
+				);
 				return;
 			}
 
@@ -165,13 +191,13 @@ export function MenuRoot({
 			event.preventDefault();
 			triggerElementRef.current = triggerElement;
 
-			if (mode === "click") {
-				openAtElement(triggerElement, "keyboard");
+			if (mode === MENU_TRIGGER_CLICK) {
+				openAtElement(triggerElement, MENU_OPEN_SOURCE_KEYBOARD);
 				return;
 			}
 
 			const point = getMenuPointFromRect(triggerElement.getBoundingClientRect());
-			openAtPoint(point, "keyboard", triggerElement);
+			openAtPoint(point, MENU_OPEN_SOURCE_KEYBOARD, triggerElement);
 		},
 		[mode, openAtElement, openAtPoint]
 	);
@@ -180,7 +206,7 @@ export function MenuRoot({
 	const anchorPoint = useMemo(() => {
 		if (!menuState.anchor) return null;
 
-		if (menuState.anchor.type === "point") {
+		if (menuState.anchor.type === MENU_ANCHOR_POINT) {
 			return menuState.anchor.point;
 		}
 

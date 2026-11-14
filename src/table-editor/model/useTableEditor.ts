@@ -9,6 +9,8 @@ import {
 	type TableDocumentRange
 } from "@ryuzaki13/react-foundation-lib/table-document";
 
+const TABLE_EDITOR_MAX_UNDO_STEPS = 100;
+
 /** Локальный draft: серверные версии, сохранение и конфликты принадлежат host-приложению. */
 export type TableEditorController<T> = {
 	readonly document: TableDocument<T>;
@@ -53,7 +55,7 @@ export function useTableEditor<T>(initialDocument: TableDocument<T>): TableEdito
 		assertTableDocument(next);
 		setState((current) => {
 			if (current.documents[current.index] === next) return current;
-			const documents = [...current.documents.slice(0, current.index + 1), next].slice(-101);
+			const documents = [...current.documents.slice(0, current.index + 1), next].slice(-(TABLE_EDITOR_MAX_UNDO_STEPS + 1));
 			const position = {
 				row: Math.min(current.focus.row, next.rows.length - 1),
 				column: Math.min(current.focus.column, next.columns.length - 1)

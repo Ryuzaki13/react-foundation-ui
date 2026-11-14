@@ -2,6 +2,7 @@ import { isRecord } from "@ryuzaki13/react-foundation-lib/validators";
 import { type EditorState as LexicalEditorState } from "lexical";
 
 import { type TextEditorLexicalRaw } from "../../editorModel";
+import { TEXT_EDITOR_LEXICAL_RAW_FORMAT, TEXT_EDITOR_LEXICAL_RAW_VERSION } from "../../model/textEditorLexicalRawConstants";
 
 export const createLexicalRaw = (editorState: LexicalEditorState): TextEditorLexicalRaw => {
 	// toJSON SDK может оставлять enumerable undefined в optional полях узлов.
@@ -13,8 +14,8 @@ export const createLexicalRaw = (editorState: LexicalEditorState): TextEditorLex
 	}
 
 	return {
-		format: "lexical",
-		version: 1,
+		format: TEXT_EDITOR_LEXICAL_RAW_FORMAT,
+		version: TEXT_EDITOR_LEXICAL_RAW_VERSION,
 		editorState: serializedState
 	};
 };

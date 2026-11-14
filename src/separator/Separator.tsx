@@ -4,8 +4,11 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { PolymorphicComponent, PolymorphicComponentBaseProps } from "../polymorphic";
 
+const SEPARATOR_ORIENTATION_HORIZONTAL = "horizontal";
+const SEPARATOR_ROLE = "separator";
+
 type SeparatorOwnProps<E extends React.ElementType = React.ElementType> = PolymorphicComponentBaseProps<E> & {
-	orientation?: "horizontal" | "vertical";
+	orientation?: typeof SEPARATOR_ORIENTATION_HORIZONTAL | "vertical";
 	className?: string;
 };
 
@@ -13,9 +16,9 @@ type SeparatorProps<E extends React.ElementType> = SeparatorOwnProps<E> & Omit<R
 
 export function Separator<E extends React.ElementType>({
 	as,
-	orientation = "horizontal",
+	orientation = SEPARATOR_ORIENTATION_HORIZONTAL,
 	className,
-	role = "separator",
+	role = SEPARATOR_ROLE,
 	"aria-orientation": ariaOrientation,
 	...props
 }: SeparatorProps<E>) {
@@ -25,8 +28,8 @@ export function Separator<E extends React.ElementType>({
 		<PolymorphicComponent
 			as={Component as React.ElementType}
 			role={role}
-			aria-orientation={role === "separator" ? (ariaOrientation ?? orientation) : undefined}
-			className={cn(className, orientation === "horizontal" ? "separator" : "separatorVertical")}
+			aria-orientation={role === SEPARATOR_ROLE ? (ariaOrientation ?? orientation) : undefined}
+			className={cn(className, orientation === SEPARATOR_ORIENTATION_HORIZONTAL ? "separator" : "separatorVertical")}
 			{...props}
 		/>
 	);

@@ -8,6 +8,7 @@ import { Separator } from "../separator";
 import { UiPanelTone } from "../types";
 import uiStyles from "../ui.module.scss";
 import { getUiPanelToneClassName } from "../uiClasses";
+import { UI_PANEL_TONE_SURFACE } from "../uiSchemeConstants";
 
 import styles from "./Disclosure.module.scss";
 
@@ -28,7 +29,7 @@ export function Disclosure({
 	label,
 	defaultOpen,
 	headerActions,
-	tone = "surface",
+	tone = UI_PANEL_TONE_SURFACE,
 	triggerClassName,
 	contentClassName,
 	children

@@ -5,6 +5,7 @@ import { Placement } from "@floating-ui/react";
 import { DropdownMenuTrigger } from "./DropdownMenuTrigger";
 import { MenuContent } from "./MenuContent";
 import { MenuGroupLabel } from "./MenuGroupLabel";
+import { MENU_TRIGGER_CLICK } from "./menuInteractionConstants";
 import { MenuItem } from "./MenuItem";
 import { MenuRoot } from "./MenuRoot";
 import { MenuSeparator } from "./MenuSeparator";
@@ -19,7 +20,7 @@ export interface DropdownMenuProps {
 
 export function DropdownMenu({ children, placement, open, defaultOpen, onOpenChange }: DropdownMenuProps) {
 	return (
-		<MenuRoot mode="click" placement={placement} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+		<MenuRoot mode={MENU_TRIGGER_CLICK} placement={placement} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
 			{children}
 		</MenuRoot>
 	);

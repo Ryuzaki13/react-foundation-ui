@@ -2,9 +2,11 @@ import { type ReactNode } from "react";
 
 import { type ReadFileError, type ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 
+import { type READ_FILE_MODE_DATA_URL } from "../../input-file/readFileModeConstants";
+
 import { type ImageCropArea, type ImageCropPoint } from "./imageCropTypes";
 
-export type SelectedImageFile = Extract<ReadFileResult, { mode: "data-url" }>;
+export type SelectedImageFile = Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_DATA_URL }>;
 
 /** Данные исходного файла и подтверждённые пользователем параметры изображения. */
 export type SelectedImageData = {

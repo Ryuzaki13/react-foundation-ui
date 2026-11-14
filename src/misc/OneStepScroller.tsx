@@ -24,6 +24,11 @@ interface OneStepScrollerProps {
 }
 
 const EDGE_EPSILON_PX = 1;
+const DEFAULT_SCROLL_PADDING_PX = 6;
+const SCROLL_BEHAVIOR_SMOOTH = "smooth";
+const SCROLL_BEHAVIOR_AUTO = "auto";
+const SCROLLER_FOCUS_IN_EVENT = "focusin";
+const SCROLLER_SCROLL_EVENT = "scroll";
 
 function maxScrollLeft(scroller: HTMLElement) {
 	return Math.max(0, scroller.scrollWidth - scroller.clientWidth);
@@ -35,7 +40,13 @@ function maxScrollLeft(scroller: HTMLElement) {
  * Ожидает элементы фиксированной ширины (или близкой к фиксированной),
  * чтобы шаг скролла соответствовал ширине одного элемента.
  */
-export function OneStepScroller({ children, className, itemSelector, scrollPadding = 6, smooth = true }: OneStepScrollerProps) {
+export function OneStepScroller({
+	children,
+	className,
+	itemSelector,
+	scrollPadding = DEFAULT_SCROLL_PADDING_PX,
+	smooth = true
+}: OneStepScrollerProps) {
 	const scrollerRef = useRef<HTMLDivElement | null>(null);
 	const rafIdRef = useRef<number | null>(null);
 
@@ -140,7 +151,7 @@ export function OneStepScroller({ children, className, itemSelector, scrollPaddi
 
 			scroller.scrollTo({
 				left: target,
-				behavior: smooth ? "smooth" : "auto"
+				behavior: smooth ? SCROLL_BEHAVIOR_SMOOTH : SCROLL_BEHAVIOR_AUTO
 			});
 		},
 		[getItems, smooth]
@@ -176,7 +187,7 @@ export function OneStepScroller({ children, className, itemSelector, scrollPaddi
 
 			scroller.scrollTo({
 				left: Math.round(targetScrollLeft),
-				behavior: smooth ? "smooth" : "auto"
+				behavior: smooth ? SCROLL_BEHAVIOR_SMOOTH : SCROLL_BEHAVIOR_AUTO
 			});
 		},
 		[scrollPadding, smooth]
@@ -194,8 +205,8 @@ export function OneStepScroller({ children, className, itemSelector, scrollPaddi
 			if (item) ensureFullyVisible(item);
 		};
 
-		scroller.addEventListener("focusin", handleFocusIn);
-		return () => scroller.removeEventListener("focusin", handleFocusIn);
+		scroller.addEventListener(SCROLLER_FOCUS_IN_EVENT, handleFocusIn);
+		return () => scroller.removeEventListener(SCROLLER_FOCUS_IN_EVENT, handleFocusIn);
 	}, [ensureFullyVisible, findItemForTarget]);
 
 	/**
@@ -207,7 +218,7 @@ export function OneStepScroller({ children, className, itemSelector, scrollPaddi
 		if (!scroller) return;
 
 		const onScroll = () => scheduleUpdateScrollButtons();
-		scroller.addEventListener("scroll", onScroll, { passive: true });
+		scroller.addEventListener(SCROLLER_SCROLL_EVENT, onScroll, { passive: true });
 
 		let resizeObserver: ResizeObserver | null = null;
 		if (typeof ResizeObserver !== "undefined") {
@@ -227,7 +238,7 @@ export function OneStepScroller({ children, className, itemSelector, scrollPaddi
 		scheduleUpdateScrollButtons();
 
 		return () => {
-			scroller.removeEventListener("scroll", onScroll);
+			scroller.removeEventListener(SCROLLER_SCROLL_EVENT, onScroll);
 			resizeObserver?.disconnect();
 			mutationObserver?.disconnect();
 

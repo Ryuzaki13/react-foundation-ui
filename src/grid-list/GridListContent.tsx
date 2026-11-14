@@ -1,11 +1,13 @@
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { COLLECTION_ROW_KIND_ITEMS } from "../collection-layout/model/collectionRowConstants";
 import { GridContainer } from "../grid";
 import { LoadingMessage, Scrollable } from "../misc";
 import { CollectionPaginationEffect } from "../virtualized-collection/CollectionPaginationEffect";
 
 import styles from "./GridList.module.scss";
 import { type GridListContentProps } from "./gridListTypes";
+import { GRID_LIST_DEFAULT_GAP, GRID_LIST_NO_GAP } from "./model/gridListGapConstants";
 import { useGridListContent } from "./model/useGridListContent";
 
 /**
@@ -17,7 +19,7 @@ export function GridListContent<T>(props: GridListContentProps<T>) {
 		items,
 		render,
 		minItemWidth,
-		gap = "md",
+		gap = GRID_LIST_DEFAULT_GAP,
 		grouping,
 		className,
 		isLoading,
@@ -56,7 +58,7 @@ export function GridListContent<T>(props: GridListContentProps<T>) {
 				<span
 					ref={attachMetricsProbe}
 					className={styles.metricsProbe}
-					style={{ width: minItemWidth, height: `calc(1lh + ${gap === "none" ? "0px" : `var(--space-${gap})`})` }}
+					style={{ width: minItemWidth, height: `calc(1lh + ${gap === GRID_LIST_NO_GAP ? "0px" : `var(--space-${gap})`})` }}
 				/>
 			</GridContainer>
 			{fetchNextPage && (
@@ -82,7 +84,7 @@ export function GridListContent<T>(props: GridListContentProps<T>) {
 					{/* flatMap принципиален: Fragment или вложенный массив на ряд снова привяжет identity карточки к ряду. */}
 					{virtualRows.flatMap(({ key, index, row }, windowIndex) => {
 						const gridRow = windowIndex + 1;
-						if (row?.kind !== "items") {
+						if (row?.kind !== COLLECTION_ROW_KIND_ITEMS) {
 							return [
 								<li
 									key={JSON.stringify(["full-row", key])}

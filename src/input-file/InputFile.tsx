@@ -15,6 +15,7 @@ import { UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
 import styles from "./InputFile.module.scss";
+import { READ_FILE_MODE_ARRAY_BUFFER, READ_FILE_MODE_DATA_URL } from "./readFileModeConstants";
 
 interface InputFileCommonProps extends Omit<UiBaseProps<undefined>, "value" | "onChange"> {
 	/** Callback очистки выбранного файла. Если передан — отображается кнопка «крестик» */
@@ -41,8 +42,8 @@ interface InputFileCommonProps extends Omit<UiBaseProps<undefined>, "value" | "o
 	className?: string;
 }
 
-type InputFileDataUrlResult = Extract<ReadFileResult, { mode: "data-url" }>;
-type InputFileArrayBufferResult = Extract<ReadFileResult, { mode: "array-buffer" }>;
+type InputFileDataUrlResult = Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_DATA_URL }>;
+type InputFileArrayBufferResult = Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_ARRAY_BUFFER }>;
 
 /**
  * Пропсы компонента InputFile.
@@ -58,12 +59,12 @@ export type InputFileProps =
 	| (InputFileCommonProps & {
 			value: ReadFileResult | undefined;
 			onChange: (value: InputFileDataUrlResult) => void;
-			readMode?: "data-url";
+			readMode?: typeof READ_FILE_MODE_DATA_URL;
 	  })
 	| (InputFileCommonProps & {
 			value: ReadFileResult | undefined;
 			onChange: (value: InputFileArrayBufferResult) => void;
-			readMode: "array-buffer";
+			readMode: typeof READ_FILE_MODE_ARRAY_BUFFER;
 	  });
 
 /**
@@ -105,7 +106,7 @@ export function InputFile(props: InputFileProps) {
 
 	/** Реф на скрытый нативный input[type="file"] */
 	const inputRef = useRef<HTMLInputElement>(null);
-	const readMode = props.readMode ?? "data-url";
+	const readMode = props.readMode ?? READ_FILE_MODE_DATA_URL;
 	const activeRead = useRef<AbortController | null>(null);
 	const isReading = useRef(false);
 	const readingCallback = useRef(onReadingChange);
@@ -163,8 +164,13 @@ export function InputFile(props: InputFileProps) {
 			if (error && onClearError) onClearError();
 
 			try {
-				if (props.readMode === "array-buffer") {
-					const result = await readFile(file, { allowedMime, maxBytes, mode: "array-buffer", signal: currentRead.signal });
+				if (props.readMode === READ_FILE_MODE_ARRAY_BUFFER) {
+					const result = await readFile(file, {
+						allowedMime,
+						maxBytes,
+						mode: READ_FILE_MODE_ARRAY_BUFFER,
+						signal: currentRead.signal
+					});
 					if (activeRead.current !== currentRead || currentRead.signal.aborted) return;
 					props.onChange(result);
 					return;

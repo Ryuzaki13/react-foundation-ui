@@ -1,5 +1,7 @@
 import { useCallback, useState } from "react";
 
+import { ODATA_SELECTION_INDEPENDENT, ODATA_SELECTION_SEQUENTIAL } from "./odataDependentSelectionModes";
+
 /**
  * Единый массивный формат значений зависимых OData-сегментов.
  *
@@ -9,7 +11,7 @@ import { useCallback, useState } from "react";
  */
 export type ODataDependentSelectionValues = Record<string, string[]>;
 
-export type ODataDependentSelectionMode = "independent" | "sequential";
+export type ODataDependentSelectionMode = typeof ODATA_SELECTION_INDEPENDENT | typeof ODATA_SELECTION_SEQUENTIAL;
 
 type ODataDependentSelectionCommonOptions = {
 	/** Внешний снимок значений. При наличии включает controlled-режим. */
@@ -22,14 +24,14 @@ type ODataDependentSelectionCommonOptions = {
 
 type IndependentSelectionOptions = {
 	/** Каждый сегмент доступен независимо от заполненности предыдущих. */
-	selectionMode?: "independent";
+	selectionMode?: typeof ODATA_SELECTION_INDEPENDENT;
 	/** Порядок может передаваться общей композицией, но в этом режиме не ограничивает выбор. */
 	segmentOrder?: readonly string[];
 };
 
 type SequentialSelectionOptions = {
 	/** Сегмент доступен только после заполнения всех предыдущих уровней цепочки. */
-	selectionMode: "sequential";
+	selectionMode: typeof ODATA_SELECTION_SEQUENTIAL;
 	/** Явный metadata- или consumer-порядок сегментов одной цепочки. */
 	segmentOrder: readonly string[];
 };
@@ -63,7 +65,7 @@ export function useODataDependentSelection({
 	values,
 	defaultValues,
 	onChange,
-	selectionMode = "independent",
+	selectionMode = ODATA_SELECTION_INDEPENDENT,
 	segmentOrder = []
 }: UseODataDependentSelectionOptions): ODataDependentSelectionModel {
 	const [uncontrolledValues, setUncontrolledValues] = useState<ODataDependentSelectionValues>(() => defaultValues ?? {});
@@ -82,7 +84,7 @@ export function useODataDependentSelection({
 
 	const isSegmentDisabled = useCallback(
 		(segmentId: string) => {
-			if (selectionMode === "independent") return false;
+			if (selectionMode === ODATA_SELECTION_INDEPENDENT) return false;
 
 			const segmentIndex = getSegmentIndex(segmentId, segmentOrder);
 			if (segmentIndex < 0) return true;
@@ -101,7 +103,7 @@ export function useODataDependentSelection({
 				[segmentId]: [...nextSegmentValue]
 			};
 
-			if (selectionMode === "sequential") {
+			if (selectionMode === ODATA_SELECTION_SEQUENTIAL) {
 				const segmentIndex = getSegmentIndex(segmentId, segmentOrder);
 
 				// Смена родителя делает прежний downstream-путь недостоверным.

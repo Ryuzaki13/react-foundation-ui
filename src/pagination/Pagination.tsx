@@ -1,8 +1,10 @@
 import { Button } from "../button";
 import { FlexContainer } from "../flex";
 import { Text } from "../text";
+import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT, UI_TONE_NEUTRAL } from "../uiSchemeConstants";
 
 import { createPaginationModel } from "./lib/createPaginationModel";
+import { PAGINATION_ITEM_KIND_GAP } from "./lib/paginationConstants";
 import styles from "./Pagination.module.scss";
 import { type PaginationProps } from "./PaginationProps";
 
@@ -34,7 +36,7 @@ export function Pagination({
 			</Button>
 
 			{model.items.map((item) => {
-				if (item.kind === "gap") {
+				if (item.kind === PAGINATION_ITEM_KIND_GAP) {
 					return (
 						<Text key={`gap-${item.position}`} color="muted" className={styles.gap} aria-hidden="true" data-ui="pagination-gap">
 							...
@@ -50,8 +52,8 @@ export function Pagination({
 						data-page={item.page}
 						aria-label={`Страница ${item.page}`}
 						aria-current={selected ? "page" : undefined}
-						appearance={selected ? "solid" : buttonAppearance}
-						tone={selected ? "accent" : "neutral"}
+						appearance={selected ? UI_APPEARANCE_SOLID : buttonAppearance}
+						tone={selected ? UI_TONE_ACCENT : UI_TONE_NEUTRAL}
 						disabled={disabled}
 						onClick={() => {
 							if (!selected) {

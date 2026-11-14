@@ -1,5 +1,7 @@
 import { type StablePortalScrollTracking } from "./stablePortalScrollTrackingTypes";
 
+const STABLE_PORTAL_SCROLL_EVENT = "scroll";
+
 type ScrollPosition = Readonly<{ top: number; left: number }>;
 
 /**
@@ -36,7 +38,7 @@ export function createStablePortalScrollTracking(container: HTMLElement): Stable
 				// но за событие читает ровно один узел, не обходя subtree.
 				if (element instanceof HTMLElement) captureElement(element);
 			};
-			container.addEventListener("scroll", captureScroll, { capture: true, passive: true });
+			container.addEventListener(STABLE_PORTAL_SCROLL_EVENT, captureScroll, { capture: true, passive: true });
 			const observer = new MutationObserver((records) => {
 				if (positions.size === 0 || !records.some((record) => Array.from(record.removedNodes).some((node) => node.nodeType === 1)))
 					return;
@@ -46,7 +48,7 @@ export function createStablePortalScrollTracking(container: HTMLElement): Stable
 			});
 			observer.observe(container, { childList: true, subtree: true });
 			return () => {
-				container.removeEventListener("scroll", captureScroll, true);
+				container.removeEventListener(STABLE_PORTAL_SCROLL_EVENT, captureScroll, true);
 				observer.disconnect();
 				positions.clear();
 			};

@@ -3,6 +3,12 @@ import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 import { CircleAlertIcon, CircleCheckIcon, CircleXIcon, InfoIcon } from "lucide-react";
 
 import styles from "./State.module.scss";
+import { STATE_PRESENTATION_NONE } from "./statePresentationConstants";
+
+const STATE_ICON_ERROR = "error";
+const STATE_ICON_WARNING = "warning";
+const STATE_ICON_SUCCESS = "success";
+const STATE_ICON_INFORMATION = "information";
 
 interface StateIconProps {
 	state: State;
@@ -10,16 +16,16 @@ interface StateIconProps {
 	className?: string;
 }
 
-export function StateIcon({ state = "none", text, className }: StateIconProps) {
+export function StateIcon({ state = STATE_PRESENTATION_NONE, text, className }: StateIconProps) {
 	const renderIcon = () => {
 		switch (state) {
-			case "error":
+			case STATE_ICON_ERROR:
 				return <ErrorIcon />;
-			case "warning":
+			case STATE_ICON_WARNING:
 				return <WarningIcon />;
-			case "success":
+			case STATE_ICON_SUCCESS:
 				return <SuccessIcon />;
-			case "information":
+			case STATE_ICON_INFORMATION:
 				return <InformationIcon />;
 			default:
 				return null;
@@ -40,13 +46,13 @@ interface RenderStateIconProps {
 
 export function RenderStateIcon({ state }: RenderStateIconProps) {
 	switch (state) {
-		case "error":
+		case STATE_ICON_ERROR:
 			return <ErrorIcon />;
-		case "warning":
+		case STATE_ICON_WARNING:
 			return <WarningIcon />;
-		case "success":
+		case STATE_ICON_SUCCESS:
 			return <SuccessIcon />;
-		case "information":
+		case STATE_ICON_INFORMATION:
 			return <InformationIcon />;
 		default:
 			return null;

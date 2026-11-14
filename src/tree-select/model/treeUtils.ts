@@ -1,3 +1,4 @@
+import { TREE_NODE_SELECTION_DESCENDANTS } from "../treeSelectConstants";
 import { TreeMultiSelectValue, TreeSelectNode, TreeSelectValue } from "../types";
 
 export type TreeNodeIndex = {
@@ -185,7 +186,11 @@ function canSynchronizeEquivalentTreeNodes(nodeId: string, index: TreeNodeIndex)
 	if (
 		equivalentNodeIds.some((equivalentNodeId) => {
 			const node = index.nodeById.get(equivalentNodeId);
-			return !node || node.selectionBehavior === "descendants" || index.subtreeContainsDisabledById.get(equivalentNodeId) === true;
+			return (
+				!node ||
+				node.selectionBehavior === TREE_NODE_SELECTION_DESCENDANTS ||
+				index.subtreeContainsDisabledById.get(equivalentNodeId) === true
+			);
 		})
 	) {
 		return false;
@@ -280,7 +285,7 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 	 * group-id не протекал обратно в публичный TreeMultiSelectValue.
 	 */
 	for (const selectedId of [...nextSelectedIds]) {
-		if (index.nodeById.get(selectedId)?.selectionBehavior !== "descendants") continue;
+		if (index.nodeById.get(selectedId)?.selectionBehavior !== TREE_NODE_SELECTION_DESCENDANTS) continue;
 
 		nextSelectedIds.delete(selectedId);
 		for (const descendantId of getSelectableTreeNodeIds(index, index.childrenById.get(selectedId) ?? [])) {
@@ -305,7 +310,7 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 			children.length === 0 ||
 			nextSelectedIds.has(nodeId) ||
 			index.nodeById.get(nodeId)?.disabled ||
-			index.nodeById.get(nodeId)?.selectionBehavior === "descendants"
+			index.nodeById.get(nodeId)?.selectionBehavior === TREE_NODE_SELECTION_DESCENDANTS
 		) {
 			continue;
 		}
@@ -319,7 +324,7 @@ export function canonicalizeTreeSelection(selectedIds: Set<string>, index: TreeN
 					return (
 						equivalentNode &&
 						!equivalentNode.disabled &&
-						equivalentNode.selectionBehavior !== "descendants" &&
+						equivalentNode.selectionBehavior !== TREE_NODE_SELECTION_DESCENDANTS &&
 						isNodeFullySelected(equivalentNodeId, nextSelectedIds, index)
 					);
 				});
@@ -434,7 +439,7 @@ export function getSelectableTreeNodeIds(index: TreeNodeIndex, rootIds: readonly
 		if (!node || node.disabled) {
 			return { containsDisabled: true, selectedIds: selectedChildIds };
 		}
-		if (node.selectionBehavior === "descendants") {
+		if (node.selectionBehavior === TREE_NODE_SELECTION_DESCENDANTS) {
 			return { containsDisabled, selectedIds: selectedChildIds };
 		}
 		const containsUnsafeEquivalent = !canSynchronizeEquivalentTreeNodes(nodeId, index);

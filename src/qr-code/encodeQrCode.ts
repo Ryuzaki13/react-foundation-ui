@@ -1,6 +1,8 @@
 import { prepareZXingModule, writeBarcode } from "zxing-wasm/writer";
 import zxingWriterWasmUrl from "zxing-wasm/writer/zxing_writer.wasm?url";
 
+import { QR_CODE_ERROR_ENCODING_FAILED, QR_CODE_ERROR_UNAVAILABLE } from "./qrCodeConstants";
+
 import type { QrCodeError, QrCodeProps } from "./qrCodeTypes";
 
 // Как у barcode-scanner, WASM доставляет host-сборщик из установленного npm-пакета.
@@ -21,7 +23,7 @@ export async function encodeQrCode(
 	value: string,
 	errorCorrectionLevel: NonNullable<QrCodeProps["errorCorrectionLevel"]>
 ): Promise<EncodedQrCode> {
-	if (value.length === 0) return { error: { kind: "encoding-failed" } };
+	if (value.length === 0) return { error: { kind: QR_CODE_ERROR_ENCODING_FAILED } };
 	try {
 		const result = await writeBarcode(value, {
 			format: "QRCode",
@@ -30,9 +32,9 @@ export async function encodeQrCode(
 			addHRT: false,
 			invert: false
 		});
-		if (result.error || !result.svg) return { error: { kind: "encoding-failed" } };
+		if (result.error || !result.svg) return { error: { kind: QR_CODE_ERROR_ENCODING_FAILED } };
 		return { svg: result.svg };
 	} catch {
-		return { error: { kind: "unavailable" } };
+		return { error: { kind: QR_CODE_ERROR_UNAVAILABLE } };
 	}
 }

@@ -5,6 +5,7 @@ import { Placement } from "@floating-ui/react";
 import { ContextMenuTrigger } from "./ContextMenuTrigger";
 import { MenuContent } from "./MenuContent";
 import { MenuGroupLabel } from "./MenuGroupLabel";
+import { MENU_TRIGGER_CONTEXT_MENU } from "./menuInteractionConstants";
 import { MenuItem } from "./MenuItem";
 import { MenuRoot } from "./MenuRoot";
 import { MenuSeparator } from "./MenuSeparator";
@@ -21,7 +22,7 @@ export interface ContextMenuProps {
 
 export function ContextMenu({ children, placement, open, defaultOpen, onOpenChange }: ContextMenuProps) {
 	return (
-		<MenuRoot mode="contextmenu" placement={placement} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
+		<MenuRoot mode={MENU_TRIGGER_CONTEXT_MENU} placement={placement} open={open} defaultOpen={defaultOpen} onOpenChange={onOpenChange}>
 			{children}
 		</MenuRoot>
 	);

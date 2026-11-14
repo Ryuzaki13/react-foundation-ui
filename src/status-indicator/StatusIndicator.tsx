@@ -2,6 +2,8 @@ import type { HTMLAttributes } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { UI_TONE_NEUTRAL } from "../uiSchemeConstants";
+
 import styles from "./StatusIndicator.module.scss";
 
 import type { UiSize, UiTone } from "../types";
@@ -33,7 +35,7 @@ const sizeClasses: Record<StatusIndicatorSize, string> = {
 /**
  * Декоративный цветовой маркер статуса. Передавайте смысл состояния видимым текстом рядом с индикатором.
  */
-export function StatusIndicator({ tone = "neutral", size = "md", animated = false, className, ...htmlProps }: StatusIndicatorProps) {
+export function StatusIndicator({ tone = UI_TONE_NEUTRAL, size = "md", animated = false, className, ...htmlProps }: StatusIndicatorProps) {
 	const hasAccessibleSemantics =
 		htmlProps.role !== undefined || htmlProps["aria-label"] !== undefined || htmlProps["aria-labelledby"] !== undefined;
 	const ariaHidden = htmlProps["aria-hidden"] ?? (hasAccessibleSemantics ? undefined : true);

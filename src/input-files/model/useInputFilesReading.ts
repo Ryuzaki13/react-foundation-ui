@@ -2,12 +2,13 @@ import { useCallback, useLayoutEffect, useRef } from "react";
 
 import { readFile, ReadFileError, type ReadFileResult } from "@ryuzaki13/react-foundation-lib/file";
 
+import { READ_FILE_MODE_ARRAY_BUFFER, READ_FILE_MODE_DATA_URL } from "../../input-file/readFileModeConstants";
 import { type InputFilesProps } from "../InputFilesProps";
 
 /** Отзывает всю группу чтения при новом выборе, удалении, блокировке или размонтировании поля. */
 export function useInputFilesReading(props: InputFilesProps) {
 	const disabled = props.disabled ?? false;
-	const readMode = props.readMode ?? "data-url";
+	const readMode = props.readMode ?? READ_FILE_MODE_DATA_URL;
 	const active = useRef<AbortController | null>(null);
 	const reading = useRef(false);
 	const callback = useRef(props.onReadingChange);
@@ -42,15 +43,15 @@ export function useInputFilesReading(props: InputFilesProps) {
 		updateReading(true);
 		if (props.error) props.onClearError?.();
 		const isCurrent = () => active.current === current && !current.signal.aborted;
-		const dataUrls: Extract<ReadFileResult, { mode: "data-url" }>[] = [];
-		const buffers: Extract<ReadFileResult, { mode: "array-buffer" }>[] = [];
+		const dataUrls: Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_DATA_URL }>[] = [];
+		const buffers: Extract<ReadFileResult, { mode: typeof READ_FILE_MODE_ARRAY_BUFFER }>[] = [];
 		try {
 			for (const file of selected) {
 				if (!isCurrent()) return;
 				try {
 					const options = { allowedMime: props.allowedMime, maxBytes: props.maxBytes, signal: current.signal };
-					if (props.readMode === "array-buffer") {
-						const result = await readFile(file, { ...options, mode: "array-buffer" });
+					if (props.readMode === READ_FILE_MODE_ARRAY_BUFFER) {
+						const result = await readFile(file, { ...options, mode: READ_FILE_MODE_ARRAY_BUFFER });
 						if (!isCurrent()) return;
 						buffers.push(result);
 					} else {
@@ -65,7 +66,7 @@ export function useInputFilesReading(props: InputFilesProps) {
 			}
 			if (!isCurrent()) return;
 			// Частичный отказ не теряет уже выбранные файлы и успешные результаты этой группы.
-			if (props.readMode === "array-buffer") {
+			if (props.readMode === READ_FILE_MODE_ARRAY_BUFFER) {
 				if (buffers.length > 0) props.onChange([...props.value, ...buffers]);
 			} else if (dataUrls.length > 0) props.onChange([...props.value, ...dataUrls]);
 		} finally {

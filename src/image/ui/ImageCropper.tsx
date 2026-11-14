@@ -2,9 +2,12 @@ import { useCallback, useState } from "react";
 
 import Cropper from "react-easy-crop";
 
+import { IMAGE_CROP_DEFAULT_ASPECT, IMAGE_CROPPER_FIT_CONTAIN } from "../model/imageCropConstants";
 import { type ImageCropArea, type ImageCropperProps, type ImageCropPoint } from "../model/imageCropTypes";
 
 const DEFAULT_CROP: ImageCropPoint = { x: 0, y: 0 };
+const DEFAULT_CROPPER_MAX_ZOOM = 3;
+const DEFAULT_CROPPER_ZOOM_SPEED = 0.1;
 
 /**
  * Управляемая или автономная область обрезки изображения.
@@ -12,7 +15,7 @@ const DEFAULT_CROP: ImageCropPoint = { x: 0, y: 0 };
  */
 export function ImageCropper({
 	image,
-	aspect = 16 / 9,
+	aspect = IMAGE_CROP_DEFAULT_ASPECT,
 	width = "100%",
 	className,
 	style,
@@ -21,9 +24,9 @@ export function ImageCropper({
 	zoom,
 	defaultZoom = 1,
 	minZoom = 1,
-	maxZoom = 3,
-	zoomSpeed = 0.1,
-	objectFit = "contain",
+	maxZoom = DEFAULT_CROPPER_MAX_ZOOM,
+	zoomSpeed = DEFAULT_CROPPER_ZOOM_SPEED,
+	objectFit = IMAGE_CROPPER_FIT_CONTAIN,
 	disabled = false,
 	onCropChange,
 	onZoomChange,

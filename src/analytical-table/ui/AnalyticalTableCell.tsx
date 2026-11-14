@@ -3,8 +3,10 @@ import { resolveValueStateClassName } from "@ryuzaki13/react-foundation-lib/form
 import { isTableInteractiveElement, shouldActivateTableCellSelection } from "@ryuzaki13/react-foundation-lib/table";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { TABLE_SELECTION_MODE_NONE } from "../../base-table/lib/tableSelectionConstants";
 import { RenderStateIcon } from "../../misc";
 import { analyticalCellId } from "../lib/analyticalCellId";
+import { ANALYTICAL_ROW_KIND_GROUP, ANALYTICAL_COLUMN_KIND_MEASURE } from "../lib/analyticalTableConstants";
 import { resolveAnalyticalCellDisplay } from "../lib/formatAnalyticalCell";
 import { isAnalyticalGroupingDisplayed } from "../lib/isAnalyticalGroupingDisplayed";
 import { type AnalyticalFocus } from "../model/useAnalyticalFocus";
@@ -40,11 +42,11 @@ export function AnalyticalTableCell<T>({
 	const level = runtime.state.grouping?.find((level) => level.id === row.groupingLevelId);
 	const levelIds = level ? [...level.keyColumnIds, ...(level.displayColumnIds ?? [])] : [];
 	const groupedDimensionHidden =
-		row.kind === "group" &&
-		column.kind !== "measure" &&
+		row.kind === ANALYTICAL_ROW_KIND_GROUP &&
+		column.kind !== ANALYTICAL_COLUMN_KIND_MEASURE &&
 		!runtime.formattingFields[column.id]?.formattersPipelineExecutor?.hasRowBasedOverride &&
 		(!isAnalyticalGroupingDisplayed(level, runtime.visibleColumns) || !levelIds.includes(column.id));
-	const renderer = row.kind === "group" ? column.renderGroup : column.render;
+	const renderer = row.kind === ANALYTICAL_ROW_KIND_GROUP ? column.renderGroup : column.render;
 	const selected = selection.isCellSelected(row.id, column.id);
 	const activation = options.cellSelectionActivationMode ?? "direct";
 	const coordinates = { rowId: row.id, columnId: column.id };
@@ -53,18 +55,21 @@ export function AnalyticalTableCell<T>({
 			id={analyticalCellId(instanceId, row.id, column.id)}
 			data-analytical-row-id={row.id}
 			data-analytical-column-id={column.id}
-			aria-selected={selection.cellMode === "none" ? undefined : selected}
+			aria-selected={selection.cellMode === TABLE_SELECTION_MODE_NONE ? undefined : selected}
 			aria-haspopup="menu"
 			className={cn(
 				styles.cell,
-				selection.cellMode !== "none" && styles.cellSelectable,
+				selection.cellMode !== TABLE_SELECTION_MODE_NONE && styles.cellSelectable,
 				resolveValueStateClassName(display.state),
-				row.kind === "group" && styles.cellGrouped,
+				row.kind === ANALYTICAL_ROW_KIND_GROUP && styles.cellGrouped,
 				selected && styles.cellSelected,
 				offset !== undefined && styles.cellPinned,
-				column.kind === "measure" && styles.cellMeasure
+				column.kind === ANALYTICAL_COLUMN_KIND_MEASURE && styles.cellMeasure
 			)}
-			style={{ insetInlineStart: offset, textAlign: column.align ?? (column.kind === "measure" ? "end" : "start") }}
+			style={{
+				insetInlineStart: offset,
+				textAlign: column.align ?? (column.kind === ANALYTICAL_COLUMN_KIND_MEASURE ? "end" : "start")
+			}}
 			tabIndex={focus.tabIndex(row.id, column.id)}
 			onFocus={(event) => {
 				if (event.target === event.currentTarget) focus.focusCell(coordinates);
@@ -72,7 +77,7 @@ export function AnalyticalTableCell<T>({
 			onClick={(event) => {
 				if (event.button !== 0 || isTableInteractiveElement(event.target)) return;
 				focus.focusCell(coordinates);
-				if (selection.cellMode !== "none" && shouldActivateTableCellSelection(event, activation)) {
+				if (selection.cellMode !== TABLE_SELECTION_MODE_NONE && shouldActivateTableCellSelection(event, activation)) {
 					event.stopPropagation();
 					selection.selectCell(coordinates);
 				}
@@ -86,7 +91,7 @@ export function AnalyticalTableCell<T>({
 				}
 				if (
 					(event.key === " " || event.key === "Enter") &&
-					selection.cellMode !== "none" &&
+					selection.cellMode !== TABLE_SELECTION_MODE_NONE &&
 					shouldActivateTableCellSelection(event, activation)
 				) {
 					event.preventDefault();
@@ -97,14 +102,14 @@ export function AnalyticalTableCell<T>({
 			{renderer ? (
 				<div className={styles.cellCustomContent}>{renderer({ row, column, value: row.values[column.id] })}</div>
 			) : (
-				<div className={styles.cellContent} data-measure={column.kind === "measure" || undefined}>
+				<div className={styles.cellContent} data-measure={column.kind === ANALYTICAL_COLUMN_KIND_MEASURE || undefined}>
 					{!groupedDimensionHidden ? (
 						<>
 							{display.showIcon && display.iconPosition === "left" ? <RenderStateIcon state={display.icon} /> : null}
 							{display.showValue ? (
 								<AnalyticalTableCellValue
 									display={display.value == null ? "" : String(display.value)}
-									isMeasure={column.kind === "measure"}
+									isMeasure={column.kind === ANALYTICAL_COLUMN_KIND_MEASURE}
 									overflowTooltip={column.tooltip !== false}
 								/>
 							) : null}

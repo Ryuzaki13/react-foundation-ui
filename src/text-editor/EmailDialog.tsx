@@ -6,6 +6,7 @@ import { isSafe } from "@ryuzaki13/react-foundation-lib/validators";
 import { Button } from "../button";
 import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
+import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT } from "../uiSchemeConstants";
 
 import { LinkType } from "./linkTypes";
 
@@ -81,7 +82,7 @@ export function EmailDialog({ onClose, onConfirm, initialState }: EmailDialogPro
 			</ModalContent>
 			<ModalFooter>
 				<Button onClick={handleClose}>Отмена</Button>
-				<Button appearance="solid" tone="accent" onClick={handleConfirm} disabled={!email || !ariaLabel}>
+				<Button appearance={UI_APPEARANCE_SOLID} tone={UI_TONE_ACCENT} onClick={handleConfirm} disabled={!email || !ariaLabel}>
 					Подтвердить
 				</Button>
 			</ModalFooter>

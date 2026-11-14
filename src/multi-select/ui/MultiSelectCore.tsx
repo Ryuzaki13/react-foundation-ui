@@ -11,6 +11,7 @@ import {
 	usePickerSelectionLifecycle,
 	usePickerTriggerController
 } from "../../picker";
+import { PICKER_TRIGGER_MODE_SEARCH_MULTI } from "../../picker/model/pickerTriggerModes";
 import { Separator } from "../../separator";
 import { formatMultiSelectOptionCount } from "../lib/formatMultiSelectOptionCount";
 import { materializeMultiSelectOptions } from "../lib/materializeMultiSelectOptions";
@@ -68,7 +69,7 @@ export function MultiSelectCore<TOption>({
 }: MultiSelectCoreProps<TOption>) {
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [open, setOpen] = useState(false);
-	const triggerMode = "search-multi";
+	const triggerMode = PICKER_TRIGGER_MODE_SEARCH_MULTI;
 	const committedSelectedOptions = useMemo(
 		() => materializeMultiSelectOptions(value, preserveOptionArrayReference),
 		[preserveOptionArrayReference, value]

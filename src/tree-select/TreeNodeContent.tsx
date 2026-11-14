@@ -8,6 +8,12 @@ import { OptionButton, OptionContent } from "../option";
 import { OptionContentContainer } from "../option/OptionContentContainer";
 
 import styles from "./TreeSelect.module.scss";
+import {
+	TREE_OPTIONS_LAYOUT_TREE,
+	TREE_OPTIONS_LAYOUT_COLUMNS,
+	TREE_SELECTION_MODE_MULTI,
+	type TREE_SELECTION_MODE_SINGLE
+} from "./treeSelectConstants";
 import { TreeMultiSelectOptionsLayout, TreeSelectNode } from "./types";
 
 type TreeNodeContentProps = {
@@ -18,7 +24,7 @@ type TreeNodeContentProps = {
 	isExpanded: boolean;
 	selected: boolean;
 	partial: boolean;
-	selectionMode: "single" | "multi";
+	selectionMode: typeof TREE_SELECTION_MODE_SINGLE | typeof TREE_SELECTION_MODE_MULTI;
 	optionsLayout?: TreeMultiSelectOptionsLayout;
 	onToggleExpand?: () => void;
 	onToggleSelection?: () => void;
@@ -35,14 +41,14 @@ export function TreeNodeContent({
 	selected,
 	partial,
 	selectionMode,
-	optionsLayout = "tree",
+	optionsLayout = TREE_OPTIONS_LAYOUT_TREE,
 	onToggleExpand,
 	onToggleSelection,
 	onActivate,
 	actionRef
 }: TreeNodeContentProps) {
-	const showExpansionControl = optionsLayout === "tree";
-	const emphasizeRootContent = optionsLayout === "columns" && level === 0;
+	const showExpansionControl = optionsLayout === TREE_OPTIONS_LAYOUT_TREE;
+	const emphasizeRootContent = optionsLayout === TREE_OPTIONS_LAYOUT_COLUMNS && level === 0;
 	const optionContent = (
 		<OptionContent text={node.label} code={node.code} searchText={highlight} emphasizeContent={emphasizeRootContent} />
 	);
@@ -63,7 +69,7 @@ export function TreeNodeContent({
 		<div className={styles.treeExpanderPlaceholder} aria-hidden="true" />
 	);
 
-	if (selectionMode === "multi" && optionsLayout === "tree") {
+	if (selectionMode === TREE_SELECTION_MODE_MULTI && optionsLayout === TREE_OPTIONS_LAYOUT_TREE) {
 		return (
 			<>
 				<div role="gridcell" className={styles.treeNodeSelectionCell}>
@@ -106,7 +112,7 @@ export function TreeNodeContent({
 			<div className={styles.treeIndent} style={{ "--tree-level": level } as CSSProperties} aria-hidden="true" />
 			{showExpansionControl ? expansionControl : null}
 
-			{selectionMode === "multi" ? (
+			{selectionMode === TREE_SELECTION_MODE_MULTI ? (
 				<div
 					className={styles.treeColumnCheckBox}
 					onMouseDown={(event) => event.stopPropagation()}
@@ -121,7 +127,7 @@ export function TreeNodeContent({
 				</div>
 			) : null}
 
-			{optionsLayout === "tree" ? (
+			{optionsLayout === TREE_OPTIONS_LAYOUT_TREE ? (
 				<OptionContentContainer className={styles.treeNodeButton}>{optionContent}</OptionContentContainer>
 			) : (
 				<OptionButton

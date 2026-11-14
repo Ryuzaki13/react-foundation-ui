@@ -21,6 +21,25 @@ import {
 import { type TextEditorClipboardProfile } from "../editorModel";
 import { $createAccessibleLinkNode } from "../nodes/AccessibleLinkNode";
 
+import { LEXICAL_LIST_TYPE_NUMBER, LEXICAL_LIST_TYPE_BULLET, LEXICAL_NODE_TYPE_PARAGRAPH } from "./textEditorLexicalNodeConstants";
+import { TEXT_EDITOR_EXTERNAL_LINK_REL, TEXT_EDITOR_LINK_TARGET_BLANK } from "./textEditorLinkConstants";
+import {
+	TEXT_EDITOR_INLINE_STYLE_BOLD,
+	TEXT_EDITOR_INLINE_STYLE_ITALIC,
+	TEXT_EDITOR_INLINE_STYLE_UNDERLINE,
+	TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH,
+	TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT,
+	TEXT_EDITOR_INLINE_STYLE_CODE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_ONE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_TWO,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE,
+	TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX,
+	TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM,
+	TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM,
+	TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE
+} from "./textEditorStyleConstants";
 import { type TextEditorBlockStyle, type TextEditorInlineStyle } from "./textEditorTypes";
 
 type ClipboardNormalizationContext = {
@@ -30,21 +49,21 @@ type ClipboardNormalizationContext = {
 };
 
 const inlineFormatFlags = {
-	BOLD: IS_BOLD,
-	ITALIC: IS_ITALIC,
-	UNDERLINE: IS_UNDERLINE,
-	STRIKETHROUGH: IS_STRIKETHROUGH,
-	HIGHLIGHT: IS_HIGHLIGHT,
-	CODE: IS_CODE
+	[TEXT_EDITOR_INLINE_STYLE_BOLD]: IS_BOLD,
+	[TEXT_EDITOR_INLINE_STYLE_ITALIC]: IS_ITALIC,
+	[TEXT_EDITOR_INLINE_STYLE_UNDERLINE]: IS_UNDERLINE,
+	[TEXT_EDITOR_INLINE_STYLE_STRIKETHROUGH]: IS_STRIKETHROUGH,
+	[TEXT_EDITOR_INLINE_STYLE_HIGHLIGHT]: IS_HIGHLIGHT,
+	[TEXT_EDITOR_INLINE_STYLE_CODE]: IS_CODE
 } satisfies Record<TextEditorInlineStyle, number>;
 
 const headingStyles = {
-	h1: "header-one",
-	h2: "header-two",
-	h3: "header-three",
-	h4: "header-four",
-	h5: "header-five",
-	h6: "header-six"
+	h1: TEXT_EDITOR_BLOCK_STYLE_HEADER_ONE,
+	h2: TEXT_EDITOR_BLOCK_STYLE_HEADER_TWO,
+	h3: TEXT_EDITOR_BLOCK_STYLE_HEADER_THREE,
+	h4: TEXT_EDITOR_BLOCK_STYLE_HEADER_FOUR,
+	h5: TEXT_EDITOR_BLOCK_STYLE_HEADER_FIVE,
+	h6: TEXT_EDITOR_BLOCK_STYLE_HEADER_SIX
 } as const satisfies Record<HeadingTagType, TextEditorBlockStyle>;
 
 /** Метаданные нового блока не наследуют CSS, indent и alignment HTML-обёрток. */
@@ -123,7 +142,12 @@ function normalizeListItem(source: LexicalNode, context: ClipboardNormalizationC
 
 function normalizeList(source: ListNode, context: ClipboardNormalizationContext): LexicalNode[] {
 	const listType = source.getListType();
-	const style = listType === "number" ? "ordered-list-item" : listType === "bullet" ? "unordered-list-item" : null;
+	const style =
+		listType === LEXICAL_LIST_TYPE_NUMBER
+			? TEXT_EDITOR_BLOCK_STYLE_ORDERED_LIST_ITEM
+			: listType === LEXICAL_LIST_TYPE_BULLET
+				? TEXT_EDITOR_BLOCK_STYLE_UNORDERED_LIST_ITEM
+				: null;
 	if (!style || !context.blockStyles.has(style)) {
 		return wrapInlineRuns(normalizeNodes(source.getChildren(), context), source);
 	}
@@ -140,8 +164,8 @@ function normalizeElement(source: ElementNode, context: ClipboardNormalizationCo
 		const url = context.normalizeLinkUrl?.(source.getURL());
 		if (!url) return children;
 		const link = $createAccessibleLinkNode(url, {
-			rel: "noopener noreferrer",
-			target: "_blank",
+			rel: TEXT_EDITOR_EXTERNAL_LINK_REL,
+			target: TEXT_EDITOR_LINK_TARGET_BLANK,
 			title: null,
 			ariaLabel: null,
 			qrCode: false,
@@ -161,7 +185,7 @@ function normalizeElement(source: ElementNode, context: ClipboardNormalizationCo
 		for (const child of flattenInlineContent(children, false)) heading.append(child);
 		return [heading];
 	}
-	if ($isQuoteNode(source) && context.blockStyles.has("blockquote")) {
+	if ($isQuoteNode(source) && context.blockStyles.has(TEXT_EDITOR_BLOCK_STYLE_BLOCKQUOTE)) {
 		const quote = $createQuoteNode();
 		copyBlockDirection(quote, source);
 		for (const child of children) quote.append(child);
@@ -172,7 +196,7 @@ function normalizeElement(source: ElementNode, context: ClipboardNormalizationCo
 	const fallback = normalizeText(source.getTextContent(), 0);
 	if (fallback.length > 0) return wrapInlineRuns(fallback, source);
 	// Пустой настоящий абзац сохраняется; пустые служебные контейнеры не создают контент.
-	if (source.getType() === "paragraph") {
+	if (source.getType() === LEXICAL_NODE_TYPE_PARAGRAPH) {
 		const paragraph = $createParagraphNode();
 		copyBlockDirection(paragraph, source);
 		return [paragraph];

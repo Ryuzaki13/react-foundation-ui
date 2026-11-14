@@ -5,6 +5,7 @@ import { CheckBox } from "../../check-box";
 import { DropdownMenu } from "../../context-menu";
 import { FlexContainer } from "../../flex";
 import { Notice } from "../../misc";
+import { UI_APPEARANCE_GHOST, UI_APPEARANCE_OUTLINE } from "../../uiSchemeConstants";
 import { useAnalyticalExport } from "../model/useAnalyticalExport";
 import { type AnalyticalTableProps, type AnalyticalTableRuntime } from "../types/analyticalTable";
 
@@ -21,7 +22,7 @@ export function AnalyticalTableToolbar<T>({ runtime, options }: AnalyticalTableT
 			<FlexContainer wrap gap="xs" align="center">
 				<DropdownMenu>
 					<DropdownMenu.Trigger>
-						<Button appearance="outline" icon={<Columns3Icon />} data-action="configure-analytical-columns">
+						<Button appearance={UI_APPEARANCE_OUTLINE} icon={<Columns3Icon />} data-action="configure-analytical-columns">
 							Колонки
 						</Button>
 					</DropdownMenu.Trigger>
@@ -50,7 +51,7 @@ export function AnalyticalTableToolbar<T>({ runtime, options }: AnalyticalTableT
 					</DropdownMenu.Content>
 				</DropdownMenu>
 				<Button
-					appearance="outline"
+					appearance={UI_APPEARANCE_OUTLINE}
 					icon={<FoldVerticalIcon />}
 					data-action="collapse-analytical-all"
 					disabled={!runtime.model.flatRows.some((row) => row.isExpanded)}
@@ -59,7 +60,7 @@ export function AnalyticalTableToolbar<T>({ runtime, options }: AnalyticalTableT
 				</Button>
 				{options.onRefresh ? (
 					<Button
-						appearance="outline"
+						appearance={UI_APPEARANCE_OUTLINE}
 						icon={<RefreshCwIcon />}
 						data-action="refresh-analytical-table"
 						disabled={options.isFetching}
@@ -69,7 +70,7 @@ export function AnalyticalTableToolbar<T>({ runtime, options }: AnalyticalTableT
 				) : null}
 				{options.onExport ? (
 					<Button
-						appearance="outline"
+						appearance={UI_APPEARANCE_OUTLINE}
 						icon={<ArrowDownToLineIcon />}
 						data-action="export-analytical-table"
 						disabled={exporter.isExporting}
@@ -80,7 +81,7 @@ export function AnalyticalTableToolbar<T>({ runtime, options }: AnalyticalTableT
 				{runtime.state.grouping?.map((group) => (
 					<DropdownMenu key={group.id}>
 						<DropdownMenu.Trigger>
-							<Button appearance="ghost" data-action="configure-analytical-group" data-group-id={group.id}>
+							<Button appearance={UI_APPEARANCE_GHOST} data-action="configure-analytical-group" data-group-id={group.id}>
 								{group.label ?? group.id}
 							</Button>
 						</DropdownMenu.Trigger>
@@ -92,7 +93,7 @@ export function AnalyticalTableToolbar<T>({ runtime, options }: AnalyticalTableT
 				{runtime.state.filters?.map((filter) => (
 					<Button
 						key={filter.id}
-						appearance="ghost"
+						appearance={UI_APPEARANCE_GHOST}
 						data-action="clear-analytical-filter"
 						data-column-id={filter.id}
 						onClick={() =>

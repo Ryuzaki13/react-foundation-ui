@@ -24,8 +24,23 @@ import {
 	type SliderRangeValue
 } from "./lib";
 import styles from "./Slider.module.scss";
+import {
+	SLIDER_MARKS_DISPLAY_COMPACT,
+	SLIDER_MARKS_DISPLAY_FULL,
+	SLIDER_MARKS_POSITION_VALUE,
+	SLIDER_MODE_RANGE,
+	SLIDER_MODE_SINGLE,
+	SLIDER_NEGATIVE_INFINITY_LABEL,
+	SLIDER_POSITIVE_INFINITY_LABEL
+} from "./sliderConstants";
 
-type SliderMarksDisplay = "compact" | "full";
+const SLIDER_PAGE_KEYBOARD_STEP = 10;
+const SLIDER_POINTER_MOVE_EVENT = "pointermove";
+const SLIDER_POINTER_UP_EVENT = "pointerup";
+const SLIDER_POINTER_CANCEL_EVENT = "pointercancel";
+const PERCENT_SCALE = 100;
+
+type SliderMarksDisplay = typeof SLIDER_MARKS_DISPLAY_COMPACT | typeof SLIDER_MARKS_DISPLAY_FULL;
 
 interface SliderCommonProps<TMark extends SliderMark> {
 	/**
@@ -97,13 +112,13 @@ interface SliderBaseCommonProps<TMark extends SliderMark> extends SliderCommonPr
 }
 
 interface SliderBaseSingleProps extends SliderBaseCommonProps<SliderMark> {
-	mode: "single";
+	mode: typeof SLIDER_MODE_SINGLE;
 	value: number | undefined;
 	onChange: (value: number) => void;
 }
 
 interface SliderBaseRangeProps extends SliderBaseCommonProps<SliderRangeMark> {
-	mode: "range";
+	mode: typeof SLIDER_MODE_RANGE;
 	value: SliderRangeValue | undefined;
 	onChange: (value: SliderRangeValue) => void;
 }
@@ -120,11 +135,11 @@ function resolveKeyboardOffset(eventKey: string) {
 	}
 
 	if (eventKey === "PageDown") {
-		return -10;
+		return -SLIDER_PAGE_KEYBOARD_STEP;
 	}
 
 	if (eventKey === "PageUp") {
-		return 10;
+		return SLIDER_PAGE_KEYBOARD_STEP;
 	}
 
 	return null;
@@ -136,7 +151,7 @@ function areRangeValuesEqual(left: SliderRangeValue | undefined, right: SliderRa
 
 function formatRangeEndpoint(value: number | null, thumbIndex: number) {
 	if (value === null) {
-		return thumbIndex === 0 ? "-∞" : "∞";
+		return thumbIndex === 0 ? SLIDER_NEGATIVE_INFINITY_LABEL : SLIDER_POSITIVE_INFINITY_LABEL;
 	}
 
 	return String(value);
@@ -168,8 +183,8 @@ export function SliderBase(props: SliderBaseProps) {
 		max: rawMax,
 		step,
 		marks,
-		marksPosition = "value",
-		marksDisplay = "compact",
+		marksPosition = SLIDER_MARKS_POSITION_VALUE,
+		marksDisplay = SLIDER_MARKS_DISPLAY_COMPACT,
 		className,
 		error,
 		onClearError,
@@ -191,7 +206,7 @@ export function SliderBase(props: SliderBaseProps) {
 		[min, max, step, normalizedMarks, marksPosition]
 	);
 
-	const isRange = props.mode === "range";
+	const isRange = props.mode === SLIDER_MODE_RANGE;
 	const currentSingleValue = !isRange ? normalizeSingleSliderValue(props.value, sliderOptions) : undefined;
 	const currentRangeValue = isRange ? normalizeRangeSliderValue(props.value, sliderOptions) : undefined;
 	const visualRangeValue = isRange ? getRangeSliderVisualValue(props.value, sliderOptions) : undefined;
@@ -211,7 +226,7 @@ export function SliderBase(props: SliderBaseProps) {
 	});
 
 	const emitSingleValue = (nextValue: number) => {
-		if (disabled || props.mode !== "single") {
+		if (disabled || props.mode !== SLIDER_MODE_SINGLE) {
 			return;
 		}
 
@@ -224,7 +239,7 @@ export function SliderBase(props: SliderBaseProps) {
 	};
 
 	const emitRangeValue = (nextValue: SliderRangeValue) => {
-		if (disabled || props.mode !== "range") {
+		if (disabled || props.mode !== SLIDER_MODE_RANGE) {
 			return;
 		}
 
@@ -241,7 +256,7 @@ export function SliderBase(props: SliderBaseProps) {
 			return;
 		}
 
-		if (props.mode === "range") {
+		if (props.mode === SLIDER_MODE_RANGE) {
 			const [startVisualValue, endVisualValue] = visualRangeValue!;
 			const [startValue, endValue] = currentRangeValue!;
 			const nextValue =
@@ -268,7 +283,7 @@ export function SliderBase(props: SliderBaseProps) {
 			return min;
 		}
 
-		const percent = ((clientX - bounds.left) / bounds.width) * 100;
+		const percent = ((clientX - bounds.left) / bounds.width) * PERCENT_SCALE;
 		const closestMark = normalizedMarks.length > 0 ? getClosestSliderMarkByPercent(percent, sliderOptions) : undefined;
 
 		return closestMark?.value ?? percentToNumberScaleValue(percent, min, max);
@@ -304,14 +319,14 @@ export function SliderBase(props: SliderBaseProps) {
 			applySliderValueRef.current(resolveValueFromPointerRef.current(event.clientX), dragThumbIndexRef.current);
 		};
 
-		window.addEventListener("pointermove", onPointerMove);
-		window.addEventListener("pointerup", onPointerUp);
-		window.addEventListener("pointercancel", onPointerUp);
+		window.addEventListener(SLIDER_POINTER_MOVE_EVENT, onPointerMove);
+		window.addEventListener(SLIDER_POINTER_UP_EVENT, onPointerUp);
+		window.addEventListener(SLIDER_POINTER_CANCEL_EVENT, onPointerUp);
 
 		return () => {
-			window.removeEventListener("pointermove", onPointerMove);
-			window.removeEventListener("pointerup", onPointerUp);
-			window.removeEventListener("pointercancel", onPointerUp);
+			window.removeEventListener(SLIDER_POINTER_MOVE_EVENT, onPointerMove);
+			window.removeEventListener(SLIDER_POINTER_UP_EVENT, onPointerUp);
+			window.removeEventListener(SLIDER_POINTER_CANCEL_EVENT, onPointerUp);
 		};
 	}, []);
 
@@ -413,7 +428,7 @@ export function SliderBase(props: SliderBaseProps) {
 			errorId={errorId}>
 			<div
 				id={controlId}
-				className={cn(styles.slider, marksDisplay === "compact" && styles.sliderCompact)}
+				className={cn(styles.slider, marksDisplay === SLIDER_MARKS_DISPLAY_COMPACT && styles.sliderCompact)}
 				data-disabled={disabled || undefined}
 				role={isRange ? "group" : undefined}
 				aria-label={isRange && !labelId ? "Диапазон значений" : undefined}
@@ -437,7 +452,7 @@ export function SliderBase(props: SliderBaseProps) {
 							}}
 						/>
 
-						{marksDisplay === "compact" &&
+						{marksDisplay === SLIDER_MARKS_DISPLAY_COMPACT &&
 							normalizedMarks.map((mark) => {
 								const markPercent = getSliderMarkPercent(mark, normalizedMarks, sliderOptions);
 								const isActive = isRange
@@ -522,7 +537,7 @@ export function SliderBase(props: SliderBaseProps) {
 					</div>
 				</div>
 
-				{marksDisplay === "full" && normalizedMarks.length > 0 && (
+				{marksDisplay === SLIDER_MARKS_DISPLAY_FULL && normalizedMarks.length > 0 && (
 					<div className={styles.marks}>
 						{normalizedMarks.map((mark) => {
 							const isActive = isRange
@@ -553,9 +568,9 @@ export function SliderBase(props: SliderBaseProps) {
 }
 
 export function Slider(props: SliderProps) {
-	return <SliderBase {...props} mode="single" marksDisplay="compact" />;
+	return <SliderBase {...props} mode={SLIDER_MODE_SINGLE} marksDisplay={SLIDER_MARKS_DISPLAY_COMPACT} />;
 }
 
 export function SliderRange(props: SliderRangeProps) {
-	return <SliderBase {...props} mode="range" marksDisplay="compact" />;
+	return <SliderBase {...props} mode={SLIDER_MODE_RANGE} marksDisplay={SLIDER_MARKS_DISPLAY_COMPACT} />;
 }

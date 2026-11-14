@@ -1,4 +1,5 @@
 import { WheelPicker } from "../../wheel-picker";
+import { DATE_TIME_INPUT_MODE_DATE_TIME } from "../lib/dateTimeInputModes";
 import { buildTimePanelState } from "../lib/timePanelState";
 
 import styles from "./TimePanel.module.scss";
@@ -20,7 +21,7 @@ export interface TimePanelProps {
 /**
  * Переиспользуемая панель выбора времени поверх internal wheel-picker.
  */
-export function TimePanel({ value, disabled, minDate, maxDate, mode = "date-time", onChange }: TimePanelProps) {
+export function TimePanel({ value, disabled, minDate, maxDate, mode = DATE_TIME_INPUT_MODE_DATE_TIME, onChange }: TimePanelProps) {
 	const state = buildTimePanelState(value, minDate, maxDate, mode);
 
 	/**

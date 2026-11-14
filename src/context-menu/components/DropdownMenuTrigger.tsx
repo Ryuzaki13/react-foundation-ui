@@ -2,6 +2,7 @@ import { cloneElement, type HTMLAttributes, type ReactElement, type Ref } from "
 
 import { assignRef, composeKeyboardHandlers, composeMouseHandlers } from "./helpers";
 import { useMenuContext } from "./MenuContext";
+import { MENU_TRIGGER_CLICK } from "./menuInteractionConstants";
 
 export interface DropdownMenuTriggerProps {
 	children: ReactElement<HTMLAttributes<HTMLElement> & { ref?: Ref<HTMLElement> }>;
@@ -10,7 +11,7 @@ export interface DropdownMenuTriggerProps {
 export function DropdownMenuTrigger({ children }: DropdownMenuTriggerProps) {
 	const { mode, open, menuId, triggerId, registerTriggerElement, onTriggerClick, onTriggerKeyDown } = useMenuContext();
 
-	if (mode !== "click") {
+	if (mode !== MENU_TRIGGER_CLICK) {
 		throw new Error("DropdownMenu.Trigger must be used within <DropdownMenu>");
 	}
 

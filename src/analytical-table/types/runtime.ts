@@ -1,6 +1,8 @@
 import { type AnalyticalTableModel } from "@ryuzaki13/react-foundation-lib/analytical-table";
 import { type FormattersPipelineRuntimeFields } from "@ryuzaki13/react-foundation-lib/formatters";
 
+import { type TableSortingMenuAction } from "../../table-sorting";
+
 import { type AnalyticalTableColumn } from "./columns";
 import { type AnalyticalTableState } from "./state";
 
@@ -15,7 +17,7 @@ export type AnalyticalTableRuntime<T = unknown> = Readonly<{
 	toggleRow: (id: string) => void;
 	collapseBranch: (id: string) => void;
 	collapseAll: () => void;
-	sortColumn: (id: string, direction?: "asc" | "desc" | "clear", multi?: boolean) => void;
+	sortColumn: (id: string, direction?: TableSortingMenuAction, multi?: boolean) => void;
 	groupColumn: (id: string) => void;
 	ungroupColumn: (id: string) => void;
 	moveGrouping: (id: string, offset: number) => void;

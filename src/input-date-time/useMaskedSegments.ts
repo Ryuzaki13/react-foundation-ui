@@ -1,5 +1,14 @@
 import React, { useCallback, useMemo, useRef, useState } from "react";
 
+import {
+	DATE_MASK_KEY_NEXT_SEGMENT,
+	DATE_MASK_KEY_PREVIOUS_SEGMENT,
+	DATE_MASK_KEY_INCREMENT,
+	DATE_MASK_KEY_DECREMENT,
+	DATE_MASK_KEY_BACKSPACE,
+	DATE_MASK_KEY_DELETE
+} from "./dateMaskKeys";
+import { DATE_MASK_SEGMENT_EDITABLE } from "./dateMaskSegmentKinds";
 import { dateToSegmentValues, EditableSegment, parseMask, segmentsToDate, SegmentType } from "./maskParser";
 
 interface UseMaskedSegmentsOptions {
@@ -16,7 +25,7 @@ function buildSegmentMap(date: Date | undefined, segments: ReturnType<typeof par
 	const map = new Map<number, string>();
 
 	segments.forEach((seg, i) => {
-		if (seg.kind === "editable") {
+		if (seg.kind === DATE_MASK_SEGMENT_EDITABLE) {
 			map.set(i, typeValues.get(seg.type) ?? "");
 		}
 	});
@@ -29,7 +38,7 @@ function resolveEditableIndices(segments: ReturnType<typeof parseMask>): number[
 	const indices: number[] = [];
 
 	segments.forEach((segment, index) => {
-		if (segment.kind === "editable") {
+		if (segment.kind === DATE_MASK_SEGMENT_EDITABLE) {
 			indices.push(index);
 		}
 	});
@@ -68,7 +77,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 			const typeValues = new Map<SegmentType, string>();
 
 			segments.forEach((seg, i) => {
-				if (seg.kind === "editable") {
+				if (seg.kind === DATE_MASK_SEGMENT_EDITABLE) {
 					typeValues.set(seg.type, updatedValues.get(i) ?? "");
 				}
 			});
@@ -158,7 +167,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 			const el = e.currentTarget;
 
 			switch (e.key) {
-				case "ArrowRight": {
+				case DATE_MASK_KEY_NEXT_SEGMENT: {
 					if (el.selectionStart === currentVal.length || currentVal === "") {
 						e.preventDefault();
 						const next = getNextEditable(index);
@@ -166,7 +175,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 					}
 					break;
 				}
-				case "ArrowLeft": {
+				case DATE_MASK_KEY_PREVIOUS_SEGMENT: {
 					if (el.selectionStart === 0 || currentVal === "") {
 						e.preventDefault();
 						const prev = getPrevEditable(index);
@@ -174,7 +183,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 					}
 					break;
 				}
-				case "ArrowUp": {
+				case DATE_MASK_KEY_INCREMENT: {
 					e.preventDefault();
 					let num = currentVal === "" ? segment.min : parseInt(currentVal, 10) + 1;
 					if (num > segment.max) num = segment.min;
@@ -188,7 +197,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 					requestAnimationFrame(() => el.select());
 					break;
 				}
-				case "ArrowDown": {
+				case DATE_MASK_KEY_DECREMENT: {
 					e.preventDefault();
 					let num = currentVal === "" ? segment.max : parseInt(currentVal, 10) - 1;
 					if (num < segment.min) num = segment.max;
@@ -202,7 +211,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 					requestAnimationFrame(() => el.select());
 					break;
 				}
-				case "Backspace": {
+				case DATE_MASK_KEY_BACKSPACE: {
 					if (currentVal === "") {
 						e.preventDefault();
 						const prev = getPrevEditable(index);
@@ -210,7 +219,7 @@ export function useMaskedSegments({ mask, value, onChange, onClearError, disable
 					}
 					break;
 				}
-				case "Delete": {
+				case DATE_MASK_KEY_DELETE: {
 					e.preventDefault();
 					const updated = new Map(segmentValues);
 					updated.set(index, "");

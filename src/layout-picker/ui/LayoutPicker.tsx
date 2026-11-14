@@ -7,6 +7,7 @@ import { FlexContainer } from "../../flex";
 import { Option } from "../../option";
 import { OptionContentContainer } from "../../option/OptionContentContainer";
 import { PickerField, PickerPopup, PickerTrigger, usePickerFloatingListbox, usePickerTriggerController } from "../../picker";
+import { PICKER_TRIGGER_MODE_DISPLAY } from "../../picker/model/pickerTriggerModes";
 import { type UiBaseProps } from "../../types";
 import { DEFAULT_LAYOUT_PICKER_PRESETS, type LayoutPickerPreset } from "../lib";
 
@@ -101,10 +102,10 @@ export function LayoutPicker({
 		onSelect: (preset) => onChange(preset.id),
 		disabled,
 		placement,
-		triggerMode: "display"
+		triggerMode: PICKER_TRIGGER_MODE_DISPLAY
 	});
 	const triggerController = usePickerTriggerController({
-		mode: "display",
+		mode: PICKER_TRIGGER_MODE_DISPLAY,
 		open,
 		currentQuery: "",
 		hasDisplayValue: selectedPreset !== undefined,

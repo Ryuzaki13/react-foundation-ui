@@ -18,6 +18,7 @@ import {
 	usePickerQuery,
 	usePickerTriggerController
 } from "../picker";
+import { PICKER_TRIGGER_MODE_SEARCH_SINGLE, PICKER_TRIGGER_MODE_DISPLAY } from "../picker/model/pickerTriggerModes";
 import { ChangeHandler, UiBaseProps } from "../types";
 import uiStyles from "../ui.module.scss";
 
@@ -123,7 +124,7 @@ export function Select<TOption extends InputType, TClearable extends boolean | u
 
 	const inputRef = useRef<HTMLInputElement | null>(null);
 	const [open, setOpen] = useState(false);
-	const triggerMode = searchable ? "search-single" : "display";
+	const triggerMode = searchable ? PICKER_TRIGGER_MODE_SEARCH_SINGLE : PICKER_TRIGGER_MODE_DISPLAY;
 	const selectedKey = value === undefined ? undefined : getOptionKey(value);
 	const selectedOption =
 		selectedKey === undefined ? undefined : (options.find((option) => getOptionKey(option) === selectedKey) ?? value);

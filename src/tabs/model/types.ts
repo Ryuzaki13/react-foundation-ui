@@ -2,20 +2,30 @@ import { type ReactNode } from "react";
 
 import { UiPanelTone } from "../../types";
 
+import {
+	type TABS_ACTIVATION_AUTOMATIC,
+	type TABS_ACTIVATION_MANUAL,
+	type TABS_MOUNT_KEEP_MOUNTED,
+	type TABS_MOUNT_LAZY,
+	type TABS_MOUNT_UNMOUNT,
+	type TABS_ORIENTATION_HORIZONTAL,
+	type TABS_ORIENTATION_VERTICAL
+} from "./tabsConstants";
+
 /**
  * Направление списка вкладок.
  */
-export type TabsOrientation = "horizontal" | "vertical";
+export type TabsOrientation = typeof TABS_ORIENTATION_HORIZONTAL | typeof TABS_ORIENTATION_VERTICAL;
 
 /**
  * Режим клавиатурной активации вкладок.
  */
-export type TabsActivationMode = "automatic" | "manual";
+export type TabsActivationMode = typeof TABS_ACTIVATION_AUTOMATIC | typeof TABS_ACTIVATION_MANUAL;
 
 /**
  * Стратегия монтирования панелей вкладок.
  */
-export type TabsMountStrategy = "unmount" | "lazy" | "keep-mounted";
+export type TabsMountStrategy = typeof TABS_MOUNT_UNMOUNT | typeof TABS_MOUNT_LAZY | typeof TABS_MOUNT_KEEP_MOUNTED;
 
 /**
  * Базовое описание вкладки для управления состоянием и доступностью.

@@ -8,11 +8,13 @@ import {
 } from "@tanstack/react-virtual";
 
 import { captureCollectionScrollAnchor } from "../lib/captureCollectionScrollAnchor";
+import { COLLECTION_SCROLL_ANCHOR_START } from "../lib/collectionScrollAnchorConstants";
 import { type CollectionScrollAnchor } from "../lib/collectionScrollAnchorTypes";
 import { indexCollectionRowAnchorKeys } from "../lib/indexCollectionRowAnchorKeys";
 import { resolveCollectionScrollAnchor } from "../lib/resolveCollectionScrollAnchor";
 import { selectCollectionVisibleKeys } from "../lib/selectCollectionVisibleKeys";
 
+import { COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX, COLLECTION_VIRTUALIZER_OVERSCAN_ROWS } from "./collectionVirtualizerDefaults";
 import {
 	type CollectionVirtualizerDriver,
 	type CollectionVirtualizerOptions,
@@ -52,13 +54,15 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 	const serverSnapshot: CollectionVirtualizerSnapshot = Object.freeze({
 		virtualItems: Object.freeze([]),
 		anchorKeys: Object.freeze([]),
-		totalSize: serverRowCount * (initialOptions.estimateSize ?? 120) + Math.max(0, serverRowCount - 1) * (initialOptions.gap ?? 0)
+		totalSize:
+			serverRowCount * (initialOptions.estimateSize ?? COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX) +
+			Math.max(0, serverRowCount - 1) * (initialOptions.gap ?? 0)
 	});
 	let snapshot = serverSnapshot;
 	let visibleKeys: readonly string[] | null = null;
 	let visibleCallback: CollectionVirtualizerOptions<T>["onVisibleKeysChange"];
 	const getScrollElement = () => scrollElement;
-	const estimateSize = () => committedOptions.estimateSize ?? 120;
+	const estimateSize = () => committedOptions.estimateSize ?? COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX;
 	const observeScrollOffset: VirtualizerOptions<HTMLDivElement, HTMLElement>["observeElementOffset"] = (core, callback) => {
 		receiveScrollOffset = callback;
 		const cleanup = observeElementOffset(core, callback);
@@ -159,7 +163,7 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 			getItemKey: (index) => keys[index] ?? loadingRowKey,
 			getScrollElement,
 			estimateSize,
-			overscan: options.overscan ?? 5,
+			overscan: options.overscan ?? COLLECTION_VIRTUALIZER_OVERSCAN_ROWS,
 			gap: options.gap ?? 0,
 			useAnimationFrameWithResizeObserver: options.useAnimationFrameWithResizeObserver ?? false,
 			measureElement: measureVirtualElement,
@@ -259,7 +263,7 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 				const measurementChanged = !Object.is(options.measurementKey, committedOptions.measurementKey);
 				const geometryChanged = datasetChanged || measurementChanged || (options.gap ?? 0) !== (committedOptions.gap ?? 0);
 				if (!Object.is(options.resetKey, committedOptions.resetKey)) {
-					pendingAnchor = { type: "start" };
+					pendingAnchor = { type: COLLECTION_SCROLL_ANCHOR_START };
 				} else if (!(options.preserveScrollAnchor ?? true)) {
 					pendingAnchor = null;
 				} else if (geometryChanged && (options.preserveScrollAnchor ?? true) && pendingAnchor === null) {
@@ -291,7 +295,11 @@ export function createCollectionVirtualizerDriver<T>(initialOptions: CollectionV
 				// TanStack пересчитывает позиции, сохраняя измеренные высоты по ключам.
 				const keys = rowKeysChanged ? candidateKeys : committedKeys;
 				const nextOptions = createCoreOptions(options, keys);
-				if (!rowKeysChanged && (options.estimateSize ?? 120) === (committedOptions.estimateSize ?? 120)) {
+				if (
+					!rowKeysChanged &&
+					(options.estimateSize ?? COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX) ===
+						(committedOptions.estimateSize ?? COLLECTION_VIRTUALIZER_ESTIMATED_ROW_HEIGHT_PX)
+				) {
 					nextOptions.getItemKey = instance.options.getItemKey;
 				}
 				if (options.getVisibleKeys === undefined && options.getAnchorKeys === undefined) {

@@ -2,6 +2,13 @@ import type { CSSProperties, HTMLAttributes, JSX } from "react";
 
 import { ResponsiveValue } from "@ryuzaki13/react-foundation-lib/media";
 
+import {
+	type GRID_GAP_NONE,
+	type GRID_VARIANT_AUTO_1FR,
+	type GRID_VARIANT_AUTO_1FR_ROWS_AUTO,
+	type GRID_VARIANT_SINGLE_COLUMN
+} from "./gridConstants";
+
 export type GridTemplate = string | number;
 export type GridAuto = "auto" | "min-content" | "max-content" | "1fr" | string;
 
@@ -65,7 +72,7 @@ export interface GridContainerProps extends HTMLAttributes<HTMLElement> {
 	 * Управляет расстоянием между строками и колонками одновременно.
 	 * Использует предопределенные значения из дизайн-системы для согласованности интерфейсов.
 	 */
-	gap?: ResponsiveValue<"none" | "xs" | "sm" | "md" | "lg" | "xl">;
+	gap?: ResponsiveValue<typeof GRID_GAP_NONE | "xs" | "sm" | "md" | "lg" | "xl">;
 
 	/**
 	 * Отступы только между строками
@@ -191,7 +198,7 @@ export interface GridContainerProps extends HTMLAttributes<HTMLElement> {
 	 * Готовые решения для частых сценариев использования.
 	 * Упрощают создание стандартных макетов без ручного указания templateColumns/templateRows.
 	 */
-	variant?: ResponsiveValue<"single-column" | "auto-1fr" | "auto1fr-rows-auto">;
+	variant?: ResponsiveValue<typeof GRID_VARIANT_SINGLE_COLUMN | typeof GRID_VARIANT_AUTO_1FR | typeof GRID_VARIANT_AUTO_1FR_ROWS_AUTO>;
 
 	/**
 	 * Дочерние элементы grid-контейнера

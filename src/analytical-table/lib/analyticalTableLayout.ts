@@ -2,18 +2,24 @@ import { buildTableColumnLayout } from "@ryuzaki13/react-foundation-lib/table";
 
 import { type AnalyticalTableRuntime } from "../types/analyticalTable";
 
+import {
+	ANALYTICAL_TREE_LEVEL_INDENT_PX,
+	ANALYTICAL_DEFAULT_COLUMN_WIDTH_PX,
+	ANALYTICAL_COLUMN_KIND_MEASURE
+} from "./analyticalTableConstants";
+
 export const ANALYTICAL_TREE_COLUMN = "__analytical_tree__";
 export const ANALYTICAL_SELECTION_WIDTH = 32;
 
 /** Геометрия исходной таблицы: отдельные tree/selection колонки и sticky-смещения в px. */
 export function buildAnalyticalTableLayout<T>(runtime: AnalyticalTableRuntime<T>, selection: boolean) {
-	const treeWidth = Math.max(40, runtime.maxRowLevel * 8 + 27);
+	const treeWidth = Math.max(40, runtime.maxRowLevel * ANALYTICAL_TREE_LEVEL_INDENT_PX + 27);
 	const leadingWidth = treeWidth + (selection ? ANALYTICAL_SELECTION_WIDTH : 0);
 	const columns = buildTableColumnLayout({
 		ids: runtime.visibleColumns.map((column) => column.id),
 		getWidth: (id) => {
 			const column = runtime.columns.find((item) => item.id === id);
-			return runtime.state.columnWidths?.[id] ?? column?.width ?? 160;
+			return runtime.state.columnWidths?.[id] ?? column?.width ?? ANALYTICAL_DEFAULT_COLUMN_WIDTH_PX;
 		}
 	});
 	let pinnedOffset = leadingWidth;
@@ -26,7 +32,7 @@ export function buildAnalyticalTableLayout<T>(runtime: AnalyticalTableRuntime<T>
 	// Tree-подпись может занимать только пустые dimension-ячейки перед первой мерой.
 	const firstValueIndex = runtime.visibleColumns.findIndex(
 		(column) =>
-			column.kind === "measure" ||
+			column.kind === ANALYTICAL_COLUMN_KIND_MEASURE ||
 			column.renderGroup ||
 			runtime.formattingFields[column.id]?.formattersPipelineExecutor?.hasRowBasedOverride
 	);

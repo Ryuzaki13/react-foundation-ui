@@ -1,11 +1,13 @@
 import { type ComponentProps, type ComponentType, type ReactNode, type Ref } from "react";
 
+import { TEXT_EDITOR_LEXICAL_RAW_FORMAT, TEXT_EDITOR_LEXICAL_RAW_VERSION } from "./model/textEditorLexicalRawConstants";
+import { type TEXT_EDITOR_PRESENTATION_DOCUMENT, type TEXT_EDITOR_PRESENTATION_COMPACT } from "./model/textEditorPresentationConstants";
 import { type TextEditorBlockStyle, type TextEditorInlineStyle } from "./model/textEditorTypes";
 import { type LinkTypes } from "./toolbar/types";
 
 export type TextEditorLexicalRaw = {
-	format: "lexical";
-	version: 1;
+	format: typeof TEXT_EDITOR_LEXICAL_RAW_FORMAT;
+	version: typeof TEXT_EDITOR_LEXICAL_RAW_VERSION;
 	editorState: Record<string, unknown>;
 };
 
@@ -90,7 +92,7 @@ export interface TextEditorCoreProps<TRaw = unknown> {
 	initialData: TextEditorData<TRaw>;
 	onChange: (data: TextEditorData<TextEditorLexicalRaw>) => void;
 	/** document сохраняет обычную панель; compact предназначен для встроенного короткого ввода без внешней рамки. */
-	presentation?: "document" | "compact";
+	presentation?: typeof TEXT_EDITOR_PRESENTATION_DOCUMENT | typeof TEXT_EDITOR_PRESENTATION_COMPACT;
 	/** null полностью убирает подсказку и её место; undefined сохраняет стандартную подсказку. */
 	placeholder?: string | null;
 	/** Действия или содержимое справа внутри общей рамки поля, вне contenteditable. Состоянием действий управляет consumer. */
@@ -106,5 +108,10 @@ export const isLexicalTextRaw = (raw: unknown): raw is TextEditorLexicalRaw => {
 	if (!raw || typeof raw !== "object") return false;
 
 	const value = raw as Partial<TextEditorLexicalRaw>;
-	return value.format === "lexical" && value.version === 1 && !!value.editorState && typeof value.editorState === "object";
+	return (
+		value.format === TEXT_EDITOR_LEXICAL_RAW_FORMAT &&
+		value.version === TEXT_EDITOR_LEXICAL_RAW_VERSION &&
+		!!value.editorState &&
+		typeof value.editorState === "object"
+	);
 };

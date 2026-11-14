@@ -10,10 +10,19 @@ import {
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
 import { resolveDateInputPeriodRangeState } from "../lib";
+import {
+	CALENDAR_LAST_HOUR,
+	CALENDAR_LAST_MINUTE,
+	CALENDAR_LAST_SECOND,
+	DATE_INPUT_WEEK_END_SUNDAY,
+	DATE_INPUT_SELECTION_MODE_DAY
+} from "../lib/dateInputCalendarConstants";
 
 import styles from "./CalendarMonthView.module.scss";
 
 import type { DateInputSelectionMode, DateInputWeekEndDay } from "../lib";
+
+const MONTHS_PER_YEAR = 12;
 
 const monthLabelFormatter = new Intl.DateTimeFormat("ru-RU", { month: "short" });
 const monthAriaFormatter = new Intl.DateTimeFormat("ru-RU", { month: "long", year: "numeric" });
@@ -41,11 +50,11 @@ export function CalendarMonthView({
 	maxDate,
 	selectsRange,
 	selectsPeriod,
-	selectionMode = "day",
-	weekEndDay = "sunday"
+	selectionMode = DATE_INPUT_SELECTION_MODE_DAY,
+	weekEndDay = DATE_INPUT_WEEK_END_SUNDAY
 }: MonthViewProps) {
 	const [hoveredDate, setHoveredDate] = useState<Date | null>(null);
-	const months = Array.from({ length: 12 }, (_, index) => index);
+	const months = Array.from({ length: MONTHS_PER_YEAR }, (_, index) => index);
 	const currentYear = currentDate.getFullYear();
 	const selectionOptions: CalendarPeriodOptions = {
 		selectionMode,
@@ -66,7 +75,7 @@ export function CalendarMonthView({
 		if (!minDate && !maxDate) return false;
 
 		const monthStart = createCalendarDate(currentYear, monthIndex, 1);
-		const monthEnd = createCalendarDate(currentYear, monthIndex + 1, 0, 23, 59, 59);
+		const monthEnd = createCalendarDate(currentYear, monthIndex + 1, 0, CALENDAR_LAST_HOUR, CALENDAR_LAST_MINUTE, CALENDAR_LAST_SECOND);
 
 		if (selectsPeriod) {
 			return !isCalendarPeriodWithinDateBounds(getCalendarPeriod(monthStart, selectionOptions), { minDate, maxDate });

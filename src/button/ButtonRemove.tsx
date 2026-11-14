@@ -2,6 +2,8 @@ import React, { useRef, useState } from "react";
 
 import { XIcon } from "lucide-react";
 
+import { UI_APPEARANCE_OUTLINE, UI_APPEARANCE_SOLID, UI_TONE_ERROR } from "../uiSchemeConstants";
+
 import { Button } from "./Button";
 
 type ButtonRemoveProps = Omit<React.ButtonHTMLAttributes<HTMLButtonElement>, "type" | "onClick"> & {
@@ -37,5 +39,13 @@ export function ButtonRemove({ onPreConfirm, onConfirm, confirmTimeout = 1500, .
 		}
 	};
 
-	return <Button {...props} icon={<XIcon />} onClick={handleRemoveClick} tone="error" appearance={confirmRemove ? "solid" : "outline"} />;
+	return (
+		<Button
+			{...props}
+			icon={<XIcon />}
+			onClick={handleRemoveClick}
+			tone={UI_TONE_ERROR}
+			appearance={confirmRemove ? UI_APPEARANCE_SOLID : UI_APPEARANCE_OUTLINE}
+		/>
+	);
 }

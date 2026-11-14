@@ -1,0 +1,2 @@
+export const TEXT_EDITOR_LEXICAL_RAW_FORMAT = "lexical";
+export const TEXT_EDITOR_LEXICAL_RAW_VERSION = 1;

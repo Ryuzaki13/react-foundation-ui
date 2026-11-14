@@ -4,6 +4,7 @@ import { Move, X } from "lucide-react";
 
 import { Button } from "../button";
 import { FlexContainer } from "../flex";
+import { UI_APPEARANCE_GHOST } from "../uiSchemeConstants";
 
 import styles from "./FloatingWindows.module.scss";
 import { type FloatingWindowMoveResult } from "./model/floatingWindowMoveTypes";
@@ -22,7 +23,7 @@ export function FloatingWindowHeader({ title, titleId, instructionId, actions, o
 	return (
 		<FlexContainer row align="center" gap="xs" className={styles.header}>
 			<Button
-				appearance="ghost"
+				appearance={UI_APPEARANCE_GHOST}
 				icon={<Move size={16} />}
 				className={styles.handle}
 				aria-label={`Переместить окно «${title}»`}
@@ -36,7 +37,7 @@ export function FloatingWindowHeader({ title, titleId, instructionId, actions, o
 			{onClose && (
 				<Button
 					icon={<X size={16} />}
-					appearance="ghost"
+					appearance={UI_APPEARANCE_GHOST}
 					aria-label={`Закрыть окно «${title}»`}
 					data-floating-window-action="close"
 					onClick={onClose}
