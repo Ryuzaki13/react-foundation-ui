@@ -113,7 +113,7 @@ export default defineConfig((configEnv) => ({
 			formats: ["es"],
 			cssFileName: "styles"
 		},
-		rollupOptions: {
+		rolldownOptions: {
 			external: isExternalPackage,
 			output: {
 				entryFileNames: "[name].js",
