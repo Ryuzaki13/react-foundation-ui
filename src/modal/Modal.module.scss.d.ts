@@ -4,6 +4,9 @@ declare const styles: {
   readonly headerText: "headerText";
   readonly headerButton: "headerButton";
   readonly body: "body";
+  readonly content: "content";
+  readonly contentScrollable: "contentScrollable";
+  readonly scrollable: "scrollable";
   readonly "99875em": "99875em";
   readonly sm: "sm";
   readonly md: "md";

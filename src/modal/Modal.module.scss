@@ -54,6 +54,21 @@
 	border-bottom-right-radius: var(--modal-border-radius);
 }
 
+.content {
+	overflow: hidden;
+	padding: var(--space-md);
+}
+
+.contentScrollable,
+.scrollable {
+	padding-right: var(--space-sm);
+}
+
+.content,
+.scrollable {
+	height: 100%;
+}
+
 @include mobile-above {
 	.modal {
 		height: var(--modal-height, fit-content);
