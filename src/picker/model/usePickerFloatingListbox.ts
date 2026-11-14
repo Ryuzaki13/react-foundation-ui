@@ -27,8 +27,10 @@ interface UsePickerFloatingListboxParams<T> {
 
 /**
  * Единая точка входа для popup/listbox поведения во всех picker-компонентах.
+ * Возвращаемый тип берётся из публичного хука Foundation LIB, чтобы декларация
+ * оставалась переносимой при раздельной установке зависимостей.
  */
-export function usePickerFloatingListbox<T>(params: UsePickerFloatingListboxParams<T>) {
+export function usePickerFloatingListbox<T>(params: UsePickerFloatingListboxParams<T>): ReturnType<typeof useFloatingListbox<T>> {
 	const triggerPolicy = params.triggerMode ? createPickerTriggerPolicy(params.triggerMode) : undefined;
 
 	return useFloatingListbox({

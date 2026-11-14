@@ -228,7 +228,7 @@ import "@ryuzaki13/react-foundation-ui/styles.css";
 
 Расчёт не выполняет JavaScript в браузере. Host управляет атрибутом, в том числе при учёте системного предпочтения; `$contrast: auto` сам не подписывается на `prefers-contrast`. Градиенты, overlay, изображения и произвольные доменные цвета приложения требуют собственной проверки.
 
-Storybook [Development/Theme contrast](./src/development/theme-contrast/stories/ThemeContrast.stories.tsx) показывает исходную и рассчитанную палитры рядом для светлой, тёмной, сиреневой и зелёной тем. Запустите `npm run storybook`, откройте эту историю и проверьте hover/pressed, Tab-фокус, кнопку внутри обрезающего контейнера, поля, выбранность и выделение текста. История использует тот же Sass API, что и host-приложение.
+Storybook [Development/Theme contrast](./src/development/theme-contrast/stories/ThemeContrast.stories.tsx) показывает исходную и рассчитанную палитры рядом для светлой, тёмной, сиреневой и зелёной тем. Запустите `pnpm run storybook`, откройте эту историю и проверьте hover/pressed, Tab-фокус, кнопку внутри обрезающего контейнера, поля, выбранность и выделение текста. История использует тот же Sass API, что и host-приложение.
 
 Mixin не выбирает selector и не выставляет `color-scheme`: ими управляет host. `light-theme` и `dark-theme` остаются сокращёнными вызовами соответствующего режима. Состав ролей и правила перехода описаны в [COLOR_TOKENS_MIGRATION.md](./COLOR_TOKENS_MIGRATION.md).
 
@@ -383,7 +383,7 @@ export function MaterialGallery() {
 Stories и MDX не экспортируются как public API пакета. Вместо этого пакет собирает готовую статическую документацию:
 
 ```bash
-npm run build-storybook
+pnpm run build-storybook
 ```
 
 Результат лежит в `storybook-static` и включается в npm package через `files`. После установки пакета host-проект может отдать эту директорию:
@@ -735,18 +735,19 @@ function send(response, status, body, type) {
 }
 ```
 
-Для разработки самого пакета:
+Для разработки пакета используется `pnpm@12.4.1`, закреплённый в `package.json#packageManager`.
 
 ```bash
-npm run storybook
-npm run build-storybook
-npm run serve-storybook
+pnpm install --frozen-lockfile
+pnpm run storybook
+pnpm run build-storybook
+pnpm run serve-storybook
 ```
 
-Для проверки npm-артефакта:
+Команда `pack:dry-run` проверяет пакет, собирает Storybook и выводит состав публикуемого артефакта с помощью `npm pack --dry-run`.
 
 ```bash
-npm run pack:dry-run
+pnpm run pack:dry-run
 ```
 
 ## Зависимые OData-сегменты

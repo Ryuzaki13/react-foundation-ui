@@ -529,13 +529,8 @@ state = closeMenu(state);
 
 ## Тесты
 
-Покрыты функциональные утилиты слоя `shared/lib/context-menu`:
-
-- `src/shared/lib/context-menu/state.test.ts`
-- `src/shared/lib/context-menu/anchor.test.ts`
-
-Запуск:
+Тесты взаимодействия с контекстным меню можно запустить отдельно.
 
 ```bash
-npx vitest run src/shared/lib/context-menu/state.test.ts src/shared/lib/context-menu/anchor.test.ts
+pnpm exec vitest run src/context-menu/ContextMenu.test.tsx
 ```

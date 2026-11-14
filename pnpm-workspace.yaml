@@ -1,0 +1,5 @@
+# Разрешены install scripts для нативных зависимостей Storybook, Sass и ESLint.
+allowBuilds:
+    "@parcel/watcher": true
+    esbuild: true
+    unrs-resolver: true

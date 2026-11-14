@@ -21,7 +21,7 @@
 		"vite",
 		"esm"
 	],
-	"packageManager": "npm@11.7.0",
+	"packageManager": "pnpm@12.4.1",
 	"type": "module",
 	"sideEffects": [
 		"**/*.css",
@@ -388,16 +388,16 @@
 	"scripts": {
 		"build": "vite build && tsc -p tsconfig.build.json --emitDeclarationOnly",
 		"typecheck": "tsc -p tsconfig.build.json --noEmit && tsc -p tsconfig.type-tests.json --noEmit",
-		"test:run": "npx vitest",
+		"test:run": "vitest",
 		"test": "vitest run",
 		"lint": "eslint --config eslint.config.ts .",
 		"lint:fix": "eslint --config eslint.config.ts . --fix",
 		"storybook": "storybook dev -p 6006",
 		"build-storybook": "storybook build",
-		"validate": "npm run lint && npm run typecheck && npm run test && npm run build",
-		"pack:dry-run": "npm run validate && npm run build-storybook && npm pack --dry-run",
-		"build-package": "npm run build && npm run build-storybook",
-		"serve-storybook": "npx http-server storybook-static"
+		"validate": "pnpm run lint && pnpm run typecheck && pnpm run test && pnpm run build",
+		"pack:dry-run": "pnpm run validate && pnpm run build-storybook && npm pack --dry-run",
+		"build-package": "pnpm run build && pnpm run build-storybook",
+		"serve-storybook": "pnpm dlx http-server storybook-static"
 	},
 	"publishConfig": {
 		"access": "public",
@@ -552,6 +552,7 @@
 		"lucide-react": "^1.28.0",
 		"motion": "^14.7.1",
 		"playwright": "^1.62.1",
+		"prettier": "3.9.6",
 		"react": "^19.2.8",
 		"react-dom": "^19.2.8",
 		"react-easy-crop": "^6.2.3",
@@ -577,10 +578,5 @@
 				"prerelease": true
 			}
 		]
-	},
-	"allowScripts": {
-		"@parcel/watcher@2.5.6": true,
-		"esbuild@0.28.1": true,
-		"unrs-resolver@1.12.2": true
 	}
 }
