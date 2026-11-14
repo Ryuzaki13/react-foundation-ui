@@ -51,7 +51,7 @@ export function TabsBox({
 		className
 	);
 	const tabListClassName = styles.tabs;
-	const panelsClassName = cn(styles.panels, styles.panelScrollable, "scrollable overscroll");
+	const panelsClassName = cn(styles.panels, "scrollable overscroll");
 	const panelClassName = styles.panel;
 	const panelBodyClassName = styles.panelBody;
 

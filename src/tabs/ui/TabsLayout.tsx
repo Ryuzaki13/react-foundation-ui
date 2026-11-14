@@ -2,6 +2,7 @@ import React, { Children, isValidElement, useMemo } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
+import { Scrollable } from "../../misc";
 import uiStyles from "../../ui.module.scss";
 import { getUiPanelToneClassName } from "../../uiClasses";
 import { shouldMountTabPanel } from "../lib/tabs";
@@ -225,9 +226,9 @@ export function TabsLayout({
 									{tab.toolbar ? (
 										<div className={cn(styles.layoutSection, tab.toolbar.className)}>{tab.toolbar.children}</div>
 									) : null}
-									<div className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}>
+									<Scrollable className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}>
 										{tab.content.children}
-									</div>
+									</Scrollable>
 									{tab.footer ? (
 										<div className={cn(styles.layoutSection, tab.footer.className)}>{tab.footer.children}</div>
 									) : null}

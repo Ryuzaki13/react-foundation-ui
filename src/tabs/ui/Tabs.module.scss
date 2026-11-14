@@ -29,7 +29,7 @@
 .tabs {
 	display: flex;
 	min-width: 0;
-	padding: var(--space-sm);
+	padding: var(--space-sm) var(--tabs-panel-padding);
 }
 
 .panels {
@@ -75,10 +75,6 @@
 		border-top-right-radius: var(--tabs-radius);
 		border-bottom-right-radius: var(--tabs-radius);
 	}
-}
-
-.panelScrollable {
-	overflow: auto;
 }
 
 .tab {
@@ -161,6 +157,7 @@
 	min-height: 0;
 	height: 100%;
 	padding: var(--tabs-panel-padding);
+	padding-right: calc(var(--tabs-panel-padding) / 2);
 }
 
 .layoutSection {
@@ -169,4 +166,5 @@
 
 .layoutContent {
 	min-height: 0;
+	padding-right: calc(var(--tabs-panel-padding) / 2);
 }

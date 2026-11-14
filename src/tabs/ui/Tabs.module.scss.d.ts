@@ -6,7 +6,6 @@ declare const styles: {
   readonly panels: "panels";
   readonly horizontal: "horizontal";
   readonly vertical: "vertical";
-  readonly panelScrollable: "panelScrollable";
   readonly tab: "tab";
   readonly selected: "selected";
   readonly panel: "panel";

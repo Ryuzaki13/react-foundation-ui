@@ -232,21 +232,19 @@ const renderTabsLayoutStory = createControlledStoryRender<TabsLayoutProps>((args
 						</div>
 					</TabsLayout.Content>
 					<TabsLayout.Footer>
-						<div className="bgCanvas border radiusSm paddingSm">Футер тоже исключён из scroll-контента.</div>
+						<div className="border radiusSm paddingSm">Футер тоже исключён из scroll-контента.</div>
 					</TabsLayout.Footer>
 				</TabsLayout.Tab>
 
 				<TabsLayout.Tab id="history" title="История">
 					<TabsLayout.Content>
-						<Scrollable className="bgCanvas border radiusSm paddingSm h100">
-							<div role="region" aria-label="История изменений" tabIndex={0}>
-								{longLines.map((line) => (
-									<div key={`history-${line}`} className="paddingBlockXs">
-										История изменения: {line}
-									</div>
-								))}
-							</div>
-						</Scrollable>
+						<div role="region" aria-label="История изменений" tabIndex={0}>
+							{longLines.map((line) => (
+								<div key={`history-${line}`} className="paddingBlockXs">
+									История изменения: {line}
+								</div>
+							))}
+						</div>
 					</TabsLayout.Content>
 				</TabsLayout.Tab>
 			</TabsLayout>
