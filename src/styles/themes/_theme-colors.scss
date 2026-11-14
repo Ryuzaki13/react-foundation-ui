@@ -1,0 +1,80 @@
+@use "sass:color";
+@use "sass:map";
+@use "sass:math";
+@use "sass:meta";
+@use "sass:string";
+
+$_rgb-channels: ("red", "green", "blue");
+$_channels-by-space: (
+	rgb: $_rgb-channels,
+	hsl: (
+		"hue",
+		"saturation",
+		"lightness"
+	)
+);
+$_channel-max: 255;
+
+// HEX передаёт только числовые каналы. Значения с none могут участвовать
+// в CSS-интерполяции, где отсутствующий канал отличается от нулевого.
+@function can-encode($value) {
+	@if meta.type-of($value) != color {
+		@return false;
+	}
+
+	$channels: map.get($_channels-by-space, color.space($value));
+	@if $channels == null or color.is-missing($value, "alpha") {
+		@return false;
+	}
+
+	@each $channel in $channels {
+		@if color.is-missing($value, $channel) {
+			@return false;
+		}
+	}
+
+	@return true;
+}
+
+@function _byte($channel) {
+	@return math.round(math.clamp(0, $channel, $_channel-max));
+}
+
+// Контраст считается по тем же 8-битным каналам, которые получит браузер.
+// Результат остаётся Sass-цветом до вывода CSS.
+@function normalize($value) {
+	$rgb: color.to-space($value, rgb);
+
+	@return color.change(
+		$rgb,
+		$red: _byte(color.channel($rgb, "red")),
+		$green: _byte(color.channel($rgb, "green")),
+		$blue: _byte(color.channel($rgb, "blue")),
+		$alpha: math.div(_byte(color.channel($rgb, "alpha") * $_channel-max), $_channel-max)
+	);
+}
+
+@function _hex-byte($byte) {
+	$digits: "0123456789abcdef";
+	$base: string.length($digits);
+	$high: math.floor(math.div($byte, $base)) + 1;
+	$low: ($byte % $base) + 1;
+
+	@return string.slice($digits, $high, $high) + string.slice($digits, $low, $low);
+}
+
+// У нормализованного цвета каналы уже целые. Явная запись HEX нужна,
+// потому что Sass может выводить те же байты именем цвета или через rgba().
+@function hex($value) {
+	$result: "#";
+	@each $channel in $_rgb-channels {
+		$result: $result + _hex-byte(color.channel($value, $channel));
+	}
+
+	$alpha: color.channel($value, "alpha");
+	@if $alpha < 1 {
+		$result: $result + _hex-byte(_byte($alpha * $_channel-max));
+	}
+
+	@return string.unquote($result);
+}

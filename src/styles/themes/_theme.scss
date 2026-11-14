@@ -2,6 +2,7 @@
 
 @use "../config" as stylesConfig;
 @use "./contrast-theme" as contrastTheme;
+@use "./theme-colors" as themeColors;
 
 @function _theme-base($mode) {
 	@if $mode == light {
@@ -15,9 +16,21 @@
 	@error "Цветовая схема темы должна иметь значение light или dark, получено: #{$mode}.";
 }
 
+@mixin _emit-declarations($tokens) {
+	$declarations: $tokens;
+	@each $name, $value in $tokens {
+		@if themeColors.can-encode($value) {
+			$declarations: map.set($declarations, $name, themeColors.hex($value));
+		}
+	}
+
+	@include stylesConfig.emit-declarations($declarations);
+}
+
 /// Выводит явную палитру выбранного режима в selector, которым владеет host.
 /// Приоритет: defaults режима < config overrides < overrides этого вызова.
-/// normal сохраняет авторские цвета, high рассчитывает полную контрастную палитру,
+/// RGB/HSL нормализуются в 8-битную палитру до расчёта контраста и вывода HEX.
+/// normal выводит эту палитру, high рассчитывает полную контрастную палитру,
 /// auto добавляет к normal только изменившиеся токены под data-contrast="high".
 /// Атрибут контрастности и selector темы принадлежат одному host-элементу.
 @mixin theme($mode, $overrides: (), $contrast: auto) {
@@ -31,24 +44,30 @@
 	@if $contrast != auto and $contrast != normal and $contrast != high {
 		@error "Контрастность темы должна иметь значение auto, normal или high, получено: #{$contrast}.";
 	}
+
+	@each $name, $value in $tokens {
+		@if themeColors.can-encode($value) {
+			$tokens: map.set($tokens, $name, themeColors.normalize($value));
+		}
+	}
+
 	@if $contrast == normal {
-		@include stylesConfig.emit-declarations($tokens);
+		@include _emit-declarations($tokens);
 	} @else {
 		$high: contrastTheme.resolve($tokens, $mode);
 		@if $contrast == high {
-			@include stylesConfig.emit-declarations($high);
+			@include _emit-declarations($high);
 		} @else {
-			@include stylesConfig.emit-declarations($tokens);
+			@include _emit-declarations($tokens);
 			&[data-contrast="high"] {
+				$overrides: ();
 				@each $name, $value in $high {
 					@if not map.has-key($tokens, $name) or map.get($tokens, $name) != $value {
-						@include stylesConfig.emit-declarations(
-							(
-								$name: $value
-							)
-						);
+						$overrides: map.set($overrides, $name, $value);
 					}
 				}
+
+				@include _emit-declarations($overrides);
 			}
 		}
 	}

@@ -186,6 +186,64 @@ describe("Расчёт повышенной контрастности Sass-те
 		expectSemanticContrast(theme(mode, "high"));
 	});
 
+	it.each(["normal", "high", "auto"] as const)("выводит статические HSL и RGB в HEX в режиме %s", (mode) => {
+		const css = compile(`
+			@use "sass:color";
+			.theme {
+				@include themes.theme(light, (tokens: (
+					"--bg-canvas": hsl(0 0% 100%),
+					"--project-hsl": hsl(240 79% 74%),
+					"--project-rgb": color.to-space(hsl(240 79% 74%), rgb),
+					"--project-translucent": hsl(240 79% 74% / 70%),
+					"--project-red": hsl(0 100% 50%)
+				)), $contrast: ${mode});
+			}
+		`);
+		const tokens = rule(css, ".theme");
+
+		expect(tokens.get("--bg-canvas")).toBe("#ffffff");
+		expect(tokens.get("--project-hsl")).toBe("#8888f1");
+		expect(tokens.get("--project-rgb")).toBe("#8888f1");
+		expect(tokens.get("--project-translucent")).toBe("#8888f1b3");
+		expect(tokens.get("--project-red")).toBe("#ff0000");
+
+		if (mode === "high") expectSemanticContrast(tokens);
+		if (mode === "auto") expectSemanticContrast(new Map([...tokens, ...rule(css, '.theme[data-contrast="high"]')]));
+	});
+
+	it("сохраняет вычисляемые в браузере цвета, отсутствующие каналы и широкие цветовые пространства", () => {
+		const tokens = theme(
+			"light",
+			"normal",
+			[
+				'"--text-primary": color(display-p3 1 0 0)',
+				'"--project-dynamic": hsl(var(--hue) 79% 74%)',
+				'"--project-missing": rgb(none 100 50 / none)',
+				'"--project-gradient": linear-gradient(90deg, red, blue)'
+			].join(",")
+		);
+
+		expect(tokens.get("--text-primary")).toBe("color(display-p3 1 0 0)");
+		expect(tokens.get("--project-dynamic")).toBe("hsl(var(--hue), 79%, 74%)");
+		expect(tokens.get("--project-missing")).toBe("rgb(none 100 50 / none)");
+		expect(tokens.get("--project-gradient")).toBe("linear-gradient(90deg, red, blue)");
+	});
+
+	it("проверяет порог функциональной границы по округлённым RGB-каналам", () => {
+		const overrides = [...surfaces, ...softSurfaces]
+			.map((role) => `"${role}": #fff`)
+			.concat('"--focus-ring": rgb(148.8 148.8 148.8)')
+			.join(",");
+		const normal = theme("light", "normal", overrides);
+		const high = theme("light", "high", overrides);
+
+		// Исходный дробный RGB даёт 3.00292:1, но после округления до #959595
+		// такой цвет уже не проходит порог на белом фоне.
+		expect(normal.get("--focus-ring")).toBe("#959595");
+		expect(high.get("--focus-ring")).toBe("#949494");
+		expectPair(high, "--focus-ring", "--bg-canvas", 3);
+	});
+
 	it.each([
 		["light", "#edf7ee", "#e4f1e5", "#98ad9c"],
 		["dark", "#101b28", "#18283b", "#6f8297"]
@@ -316,11 +374,8 @@ describe("Расчёт повышенной контрастности Sass-те
 		const normal = theme("light", "normal", overrides);
 		const tokens = theme("light", "high", overrides);
 
-		expect(tokenColor(normal, "--text-muted")[3]).toBe(0.35);
-		const expectedSurface = composite(tokenColor(normal, "--bg-surface"), tokenColor(normal, "--bg-canvas"));
-		for (let channel = 0; channel < 4; channel++) {
-			expect(tokenColor(tokens, "--bg-surface")[channel]).toBeCloseTo(expectedSurface[channel], 6);
-		}
+		expect(normal.get("--text-muted")).toBe("#50698259");
+		expect(tokens.get("--bg-surface")).toBe("#fffcf9");
 		for (const background of surfaces) expectPair(tokens, "--text-muted", background);
 		expectPair(tokens, "--selection-text", "--selection-bg");
 	});

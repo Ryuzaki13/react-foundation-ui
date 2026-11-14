@@ -4,9 +4,10 @@
 @use "sass:string";
 
 @use "./contrast-colors" as colors;
+@use "./theme-colors" as themeColors;
 
 // Единственная таблица допустимых обычных поверхностей принадлежит теме,
-// а не компонентам. Новая тема предоставляет только исходные HEX/RGB роли.
+// а не компонентам.
 $_surfaces: (
 	"--bg-canvas",
 	"--bg-surface",
@@ -121,6 +122,18 @@ $_boundary-ratio: 3;
 	@return $best;
 }
 
+@function _contrast-input($tokens, $role) {
+	$value: colors.read($tokens, $role);
+
+	// normal сохраняет CSS-семантику none. При расчёте high Sass читает
+	// такие каналы как нули, поэтому фиксируем их явно до подбора палитры.
+	@if not themeColors.can-encode($value) {
+		@return themeColors.normalize($value);
+	}
+
+	@return $value;
+}
+
 @function _resolve-colors($tokens) {
 	$roles: list.join(
 		$_surfaces,
@@ -167,13 +180,14 @@ $_boundary-ratio: 3;
 	// Ссылки разрешаются по исходной карте до коррекции её зависимостей:
 	// иначе var(--accent-fill) незаметно изменил бы уже проверенный текст.
 	$resolved: $tokens;
-	$canvas: colors.read($tokens, "--bg-canvas");
+	$canvas: _contrast-input($tokens, "--bg-canvas");
 	@if color.channel($canvas, "alpha") != 1 {
 		@error "--bg-canvas должен быть непрозрачным: фон документа неизвестен генератору контраста.";
 	}
-	$surface: colors.composite(colors.read($tokens, "--bg-surface"), $canvas);
+	// Производные подложки округляются до проверки контраста, как и исходные.
+	$surface: themeColors.normalize(colors.composite(_contrast-input($tokens, "--bg-surface"), $canvas));
 	@each $role in $roles {
-		$value: colors.read($tokens, $role);
+		$value: _contrast-input($tokens, $role);
 		// Полупрозрачные подложки фиксируются над известной surface. Overlay,
 		// gradients, shadows и прочая декоративная графика сюда не входят.
 		@if $role == "--bg-surface" {
@@ -183,7 +197,7 @@ $_boundary-ratio: 3;
 			string.index($role, "-bg") or
 			(string.index($role, "-fill") and not string.index($role, "-on-fill"))
 		{
-			$value: colors.composite($value, $surface);
+			$value: themeColors.normalize(colors.composite($value, $surface));
 		}
 		$resolved: map.set($resolved, $role, $value);
 	}

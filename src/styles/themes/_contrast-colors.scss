@@ -19,7 +19,7 @@
 
 /// Разрешает только известные цветовые роли, включая простые ссылки var(--role).
 /// Составные CSS-выражения нельзя проверить при сборке: вместо тихого пропуска
-/// генератор сообщает имя роли и предлагает передать конкретный HEX/RGB.
+/// генератор сообщает имя роли и предлагает передать конкретный HEX/RGB/HSL.
 @function read($tokens, $name, $visited: ()) {
 	@if list.index($visited, $name) {
 		@error "Циклическая ссылка цвета #{$name}: #{$visited}.";
@@ -32,19 +32,13 @@
 		@return read($tokens, _trim(string.slice($value, 5, -2)), list.append($visited, $name));
 	}
 	@if meta.type-of($value) != color {
-		@error "Для расчёта контраста #{$name} требуется HEX/RGB или ссылка на известную роль, получено #{meta.inspect($value)}.";
+		@error "Для расчёта контраста #{$name} требуется HEX/RGB/HSL или ссылка на известную роль, получено #{meta.inspect($value)}.";
 	}
 	@if color.space($value) != rgb {
-		@error "Для расчёта контраста #{$name} требуется цвет sRGB, получено #{meta.inspect($value)}.";
+		@error "Для расчёта контраста #{$name} требуется цвет HEX, RGB или HSL с числовыми каналами, получено #{meta.inspect($value)}.";
 	}
-	// CSS обрезает выходящие за sRGB каналы при выводе. Проверка должна видеть
-	// тот же цвет, иначе rgb(300 0 0) даст ложную оценку относительной яркости.
-	@return color.change(
-		$value,
-		$red: math.clamp(0, color.channel($value, "red"), 255),
-		$green: math.clamp(0, color.channel($value, "green"), 255),
-		$blue: math.clamp(0, color.channel($value, "blue"), 255)
-	);
+
+	@return $value;
 }
 
 /// Композиция alpha выполняется над известной непрозрачной поверхностью.
