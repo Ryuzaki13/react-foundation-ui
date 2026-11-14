@@ -146,12 +146,17 @@ describe("List: встроенные столбцы и группы", () => {
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-1"]);
 		expect(screen.getAllByRole("heading")).toHaveLength(1);
 		expect(screen.getAllByRole("listitem")).toHaveLength(2);
+
+		environment.setViewportHeight(120);
+		act(() => environment.flushResizeObservers());
 		fireEvent.scroll(screen.getByRole("region"), { target: { scrollTop: 720 } });
+		expect(screen.getByText("Загрузка следующей страницы").closest("li")?.getAttribute("role")).toBe("presentation");
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
 		expect(screen.queryAllByRole("listitem")).toHaveLength(0);
 	});
 
 	it("grouping без columns сохраняет sentinel служебной строкой без роли listitem", () => {
+		environment.setViewportHeight(120);
 		const items = createItems(4);
 		render(
 			<List.VirtualizedContent
@@ -169,6 +174,7 @@ describe("List: встроенные столбцы и группы", () => {
 		);
 		const viewport = screen.getByRole("region");
 		fireEvent.scroll(viewport, { target: { scrollTop: 720 } });
+		expect(screen.getByText("Загрузка следующей страницы").closest("li")?.getAttribute("role")).toBe("presentation");
 		expect(viewport.querySelector("ul")?.children).toHaveLength(1);
 		expect(screen.queryAllByRole("listitem")).toHaveLength(0);
 	});

@@ -584,6 +584,7 @@ describe("createCollectionVirtualizerDriver", () => {
 	});
 
 	it("empty, sentinel-only и reset/prepend не передают чужие или технические ключи", () => {
+		environment.setViewportHeight(120);
 		const onVisibleKeysChange = vi.fn<NonNullable<CollectionVirtualizerOptions<string>["onVisibleKeysChange"]>>();
 		const { viewport, commit } = createDriverHost(["-1"], { hasNextPage: true, onVisibleKeysChange });
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["-1"]);
@@ -592,6 +593,9 @@ describe("createCollectionVirtualizerDriver", () => {
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
 		commit([], { hasNextPage: false });
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
+
+		environment.setViewportHeight(240);
+		environment.flushResizeObservers();
 		commit(items, { hasNextPage: false, resetKey: "initial" });
 		viewport.scrollTop = 1237;
 		viewport.dispatchEvent(new Event("scroll"));

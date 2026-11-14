@@ -16,6 +16,8 @@ import {
 } from "lexical";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { getLexicalEditorRoot } from "../test/text-editor/getLexicalEditorRoot.fixture.test";
+
 import { TextEditorLexicalClient } from "./TextEditorLexicalClient";
 
 import { TextEditorLexical, type TextEditorFocusHandle } from "./index";
@@ -160,7 +162,7 @@ describe("явный фокус публичного редактора", () => 
 				<button data-action="outside-focus" type="button" />
 			</>
 		);
-		const input = screen.getByRole("textbox");
+		const input = getLexicalEditorRoot(view.container);
 		const outside = requireOutsideButton();
 		act(() => outside.focus());
 		await act(async () => ref.current?.focus());

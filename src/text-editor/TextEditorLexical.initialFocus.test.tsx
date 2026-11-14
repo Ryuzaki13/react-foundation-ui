@@ -14,6 +14,7 @@ import {
 } from "lexical";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { getLexicalEditorRoot } from "../test/text-editor/getLexicalEditorRoot.fixture.test";
 import { TextEditorInitialFocusReadOnlyFixture } from "../test/text-editor/TextEditorInitialFocusReadOnlyFixture";
 
 import { TextEditorLexicalClient } from "./TextEditorLexicalClient";
@@ -174,7 +175,7 @@ describe("начальный фокус новой сессии редактор
 		act(() => outside.focus());
 		const onChange = vi.fn();
 		const view = render(<TextEditorLexicalClient autoFocus readOnly initialData={htmlData} onChange={onChange} />);
-		const input = screen.getByRole("textbox");
+		const input = getLexicalEditorRoot(view.container);
 		await act(async () => undefined);
 		expect(document.activeElement).toBe(outside);
 		view.rerender(<TextEditorLexicalClient autoFocus initialData={htmlData} onChange={onChange} />);
@@ -279,9 +280,9 @@ describe("начальный фокус новой сессии редактор
 		render(<button type="button" />);
 		const outside = screen.getByRole("button");
 		act(() => outside.focus());
-		render(<TextEditorInitialFocusReadOnlyFixture />);
+		const view = render(<TextEditorInitialFocusReadOnlyFixture />);
 		await act(async () => undefined);
-		expect(requireTextEditor(screen.getByRole("textbox")).isEditable()).toBe(false);
+		expect(requireTextEditor(getLexicalEditorRoot(view.container)).isEditable()).toBe(false);
 		expect(document.activeElement).toBe(outside);
 	});
 

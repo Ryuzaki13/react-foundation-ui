@@ -12,6 +12,8 @@ import {
 } from "lexical";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { getLexicalEditorRoot } from "../test/text-editor/getLexicalEditorRoot.fixture.test";
+
 import { type TextEditorHandle, type TextEditorToolbarComponents } from "./editorModel";
 import { TextEditorLexicalClient } from "./TextEditorLexicalClient";
 import { LinkTypes } from "./toolbar";
@@ -389,7 +391,7 @@ describe("компактный редактор", () => {
 			/>
 		);
 
-		expect(screen.getByRole("textbox")).toBe(input);
+		expect(getLexicalEditorRoot(view.container)).toBe(input);
 		expect(screen.queryByRole("group")).toBeNull();
 		expect(formattingTrigger().disabled).toBe(true);
 		await user.click(formattingTrigger());

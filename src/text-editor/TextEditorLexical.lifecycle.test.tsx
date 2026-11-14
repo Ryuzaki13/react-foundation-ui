@@ -5,6 +5,7 @@ import userEvent from "@testing-library/user-event";
 import { $getRoot, $isTextNode, CONTROLLED_TEXT_INSERTION_COMMAND, getNearestEditorFromDOMNode, HISTORY_PUSH_TAG } from "lexical";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { getLexicalEditorRoot } from "../test/text-editor/getLexicalEditorRoot.fixture.test";
 import { LocalLinkDialogFixture } from "../test/text-editor/LocalLinkDialogFixture";
 
 import { TextEditorLexicalClient } from "./TextEditorLexicalClient";
@@ -168,7 +169,8 @@ describe("lifecycle публичного редактора", () => {
 		view.rerender(
 			<TextEditorLexicalClient readOnly initialData={initialData} onChange={onChange} toolbarComponents={toolbarComponents} />
 		);
-		expect(screen.getByRole("textbox")).toBe(input);
+		expect(view.queryByRole("textbox")).toBeNull();
+		expect(getLexicalEditorRoot(view.container)).toBe(input);
 		expect(getNearestEditorFromDOMNode(input)).toBe(editor);
 		expect(input.getAttribute("contenteditable")).toBe("false");
 		expect(editor.isEditable()).toBe(false);
@@ -186,6 +188,7 @@ describe("lifecycle публичного редактора", () => {
 		view.rerender(
 			<TextEditorLexicalClient readOnly={false} initialData={initialData} onChange={onChange} toolbarComponents={toolbarComponents} />
 		);
+		expect(view.getByRole("textbox")).toBe(input);
 		expect(input.getAttribute("contenteditable")).toBe("true");
 		await user.click(commandButton("undo"));
 		await waitFor(() => expect(input.querySelector("strong")).toBeNull());
@@ -195,8 +198,8 @@ describe("lifecycle публичного редактора", () => {
 	it("clear доступен при readOnly и не меняет режим редактирования", async () => {
 		const ref = createRef<TextEditorHandle>();
 		const onChange = vi.fn();
-		render(<TextEditorLexicalClient ref={ref} readOnly initialData={initialData} onChange={onChange} />);
-		const input = screen.getByRole("textbox");
+		const view = render(<TextEditorLexicalClient ref={ref} readOnly initialData={initialData} onChange={onChange} />);
+		const input = getLexicalEditorRoot(view.container);
 		await waitFor(() => expect(input.textContent).toBe("Первоначальный текст"));
 		expect(input.getAttribute("contenteditable")).toBe("false");
 		expect(getNearestEditorFromDOMNode(input).isEditable()).toBe(false);
@@ -383,9 +386,13 @@ describe("lifecycle публичного редактора", () => {
 		const pending = adapter.mock.lastCall?.[0];
 		if (!pending?.isOpen) throw new Error("Компактная команда не открыла адаптер синхронно");
 
-		if (boundary === "clear") await act(async () => ref.current?.clear());
-		else view.rerender(<TextEditorLexicalClient {...props} ref={ref} presentation="compact" readOnly />);
-		expect(screen.getByRole("textbox")).toBe(input);
+		if (boundary === "clear") {
+			await act(async () => ref.current?.clear());
+			expect(screen.getByRole("textbox")).toBe(input);
+		} else {
+			view.rerender(<TextEditorLexicalClient {...props} ref={ref} presentation="compact" readOnly />);
+			expect(getLexicalEditorRoot(view.container)).toBe(input);
+		}
 		expect(screen.queryByRole("group")).toBeNull();
 		expect(screen.queryByRole("dialog")).toBeNull();
 		onChange.mockClear();

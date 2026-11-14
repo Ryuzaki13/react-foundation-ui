@@ -142,7 +142,11 @@ describe("GridList: непрерывная виртуализированная 
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith(["item-0", "item-2", "item-4"]);
 		expect(screen.getAllByRole("listitem")).toHaveLength(3);
 		expect(screen.getAllByRole("heading")).toHaveLength(1);
+
+		environment.setViewportHeight(120);
+		act(() => environment.flushResizeObservers());
 		fireEvent.scroll(screen.getByRole("region"), { target: { scrollTop: 480 } });
+		expect(screen.getByText("Загрузка следующей страницы").closest("li")?.getAttribute("role")).toBe("presentation");
 		expect(onVisibleKeysChange).toHaveBeenLastCalledWith([]);
 		expect(screen.queryAllByRole("listitem")).toHaveLength(0);
 	});

@@ -1,16 +1,26 @@
 import { beforeEach, expect, it, vi } from "vitest";
-import { prepareZXingModule, writeBarcode } from "zxing-wasm/writer";
+import { type prepareZXingModule, writeBarcode } from "zxing-wasm/writer";
 
 import { encodeQrCode } from "./encodeQrCode";
 
-vi.mock("zxing-wasm/writer", () => ({ prepareZXingModule: vi.fn(), writeBarcode: vi.fn() }));
+const writerSetup = vi.hoisted(() => ({
+	options: undefined as Parameters<typeof prepareZXingModule>[0] | undefined
+}));
+
+vi.mock("zxing-wasm/writer", () => ({
+	prepareZXingModule(options: Parameters<typeof prepareZXingModule>[0]) {
+		// Модуль настраивает WASM при импорте, до очистки истории моков.
+		writerSetup.options = options;
+	},
+	writeBarcode: vi.fn()
+}));
 
 beforeEach(() => {
 	vi.mocked(writeBarcode).mockReset();
 });
 
 it("задаёт локальный URL writer WASM вместо CDN", () => {
-	const locateFile = vi.mocked(prepareZXingModule).mock.calls[0]?.[0]?.overrides?.locateFile;
+	const locateFile = writerSetup.options?.overrides?.locateFile;
 	expect(locateFile).toBeTypeOf("function");
 	const url = locateFile?.("zxing_writer.wasm", "https://cdn.invalid/");
 	expect(url).toContain("zxing_writer.wasm");
@@ -23,7 +33,7 @@ it("пустое значение отклоняется до vendor API", async
 });
 
 it("vendor stdout/stderr не передаются в console", () => {
-	const overrides = vi.mocked(prepareZXingModule).mock.calls[0]?.[0]?.overrides;
+	const overrides = writerSetup.options?.overrides;
 	const log = vi.spyOn(console, "log");
 	const error = vi.spyOn(console, "error");
 	try {

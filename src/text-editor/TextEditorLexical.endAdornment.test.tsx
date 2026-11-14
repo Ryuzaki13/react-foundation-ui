@@ -4,6 +4,8 @@ import { act, fireEvent, render, screen, waitFor } from "@testing-library/react"
 import { $getRoot, $isTextNode, FORMAT_TEXT_COMMAND, getNearestEditorFromDOMNode, REDO_COMMAND, UNDO_COMMAND } from "lexical";
 import { afterAll, beforeAll, describe, expect, it, vi } from "vitest";
 
+import { getLexicalEditorRoot } from "../test/text-editor/getLexicalEditorRoot.fixture.test";
+
 import { type TextEditorCoreProps, type TextEditorHandle } from "./editorModel";
 import { TextEditorLexical } from "./TextEditorLexical";
 import { TextEditorLexicalClient } from "./TextEditorLexicalClient";
@@ -88,7 +90,7 @@ describe("действия внутри общей рамки редактора
 			view.rerender(
 				<TextEditorLexicalClient {...props} readOnly endAdornment={<button type="button" data-action="second-command" />} />
 			);
-			expect(screen.getByRole("textbox")).toBe(input);
+			expect(getLexicalEditorRoot(view.container)).toBe(input);
 			expect(editor.isEditable()).toBe(false);
 			expect(editor.getEditorState().toJSON()).toEqual(formatted);
 
