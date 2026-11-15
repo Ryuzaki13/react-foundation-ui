@@ -46,7 +46,7 @@ export function Example() {
 	return (
 		<>
 			<Button onClick={() => setOpen(true)}>Открыть</Button>
-			<Modal isOpen={open} title="Редактирование" onClose={() => setOpen(false)}>
+			<Modal open={open} title="Редактирование" onClose={() => setOpen(false)}>
 				<ModalContent>Содержимое модального окна</ModalContent>
 				<ModalFooter>
 					<Button onClick={() => setOpen(false)}>Закрыть</Button>

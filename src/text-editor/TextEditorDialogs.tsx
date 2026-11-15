@@ -48,7 +48,7 @@ export function TextEditorDialogs({
 	return (
 		<>
 			{linkTypeDialog === LinkTypes.LOCAL_LINK && LocalLinkDialogComponent ? (
-				<LocalLinkDialogComponent isOpen={true} onClose={onCloseLinkDialog} onConfirm={onAddLocalLink} />
+				<LocalLinkDialogComponent open={true} onClose={onCloseLinkDialog} onConfirm={onAddLocalLink} />
 			) : null}
 
 			{linkTypeDialog === LinkTypes.LINK ? (

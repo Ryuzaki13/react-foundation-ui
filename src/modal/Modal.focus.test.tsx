@@ -38,7 +38,7 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 		if (!container) throw new Error("Контейнер приложения отсутствует.");
 		const view = render(
 			<Wrapper>
-				<ModalFocusProbe mounted={!conditional} isOpen={false} />
+				<ModalFocusProbe mounted={!conditional} open={false} />
 			</Wrapper>,
 			{ container }
 		);
@@ -46,13 +46,13 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 		first.focus();
 		view.rerender(
 			<Wrapper>
-				<ModalFocusProbe mounted isOpen />
+				<ModalFocusProbe mounted open />
 			</Wrapper>
 		);
 		await screen.findByRole("dialog");
 		view.rerender(
 			<Wrapper>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</Wrapper>
 		);
 		await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
@@ -62,20 +62,20 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 	it("persistent false→true повторно захватывает другой trigger", async () => {
 		const view = render(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</StrictMode>
 		);
 		const first = trigger("first-modal-trigger");
 		first.focus();
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen />
+				<ModalFocusProbe mounted open />
 			</StrictMode>
 		);
 		await screen.findByRole("dialog");
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</StrictMode>
 		);
 		await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
@@ -84,13 +84,13 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 		second.focus();
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen />
+				<ModalFocusProbe mounted open />
 			</StrictMode>
 		);
 		await screen.findByRole("dialog");
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</StrictMode>
 		);
 		await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
@@ -100,14 +100,14 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 	it("новое открытие отменяет ожидающий native restore предыдущего exit", async () => {
 		const view = render(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</StrictMode>
 		);
 		const first = trigger("first-modal-trigger");
 		first.focus();
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen />
+				<ModalFocusProbe mounted open />
 			</StrictMode>
 		);
 		await screen.findByRole("dialog");
@@ -125,7 +125,7 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 		});
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</StrictMode>
 		);
 		await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
@@ -136,7 +136,7 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 		second.focus();
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen />
+				<ModalFocusProbe mounted open />
 			</StrictMode>
 		);
 		await screen.findByRole("dialog");
@@ -144,7 +144,7 @@ describe("Modal: native focus lifecycle без подмены primitive", () => 
 		expect(pending.has(oldFrame)).toBe(false);
 		view.rerender(
 			<StrictMode>
-				<ModalFocusProbe mounted isOpen={false} />
+				<ModalFocusProbe mounted open={false} />
 			</StrictMode>
 		);
 		await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());

@@ -84,7 +84,7 @@ export function SemanticDialog({ onClose, onConfirm, config, initialText = "", i
 	};
 
 	return (
-		<Modal isOpen={true} onClose={onClose} title={`Вставка <${config.tagName}>`} size="md">
+		<Modal open={true} onClose={onClose} title={`Вставка <${config.tagName}>`} size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<div>

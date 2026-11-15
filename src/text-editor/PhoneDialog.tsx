@@ -81,7 +81,7 @@ export function PhoneDialog({ onClose, onConfirm, initialState }: PhoneDialogPro
 	};
 
 	return (
-		<Modal isOpen={true} onClose={handleClose} title="Ссылка на телефон" size="md">
+		<Modal open={true} onClose={handleClose} title="Ссылка на телефон" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<FlexContainer gap="sm" align="end">

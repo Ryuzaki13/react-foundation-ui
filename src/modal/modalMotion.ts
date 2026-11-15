@@ -6,13 +6,13 @@ export const MODAL_MOTION_VISIBLE = "visible";
 
 /**
  * Варианты задают единый спокойный переход для появления и удаления modal-панели.
- * Конфигурация приватна для primitive: потребители управляют только состоянием `isOpen`.
+ * Конфигурация приватна для primitive: потребители управляют только состоянием `open`.
  */
 export const modalMotionVariants = {
 	[MODAL_MOTION_HIDDEN]: {
 		opacity: 0,
-		scale: 0.96,
-		y: 12
+		scale: 0.9,
+		y: 64
 	},
 	[MODAL_MOTION_VISIBLE]: {
 		opacity: 1,
@@ -23,7 +23,7 @@ export const modalMotionVariants = {
 
 /** Переход сохраняет отзывчивое открытие и дает exit-анимации завершиться до удаления portal content. */
 export const modalMotionTransition = {
-	duration: 0.18,
+	duration: 0.25,
 	ease: [0.22, 1, 0.36, 1]
 } satisfies Transition;
 

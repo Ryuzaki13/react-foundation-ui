@@ -35,7 +35,7 @@ function ControlledModal() {
 	return (
 		<ModalManagerProvider>
 			<Button onClick={() => setIsOpen(true)}>Открыть</Button>
-			<Modal isOpen={isOpen} title="Проверка анимации" onClose={() => setIsOpen(false)}>
+			<Modal open={isOpen} title="Проверка анимации" onClose={() => setIsOpen(false)}>
 				<ModalContent>Содержимое</ModalContent>
 				<ModalFooter>
 					<Button onClick={() => setIsOpen(false)}>Закрыть</Button>
@@ -50,7 +50,7 @@ describe("Modal", () => {
 		vi.stubGlobal("visualViewport", Object.assign(new EventTarget(), { width: 390, height: 320, offsetTop: 90, offsetLeft: 0 }));
 		const view = render(
 			<ModalManagerProvider>
-				<Modal isOpen onClose={() => undefined}>
+				<Modal open onClose={() => undefined}>
 					<ModalContent>Содержимое</ModalContent>
 				</Modal>
 			</ModalManagerProvider>
@@ -64,7 +64,7 @@ describe("Modal", () => {
 
 	it("передает пользовательскую высоту только в desktop CSS-переменную", async () => {
 		render(
-			<Modal isOpen title="Проверка высоты" height="min(34rem, 70dvh)" onClose={() => undefined}>
+			<Modal open title="Проверка высоты" height="min(34rem, 70dvh)" onClose={() => undefined}>
 				<ModalContent>Содержимое</ModalContent>
 			</Modal>
 		);
@@ -77,7 +77,7 @@ describe("Modal", () => {
 
 	it("создает внутреннюю область прокрутки для scrollable content", async () => {
 		render(
-			<Modal isOpen title="Прокручиваемая модалка" onClose={vi.fn()}>
+			<Modal open title="Прокручиваемая модалка" onClose={vi.fn()}>
 				<ModalContent scrollable>Длинное содержимое</ModalContent>
 			</Modal>
 		);

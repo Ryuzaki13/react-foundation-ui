@@ -68,7 +68,7 @@ const meta = {
 		)
 	],
 	args: {
-		isOpen: false,
+		open: false,
 		title: "Редактирование профиля",
 		size: "md",
 		height: undefined,
@@ -86,7 +86,7 @@ const meta = {
 		)
 	},
 	argTypes: {
-		isOpen: {
+		open: {
 			description: "Управляет видимостью модального окна.",
 			control: "boolean"
 		},
@@ -125,7 +125,7 @@ function useModalStoryArgs() {
 		updateArgs,
 		close: () => {
 			args.onClose();
-			updateArgs({ isOpen: false });
+			updateArgs({ open: false });
 		}
 	};
 }
@@ -137,8 +137,8 @@ export const Controlled: Story = {
 
 		return (
 			<>
-				<Button onClick={() => updateArgs({ isOpen: true })}>Открыть модалку</Button>
-				<Modal {...args} isOpen={args.isOpen} onClose={close}>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть модалку</Button>
+				<Modal {...args} open={args.open} onClose={close}>
 					<ModalContent>
 						<DemoFormContent />
 					</ModalContent>
@@ -165,8 +165,8 @@ export const WithToolbarAndFooter: Story = {
 
 		return (
 			<>
-				<Button onClick={() => updateArgs({ isOpen: true })}>Открыть сценарий редактирования</Button>
-				<Modal {...args} isOpen={args.isOpen} onClose={close}>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть сценарий редактирования</Button>
+				<Modal {...args} open={args.open} onClose={close}>
 					<ModalToolbar>
 						<div
 							style={{
@@ -213,8 +213,8 @@ export const ScrollableContent: Story = {
 
 		return (
 			<>
-				<Button onClick={() => updateArgs({ isOpen: true })}>Открыть длинный контент</Button>
-				<Modal {...args} isOpen={args.isOpen} onClose={close}>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть длинный контент</Button>
+				<Modal {...args} open={args.open} onClose={close}>
 					<ModalContent scrollable>
 						<div style={{ display: "grid", gap: 12 }}>
 							{Array.from({ length: 18 }, (_, index) => (
@@ -259,13 +259,13 @@ export const Sizes: Story = {
 						<Button
 							key={size}
 							appearance="ghost"
-							onClick={() => updateArgs({ isOpen: true, size, title: `Размер ${size.toUpperCase()}` })}>
+							onClick={() => updateArgs({ open: true, size, title: `Размер ${size.toUpperCase()}` })}>
 							{size.toUpperCase()}
 						</Button>
 					))}
 				</div>
 
-				<Modal {...args} isOpen={args.isOpen} onClose={close}>
+				<Modal {...args} open={args.open} onClose={close}>
 					<ModalContent>
 						<div style={{ display: "grid", gap: 12 }}>
 							<div>Этот сценарий помогает быстро сравнить ширину и поведение модалки для разных размеров.</div>
@@ -293,14 +293,14 @@ export const StackedModals: Story = {
 		const closeOuter = () => {
 			setInnerOpen(false);
 			args.onClose();
-			updateArgs({ isOpen: false });
+			updateArgs({ open: false });
 		};
 
 		return (
 			<>
-				<Button onClick={() => updateArgs({ isOpen: true })}>Открыть первую модалку</Button>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть первую модалку</Button>
 
-				<Modal {...args} isOpen={args.isOpen} onClose={closeOuter}>
+				<Modal {...args} open={args.open} onClose={closeOuter}>
 					<ModalContent>
 						<div style={{ display: "grid", gap: 16 }}>
 							<div>Откройте вторую модалку и проверьте, что `Escape` закрывает только верхний слой.</div>
@@ -316,7 +316,7 @@ export const StackedModals: Story = {
 					</ModalFooter>
 				</Modal>
 
-				<Modal isOpen={innerOpen} onClose={() => setInnerOpen(false)} size="sm" title="Вторая модалка">
+				<Modal open={innerOpen} onClose={() => setInnerOpen(false)} size="sm" title="Вторая модалка">
 					<ModalContent>
 						<div style={{ display: "grid", gap: 12 }}>
 							<div>Эта модалка должна считаться верхней в стеке.</div>

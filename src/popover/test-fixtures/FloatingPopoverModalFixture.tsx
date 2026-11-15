@@ -12,7 +12,7 @@ export function FloatingPopoverModalFixture() {
 			<Button data-testid="modal-trigger" title="Описание действия" onClick={() => setIsOpen(true)}>
 				Открыть
 			</Button>
-			<Modal isOpen={isOpen} onClose={() => setIsOpen(false)}>
+			<Modal open={isOpen} onClose={() => setIsOpen(false)}>
 				<ModalContent>
 					<Button data-testid="modal-close" onClick={() => setIsOpen(false)}>
 						Закрыть

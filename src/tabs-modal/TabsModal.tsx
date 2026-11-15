@@ -8,7 +8,7 @@ import { TabsLayoutView } from "../tabs/ui/TabsLayoutView";
 
 import styles from "./TabsModal.module.scss";
 
-export type TabsModalProps = Pick<ModalProps, "isOpen" | "size" | "height" | "onClose"> &
+export type TabsModalProps = Pick<ModalProps, "open" | "size" | "height" | "onClose"> &
 	Pick<TabsLayoutProps, "children" | "value" | "defaultValue" | "onValueChange" | "activationMode" | "loop"> & {
 		/** Доступное имя окна: отдельный видимый заголовок не выводится. */
 		title: string;
@@ -22,9 +22,9 @@ type TabsModalComponent = ((props: TabsModalProps) => JSX.Element) & Pick<typeof
  * При переключении содержимое предыдущей вкладки размонтируется.
  */
 export const TabsModal: TabsModalComponent = Object.assign(
-	function TabsModal({ isOpen, size, height, onClose, title, ...tabsProps }: TabsModalProps) {
+	function TabsModal({ open, size, height, onClose, title, ...tabsProps }: TabsModalProps) {
 		return (
-			<ModalFrame isOpen={isOpen} size={size} height={height} onClose={onClose} aria-label={title} className={styles.frame}>
+			<ModalFrame open={open} size={size} height={height} onClose={onClose} aria-label={title} className={styles.frame}>
 				<TabsLayoutView {...tabsProps} mountStrategy="unmount" tabBarAction={<ModalCloseButton onClose={onClose} />} />
 			</ModalFrame>
 		);

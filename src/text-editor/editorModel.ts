@@ -1,7 +1,7 @@
 import { type ComponentProps, type ComponentType, type ReactNode, type Ref } from "react";
 
 import { TEXT_EDITOR_LEXICAL_RAW_FORMAT, TEXT_EDITOR_LEXICAL_RAW_VERSION } from "./model/textEditorLexicalRawConstants";
-import { type TEXT_EDITOR_PRESENTATION_DOCUMENT, type TEXT_EDITOR_PRESENTATION_COMPACT } from "./model/textEditorPresentationConstants";
+import { type TEXT_EDITOR_PRESENTATION_COMPACT, type TEXT_EDITOR_PRESENTATION_DOCUMENT } from "./model/textEditorPresentationConstants";
 import { type TextEditorBlockStyle, type TextEditorInlineStyle } from "./model/textEditorTypes";
 import { type LinkTypes } from "./toolbar/types";
 
@@ -74,7 +74,7 @@ export type TextEditorFocusHandle = TextEditorHandle &
 	}>;
 
 export interface LocalLinkDialogAdapterProps {
-	isOpen: boolean;
+	open: boolean;
 	onClose: () => void;
 	onConfirm: (url: string, ariaLabel: string) => void;
 }

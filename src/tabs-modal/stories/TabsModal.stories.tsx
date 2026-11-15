@@ -21,7 +21,7 @@ const meta = {
 	},
 	decorators: [(story) => <ModalManagerProvider>{story()}</ModalManagerProvider>],
 	args: {
-		isOpen: false,
+		open: false,
 		title: "Сведения о проекте",
 		size: "md",
 		onClose: fn(),
@@ -47,12 +47,12 @@ const meta = {
 
 		return (
 			<div id="app-root">
-				<Button onClick={() => updateArgs({ isOpen: true })}>Открыть окно с вкладками</Button>
+				<Button onClick={() => updateArgs({ open: true })}>Открыть окно с вкладками</Button>
 				<TabsModal
 					{...args}
 					onClose={() => {
 						args.onClose();
-						updateArgs({ isOpen: false });
+						updateArgs({ open: false });
 					}}
 				/>
 			</div>

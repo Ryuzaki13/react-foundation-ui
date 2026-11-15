@@ -195,7 +195,7 @@ export function BarcodeScannerDialog({
 	const visibleErrorMessage = error ? (errorMessages?.[error.kind] ?? defaultErrorMessages[error.kind]) : null;
 
 	return (
-		<Modal isOpen onClose={closeScanner} size="xl" title={title}>
+		<Modal open onClose={closeScanner} size="xl" title={title}>
 			<ModalContent>
 				<section className={rootClassName} aria-label={title}>
 					<div className={styles.viewport}>

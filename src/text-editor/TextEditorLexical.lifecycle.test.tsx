@@ -344,7 +344,7 @@ describe("lifecycle публичного редактора", () => {
 		fireEvent.click(commandButton(LinkTypes.LOCAL_LINK));
 		expect(screen.getByRole("dialog", { name: "Каталог ссылок" })).toBeDefined();
 		const pending = adapter.mock.lastCall?.[0];
-		if (!pending?.isOpen) throw new Error("Нет открытого адаптера");
+		if (!pending?.open) throw new Error("Нет открытого адаптера");
 		if (boundary === "clear") await act(async () => ref.current?.clear());
 		else view.rerender(<TextEditorLexicalClient ref={ref} {...props} readOnly />);
 		expect(screen.queryByRole("dialog")).toBeNull();
@@ -384,7 +384,7 @@ describe("lifecycle публичного редактора", () => {
 		// Команда открывает диалог в текущем событии, без отложенного действия popup.
 		expect(screen.getByRole("dialog")).toBeDefined();
 		const pending = adapter.mock.lastCall?.[0];
-		if (!pending?.isOpen) throw new Error("Компактная команда не открыла адаптер синхронно");
+		if (!pending?.open) throw new Error("Компактная команда не открыла адаптер синхронно");
 
 		if (boundary === "clear") {
 			await act(async () => ref.current?.clear());

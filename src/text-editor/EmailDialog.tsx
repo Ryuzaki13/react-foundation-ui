@@ -61,7 +61,7 @@ export function EmailDialog({ onClose, onConfirm, initialState }: EmailDialogPro
 	};
 
 	return (
-		<Modal isOpen={true} onClose={handleClose} title="Ссылка на email" size="md">
+		<Modal open={true} onClose={handleClose} title="Ссылка на email" size="md">
 			<ModalContent>
 				<div className={cn("flexColumn", "gapMd")}>
 					<Input label="Email адрес" value={email} onChange={setEmail} placeholder="some_email@mail.ru" />

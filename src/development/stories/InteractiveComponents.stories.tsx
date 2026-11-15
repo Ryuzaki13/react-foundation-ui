@@ -711,7 +711,7 @@ export function InteractiveComponents() {
 					</Button>
 					<TabsModal
 						title="Обновление справочного центра"
-						isOpen={tabsModalOpen}
+						open={tabsModalOpen}
 						onClose={() => setTabsModalOpen(false)}
 						defaultValue="plan">
 						{projectTabs}
@@ -803,7 +803,7 @@ export function InteractiveComponents() {
 					<Button style={compactButtonStyle} onClick={() => setModalOpen(true)}>
 						Открыть модалку
 					</Button>
-					<Modal title="Параметры" isOpen={modalOpen} onClose={() => setModalOpen(false)}>
+					<Modal title="Параметры" open={modalOpen} onClose={() => setModalOpen(false)}>
 						<ModalContent>Содержимое модального окна</ModalContent>
 						<ModalFooter>
 							<Button onClick={() => setModalOpen(false)}>Готово</Button>

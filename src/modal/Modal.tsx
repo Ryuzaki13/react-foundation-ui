@@ -1,4 +1,4 @@
-import React, { Children, useId } from "react";
+import { Children, type ReactElement, type ReactNode, useId } from "react";
 
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
 
@@ -13,16 +13,16 @@ import { ModalFrame } from "./ModalFrame";
 import { ModalToolbar } from "./ModalToolbar";
 import { type ModalSize } from "./types";
 
-type ToolbarElement = React.ReactElement<ModalCompositionProps, typeof ModalToolbar>;
-type ContentElement = React.ReactElement<ModalCompositionProps, typeof ModalContent>;
-type FooterElement = React.ReactElement<ModalCompositionProps, typeof ModalFooter>;
+type ToolbarElement = ReactElement<ModalCompositionProps, typeof ModalToolbar>;
+type ContentElement = ReactElement<ModalCompositionProps, typeof ModalContent>;
+type FooterElement = ReactElement<ModalCompositionProps, typeof ModalFooter>;
 
 type ModalChildren =
 	[ToolbarElement, ContentElement, FooterElement] | [ToolbarElement, ContentElement] | [ContentElement, FooterElement] | ContentElement;
 
 export interface ModalProps {
 	/** Открыто ли модальное окно */
-	isOpen?: boolean;
+	open?: boolean;
 	/** Заголовок */
 	title?: string;
 	/** Размер модального окна */
@@ -35,13 +35,13 @@ export interface ModalProps {
 }
 
 /** Стандартное окно с заголовком и составными секциями содержимого. */
-export function Modal({ isOpen, title, size, height, onClose, children }: ModalProps) {
+export function Modal({ open, title, size, height, onClose, children }: ModalProps) {
 	const titleId = useId();
 	const contentId = `${titleId}-content`;
 
-	let toolbar: React.ReactNode = null;
-	let content: React.ReactNode = null;
-	let footer: React.ReactNode = null;
+	let toolbar: ReactNode = null;
+	let content: ReactNode = null;
+	let footer: ReactNode = null;
 
 	const childArray = Children.toArray(children) as (ToolbarElement | ContentElement | FooterElement)[];
 
@@ -65,7 +65,7 @@ export function Modal({ isOpen, title, size, height, onClose, children }: ModalP
 	}
 
 	return (
-		<ModalFrame isOpen={isOpen} size={size} height={height} onClose={onClose} aria-labelledby={titleId} aria-describedby={contentId}>
+		<ModalFrame open={open} size={size} height={height} onClose={onClose} aria-labelledby={titleId} aria-describedby={contentId}>
 			<div className={cn(styles.header, toolbar ? "" : "borderBottom")}>
 				<h3 className={styles.headerText} id={titleId}>
 					{title}

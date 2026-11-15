@@ -38,7 +38,7 @@ export interface ImageSelectionPanelProps {
 }
 
 export interface ImageSelectionModalProps extends ImageSelectionPanelProps {
-	isOpen?: boolean;
+	open?: boolean;
 	onClose?: () => void;
 	title?: string;
 }

@@ -7,8 +7,8 @@ import { TextEditorLexicalClient as TextEditorLexical } from "./TextEditorLexica
 
 import type { LocalLinkDialogAdapterProps } from "./editorModel";
 
-function LocalLinkDialogStub({ isOpen }: LocalLinkDialogAdapterProps) {
-	if (!isOpen) return null;
+function LocalLinkDialogStub({ open }: LocalLinkDialogAdapterProps) {
+	if (!open) return null;
 
 	return <div data-testid="local-link-adapter">local-link-open</div>;
 }

@@ -5,11 +5,11 @@ import { ModalManagerProvider } from "./ModalManagerProvider";
 
 type ModalFocusProbeProps = Readonly<{
 	mounted: boolean;
-	isOpen: boolean;
+	open: boolean;
 }>;
 
 /** Настоящий Modal проверяется и как persistent owner, и при условном StrictMode mount. */
-export function ModalFocusProbe({ mounted, isOpen }: ModalFocusProbeProps) {
+export function ModalFocusProbe({ mounted, open }: ModalFocusProbeProps) {
 	return (
 		<ModalManagerProvider>
 			<button type="button" data-action="first-modal-trigger">
@@ -19,7 +19,7 @@ export function ModalFocusProbe({ mounted, isOpen }: ModalFocusProbeProps) {
 				Повторное открытие
 			</button>
 			{mounted ? (
-				<Modal isOpen={isOpen} onClose={() => undefined}>
+				<Modal open={open} onClose={() => undefined}>
 					<ModalContent>Содержимое</ModalContent>
 					<ModalFooter>
 						<button type="button" data-action="modal-close">

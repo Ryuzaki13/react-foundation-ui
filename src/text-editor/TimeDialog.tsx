@@ -10,11 +10,11 @@ import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT } from "../uiSchemeConstants";
 import { isSemanticDateTime } from "./lib/semantic/isSemanticDateTime";
 import {
 	TIME_DIALOG_MODE_DATE,
-	TIME_DIALOG_MODE_TIME,
 	TIME_DIALOG_MODE_DATETIME,
-	TIME_DIALOG_MODE_RANGE_TIME,
 	TIME_DIALOG_MODE_RANGE_DATE,
-	TIME_DIALOG_MODE_RANGE_DATETIME
+	TIME_DIALOG_MODE_RANGE_DATETIME,
+	TIME_DIALOG_MODE_RANGE_TIME,
+	TIME_DIALOG_MODE_TIME
 } from "./model/timeDialogModeConstants";
 import { type TimeDialogInitialState, type TimeMode } from "./model/timeDialogState";
 
@@ -144,7 +144,7 @@ export function TimeDialog({ onClose, onConfirm, initialState }: TimeDialogProps
 	};
 
 	return (
-		<Modal isOpen={true} onClose={onClose} title="Вставка <time>" size="md">
+		<Modal open={true} onClose={onClose} title="Вставка <time>" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<RadioGroup label="Тип значения" value={mode} onChange={setMode}>

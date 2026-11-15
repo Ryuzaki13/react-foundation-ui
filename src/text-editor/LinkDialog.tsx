@@ -81,7 +81,7 @@ export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = tru
 	};
 
 	return (
-		<Modal isOpen={true} onClose={handleClose} title="Ссылка на внешний url" size="md">
+		<Modal open={true} onClose={handleClose} title="Ссылка на внешний url" size="md">
 			<ModalContent>
 				<GridContainer gap="md">
 					<Input label="Полный URL адрес" value={url} onChange={handleUrlChange} placeholder="https://somesite.ru" />

@@ -9,7 +9,7 @@ import { ImageSelectionFields } from "./ImageSelectionFields";
 /** Модальная форма выбора изображений с необязательным этапом подтверждения. */
 export function ImageSelectionModal({
 	disabled,
-	isOpen = true,
+	open = true,
 	onClose = () => {},
 	title = "Загрузка нового изображения",
 	...props
@@ -18,7 +18,7 @@ export function ImageSelectionModal({
 
 	if (!props.onApply) {
 		return (
-			<Modal isOpen={isOpen} onClose={onClose} title={title} size="xl">
+			<Modal open={open} onClose={onClose} title={title} size="xl">
 				<ModalContent scrollable>
 					<ImageSelectionFields {...props} disabled={disabled} state={state} />
 				</ModalContent>
@@ -27,7 +27,7 @@ export function ImageSelectionModal({
 	}
 
 	return (
-		<Modal isOpen={isOpen} onClose={onClose} title={title} size="xl">
+		<Modal open={open} onClose={onClose} title={title} size="xl">
 			<ModalContent scrollable>
 				<ImageSelectionFields {...props} disabled={disabled} state={state} />
 			</ModalContent>

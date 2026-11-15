@@ -23,7 +23,7 @@ type ModalStyle = CSSProperties & {
 };
 
 type ModalFrameProps = {
-	isOpen?: boolean;
+	open?: boolean;
 	size?: keyof typeof ModalSize;
 	height?: string;
 	onClose: () => void;
@@ -36,7 +36,7 @@ type ModalFrameProps = {
 
 /** Общий каркас обычной модалки и модалки с вкладками: геометрия, стек и цикл фокуса. */
 export function ModalFrame({
-	isOpen,
+	open,
 	size = "sm",
 	height,
 	onClose,
@@ -59,11 +59,11 @@ export function ModalFrame({
 	 * Если provider менеджера не подключен, считаем одиночную модалку активной,
 	 * иначе логика Escape/focus trap никогда не включится.
 	 */
-	const isActive = isOpen && (modals.length === 0 || isTopModal(modalId));
-	useModalViewportFrame(Boolean(isOpen) || modals.includes(modalId));
+	const isActive = open && (modals.length === 0 || isTopModal(modalId));
+	useModalViewportFrame(Boolean(open) || modals.includes(modalId));
 
 	useEffect(() => {
-		const nextOpen = Boolean(isOpen);
+		const nextOpen = Boolean(open);
 		if (nextOpen && !wasOpenRef.current) {
 			// StrictMode повторяет setup без нового открытия: исходный trigger нельзя
 			// заменять уже сфокусированной кнопкой внутри Modal. Настоящее повторное
@@ -73,9 +73,9 @@ export function ModalFrame({
 			restoreFocusTargetRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
 		}
 		wasOpenRef.current = nextOpen;
-	}, [isOpen]);
+	}, [open]);
 
-	const modalRef = useOverlayFocus<HTMLDivElement>({ active: isOpen || false, trapFocus: true, restoreFocus: false });
+	const modalRef = useOverlayFocus<HTMLDivElement>({ active: open || false, trapFocus: true, restoreFocus: false });
 
 	useEscapeDismiss({
 		active: isActive || false,
@@ -84,10 +84,10 @@ export function ModalFrame({
 	});
 
 	useEffect(() => {
-		if (isOpen) {
+		if (open) {
 			openModal(modalId);
 		}
-	}, [isOpen, modalId, openModal]);
+	}, [open, modalId, openModal]);
 
 	useEffect(() => {
 		return () => {
@@ -120,7 +120,7 @@ export function ModalFrame({
 
 	return createPortal(
 		<AnimatePresence onExitComplete={handleExitComplete}>
-			{isOpen ? (
+			{open ? (
 				<motion.div
 					ref={modalRef}
 					className={cn(styles.modal, styles[size], className)}

@@ -39,7 +39,7 @@ function ViewerOverModalFixture() {
 	return (
 		<ModalManagerProvider>
 			<Button onClick={() => setModalOpen(true)}>Открыть выбор изображения</Button>
-			<Modal isOpen={modalOpen} title="Выбор изображения" onClose={() => setModalOpen(false)}>
+			<Modal open={modalOpen} title="Выбор изображения" onClose={() => setModalOpen(false)}>
 				<ModalContent>
 					<Button onClick={() => setViewerOpen(true)}>Открыть предпросмотр</Button>
 				</ModalContent>
