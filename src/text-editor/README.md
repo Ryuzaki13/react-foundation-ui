@@ -66,6 +66,7 @@ import { LinkTypes, TextEditorLexical } from "@ryuzaki13/react-foundation-ui/tex
 Новая подпись внешней ссылки наследует активные inline-format/style
 восстановленного выделения. Это не гарантирует сохранение нескольких разных
 text nodes и смешанного форматирования: текущая вставка создаёт одну подпись.
+В диалоге внешней ссылки указывайте полный адрес с `http://` или `https://`.
 
 `editableProps` передаёт `id`, `aria-label`, `aria-labelledby`,
 `aria-describedby`, `aria-invalid` и `aria-required` непосредственно в
@@ -323,7 +324,9 @@ editorRef.current?.focus({ preventScroll: true });
 списка не рисует лишний маркер.
 
 Узлы `link` и `accessible-link` показывают только абсолютные HTTP/HTTPS
-ссылки без credentials. `target` ограничен `_self`/`_blank`; у новой вкладки
+ссылки без учётных данных. Viewer проверяет сохранённый адрес после канонизации
+стандартным API `URL`. Пробельные и управляющие символы в исходном адресе отклоняются.
+`target` ограничен `_self`/`_blank`; у новой вкладки
 всегда `rel="noopener noreferrer"`. Небезопасный URL делает документ
 неподдержанным. Не выполняются запросы, переходы или автоматическая загрузка
 ресурсов. Относительные, mailto/tel и бизнес-ссылки, QR, semantic-tag,

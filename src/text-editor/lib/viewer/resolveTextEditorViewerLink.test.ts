@@ -11,6 +11,16 @@ describe("безопасный URL viewer", () => {
 	});
 
 	it.each([
+		["https:example.org", "https://example.org/"],
+		["https:/example.org", "https://example.org/"],
+		["https:///example.org", "https://example.org/"],
+		["https://example.org/\\path", "https://example.org//path"],
+		["https://example.org/?q=\\path#\\section", "https://example.org/?q=%5Cpath#%5Csection"]
+	])("проверяет сохранённый адрес %j после канонизации", (input, href) => {
+		expect(resolveTextEditorViewerLink(input)).toBe(href);
+	});
+
+	it.each([
 		null,
 		undefined,
 		{},

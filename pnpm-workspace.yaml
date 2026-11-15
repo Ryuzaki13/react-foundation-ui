@@ -3,3 +3,5 @@ allowBuilds:
     "@parcel/watcher": true
     esbuild: true
     unrs-resolver: true
+minimumReleaseAgeExclude:
+  - '@ryuzaki13/react-foundation-lib@2.38.0'

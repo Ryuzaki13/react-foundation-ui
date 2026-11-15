@@ -419,10 +419,17 @@ describe("компактный редактор", () => {
 		await waitFor(() => expect(dialogElement.contains(document.activeElement)).toBe(true));
 		const dialog = within(dialogElement);
 		const address = dialog.getByRole("textbox", { name: "Полный URL адрес" });
-		fireEvent.change(address, { target: { value: "https://example.org/" } });
 		fireEvent.change(dialog.getByRole("textbox", { name: "Текст для экранных читалок" }), { target: { value: "Источник" } });
+		fireEvent.change(address, { target: { value: "example.org" } });
+		await user.click(dialog.getByRole("button", { name: "Подтвердить" }));
+		expect(dialog.getByText("Ошибка ввода:")).toBeTruthy();
+		expect(input.querySelector("a")).toBeNull();
+
+		const href = "https://example.org/?meeting=123#details";
+		fireEvent.change(address, { target: { value: href } });
 		await user.click(dialog.getByRole("button", { name: "Подтвердить" }));
 		await waitFor(() => expect(input.querySelector("a")?.textContent).toBe("выбор"));
+		expect(input.querySelector("a")?.getAttribute("href")).toBe(href);
 		expect(input.textContent).toBe("До выбор после");
 		await waitFor(() => expect(document.activeElement).toBe(input));
 		await user.click(commandButton("undo"));

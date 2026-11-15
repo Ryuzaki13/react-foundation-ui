@@ -32,6 +32,9 @@ function isExternalPackage(id: string): boolean {
 	// file-loader imports вроде WASM и не встраивает бинарник в JavaScript.
 	if (id.endsWith(".css")) return false;
 
+	// Редактор использует эту схему и при установке UI с ранее выпущенными версиями Lib.
+	if (id === "@ryuzaki13/react-foundation-lib/validators/schema") return false;
+
 	return externalPackages.some((packageName) => id === packageName || id.startsWith(packageName + "/"));
 }
 

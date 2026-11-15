@@ -1,6 +1,6 @@
 import { type MouseEvent, useState } from "react";
 
-import { isSafe, validateUrl } from "@ryuzaki13/react-foundation-lib/validators";
+import { isSafe } from "@ryuzaki13/react-foundation-lib/validators";
 
 import { Button } from "../button";
 import { CheckBox } from "../check-box";
@@ -9,7 +9,10 @@ import { Input } from "../input";
 import { Modal, ModalContent, ModalFooter } from "../modal";
 import { UI_APPEARANCE_SOLID, UI_TONE_ACCENT } from "../uiSchemeConstants";
 
+import { parseTextEditorExternalLink } from "./lib/parseTextEditorExternalLink";
 import { LinkType } from "./linkTypes";
+
+const MAX_EXTERNAL_LINK_LENGTH = 2_048;
 
 interface LinkDialogProps {
 	allowQrCode?: boolean;
@@ -49,8 +52,13 @@ export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = tru
 	const handleConfirm = (e: MouseEvent) => {
 		e.preventDefault();
 
-		const validation = validateUrl(url);
-		if (!validation.isValid) {
+		if (url.length > MAX_EXTERNAL_LINK_LENGTH) {
+			setError("URL слишком длинный");
+			return;
+		}
+
+		const validation = parseTextEditorExternalLink(url);
+		if (!validation.success) {
 			setError(validation.error);
 			return;
 		}
@@ -60,10 +68,8 @@ export function LinkDialog({ onClose, onConfirm, initialState, allowQrCode = tru
 			return;
 		}
 
-		// Добавляем протокол, если его нет
-		const finalUrl = url.startsWith("http") ? url : `https://${url}`;
 		// Скрытая опция не переносится из старой ссылки или состояния предыдущего переключения props.
-		onConfirm(finalUrl, "", "", ariaLabel, allowQrCode && showQrCode);
+		onConfirm(validation.value, "", "", ariaLabel, allowQrCode && showQrCode);
 		handleClose();
 	};
 
