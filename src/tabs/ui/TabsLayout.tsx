@@ -1,62 +1,12 @@
-import React, { Children, isValidElement, useMemo } from "react";
+import {
+	tabsLayoutTabDisplayName,
+	tabsLayoutToolbarDisplayName,
+	tabsLayoutContentDisplayName,
+	tabsLayoutFooterDisplayName
+} from "../lib/parseTabsLayoutChildren";
+import { type TabsLayoutProps, type TabsLayoutSectionProps, type TabsLayoutTabProps } from "../model/types";
 
-import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-
-import { Scrollable } from "../../misc";
-import uiStyles from "../../ui.module.scss";
-import { getUiPanelToneClassName } from "../../uiClasses";
-import { UI_PANEL_TONE_SURFACE } from "../../uiSchemeConstants";
-import { shouldMountTabPanel } from "../lib/tabs";
-import { TABS_ORIENTATION_HORIZONTAL, TABS_ACTIVATION_MANUAL, TABS_MOUNT_LAZY } from "../model/tabsConstants";
-import { useTabsState } from "../model/useTabsState";
-
-import styles from "./Tabs.module.scss";
-import { TabsPanel } from "./TabsPanel";
-import { TabsTabList } from "./TabsTabList";
-
-import type { TabsDescriptor, TabsLayoutProps, TabsLayoutSectionProps, TabsLayoutTabProps } from "../model/types";
-
-interface ParsedTabsLayoutTab extends TabsDescriptor {
-	toolbar: TabsLayoutSectionProps | null;
-	content: TabsLayoutSectionProps;
-	footer: TabsLayoutSectionProps | null;
-}
-
-const tabsLayoutTabDisplayName = "TabsLayout.Tab";
-const tabsLayoutToolbarDisplayName = "TabsLayout.Toolbar";
-const tabsLayoutContentDisplayName = "TabsLayout.Content";
-const tabsLayoutFooterDisplayName = "TabsLayout.Footer";
-
-/**
- * Возвращает стабильный displayName compound-элемента.
- * Это нужно для корректной работы HMR, где ссылочное сравнение `child.type` может ломаться.
- */
-function getTabsLayoutElementDisplayName(child: React.ReactElement) {
-	const { type } = child;
-
-	if (typeof type === "function") {
-		const componentType = type as React.JSXElementConstructor<unknown> & {
-			displayName?: string;
-			name?: string;
-		};
-
-		return componentType.displayName ?? componentType.name ?? null;
-	}
-
-	if (typeof type === "object" && type !== null && "displayName" in type) {
-		const componentType = type as {
-			displayName?: string;
-		};
-
-		return typeof componentType.displayName === "string" ? componentType.displayName : null;
-	}
-
-	return null;
-}
-
-function isTabsLayoutElement<Props>(child: React.ReactNode, displayName: string): child is React.ReactElement<Props> {
-	return isValidElement<Props>(child) && getTabsLayoutElementDisplayName(child) === displayName;
-}
+import { TabsLayoutView } from "./TabsLayoutView";
 
 /**
  * Маркер верхнеуровневой вкладки в compound-режиме `TabsLayout`.
@@ -94,154 +44,9 @@ function TabsLayoutFooter({ children }: TabsLayoutSectionProps) {
 
 TabsLayoutFooter.displayName = tabsLayoutFooterDisplayName;
 
-function parseTabsLayoutSections(children: React.ReactNode, tabId: string) {
-	let toolbar: TabsLayoutSectionProps | null = null;
-	let content: TabsLayoutSectionProps | null = null;
-	let footer: TabsLayoutSectionProps | null = null;
-
-	for (const child of Children.toArray(children)) {
-		if (!isValidElement(child)) {
-			throw new Error(
-				`TabsLayout.Tab "${tabId}" поддерживает только дочерние элементы TabsLayout.Toolbar, TabsLayout.Content и TabsLayout.Footer.`
-			);
-		}
-
-		if (isTabsLayoutElement<TabsLayoutSectionProps>(child, tabsLayoutToolbarDisplayName)) {
-			if (toolbar) {
-				throw new Error(`TabsLayout.Tab "${tabId}" содержит более одного блока TabsLayout.Toolbar.`);
-			}
-
-			toolbar = child.props;
-			continue;
-		}
-
-		if (isTabsLayoutElement<TabsLayoutSectionProps>(child, tabsLayoutContentDisplayName)) {
-			if (content) {
-				throw new Error(`TabsLayout.Tab "${tabId}" содержит более одного блока TabsLayout.Content.`);
-			}
-
-			content = child.props;
-			continue;
-		}
-
-		if (isTabsLayoutElement<TabsLayoutSectionProps>(child, tabsLayoutFooterDisplayName)) {
-			if (footer) {
-				throw new Error(`TabsLayout.Tab "${tabId}" содержит более одного блока TabsLayout.Footer.`);
-			}
-
-			footer = child.props;
-			continue;
-		}
-
-		throw new Error(
-			`TabsLayout.Tab "${tabId}" поддерживает только дочерние элементы TabsLayout.Toolbar, TabsLayout.Content и TabsLayout.Footer.`
-		);
-	}
-
-	if (!content) {
-		throw new Error(`TabsLayout.Tab "${tabId}" должен содержать блок TabsLayout.Content.`);
-	}
-
-	return { toolbar, content, footer };
-}
-
-function parseTabsLayoutChildren(children: React.ReactNode): ParsedTabsLayoutTab[] {
-	return Children.toArray(children).map((child) => {
-		if (!isTabsLayoutElement<TabsLayoutTabProps>(child, tabsLayoutTabDisplayName)) {
-			throw new Error("TabsLayout принимает только дочерние элементы TabsLayout.Tab.");
-		}
-
-		return {
-			id: child.props.id,
-			title: child.props.title,
-			disabled: child.props.disabled,
-			...parseTabsLayoutSections(child.props.children, child.props.id)
-		};
-	});
-}
-
-/**
- * Compound-оболочка tabs для составных panel-layout сценариев.
- * Сам компонент управляет только переключением и каркасом панели.
- */
-export function TabsLayout({
-	children,
-	value,
-	defaultValue,
-	onValueChange,
-	className,
-	orientation = TABS_ORIENTATION_HORIZONTAL,
-	activationMode = TABS_ACTIVATION_MANUAL,
-	mountStrategy = TABS_MOUNT_LAZY,
-	loop = true,
-	tone = UI_PANEL_TONE_SURFACE,
-	clean = false,
-	"aria-label": ariaLabel,
-	"aria-labelledby": ariaLabelledBy
-}: TabsLayoutProps) {
-	const tabs = useMemo(() => parseTabsLayoutChildren(children), [children]);
-	const state = useTabsState({
-		items: tabs,
-		value,
-		defaultValue,
-		onValueChange,
-		orientation,
-		activationMode,
-		loop
-	});
-	const rootClassName = cn(
-		styles.tabsContainer,
-		clean ? styles.clean : uiStyles.uiFilledPanel,
-		styles[orientation],
-		getUiPanelToneClassName(tone),
-		className
-	);
-	const panelsClassName = cn(styles.panels, styles.layoutPanels);
-
-	return (
-		<div className={rootClassName}>
-			<div className={styles.tabsWrapper}>
-				<TabsTabList items={tabs} state={state} className={styles.tabs} ariaLabel={ariaLabel} ariaLabelledBy={ariaLabelledBy} />
-			</div>
-
-			<div className={panelsClassName}>
-				{tabs.map((tab) => {
-					const isSelected = tab.id === state.selectedTabId;
-					const isMounted = shouldMountTabPanel({
-						mountStrategy,
-						isSelected,
-						isVisited: state.isVisited(tab.id)
-					});
-
-					const templateRows = `${tab.toolbar ? "auto " : ""}minmax(0, 1fr)${tab.footer ? " auto" : ""}`;
-
-					return (
-						<TabsPanel
-							key={tab.id}
-							tabId={tab.id}
-							isSelected={isSelected}
-							className={styles.panel}
-							getTabElementId={state.getTabElementId}
-							getPanelElementId={state.getPanelElementId}>
-							{isMounted ? (
-								<div className={styles.layoutPanel} style={{ gridTemplateRows: templateRows }}>
-									{tab.toolbar ? (
-										<div className={cn(styles.layoutSection, tab.toolbar.className)}>{tab.toolbar.children}</div>
-									) : null}
-									<Scrollable className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}>
-										{tab.content.children}
-									</Scrollable>
-									{tab.footer ? (
-										<div className={cn(styles.layoutSection, tab.footer.className)}>{tab.footer.children}</div>
-									) : null}
-								</div>
-							) : null}
-						</TabsPanel>
-					);
-				})}
-			</div>
-		</div>
-	);
+/** Составная раскладка вкладок с независимо прокручиваемой активной панелью. */
+export function TabsLayout(props: TabsLayoutProps) {
+	return <TabsLayoutView {...props} />;
 }
 
 TabsLayout.Tab = TabsLayoutTab;

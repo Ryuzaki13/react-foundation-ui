@@ -24,7 +24,7 @@ interface OneStepScrollerProps {
 }
 
 const EDGE_EPSILON_PX = 1;
-const DEFAULT_SCROLL_PADDING_PX = 6;
+const DEFAULT_SCROLL_PADDING_PX = 16;
 const SCROLL_BEHAVIOR_SMOOTH = "smooth";
 const SCROLL_BEHAVIOR_AUTO = "auto";
 const SCROLLER_FOCUS_IN_EVENT = "focusin";

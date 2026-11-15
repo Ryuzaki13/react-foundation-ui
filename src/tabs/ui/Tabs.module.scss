@@ -1,8 +1,8 @@
 .tabsContainer {
-	--tabs-background: var(--bg-surface);
+	--tabs-background: var(--bg-secondary);
 	--tabs-border: var(--border);
 	--tabs-radius: var(--radius-sm);
-	--tabs-panel-padding: var(--space-md);
+	--tabs-panel-padding: var(--space-sm);
 
 	display: grid;
 	min-width: 0;
@@ -23,13 +23,31 @@
 .tabsWrapper {
 	// Длинные заголовки прокручиваются внутри tablist, а не расширяют grid-панель.
 	min-width: 0;
+	padding: var(--tabs-panel-padding);
 	background: var(--tabs-background);
+}
+
+.tabsWrapperWithAction {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) auto;
+	align-items: center;
+	column-gap: var(--space-xs);
+	padding-inline: var(--space-sm);
+
+	// Кнопка остаётся первым действием для фокуса и не попадает в скроллер вкладок.
+	> :first-child {
+		grid-area: 1 / 2;
+	}
+
+	> :last-child {
+		grid-area: 1 / 1;
+	}
 }
 
 .tabs {
 	display: flex;
 	min-width: 0;
-	padding: var(--space-sm) var(--tabs-panel-padding);
+	// padding: var(--tabs-panel-padding);
 }
 
 .panels {
@@ -44,14 +62,8 @@
 	grid-template-rows: auto minmax(0, 1fr);
 
 	.tabsWrapper {
-		border-bottom: var(--border);
+		border-bottom: var(--tabs-border);
 	}
-
-	// .tab {
-	// 	border-top-left-radius: var(--radius-sm);
-	// 	border-top-right-radius: var(--radius-sm);
-	// 	border-bottom: var(--focus-width) solid var(--decoration-color);
-	// }
 }
 
 .vertical {
@@ -59,7 +71,7 @@
 	min-height: 0;
 
 	.tabsWrapper {
-		border-right: var(--border);
+		border-right: var(--tabs-border);
 	}
 
 	.tabs {
@@ -85,7 +97,6 @@
 	padding: var(--space-xs) var(--space-md);
 	color: var(--text-secondary);
 	border-radius: var(--radius-sm);
-	border: var(--border-width) solid transparent;
 	font-variation-settings: "wght" 700;
 	font-weight: 700;
 
@@ -102,18 +113,18 @@
 
 	&.selected {
 		color: var(--selection-text);
-		border-color: var(--selection-border);
+		// border-color: var(--selection-border);
 		background-color: var(--selection-bg);
 
 		&:hover:not(:disabled) {
 			color: var(--selection-text-hover);
-			border-color: var(--selection-border-hover);
+			// border-color: var(--selection-border-hover);
 			background-color: var(--selection-bg-hover);
 		}
 
 		&:active:not(:disabled) {
 			color: var(--selection-text-pressed);
-			border-color: var(--selection-border-pressed);
+			// border-color: var(--selection-border-pressed);
 			background-color: var(--selection-bg-pressed);
 		}
 	}
@@ -125,7 +136,7 @@
 
 		&.selected {
 			color: var(--selection-text-disabled);
-			border-color: var(--selection-border-disabled);
+			// border-color: var(--selection-border-disabled);
 			background-color: var(--selection-bg-disabled);
 		}
 	}

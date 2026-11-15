@@ -1,31 +1,17 @@
-import React, { Children, useEffect, useId, useRef } from "react";
+import React, { Children, useId } from "react";
 
-import { getOrCreatePortalRoot, useEscapeDismiss, useOverlayFocus } from "@ryuzaki13/react-foundation-lib/dom";
 import { cn } from "@ryuzaki13/react-foundation-lib/utils";
-import { X } from "lucide-react";
-import { AnimatePresence, motion, useReducedMotion } from "motion/react";
-import { createPortal } from "react-dom";
 
-import { Button } from "../button";
 import { GridContainer } from "../grid";
-import { UI_APPEARANCE_GHOST } from "../uiSchemeConstants";
 
 import styles from "./Modal.module.scss";
+import { ModalCloseButton } from "./ModalCloseButton";
 import { type ModalCompositionProps } from "./modalCompositionTypes";
 import { ModalContent } from "./ModalContent";
 import { ModalFooter } from "./ModalFooter";
-import {
-	MODAL_MOTION_HIDDEN,
-	MODAL_MOTION_VISIBLE,
-	modalMotionTransition,
-	modalMotionVariants,
-	reducedModalMotionTransition
-} from "./modalMotion";
-import { MODAL_PORTAL_ROOT_ID } from "./modalPortalConstants";
+import { ModalFrame } from "./ModalFrame";
 import { ModalToolbar } from "./ModalToolbar";
-import { useModalViewportFrame } from "./model/useModalViewportFrame";
-import { ModalSize } from "./types";
-import { useModalManager } from "./useModalManager";
+import { type ModalSize } from "./types";
 
 type ToolbarElement = React.ReactElement<ModalCompositionProps, typeof ModalToolbar>;
 type ContentElement = React.ReactElement<ModalCompositionProps, typeof ModalContent>;
@@ -33,10 +19,6 @@ type FooterElement = React.ReactElement<ModalCompositionProps, typeof ModalFoote
 
 type ModalChildren =
 	[ToolbarElement, ContentElement, FooterElement] | [ToolbarElement, ContentElement] | [ContentElement, FooterElement] | ContentElement;
-
-type ModalStyle = React.CSSProperties & {
-	"--modal-height"?: string;
-};
 
 export interface ModalProps {
 	/** Открыто ли модальное окно */
@@ -52,79 +34,10 @@ export interface ModalProps {
 	children: ModalChildren;
 }
 
-export function Modal({ isOpen, title, size = "sm", height, onClose, children }: ModalProps) {
-	const modalId = useId();
+/** Стандартное окно с заголовком и составными секциями содержимого. */
+export function Modal({ isOpen, title, size, height, onClose, children }: ModalProps) {
 	const titleId = useId();
-
-	const { modals, openModal, closeModal, isTopModal } = useModalManager();
-	const shouldReduceMotion = useReducedMotion();
-	const restoreFocusTargetRef = useRef<HTMLElement | null>(null);
-	const restoreFocusAnimationFrameRef = useRef(0);
-	const wasOpenRef = useRef(false);
-	const modalStyle: ModalStyle = { "--modal-height": height };
-
-	/**
-	 * Если provider менеджера не подключен, считаем одиночную модалку активной,
-	 * иначе логика Escape/focus trap никогда не включится.
-	 */
-	const isActive = isOpen && (modals.length === 0 || isTopModal(modalId));
-	useModalViewportFrame(Boolean(isOpen) || modals.includes(modalId));
-
-	useEffect(() => {
-		const nextOpen = Boolean(isOpen);
-		if (nextOpen && !wasOpenRef.current) {
-			// StrictMode повторяет setup без нового открытия: исходный trigger нельзя
-			// заменять уже сфокусированной кнопкой внутри Modal. Настоящее повторное
-			// открытие отменяет ожидающий restore прошлого exit и захватывает новый trigger.
-			window.cancelAnimationFrame(restoreFocusAnimationFrameRef.current);
-			restoreFocusAnimationFrameRef.current = 0;
-			restoreFocusTargetRef.current = document.activeElement instanceof HTMLElement ? document.activeElement : null;
-		}
-		wasOpenRef.current = nextOpen;
-	}, [isOpen]);
-
-	const modalRef = useOverlayFocus<HTMLDivElement>({ active: isOpen || false, trapFocus: true, restoreFocus: false });
-
-	useEscapeDismiss({
-		active: isActive || false,
-		onDismiss: onClose,
-		containerRef: modalRef
-	});
-
-	useEffect(() => {
-		if (isOpen) {
-			openModal(modalId);
-		}
-	}, [isOpen, modalId, openModal]);
-
-	useEffect(() => {
-		return () => {
-			window.cancelAnimationFrame(restoreFocusAnimationFrameRef.current);
-			closeModal(modalId);
-		};
-	}, [closeModal, modalId]);
-
-	function handleExitComplete() {
-		closeModal(modalId);
-		const restoreFocusTarget = restoreFocusTargetRef.current;
-
-		/**
-		 * Менеджер снимает inert в passive effect после обновления стека.
-		 * Следующий animation frame гарантирует, что trigger снова доступен для фокуса.
-		 */
-		restoreFocusAnimationFrameRef.current = window.requestAnimationFrame(() => {
-			if (restoreFocusTarget?.isConnected) {
-				restoreFocusTarget.focus({ preventScroll: true });
-			}
-			restoreFocusTargetRef.current = null;
-		});
-	}
-
-	const modalRoot = getOrCreatePortalRoot(MODAL_PORTAL_ROOT_ID);
-
-	if (!modalRoot) {
-		return null;
-	}
+	const contentId = `${titleId}-content`;
 
 	let toolbar: React.ReactNode = null;
 	let content: React.ReactNode = null;
@@ -138,60 +51,36 @@ export function Modal({ isOpen, title, size = "sm", height, onClose, children }:
 		switch (typeName) {
 			case ModalToolbar.displayName:
 				if (toolbar) throw new Error("Modal: duplicate <Toolbar> found");
-				toolbar = child; //.props.children;
+				toolbar = child;
 				break;
 			case ModalFooter.displayName:
 				if (footer) throw new Error("Modal: duplicate <Footer> found");
-				footer = child; //props.children;
+				footer = child;
 				break;
 			case ModalContent.displayName:
 				if (content) throw new Error("Modal: duplicate <Content> found");
-				content = child; //.props.children;
+				content = child;
 				break;
 		}
 	}
 
-	return createPortal(
-		<AnimatePresence onExitComplete={handleExitComplete}>
-			{isOpen ? (
-				<motion.div
-					ref={modalRef}
-					className={cn(styles.modal, styles[size])}
-					style={modalStyle}
-					role="dialog"
-					aria-modal="true"
-					aria-labelledby={titleId}
-					aria-describedby={`${titleId}-content`}
-					initial={MODAL_MOTION_HIDDEN}
-					animate={MODAL_MOTION_VISIBLE}
-					exit={MODAL_MOTION_HIDDEN}
-					variants={modalMotionVariants}
-					transition={shouldReduceMotion ? reducedModalMotionTransition : modalMotionTransition}>
-					<div className={cn(styles.header, toolbar ? "" : "borderBottom")}>
-						<h3 className={styles.headerText} id={titleId}>
-							{title}
-						</h3>
-						<Button
-							icon={<X />}
-							appearance={UI_APPEARANCE_GHOST}
-							className={styles.headerButton}
-							aria-label={"Закрыть модальное окно"}
-							onClick={onClose}
-						/>
-					</div>
+	return (
+		<ModalFrame isOpen={isOpen} size={size} height={height} onClose={onClose} aria-labelledby={titleId} aria-describedby={contentId}>
+			<div className={cn(styles.header, toolbar ? "" : "borderBottom")}>
+				<h3 className={styles.headerText} id={titleId}>
+					{title}
+				</h3>
+				<ModalCloseButton className={styles.headerButton} onClose={onClose} />
+			</div>
 
-					<GridContainer
-						id={`${titleId}-content`}
-						templateRows={`${toolbar ? "auto" : ""} 1fr ${footer ? "auto" : ""}`.trim()}
-						// gap="md"
-						className={styles.body}>
-						{toolbar}
-						{content}
-						{footer}
-					</GridContainer>
-				</motion.div>
-			) : null}
-		</AnimatePresence>,
-		modalRoot
+			<GridContainer
+				id={contentId}
+				templateRows={`${toolbar ? "auto" : ""} 1fr ${footer ? "auto" : ""}`.trim()}
+				className={styles.body}>
+				{toolbar}
+				{content}
+				{footer}
+			</GridContainer>
+		</ModalFrame>
 	);
 }

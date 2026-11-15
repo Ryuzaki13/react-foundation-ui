@@ -331,6 +331,10 @@
 			"types": "./dist/tabs/index.d.ts",
 			"import": "./dist/tabs/index.js"
 		},
+		"./tabs-modal": {
+			"types": "./dist/tabs-modal/index.d.ts",
+			"import": "./dist/tabs-modal/index.js"
+		},
 		"./text": {
 			"types": "./dist/text/index.d.ts",
 			"import": "./dist/text/index.js"

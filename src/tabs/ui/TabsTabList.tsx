@@ -36,7 +36,7 @@ export function TabsTabList({ items, state, className, ariaLabel, ariaLabelledBy
 					{...state.getTabButtonProps(item)}
 					data-ui="tabs-tab"
 					data-action="select-tab"
-					className={cn(styles.tab, "textWrap", item.id === state.selectedTabId && styles.selected)}>
+					className={cn(styles.tab, item.id === state.selectedTabId && styles.selected)}>
 					{item.title}
 				</button>
 			))}

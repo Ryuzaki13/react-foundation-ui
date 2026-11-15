@@ -34,35 +34,26 @@
 	top: 0;
 	z-index: 10;
 	width: var(--control-height);
-	height: 100%;
+	height: var(--control-height);
 	flex: 0 0 var(--control-height);
 	display: flex;
 	align-items: center;
 	justify-content: center;
-	// border: var(--border);
 	border-radius: var(--radius-sm);
 	color: var(--text-muted);
-	// background-color: var(--bg-canvas);
-	// opacity: 0.75;
+	background-color: transparent;
 
-	transition-property: opacity, color;
+	transition-property: opacity, color, background-color;
 	transition-duration: var(--transition-fast);
 
 	&:hover {
 		opacity: 1;
 		color: var(--text-primary);
+		background-color: var(--bg-hover);
 	}
 
 	&:disabled {
 		opacity: 0.5;
 		pointer-events: none;
 	}
-
-	// &.prev {
-	// 	left: 0;
-	// }
-
-	// &.next {
-	// 	right: 0;
-	// }
 }

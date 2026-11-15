@@ -36,7 +36,8 @@ import { Select } from "../../select";
 import { Slider, SliderInput, SliderRange, SliderRangeInput, SliderRangeValue } from "../../slider";
 import { StateSelect } from "../../state-select";
 import { Switch } from "../../switch";
-import { TabsBox } from "../../tabs";
+import { TabsBox, TabsLayout, type TabsBoxItem } from "../../tabs";
+import { TabsModal } from "../../tabs-modal";
 import { TagInput } from "../../tag-input";
 import { Text } from "../../text";
 import { Textarea } from "../../textarea";
@@ -46,7 +47,7 @@ import { demoTreeNodes } from "../../tree-select/stories/treeStoryFixtures";
 
 const gridStyle = {
 	display: "grid",
-	gridTemplateColumns: "repeat(auto-fit, minmax(var(--ui-width-xl), 1fr))",
+	gridTemplateColumns: "repeat(auto-fit, minmax(27em, 1fr))",
 	alignItems: "start",
 	gap: "2em",
 	padding: "2em",
@@ -57,17 +58,13 @@ const cardStyle = {
 	display: "grid",
 	alignContent: "start",
 	gridTemplateColumns: "100%",
-	gap: "0.5em",
-	padding: "1em",
+	gap: "2em",
+	padding: "2em",
 	overflow: "hidden",
 	border: "var(--border)",
 	borderRadius: "var(--radius-md)",
-	background: "var(--bg-surface)",
+	background: "var(--bg-canvas)",
 	boxShadow: "var(--shadow-card)"
-
-	// backgroundImage: "radial-gradient(#e8e8e8 1.5px, transparent 1.5px), radial-gradient(#e8e8e8 1.5px, var(--bg-surface) 1.5px)",
-	// backgroundSize: "20px 20px",
-	// backgroundPosition: "0 0,10px 10px"
 } satisfies CSSProperties;
 
 const cardTitleStyle = {
@@ -112,6 +109,47 @@ const departmentOptions: DepartmentOption[] = [
 	{ id: 3, name: "Логистика", code: "LGS", manager: "Мария Климова", direction: "Операционный блок", disabled: true },
 	{ id: 4, name: "Поддержка клиентов", code: "SUP", manager: "Ирина Белова", direction: "Операционный блок" }
 ];
+
+// Один набор для всех вариантов оформления позволяет сравнивать одинаковое содержимое.
+const projectTabs = [
+	<TabsLayout.Tab key="plan" id="plan" title="План работ">
+		<TabsLayout.Content>
+			<p>
+				<strong>Обновление справочного центра.</strong> До 20 ноября проверить инструкции по входу и восстановлению доступа.
+			</p>
+		</TabsLayout.Content>
+	</TabsLayout.Tab>,
+	<TabsLayout.Tab key="team" id="team" title="Участники">
+		<TabsLayout.Content>
+			<p>Анна готовит тексты, Илья проверяет инструкции, Мария отвечает за публикацию.</p>
+		</TabsLayout.Content>
+	</TabsLayout.Tab>,
+	<TabsLayout.Tab key="materials" id="materials" title="Материалы">
+		<TabsLayout.Content>
+			<p>К проверке готовы черновик инструкции по входу и новые снимки экрана для восстановления пароля.</p>
+		</TabsLayout.Content>
+	</TabsLayout.Tab>,
+	<TabsLayout.Tab key="decisions" id="decisions" title="Решения">
+		<TabsLayout.Content>
+			<p>Инструкции для компьютера и телефона опубликуем отдельно. Старые ссылки будут вести на новые страницы.</p>
+		</TabsLayout.Content>
+	</TabsLayout.Tab>
+	// <TabsLayout.Tab key="history" id="history" title="Журнал изменений">
+	// 	<TabsLayout.Content>
+	// 		<p className="margin0">
+	// 			<strong>14 ноября.</strong> Анна обновила раздел о входе и передала его на проверку.
+	// 		</p>
+	// 	</TabsLayout.Content>
+	// </TabsLayout.Tab>
+];
+
+const orderTabs = [
+	{ id: "items", title: "Состав заказа", content: "Настольная лампа — 1 шт., сменная лампочка — 2 шт." },
+	{ id: "delivery", title: "Доставка", content: "Курьер привезёт заказ 18 ноября с 14:00 до 18:00." },
+	{ id: "payment", title: "Оплата", content: "4 250 ₽ оплачены картой. Чек отправлен на электронную почту." },
+	{ id: "returns", title: "Условия возврата", content: "Для возврата укажите номер заказа в обращении в поддержку." }
+	// { id: "history", title: "История", content: "15 ноября заказ собрали и передали в службу доставки." }
+] satisfies TabsBoxItem[];
 
 function ComponentCard({ title, children }: { title: string; children: ReactNode }) {
 	return (
@@ -186,6 +224,7 @@ export function InteractiveComponents() {
 	const [droppedFiles, setDroppedFiles] = useState<ReadFileResult[]>([]);
 	const [dialogOpen, setDialogOpen] = useState(false);
 	const [modalOpen, setModalOpen] = useState(false);
+	const [tabsModalOpen, setTabsModalOpen] = useState(false);
 
 	const [departmentValue, setDepartmentValue] = useState<DepartmentOption | undefined>();
 
@@ -532,7 +571,7 @@ export function InteractiveComponents() {
 					options={departmentOptions}
 					value={departmentValue}
 					onChange={setDepartmentValue}
-					getOptionKey={(option: DepartmentOption) => option.id}
+					getOptionKey={(option: DepartmentOption) => String(option.id)}
 					getOptionLabel={(option: DepartmentOption) => option.name}
 					getOptionCode={(option: DepartmentOption) => option.code}
 					getOptionDisabled={(option: DepartmentOption) => option.disabled ?? false}
@@ -635,54 +674,49 @@ export function InteractiveComponents() {
 				</DropZone>
 			</ComponentCard>
 
-			<ComponentCard title="TabsBox">
-				<TabsBox
-					defaultValue="first"
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
-						{ id: "quat", title: "Четвертая", content: "Четвертая панель" },
-						{ id: "five", title: "Пятая", content: "Пятая панель" }
-					]}
-				/>
+			<ComponentCard title="TabsLayout">
+				<TabsLayout defaultValue="plan">{projectTabs}</TabsLayout>
 
-				<TabsBox
-					defaultValue="first"
-					clean
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Ещё одна панель" },
-						{ id: "quat", title: "Четвертая", content: "Четвертая панель" },
-						{ id: "five", title: "Пятая", content: "Пятая панель" }
-					]}
-				/>
+				<TabsLayout defaultValue="plan" clean>
+					{projectTabs}
+				</TabsLayout>
+			</ComponentCard>
+
+			<ComponentCard title="TabsLayout">
+				<TabsLayout defaultValue="plan" orientation="vertical">
+					{projectTabs}
+				</TabsLayout>
+
+				<TabsLayout defaultValue="plan" orientation="vertical" clean>
+					{projectTabs}
+				</TabsLayout>
 			</ComponentCard>
 
 			<ComponentCard title="TabsBox">
-				<TabsBox
-					defaultValue="first"
-					orientation="vertical"
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Другая панель" },
-						{ id: "quat", title: "Четвертая", content: "Другая панель" }
-					]}
-				/>
+				<TabsBox defaultValue="items" items={orderTabs} />
 
-				<TabsBox
-					defaultValue="first"
-					orientation="vertical"
-					clean
-					items={[
-						{ id: "first", title: "Первый", content: "Содержимое" },
-						{ id: "second", title: "Второй", content: "Другая панель" },
-						{ id: "third", title: "Ещё одна", content: "Другая панель" },
-						{ id: "quat", title: "Четвертая", content: "Другая панель" }
-					]}
-				/>
+				<TabsBox defaultValue="items" items={orderTabs} clean />
+			</ComponentCard>
+
+			<ComponentCard title="TabsBox">
+				<TabsBox defaultValue="items" items={orderTabs} orientation="vertical" />
+
+				<TabsBox defaultValue="items" items={orderTabs} orientation="vertical" clean />
+			</ComponentCard>
+
+			<ComponentCard title="TabsModal">
+				<ModalManagerProvider>
+					<Button style={compactButtonStyle} onClick={() => setTabsModalOpen(true)}>
+						Открыть окно с вкладками
+					</Button>
+					<TabsModal
+						title="Обновление справочного центра"
+						isOpen={tabsModalOpen}
+						onClose={() => setTabsModalOpen(false)}
+						defaultValue="plan">
+						{projectTabs}
+					</TabsModal>
+				</ModalManagerProvider>
 			</ComponentCard>
 
 			<ComponentCard title="Disclosure">
@@ -693,7 +727,7 @@ export function InteractiveComponents() {
 					<Disclosure label="Раскрыть 4">Содержимое панели 4</Disclosure>
 				</DisclosureGroup>
 
-				<Disclosure label="Раскрыть 1" tone="secondary">
+				<Disclosure label="Раскрыть 1" tone="surface">
 					Содержимое панели 1
 				</Disclosure>
 			</ComponentCard>
