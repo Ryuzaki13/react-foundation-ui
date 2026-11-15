@@ -77,12 +77,14 @@ export function TabsLayoutView({
 
 					const templateRows = `${tab.toolbar ? "auto " : ""}minmax(0, 1fr)${tab.footer ? " auto" : ""}`;
 
+					// Tab ведёт к самой области прокрутки. Оболочка связывает все секции с вкладкой.
 					return (
 						<TabsPanel
 							key={tab.id}
 							tabId={tab.id}
 							isSelected={isSelected}
 							className={styles.panel}
+							tabIndex={-1}
 							getTabElementId={state.getTabElementId}
 							getPanelElementId={state.getPanelElementId}>
 							{isMounted ? (
@@ -90,7 +92,9 @@ export function TabsLayoutView({
 									{tab.toolbar ? (
 										<div className={cn(styles.layoutSection, tab.toolbar.className)}>{tab.toolbar.children}</div>
 									) : null}
-									<Scrollable className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}>
+									<Scrollable
+										className={cn(styles.layoutSection, styles.layoutContent, tab.content.className)}
+										tabIndex={isSelected ? 0 : -1}>
 										{tab.content.children}
 									</Scrollable>
 									{tab.footer ? (

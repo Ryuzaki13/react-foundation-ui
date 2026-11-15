@@ -108,4 +108,33 @@ describe("Tabs", () => {
 		expect(historyPanel?.hidden).toBe(true);
 		expect(historyPanel?.textContent).toContain("История документа");
 	});
+
+	it("в TabsLayout ведёт фокус через область прокрутки между верхней и нижней секциями", async () => {
+		const user = userEvent.setup();
+		const { getByRole } = render(
+			<TabsLayout>
+				<TabsLayout.Tab id="history" title="История">
+					<TabsLayout.Toolbar>
+						<button type="button">Обновить записи</button>
+					</TabsLayout.Toolbar>
+					<TabsLayout.Content>Записи об изменениях</TabsLayout.Content>
+					<TabsLayout.Footer>
+						<button type="button">Выгрузить историю</button>
+					</TabsLayout.Footer>
+				</TabsLayout.Tab>
+			</TabsLayout>
+		);
+		const panel = within(getByRole("tabpanel", { name: "История" }));
+
+		getByRole("tab", { name: "История" }).focus();
+		await user.tab();
+		expect(document.activeElement).toBe(panel.getByRole("button", { name: "Обновить записи" }));
+
+		await user.tab();
+		expect(document.activeElement).toBe(panel.getByText("Записи об изменениях"));
+		expect(document.activeElement?.classList.contains("scrollable")).toBe(true);
+
+		await user.tab();
+		expect(document.activeElement).toBe(panel.getByRole("button", { name: "Выгрузить историю" }));
+	});
 });

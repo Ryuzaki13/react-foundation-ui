@@ -7,19 +7,28 @@ interface TabsPanelProps {
 	tabId: string;
 	isSelected: boolean;
 	className?: string;
+	tabIndex?: number;
 	getTabElementId: (tabId: string) => string;
 	getPanelElementId: (tabId: string) => string;
 	children?: ReactNode;
 }
 
-export function TabsPanel({ tabId, isSelected, className, getTabElementId, getPanelElementId, children }: TabsPanelProps) {
+export function TabsPanel({
+	tabId,
+	isSelected,
+	className,
+	tabIndex = isSelected ? 0 : -1,
+	getTabElementId,
+	getPanelElementId,
+	children
+}: TabsPanelProps) {
 	return (
 		<div
 			role="tabpanel"
 			id={getPanelElementId(tabId)}
 			aria-labelledby={getTabElementId(tabId)}
 			hidden={!isSelected}
-			tabIndex={isSelected ? 0 : -1}
+			tabIndex={tabIndex}
 			className={className}>
 			{children}
 		</div>
