@@ -1,5 +1,6 @@
 declare const styles: {
   readonly tabsContainer: "tabsContainer";
+  readonly framed: "framed";
   readonly clean: "clean";
   readonly tabsWrapper: "tabsWrapper";
   readonly tabsWrapperWithAction: "tabsWrapperWithAction";

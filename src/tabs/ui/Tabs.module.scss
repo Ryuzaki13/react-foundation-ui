@@ -9,8 +9,11 @@
 	min-height: 0;
 	height: 100%;
 	overflow: hidden;
-	border: var(--tabs-border);
-	border-radius: var(--radius-md);
+
+	&.framed {
+		border: var(--tabs-border);
+		border-radius: var(--radius-md);
+	}
 
 	&.clean {
 		--tabs-border: none;

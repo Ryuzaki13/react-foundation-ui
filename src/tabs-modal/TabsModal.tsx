@@ -9,7 +9,7 @@ import { TabsLayoutView } from "../tabs/ui/TabsLayoutView";
 import styles from "./TabsModal.module.scss";
 
 export type TabsModalProps = Pick<ModalProps, "open" | "size" | "height" | "onClose"> &
-	Pick<TabsLayoutProps, "children" | "value" | "defaultValue" | "onValueChange" | "activationMode" | "loop"> & {
+	Pick<TabsLayoutProps, "children" | "value" | "defaultValue" | "onValueChange" | "mountStrategy" | "activationMode" | "loop"> & {
 		/** Доступное имя окна: отдельный видимый заголовок не выводится. */
 		title: string;
 	};
@@ -25,7 +25,7 @@ export const TabsModal: TabsModalComponent = Object.assign(
 	function TabsModal({ open, size, height, onClose, title, ...tabsProps }: TabsModalProps) {
 		return (
 			<ModalFrame open={open} size={size} height={height} onClose={onClose} aria-label={title} className={styles.frame}>
-				<TabsLayoutView {...tabsProps} mountStrategy="unmount" tabBarAction={<ModalCloseButton onClose={onClose} />} />
+				<TabsLayoutView {...tabsProps} framed={false} tabBarAction={<ModalCloseButton onClose={onClose} />} />
 			</ModalFrame>
 		);
 	},

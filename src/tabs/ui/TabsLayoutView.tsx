@@ -17,6 +17,7 @@ import { TabsPanel } from "./TabsPanel";
 import { TabsTabList } from "./TabsTabList";
 
 type TabsLayoutViewProps = TabsLayoutProps & {
+	framed?: boolean;
 	tabBarAction?: ReactNode;
 };
 
@@ -37,6 +38,7 @@ export function TabsLayoutView({
 	loop = true,
 	tone = UI_PANEL_TONE_SURFACE,
 	clean = false,
+	framed = true,
 	"aria-label": ariaLabel,
 	"aria-labelledby": ariaLabelledBy
 }: TabsLayoutViewProps) {
@@ -53,6 +55,7 @@ export function TabsLayoutView({
 	const rootClassName = cn(
 		styles.tabsContainer,
 		clean ? styles.clean : uiStyles.uiFilledPanel,
+		framed ? styles.framed : undefined,
 		styles[orientation],
 		getUiPanelToneClassName(tone),
 		className

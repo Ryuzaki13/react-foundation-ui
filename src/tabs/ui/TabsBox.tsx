@@ -4,7 +4,7 @@ import uiStyles from "../../ui.module.scss";
 import { getUiPanelToneClassName } from "../../uiClasses";
 import { UI_PANEL_TONE_SURFACE } from "../../uiSchemeConstants";
 import { shouldMountTabPanel } from "../lib/tabs";
-import { TABS_ORIENTATION_HORIZONTAL, TABS_ACTIVATION_AUTOMATIC, TABS_MOUNT_UNMOUNT } from "../model/tabsConstants";
+import { TABS_ACTIVATION_AUTOMATIC, TABS_MOUNT_UNMOUNT, TABS_ORIENTATION_HORIZONTAL } from "../model/tabsConstants";
 import { type TabsBoxProps } from "../model/types";
 import { useTabsState } from "../model/useTabsState";
 
@@ -47,6 +47,7 @@ export function TabsBox({
 
 	const rootClassName = cn(
 		styles.tabsContainer,
+		styles.framed,
 		clean ? styles.clean : uiStyles.uiFilledPanel,
 		styles[orientation],
 		getUiPanelToneClassName(tone),
