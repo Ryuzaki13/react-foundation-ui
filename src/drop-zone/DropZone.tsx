@@ -1,18 +1,19 @@
-import { ChangeEvent, ReactNode, useCallback, useMemo, useRef, useState } from "react";
+import { type ChangeEvent, type ReactNode, useCallback, useLayoutEffect, useMemo, useRef, useState } from "react";
 
 import {
 	assertValidAccept,
 	assertValidAllowedMime,
-	readFile,
-	ReadFileError,
-	ReadFileResult,
-	ReadMode
+	type ReadFileError,
+	type ReadFileResult,
+	type ReadMode
 } from "@ryuzaki13/react-foundation-lib/file";
 import { cn, handleKeyboardActivation } from "@ryuzaki13/react-foundation-lib/utils";
 import { UploadIcon } from "lucide-react";
 
-import { READ_FILE_MODE_ARRAY_BUFFER } from "../input-file/readFileModeConstants";
+import { InputUI, useInputFieldIds } from "../input";
+import { READ_FILE_MODE_ARRAY_BUFFER, READ_FILE_MODE_DATA_URL } from "../input-file/readFileModeConstants";
 import { InputFilesList } from "../input-files";
+import { useInputFilesReading } from "../input-files/model/useInputFilesReading";
 
 import styles from "./DropZone.module.scss";
 
@@ -20,14 +21,23 @@ import styles from "./DropZone.module.scss";
  * Пропсы компонента DropZone.
  *
  * Компонент представляет собой визуальную зону для выбора файлов.
- * Поддерживает перетаскивание и выбор по клику, а результаты передаются в onDrop.
+ * Поддерживает перетаскивание и выбор по клику, а результаты передаёт в onChange.
  */
 export interface DropZoneProps {
 	value: ReadFileResult[];
-	/** Вызывается с массивом результатов readFile после сброса файлов */
+	/** Получает новый список файлов после чтения или удаления. */
 	onChange: (results: ReadFileResult[]) => void;
 	/** Callback ошибки чтения одного из файлов */
 	onChangeError?: (error: ReadFileError) => void;
+	/** Чтение группы; false приходит также при отмене, блокировке и размонтировании. */
+	onReadingChange?: (isReading: boolean) => void;
+	/** Сообщение о предыдущей ошибке, которое очищается при новом выборе. */
+	error?: string;
+	onClearError?: () => void;
+	label?: ReactNode;
+	description?: string;
+	/** Добавляет успешно прочитанные файлы к value. По умолчанию новый выбор заменяет список. */
+	append?: boolean;
 
 	/** HTML-атрибут accept для нативного input[type="file"] (например `[".pdf", ".docx"]`) */
 	accept?: readonly string[];
@@ -55,8 +65,7 @@ export interface DropZoneProps {
  * DropZone — зона для перетаскивания файлов и выбора по клику.
  *
  * При наведении файла зона подсвечивается (пунктирная рамка меняет цвет).
- * При сбросе файлов каждый читается через readFile, успешные результаты
- * передаются в onDrop, ошибки — в onDropError.
+ * Нативный выбор и перетаскивание используют один отменяемый reader.
  *
  * Поддерживает кастомный контент через children.
  * Если children не указан — отображается иконка загрузки и подсказка.
@@ -65,6 +74,12 @@ export function DropZone({
 	value,
 	onChange,
 	onChangeError,
+	onReadingChange,
+	error,
+	onClearError,
+	label,
+	description,
+	append = false,
 	accept,
 	allowedMime,
 	maxBytes,
@@ -83,6 +98,11 @@ export function DropZone({
 	const inputRef = useRef<HTMLInputElement>(null);
 	/** Состояние: файл перетаскивается над зоной */
 	const [isDragOver, setIsDragOver] = useState(false);
+	const { controlId, labelId, descriptionId, errorId, describedBy } = useInputFieldIds({
+		hasLabel: label !== undefined && label !== null,
+		hasDescription: !!description,
+		hasError: !!error
+	});
 
 	/**
 	 * Формируем HTML-атрибут accept из accept или allowedMime.
@@ -97,41 +117,28 @@ export function DropZone({
 		return "*";
 	}, [allowedMime, accept]);
 
-	const readDroppedFile = useCallback(
-		(file: File) => {
-			if (readMode === READ_FILE_MODE_ARRAY_BUFFER) {
-				return readFile(file, { allowedMime, maxBytes, mode: READ_FILE_MODE_ARRAY_BUFFER });
-			}
+	// Добавление использует последний подтверждённый список, в том числе после внешнего сброса во время чтения.
+	const latestValue = useRef(value);
+	useLayoutEffect(() => {
+		latestValue.current = value;
+	}, [value]);
 
-			return readFile(file, { allowedMime, maxBytes });
-		},
-		[allowedMime, maxBytes, readMode]
+	const readerOptions = {
+		disabled,
+		allowedMime,
+		maxBytes,
+		error,
+		onClearError,
+		onReadingChange,
+		onReadError: onChangeError,
+		value: [],
+		onChange: (files: ReadFileResult[]) => onChange(append ? [...latestValue.current, ...files] : files)
+	};
+	const reading = useInputFilesReading(
+		readMode === READ_FILE_MODE_ARRAY_BUFFER ? { ...readerOptions, readMode } : { ...readerOptions, readMode: READ_FILE_MODE_DATA_URL }
 	);
 
-	const processFiles = useCallback(
-		async (files: File[]) => {
-			if (disabled || files.length === 0) return;
-
-			const filesToProcess = multiple ? files : files.slice(0, 1);
-			const results: ReadFileResult[] = [];
-
-			for (const file of filesToProcess) {
-				try {
-					const result = await readDroppedFile(file);
-					results.push(result);
-				} catch (err) {
-					if (err instanceof ReadFileError && onChangeError) {
-						onChangeError(err);
-					}
-				}
-			}
-
-			if (results.length > 0) {
-				onChange(results);
-			}
-		},
-		[disabled, multiple, onChange, onChangeError, readDroppedFile]
-	);
+	const processFiles = (files: File[]) => reading.read(multiple ? files : files.slice(0, 1));
 
 	const openFileDialog = useCallback(() => {
 		if (disabled) return;
@@ -193,33 +200,20 @@ export function DropZone({
 	/**
 	 * Обработка drop — читаем сброшенные файлы через общую логику.
 	 */
-	const handleDrop = useCallback(
-		async (e: React.DragEvent) => {
-			e.preventDefault();
-			e.stopPropagation();
+	const handleDrop = (event: React.DragEvent) => {
+		event.preventDefault();
+		event.stopPropagation();
+		dragCounter.current = 0;
+		setIsDragOver(false);
 
-			// Сбрасываем состояние drag
-			dragCounter.current = 0;
-			setIsDragOver(false);
+		void processFiles(Array.from(event.dataTransfer.files));
+	};
 
-			if (disabled) return;
-
-			const droppedFiles = Array.from(e.dataTransfer.files);
-			await processFiles(droppedFiles);
-		},
-		[disabled, processFiles]
-	);
-
-	const handleInputChange = useCallback(
-		async (e: ChangeEvent<HTMLInputElement>) => {
-			const selectedFiles = Array.from(e.target.files ?? []);
-			await processFiles(selectedFiles);
-
-			// Сбрасываем значение, чтобы повторный выбор того же файла тоже вызывал change.
-			e.target.value = "";
-		},
-		[processFiles]
-	);
+	const handleInputChange = (event: ChangeEvent<HTMLInputElement>) => {
+		const files = Array.from(event.currentTarget.files ?? []);
+		event.currentTarget.value = "";
+		void processFiles(files);
+	};
 
 	const handleKeyDown = useCallback(
 		(e: React.KeyboardEvent<HTMLDivElement>) => {
@@ -229,9 +223,18 @@ export function DropZone({
 	);
 
 	return (
-		<div>
+		<InputUI
+			label={label}
+			description={description}
+			disabled={disabled}
+			error={error}
+			controlId={controlId}
+			labelId={labelId}
+			descriptionId={descriptionId}
+			errorId={errorId}>
 			<input
 				ref={inputRef}
+				id={controlId}
 				type="file"
 				hidden
 				disabled={disabled}
@@ -249,7 +252,10 @@ export function DropZone({
 				onDrop={handleDrop}
 				role="button"
 				tabIndex={disabled ? -1 : 0}
-				aria-disabled={disabled}>
+				aria-disabled={disabled}
+				aria-invalid={!!error || undefined}
+				aria-labelledby={labelId}
+				aria-describedby={describedBy}>
 				{children ?? (
 					<>
 						{/* Иконка загрузки по умолчанию */}
@@ -262,8 +268,14 @@ export function DropZone({
 				)}
 			</div>
 
-			{/* Список выбранных файлов */}
-			<InputFilesList files={value} onChange={onChange} />
-		</div>
+			<InputFilesList
+				files={value}
+				disabled={disabled}
+				onChange={(files) => {
+					reading.cancel();
+					onChange(files);
+				}}
+			/>
+		</InputUI>
 	);
 }
