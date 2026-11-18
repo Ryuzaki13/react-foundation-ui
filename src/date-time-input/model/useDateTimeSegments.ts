@@ -129,6 +129,17 @@ export function useDateTimeSegments({
 		}
 	}, []);
 
+	/** Очищает также незавершённый ввод, когда внешнее значение уже равно null. */
+	const clearSegments = () => {
+		clearTimeout(blurTimeout.current);
+		setDirtyValues(null);
+		onClearError?.();
+		onChange(null);
+
+		// После закрытия пикера фокус возвращается в первый сегмент для повторного ввода.
+		requestAnimationFrame(() => focusSegment(editableIndices[0], false));
+	};
+
 	/**
 	 * Возвращает индекс следующего редактируемого сегмента.
 	 */
@@ -334,6 +345,8 @@ export function useDateTimeSegments({
 	return {
 		segments,
 		segmentValues,
+		hasSegmentValue: !areAllDateSegmentsEmpty(segments, segmentValues),
+		clearSegments,
 		registerRef,
 		handleInput,
 		handleKeyDown,

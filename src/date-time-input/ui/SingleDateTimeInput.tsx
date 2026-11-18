@@ -7,7 +7,7 @@ import { CalendarDaysIcon, Clock3Icon } from "lucide-react";
 import { DATE_INPUT_SELECTION_MODE_DAY, DATE_PICKER_LEVEL_DAY } from "../../date-input/lib/dateInputCalendarConstants";
 import { type DatePickerLevel } from "../../date-input/lib/types";
 import { CalendarView } from "../../date-input/ui";
-import { InputControl, InputUI, useInputFieldIds } from "../../input";
+import { InputClearButton, InputControl, InputUI, useInputFieldIds } from "../../input";
 import { DATE_MASK_SEGMENT_LITERAL } from "../../input-date-time/dateMaskSegmentKinds";
 import { Popover } from "../../popover";
 import { UiBaseProps } from "../../types";
@@ -77,6 +77,8 @@ export function SingleDateTimeInput({
 	const {
 		segments,
 		segmentValues,
+		hasSegmentValue,
+		clearSegments,
 		registerRef,
 		handleInput,
 		handleKeyDown,
@@ -147,6 +149,12 @@ export function SingleDateTimeInput({
 		}
 	};
 
+	const handleClear = () => {
+		setOpen(false);
+		clearSegments();
+	};
+
+	const canClear = hasSegmentValue || (open && draftValue !== null);
 	const panelPlacementClass = timePanelPlacement === TIME_PANEL_PLACEMENT_RIGHT ? styles.timePanelPaneRight : styles.timePanelPaneBottom;
 	const buttonAriaLabel = mode === DATE_TIME_INPUT_MODE_TIME ? "Открыть выбор времени" : "Открыть календарь даты и времени";
 	const inputPlaceholder = placeholder ?? (mode === DATE_TIME_INPUT_MODE_TIME ? "чч:мм" : "дд.мм.гггг чч:мм");
@@ -165,9 +173,14 @@ export function SingleDateTimeInput({
 				descriptionId={descriptionId}
 				errorId={errorId}>
 				<InputControl
-					endAdornmentWidth="var(--control-height)"
+					endAdornmentWidth="calc(var(--button-size) * 2)"
 					endAdornment={
 						<div className={uiStyles.uiToggleButtonContainer}>
+							<InputClearButton
+								ariaLabel={typeof label === "string" && label ? `Очистить поле «${label}»` : undefined}
+								disabled={disabled || !canClear}
+								onClick={handleClear}
+							/>
 							<Popover.Trigger>
 								<button
 									type="button"

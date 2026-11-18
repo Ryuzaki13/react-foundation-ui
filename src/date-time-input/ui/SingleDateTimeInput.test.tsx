@@ -3,9 +3,9 @@
 import { act, useState } from "react";
 
 import { createRoot, type Root } from "react-dom/client";
-import { afterEach, describe, expect, it } from "vitest";
+import { afterEach, describe, expect, it, vi } from "vitest";
 
-import { SingleDateTimeInput } from "./SingleDateTimeInput";
+import { SingleDateTimeInput, type SingleDateTimeInputProps } from "./SingleDateTimeInput";
 
 (globalThis as typeof globalThis & { IS_REACT_ACT_ENVIRONMENT?: boolean }).IS_REACT_ACT_ENVIRONMENT = true;
 
@@ -18,12 +18,20 @@ Object.defineProperty(HTMLElement.prototype, "scrollTo", {
 let container: HTMLDivElement | null = null;
 let root: Root | null = null;
 
-function DateTimeHarness() {
+function DateTimeHarness({ mode, onChange }: Partial<Pick<SingleDateTimeInputProps, "mode" | "onChange">>) {
 	const [value, setValue] = useState<Date | null>(new Date(2026, 2, 3, 12, 30));
 
 	return (
 		<>
-			<SingleDateTimeInput label="Дата и время" value={value} onChange={setValue} />
+			<SingleDateTimeInput
+				label="Дата и время"
+				mode={mode}
+				value={value}
+				onChange={(next) => {
+					setValue(next);
+					onChange?.(next);
+				}}
+			/>
 			<button type="button" onClick={() => setValue(new Date(2027, 3, 4, 9, 45))}>
 				Внешнее значение
 			</button>
@@ -107,5 +115,56 @@ describe("SingleDateTimeInput", () => {
 		expect(getSegment("Год").value).toBe("2027");
 		expect(getSegment("Часы").value).toBe("09");
 		expect(getSegment("Минуты").value).toBe("45");
+	});
+
+	it("очищает время из поля и отбрасывает выбор в открытой панели", async () => {
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+
+		const onChange = vi.fn();
+		await act(async () => root?.render(<DateTimeHarness mode="time" onChange={onChange} />));
+
+		const trigger = container.querySelector<HTMLButtonElement>('button[aria-label="Открыть выбор времени"]')!;
+		await act(async () => trigger.click());
+		const hours = document.querySelector('[role="listbox"][aria-label="Выбор часов"]')!;
+		await act(async () => hours.dispatchEvent(new KeyboardEvent("keydown", { key: "ArrowDown", bubbles: true })));
+		expect(hours.querySelector('[aria-selected="true"]')?.textContent).toBe("13");
+
+		const clear = container.querySelector<HTMLButtonElement>('button[aria-label="Очистить поле «Дата и время»"]')!;
+		await act(async () => {
+			clear.dispatchEvent(new MouseEvent("mousedown", { bubbles: true, cancelable: true }));
+			clear.click();
+		});
+
+		expect(onChange.mock.calls).toEqual([[null]]);
+		expect(document.querySelector('[role="dialog"]')).toBeNull();
+		expect(getSegment("Часы").value).toBe("");
+		expect(getSegment("Минуты").value).toBe("");
+		expect(clear.disabled).toBe(true);
+		await vi.waitFor(() => expect(document.activeElement).toBe(getSegment("Часы")));
+	});
+
+	it("очищает частичный ввод при пустом value и учитывает блокировку поля", async () => {
+		container = document.createElement("div");
+		document.body.appendChild(container);
+		root = createRoot(container);
+
+		const onChange = vi.fn();
+		await act(async () => root?.render(<SingleDateTimeInput value={null} onChange={onChange} />));
+		const clear = container.querySelector<HTMLButtonElement>('[data-action="clear-input"]')!;
+		expect(clear.disabled).toBe(true);
+
+		await act(async () => setNativeInputValue(getSegment("День"), "1"));
+		expect(clear.disabled).toBe(false);
+		await act(async () => clear.click());
+		expect(getSegment("День").value).toBe("");
+		expect(onChange.mock.calls).toEqual([[null]]);
+
+		await act(async () => root?.render(<SingleDateTimeInput value={new Date(2026, 2, 3)} onChange={onChange} disabled />));
+		expect(clear.disabled).toBe(true);
+		await act(async () => clear.click());
+		expect(getSegment("День").value).toBe("03");
+		expect(onChange).toHaveBeenCalledTimes(1);
 	});
 });

@@ -35,7 +35,7 @@ const meta = {
 			control: false
 		},
 		onChange: {
-			description: "Вызывается при вводе или выборе валидной даты-времени.",
+			description: "Получает дату и время при выборе или вводе, а при очистке получает null.",
 			control: false
 		},
 		minDate: {
