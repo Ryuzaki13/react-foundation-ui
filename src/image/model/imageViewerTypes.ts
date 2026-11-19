@@ -94,3 +94,20 @@ export type ImageViewerProps = {
 	readonly className?: string;
 	readonly style?: ImageViewerStyle;
 };
+
+/** Адрес воспроизведения может отличаться от оригинала для скачивания. */
+export type MediaViewerVideo = {
+	readonly kind: "video";
+	readonly src: string;
+	readonly mimeType: string;
+	readonly title?: ReactNode;
+	readonly poster?: string;
+	readonly download?: { readonly url: string; readonly filename: string };
+};
+
+export type MediaViewerSlide = (ImageViewerImage & { readonly kind?: "image" }) | MediaViewerVideo;
+
+/** В смешанной галерее изображения сохраняют responsive-варианты и собственные действия. */
+export type MediaViewerProps = Omit<ImageViewerProps, "images"> & {
+	readonly slides: readonly MediaViewerSlide[];
+};

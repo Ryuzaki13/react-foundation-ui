@@ -23,15 +23,18 @@ import Counter from "yet-another-react-lightbox/plugins/counter";
 import Download from "yet-another-react-lightbox/plugins/download";
 import Fullscreen from "yet-another-react-lightbox/plugins/fullscreen";
 import Thumbnails from "yet-another-react-lightbox/plugins/thumbnails";
+import Video from "yet-another-react-lightbox/plugins/video";
 import Zoom from "yet-another-react-lightbox/plugins/zoom";
 
 import { buildImageViewerSlides } from "../lib/buildImageViewerSlides";
 import { resolveImageViewerLabels } from "../lib/resolveImageViewerLabels";
-import { type ImageViewerProps } from "../model/imageViewerTypes";
+import { type MediaViewerProps } from "../model/imageViewerTypes";
+
+import { VideoSlideFrame } from "./VideoSlideFrame";
 
 import styles from "./ImageViewer.module.scss";
 
-type ImageViewerRuntimeProps = ImageViewerProps & {
+type ImageViewerRuntimeProps = MediaViewerProps & {
 	readonly onRuntimeMounted: () => void;
 };
 
@@ -44,7 +47,7 @@ const IMAGE_VIEWER_TOP_ROW_HEIGHT = "var(--_image-viewer-top-row-height)";
  */
 export default function ImageViewerRuntime({
 	open,
-	images,
+	slides: items,
 	index = 0,
 	onClose,
 	onIndexChange,
@@ -63,17 +66,15 @@ export default function ImageViewerRuntime({
 	}, [onRuntimeMounted]);
 
 	// Стабильная ссылка предотвращает внешний reset текущего slide при несвязанном rerender родителя.
-	const slides = useMemo(() => buildImageViewerSlides(images), [images]);
+	const slides = useMemo(() => buildImageViewerSlides(items), [items]);
 	const viewerOpen = open && slides.length > 0;
 	// Общая аренда сохраняет исходную прокрутку и не разблокирует документ под
 	// вложенным Modal. Vendor height: 100% обрезает длинный body и теряет scrollTop.
 	useDocumentScrollLock({ active: viewerOpen, compensateScrollbar: true });
 	const requestedIndex = Number.isFinite(index) ? Math.trunc(index) : 0;
 	const resolvedIndex = slides.length > 0 ? Math.min(Math.max(requestedIndex, 0), slides.length - 1) : 0;
-	const hasCaptions = images.some((image) => {
-		const title = image.title === undefined ? image.alt : image.title;
-		return (title !== undefined && title !== null) || (image.description !== undefined && image.description !== null);
-	});
+	const hasVideo = slides.some((slide) => slide.type === "video");
+	const hasCaptions = slides.some((slide) => slide.title != null || slide.description != null);
 	const captionsEnabled = features?.captions ?? hasCaptions;
 	const counterEnabled = features?.counter ?? slides.length > 1;
 	const downloadEnabled = features?.download ?? false;
@@ -82,6 +83,7 @@ export default function ImageViewerRuntime({
 	const zoomEnabled = features?.zoom ?? true;
 	const plugins = useMemo<Plugin[]>(
 		() => [
+			...(hasVideo ? [Video] : []),
 			...(captionsEnabled ? [Captions] : []),
 			...(counterEnabled ? [Counter] : []),
 			...(downloadEnabled ? [Download] : []),
@@ -89,9 +91,24 @@ export default function ImageViewerRuntime({
 			...(thumbnailsEnabled ? [Thumbnails] : []),
 			...(zoomEnabled ? [Zoom] : [])
 		],
-		[captionsEnabled, counterEnabled, downloadEnabled, fullscreenEnabled, thumbnailsEnabled, zoomEnabled]
+		[hasVideo, captionsEnabled, counterEnabled, downloadEnabled, fullscreenEnabled, thumbnailsEnabled, zoomEnabled]
 	);
-	const resolvedLabels = useMemo(() => resolveImageViewerLabels(labels), [labels]);
+	const resolvedLabels = useMemo(
+		() =>
+			resolveImageViewerLabels(
+				hasVideo
+					? {
+							lightbox: "Просмотр медиафайлов",
+							photoGallery: "Галерея",
+							slide: "Файл",
+							caption: "Подпись",
+							download: "Скачать файл",
+							...labels
+						}
+					: labels
+			),
+		[hasVideo, labels]
+	);
 	const lightboxProps: LightboxExternalProps = {
 		open: viewerOpen,
 		close: onClose,
@@ -101,7 +118,8 @@ export default function ImageViewerRuntime({
 		className: cn(styles.viewer, className),
 		portal: { container: { style } },
 		labels: resolvedLabels,
-		carousel: { finite: !loop },
+		carousel: { finite: !loop, ...(hasVideo ? { preload: 0 } : {}) },
+		video: { controls: true, playsInline: true, preload: "metadata" },
 		controller: { closeOnBackdropClick, closeOnPullDown },
 		noScroll: { disabled: true },
 		captions: { showToggle: true },
@@ -115,7 +133,7 @@ export default function ImageViewerRuntime({
 		thumbnails: { showToggle: true },
 		download: {
 			download: ({ slide, saveAs }) => {
-				if (!isImageSlide(slide) || slide.download === false) return;
+				if (slide.download === false) return;
 
 				if (typeof slide.download === "string") {
 					saveAs(slide.download);
@@ -127,7 +145,7 @@ export default function ImageViewerRuntime({
 					return;
 				}
 
-				saveAs(slide.src);
+				if (isImageSlide(slide)) saveAs(slide.src);
 			}
 		},
 		on: {
@@ -136,6 +154,16 @@ export default function ImageViewerRuntime({
 			}
 		},
 		render: {
+			slideContainer: ({ slide, children }) => {
+				if (slide.type !== "video") return children;
+				if (!viewerOpen) return null;
+
+				return (
+					<VideoSlideFrame key={slide.sources[0]?.src} download={typeof slide.download === "object" ? slide.download : undefined}>
+						{children}
+					</VideoSlideFrame>
+				);
+			},
 			iconPrev: () => <ChevronLeftIcon aria-hidden="true" className={styles.icon} />,
 			iconNext: () => <ChevronRightIcon aria-hidden="true" className={styles.icon} />,
 			iconClose: () => <XIcon aria-hidden="true" className={styles.icon} />,

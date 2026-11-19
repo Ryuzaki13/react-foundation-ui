@@ -1,7 +1,7 @@
-import { type Slide } from "yet-another-react-lightbox";
+import { type Slide, type SlideImage } from "yet-another-react-lightbox";
 
 import { type ImageCandidate } from "../model/imageTypes";
-import { type ImageViewerImage } from "../model/imageViewerTypes";
+import { type ImageViewerImage, type MediaViewerSlide } from "../model/imageViewerTypes";
 
 /** Проверяет размер до передачи в srcset внешней lightbox-библиотеки. */
 function isPositiveFinite(value: number): boolean {
@@ -24,7 +24,7 @@ function resolveCandidateWidth(candidate: ImageCandidate, intrinsicWidth: number
  * Альтернативные picture sources намеренно остаются контрактом ImageView: YARL 3.x не поддерживает их
  * в стандартном image slide, а custom slide лишает viewer встроенного responsive preload и Zoom.
  */
-function buildLightboxSrcSet(image: ImageViewerImage): Slide["srcSet"] {
+function buildLightboxSrcSet(image: ImageViewerImage): SlideImage["srcSet"] {
 	const { intrinsicWidth, intrinsicHeight } = image;
 
 	if (
@@ -58,8 +58,18 @@ function buildLightboxSrcSet(image: ImageViewerImage): Slide["srcSet"] {
  * Адаптирует storage-agnostic ResponsiveImageData к image slides Yet Another React Lightbox.
  * Функция остаётся приватной для `/image`, чтобы vendor contract не становился public API пакета.
  */
-export function buildImageViewerSlides(images: readonly ImageViewerImage[]): Slide[] {
+export function buildImageViewerSlides(images: readonly MediaViewerSlide[]): Slide[] {
 	return images.map((image) => {
+		if (image.kind === "video") {
+			return {
+				type: "video",
+				sources: [{ src: image.src, type: image.mimeType }],
+				poster: image.poster,
+				title: image.title,
+				download: image.download ?? false
+			};
+		}
+
 		const hasIntrinsicSize = isPositiveFinite(image.intrinsicWidth ?? 0) && isPositiveFinite(image.intrinsicHeight ?? 0);
 
 		return {

@@ -83,3 +83,19 @@
 		animation: none;
 	}
 }
+
+.videoFrame {
+	width: 100%;
+	height: 100%;
+}
+
+.videoError {
+	color: var(--image-viewer-caption-color, var(--white, #fff));
+	text-align: center;
+	padding: var(--space-md);
+}
+
+.videoError a {
+	color: inherit;
+	text-decoration: underline;
+}
