@@ -4,6 +4,7 @@ import { createRef, type SyntheticEvent } from "react";
 
 import { fireEvent, render, screen } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
+import { renderToString } from "react-dom/server";
 import { describe, expect, it, vi } from "vitest";
 
 import { Button } from "./Button";
@@ -13,6 +14,15 @@ import { Button } from "./Button";
  * в Storybook, поэтому функциональные тесты не зависят от состава CSS-классов.
  */
 describe("Button", () => {
+	it.each([true, false, undefined])("задаёт восстановление состояния Firefox уже в серверном HTML при disabled=%s", (disabled) => {
+		const host = document.createElement("div");
+		host.innerHTML = renderToString(<Button disabled={disabled} title="Действие" />);
+
+		const button = host.querySelector("button");
+		expect(button?.disabled).toBe(disabled === true);
+		expect(button?.getAttribute("autocomplete")).toBe(disabled === undefined ? null : "off");
+	});
+
 	it("передаёт ref и по умолчанию не отправляет форму", () => {
 		const buttonRef = createRef<HTMLButtonElement>();
 		const onSubmit = vi.fn();

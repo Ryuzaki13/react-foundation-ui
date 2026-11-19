@@ -48,9 +48,13 @@ export function Button({
 	// Если кнопка только с иконкой, нужен aria-label или title.
 	const computedAriaLabel = iconOnly ? (ariaLabel ?? title) : ariaLabel;
 
+	// Firefox при перезагрузке может восстановить прежний disabled до гидрации.
+	// Для управляемой кнопки autocomplete="off" сохраняет состояние из серверного HTML.
+	const nativeProps = disabled === undefined ? props : { ...props, autoComplete: "off" };
+
 	const button = (
 		<button
-			{...props}
+			{...nativeProps}
 			ref={ref}
 			type={type}
 			disabled={disabled}
